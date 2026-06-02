@@ -1,93 +1,138 @@
-# nature_dis + PheroViz
+# NaturePheroViz
 
-这是 `nature_dis` 与 `PheroViz` 的集成工作目录。两个原始 Git 仓库保留在 `_sources/`，根目录展开了一份可直接联动使用的工作副本。
+NaturePheroViz is a research data pipeline for collecting Nature article figures, matching them with Source Data files, validating the downloaded corpus, and generating visualization outputs with the PheroViz agent.
 
-## 目录结构
+The project is organized as a single working codebase:
 
-- `_sources/nature_dis/`：`https://github.com/shatianming5/nature_dis.git` 的完整 clone。
-- `_sources/PheroViz/`：`https://github.com/shatianming5/PheroViz.git` 的完整 clone。
-- `agent/`：PheroViz Slot Pipeline，可根据数据自动生成 Matplotlib 可视化。
-- `nature_download/`：PheroViz 中的 Nature 检索、图像和 Source data 抓取入口。
-- `download_nature_pairs.py`：nature_dis 中的 Nature 图文/数据下载脚本。
-- `tools/process_articles.py`：nature_dis 中的文章预检、子图分割和派生数据处理工具。
-- `docs/`、`scripts/`：nature_dis 的代理 API 文档与辅助脚本。
+- `download_nature_pairs.py`: collect Nature article pages and download matched figure + Source Data pairs.
+- `tools/process_articles.py`: preflight downloaded articles, build manifests, and prepare figure-level processing outputs.
+- `nature_download/`: alternate all-in-one Nature search/download utilities for metadata, figures, and Source Data.
+- `agent/`: PheroViz slot pipeline for data-driven Matplotlib chart generation.
+- `docs/` and `scripts/`: supporting docs and local automation.
 
-## 环境准备
+## Install
 
 ```bash
 python -m venv .venv
 source .venv/bin/activate
 pip install -r requirements.txt
-python -m playwright install
+python -m playwright install chromium
 ```
 
-如需调用 LLM/VLM，请在 `.env` 中配置 `LLM_API_KEY`、`OPENAI_API_KEY`、`LLM_API_BASE`、`LLM_MODEL` 或 `VLM_API_KEY` 等变量。
-
-## 常用入口
-
-Nature Source Data 配对采集与下载：
+For LLM/VLM features, create `.env` with the relevant values:
 
 ```bash
-python download_nature_pairs.py --max-articles 10 --max-candidates 1000 --out-dir downloads/nature_pairs
+LLM_API_KEY=...
+OPENAI_API_KEY=...
+LLM_API_BASE=...
+LLM_MODEL=...
+VLM_API_KEY=...
 ```
 
-输出包括：
+## Collect Figure and Source Data Pairs
 
-- `downloads/nature_pairs/pairs.jsonl`：图像与 Source Data 的配对记录。
-- `downloads/nature_pairs/articles/<article-id>/images/`：图像文件。
-- `downloads/nature_pairs/articles/<article-id>/data/`：Source Data 文件。
-- `downloads/nature_pairs/skipped.jsonl`：已检查但没有可配对 Source Data 的文章。
-
-`--max-articles` 表示“成功下载到至少一组图片 + Source Data 配对的文章数”。没有可配对数据的候选文章会写入 `skipped.jsonl`，不占用成功名额。`--max-candidates` 用来限制最多检查多少候选文章，避免大批量搜索无限延伸。
-
-也可以直接给定文章 URL：
+Run the main collector:
 
 ```bash
-python download_nature_pairs.py --urls-file urls.txt --out-dir downloads/nature_pairs
+python download_nature_pairs.py \
+  --max-articles 10 \
+  --max-candidates 1000 \
+  --out-dir downloads/nature_pairs
 ```
 
-PheroViz 可视化流水线：
+`--max-articles` means successful articles: an article counts only when at least one figure + Source Data pair is downloaded. Articles without pairable Source Data are written to `skipped.jsonl` and do not consume the success target.
+
+`--max-candidates` limits how many candidate article URLs are inspected while trying to reach the success target.
+
+You can also provide explicit article URLs:
+
+```bash
+python download_nature_pairs.py \
+  --urls-file urls.txt \
+  --max-articles 10 \
+  --out-dir downloads/nature_pairs
+```
+
+Collector output:
+
+- `downloads/nature_pairs/pairs.jsonl`: one record per matched figure + Source Data pair.
+- `downloads/nature_pairs/articles/<article-id>/article.json`: article metadata and extracted pair metadata.
+- `downloads/nature_pairs/articles/<article-id>/images/`: downloaded figure images.
+- `downloads/nature_pairs/articles/<article-id>/data/`: downloaded Source Data files.
+- `downloads/nature_pairs/skipped.jsonl`: inspected articles without pairable Source Data.
+- `downloads/nature_pairs/errors.jsonl`: article-level failures.
+- `downloads/nature_pairs/state.json`: resumable processed-URL state.
+
+## Validate Downloaded Articles
+
+Run preflight over the collected article folders:
+
+```bash
+python -m tools.process_articles preflight \
+  --input downloads/nature_pairs/articles \
+  --output downloads/nature_pairs/derived \
+  --progress
+```
+
+Preflight output:
+
+- `articles_manifest.jsonl`: article-level inventory.
+- `figures_manifest.jsonl`: figure-level inventory with matched Source Data files.
+- `preflight_report.md`: summary counts for articles, figures, captions, and Source Data matches.
+
+## Segment Figures
+
+Figure segmentation uses a VLM backend and writes derived panel metadata and cropped data-viz panels.
+
+```bash
+python -m tools.process_articles segment \
+  --input downloads/nature_pairs/articles \
+  --output downloads/nature_pairs/derived \
+  --backend cliproxy \
+  --model models/gemini-3-flash-preview \
+  --progress
+```
+
+## Nature Search and Source Data Utilities
+
+The `nature_download/` directory contains a secondary CLI for search-first workflows:
+
+```bash
+cd nature_download
+python nature_all_in_one.py search --query "cancer" --max 20 --out outputs/search_run
+python nature_all_in_one.py postfetch \
+  --jsonl outputs/search_run/articles.jsonl \
+  --out outputs/nature_content \
+  --max-figs 12
+```
+
+`postfetch` downloads Source Data independently from figure discovery. If Source Data succeeds but no figure is fetched, the article is still kept and marked processed.
+
+## PheroViz Agent
+
+Run the chart-generation agent from `agent/`:
 
 ```bash
 cd agent
 python run_chain.py data/sales_demo.csv "季度对比" bar --rounds 1
 ```
 
-Nature all-in-one 检索与抓取：
+Generated run artifacts are written under `agent/runs/` and are ignored by Git.
+
+## Tests
 
 ```bash
-cd nature_download
-python nature_all_in_one.py search --query "cancer" --max 20 --out outputs/search_run
-python nature_all_in_one.py postfetch --jsonl outputs/search_run/articles.jsonl --out outputs/nature_content --max-figs 12
+python -m compileall -q download_nature_pairs.py tools agent nature_download
+python -m pytest -q agent/tests
 ```
 
-`postfetch` 会独立尝试下载 Source Data；即使 figure 页面没有抓到图，只要 Source Data 下载成功，文章目录也会保留。
+## Data and Git Hygiene
 
-nature_dis 下载脚本：
+Generated data and downloads are intentionally ignored:
 
-```bash
-python download_nature_pairs.py --help
-```
+- `downloads/`
+- `outputs/`
+- `agent/runs/`
+- `nature_download/outputs/`
 
-文章预检与子图处理：
-
-```bash
-python -m tools.process_articles preflight --input downloads/articles --output downloads/derived --progress
-```
-
-对于 `download_nature_pairs.py` 的输出，预检入口是：
-
-```bash
-python -m tools.process_articles preflight --input downloads/nature_pairs/articles --output downloads/nature_pairs/derived --progress
-```
-
-## 同步上游仓库
-
-原始 clone 保留在 `_sources/` 中，需要更新时运行：
-
-```bash
-git -C _sources/nature_dis pull --ff-only
-git -C _sources/PheroViz pull --ff-only
-```
-
-更新 `_sources/` 后，如需刷新根目录集成副本，可重新将两个源目录的非 `.git` 文件同步到根目录，并再次检查 README、依赖与忽略规则。
+Keep API keys in `.env`; do not commit real credentials.
