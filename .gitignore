@@ -1,0 +1,54 @@
+# Environment / secrets
+.env
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyc
+*.pyo
+*.pyd
+*.so
+*.egg-info/
+
+# Virtual environments
+.venv/
+venv/
+env/
+
+# Data / downloads / generated outputs
+downloads/
+downloads*/
+outputs/
+/data/
+nature_download/data/
+agent/runs/
+nature_download/outputs/
+
+# Build and cache artifacts
+dist/
+build/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.cache/
+.ipynb_checkpoints/
+
+# Logs and local databases
+*.log
+*.sqlite3
+*.sqlite
+*.db
+
+# Editors / OS
+.DS_Store
+/.idea/
+/.vscode/
+
+# Coverage
+coverage/
+
+# Local tooling repos
+CLIProxyAPI/
+
+# Local source-clone backups kept outside the integrated project history
+_sources/

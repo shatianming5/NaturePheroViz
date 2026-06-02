@@ -1,0 +1,5 @@
+-如果是捕捉到“https://www.nature.com/articles/s41586-025-09507-9/figures/1”类似于这种的图和下面的caption呢，并且还能捕捉到 这个下面的https://www.nature.com/articles/s41586-025-09507-9#Sec71“Source data Source Data Fig. 4Source Data Extended Data Fig. 7"
+
+
+-深度满足我上面的这个要求，并且要尝试多尺度的运行。确保能正常运行，并且捕捉到真实的，且一一对应的数据之后才能结束。不然就一直帮我想办法
+每一步都要同步到git，然后push上去，并且附上干了什么，并且再当前文件夹做一个记录版本，以及修改信息的文件
