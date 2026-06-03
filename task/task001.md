@@ -41,3 +41,13 @@
 - **Stage-A chart→code 数据 → ReachQA(MIT 可执行代码)**；Chart2Code-160k 更大但 NC+有错。
 - **DracoGPT 证 LLM 不能可靠自评 visual form（task-dependent）** → 保留符号评分器。
 - 诚实警示：无人测过小 VLM 检测「错配图」可靠性 → 采用前须自建 held-out 校准。VizML/DeepEye/Data Formulator/ChartMoE 因 StructuredOutput 失败未 grounded（可选第四轮）。
+
+#### ✅ 第四轮（重核补齐）— 交付物：[`task001_step4_survey.md`](./task001_step4_survey.md)
+
+重核第三轮失败的工作（39 源 / 187 主张 / 50 核验 / 47 证实 / 3 证伪 / 203 agent）：
+- **ChartMoE（ICLR 2025）全部锁定**：InternLM-XComposer2 基座、**8.4B 单张 24GB 卡可推理**、MoE 4 专家(chart→table/JSON/code)、**ChartMoE-Align ~1M 四元组、Apache-2.0、HF 公开 54.6GB**、ChartQA 80.48→84.64。
+- **净判定**：(1) **Stage-A 数据 ChartMoE-Align 取代/补强 ReachQA 为首选**（须混 Nature pairs 补风格；衍生权重基座许可须单独核验）；(2) **C3 Judge：ChartMoE(8B) vs TinyChart-3B 二选一原型对比**（精度/同源 vs 体量/直接 chart→table 指标）。
+- **VizML**（CARS 88.96 人类水平）作 C3 学习式 Visual-Form 特征，与 Draco 符号约束**正交互补**；**Data Formulator(MIT)** 的 agent 驱动 reshape 作 L3 范式；DeepEye/Data2Vis 跳过（冗余/仅观察）。
+- 仍未 grounded：NL4DV/ncNet/Chat2VIS/ChartGPT/VisText + UniChart/DocOwl/Plot2Code（可选第五轮）。
+
+> 四轮调研合计 ≈169 源 / 827 主张 / 200 核验，已形成完整的 C3 Judge + Stage-A 数据 + 评测工程蓝图（见各 survey 净判定）。
