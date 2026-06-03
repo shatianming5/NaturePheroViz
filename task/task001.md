@@ -51,3 +51,13 @@
 - 仍未 grounded：NL4DV/ncNet/Chat2VIS/ChartGPT/VisText + UniChart/DocOwl/Plot2Code（可选第五轮）。
 
 > 四轮调研合计 ≈169 源 / 827 主张 / 200 核验，已形成完整的 C3 Judge + Stage-A 数据 + 评测工程蓝图（见各 survey 净判定）。
+
+#### ✅ 第五轮（收尾）— 交付物：[`task001_step5_survey.md`](./task001_step5_survey.md)
+
+收尾最外围工作（约 45 源 / ~250 主张 / 127 条核验主张取证）。⚠️ 两路 workflow 均在**最终合成阶段 StructuredOutput 失败**（已知 harness 不稳定）→ 从 journal 直接取证，结论可靠。
+- **chart→table 读取器净增量**：**UniChart-201M**（Donut 式，比 MatCha 快 >11×，**RMS_F1 91.10@ChartQA**，比 TinyChart-3B 小 15×）作「最轻档」新增候选——但**无明确 model 许可**；已采纳的 OneChart/TinyChart/ChartMoE 不被颠覆。
+- **NL2Vis 低增量**：ChartGPT（IEEE TVCG'24，**Apache-2.0**）6 步分解（选列/过滤/聚合/图型/编码/排序）可借作 spec.compose CoT 模板；NL4DV 离线意图解析器可选；ncNet/Chat2VIS 被取代。
+- **VisText**（ACL'23）三级语义 caption → 可作 `alt_text.py` rubric + C3 可读性检查项。
+- 仍未 grounded（优先级低）：Plot2Code 许可、StructChart/ChartReader/DocOwl 作读取器。
+
+> **五轮调研收口**：合计 ≈214 源 / ~1080 主张 / 250 条 3 票核验。C3 Judge + Stage-A 数据 + 评测的工程蓝图已完整、无重大缺口。下一步可进入「落代码」或新步骤。
