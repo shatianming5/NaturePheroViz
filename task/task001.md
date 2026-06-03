@@ -32,3 +32,12 @@
 3. 直接可用：Text2Chart31/Text2Vis(MIT) 作 Stage-A 数据、MatPlotBench 作 eval+基线、VisEval SVG 作 C2 保真校验、PlotGen 三通道作 C3 诊断、nvBench2.0 五步作 HCT 层。
 
 另含：感知·数据·评测层挂载表、代码级集成设计 Q1–Q7（grounded `judge.py` 等）、排序短名单、7 条开放问题、7 条已证伪清单。
+
+#### ✅ 第三轮（覆盖补齐）— 交付物：[`task001_step3_survey.md`](./task001_step3_survey.md)
+
+补步骤2 两个精确缺口（37 源 / 185 主张 / 50 核验 / 31 证实 / 19 证伪 / 202 agent）：
+- **C3 缺的「有原则 Visual-Form 评分器」→ Draco/Draco2**（BSD 符号、RankSVM 学习权重 93% vs 65% 碾压手调，替 `judge_rules.yml`；唯一门槛=需建 matplotlib→spec 适配器）。
+- **C3 缺的「单卡本地 VLM-Judge」→ TinyChart-3B**（ChartQA 83.60 超 GPT-4V；唯一同时有 chart→table RMS-F1 93.78 + PoT 78.98；接 `judge.py:_call_vlm_judge`，PoT 输出回 C2 执行比对 plot_df）；ChartGemma-3B 次优；ChartVLM「先抽表再判」级联作 C3 范式。
+- **Stage-A chart→code 数据 → ReachQA(MIT 可执行代码)**；Chart2Code-160k 更大但 NC+有错。
+- **DracoGPT 证 LLM 不能可靠自评 visual form（task-dependent）** → 保留符号评分器。
+- 诚实警示：无人测过小 VLM 检测「错配图」可靠性 → 采用前须自建 held-out 校准。VizML/DeepEye/Data Formulator/ChartMoE 因 StructuredOutput 失败未 grounded（可选第四轮）。
