@@ -13,9 +13,11 @@ def compose_feedback(
     lines: List[str] = []
     lines.append(f"[ROUND {round_idx}] Goal: {{goal}}  Chart: {{chart_family}}")
     lines.append(
-        "Prev J: VisualForm={:.2f}  DataFidelity={:.2f}".format(
+        "Prev J: Overall={:.2f}  VisualForm={:.2f}  DataFidelity={:.2f}  SeriesCohesion={:.2f}".format(
+            last_scores.get("overall_score", 0.0),
             last_scores.get("visual_form", 0.0),
             last_scores.get("data_fidelity", 0.0),
+            last_scores.get("series_cohesion", 0.0),
         )
     )
     lines.append("Diagnostics (top-5):")

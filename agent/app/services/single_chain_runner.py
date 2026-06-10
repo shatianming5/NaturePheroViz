@@ -604,7 +604,7 @@ def run_chain(
         {"keys": list(spec.keys()), "intent_keys": list(base_intent.keys())},
     )
 
-    last_scores: Dict[str, float] = {"visual_form": 0.0, "data_fidelity": 0.0}
+    last_scores: Dict[str, float] = {"visual_form": 0.0, "data_fidelity": 0.0, "series_cohesion": 0.0, "overall_score": 0.0}
     feedback_text = ""
     selected: Optional[Dict[str, Any]] = None
 
@@ -857,6 +857,8 @@ def run_chain(
         last_scores = {
             "visual_form": judge_result.get("visual_form", 0.0),
             "data_fidelity": judge_result.get("data_fidelity", 0.0),
+            "series_cohesion": judge_result.get("series_cohesion", 0.0),
+            "overall_score": judge_result.get("overall_score", 0.0),
         }
         emit(
             "judging_complete",
@@ -900,7 +902,7 @@ def run_chain(
         )
         emit("artifact_written", {"round": round_idx, "path": str(artifact_path)})
 
-        if (not force_all_rounds) and last_scores["visual_form"] >= 0.75 and last_scores["data_fidelity"] >= 0.75:
+        if (not force_all_rounds) and last_scores["overall_score"] >= 0.75:
             emit("round_success", {"round": round_idx, "scores": last_scores})
             break
 

@@ -103,7 +103,8 @@ def _detail_for_event(event: str, payload: Dict[str, Any]) -> str:
         scores = payload.get("scores", {})
         vf = scores.get("visual_form")
         df = scores.get("data_fidelity")
-        return f"VF {vf:.2f} / DF {df:.2f}" if vf is not None and df is not None else ""
+        overall = scores.get("overall_score")
+        return f"J {overall:.2f} / VF {vf:.2f} / DF {df:.2f}" if overall is not None and vf is not None and df is not None else ""
     if event == "round_complete":
         return f"诊断 {payload.get('diagnostics', 0)} 条"
     if event == "artifact_written":
@@ -112,7 +113,7 @@ def _detail_for_event(event: str, payload: Dict[str, Any]) -> str:
         return _trim(payload.get("feedback", ""))
     if event == "round_success":
         scores = payload.get("scores", {})
-        return f"VF {scores.get('visual_form', 0):.2f} / DF {scores.get('data_fidelity', 0):.2f}"
+        return f"J {scores.get('overall_score', 0):.2f} / VF {scores.get('visual_form', 0):.2f} / DF {scores.get('data_fidelity', 0):.2f}"
     if event == "llm_io":
         response = payload.get("response")
         if isinstance(response, dict):
@@ -141,8 +142,8 @@ def _format_event(event: str, payload: Dict[str, Any]) -> str:
     if event == "round_success":
         scores = payload.get("scores", {})
         return (
-            f"[bold green]达到阈值[/] VF={scores.get('visual_form', 0):.2f} "
-            f"DF={scores.get('data_fidelity', 0):.2f}"
+            f"[bold green]达到阈值[/] J={scores.get('overall_score', 0):.2f} "
+            f"VF={scores.get('visual_form', 0):.2f} DF={scores.get('data_fidelity', 0):.2f}"
         )
     if event == "llm_io":
         stage = payload.get("stage_name") or payload.get("stage")
@@ -151,7 +152,7 @@ def _format_event(event: str, payload: Dict[str, Any]) -> str:
         return "[green]执行完成[/]" if not payload.get("stderr") else "[yellow]执行完成 (含 stderr)"
     if event == "judging_complete":
         scores = payload.get("scores", {})
-        return f"[bold white]评分[/] VF={scores.get('visual_form', 0):.2f} DF={scores.get('data_fidelity', 0):.2f}"
+        return f"[bold white]评分[/] J={scores.get('overall_score', 0):.2f} VF={scores.get('visual_form', 0):.2f} DF={scores.get('data_fidelity', 0):.2f}"
     if event == "feedback_ready":
         return "[magenta]反馈已生成[/]"
     if event == "artifact_written":
@@ -304,8 +305,10 @@ def main() -> None:
     summary.add_column(style="cyan", justify="right", no_wrap=True)
     summary.add_column(style="bold white")
     summary.add_row("轮次", str(result.get("round", "-")))
+    summary.add_row("综合分", f"{scores.get('overall_score', 0.0):.2f}")
     summary.add_row("视觉表现", f"{scores.get('visual_form', 0.0):.2f}")
     summary.add_row("数据保真", f"{scores.get('data_fidelity', 0.0):.2f}")
+    summary.add_row("系列一致性", f"{scores.get('series_cohesion', 0.0):.2f}")
     if result.get("png_path"):
         summary.add_row("图像输出", _trim(result["png_path"], 60))
     console.print(Panel(summary, title="链路结果", border_style="green"))

@@ -27,7 +27,8 @@ source .venv/bin/activate
 pip install -r requirements.txt
 ```
 
-> 请在 `.env` 中配置 `LLM_API_KEY`（或兼容的 `OPENAI_API_KEY` / `LLM_API_BASE` / `LLM_MODEL`），以便在默认 slot 之外需要调用 Zhizengzeng Responses API 时能够正常工作。
+> 请在 `.env` 中配置 `LLM_API_KEY`（或兼容的 `OPENAI_API_KEY` / `LLM_API_BASE` / `LLM_MODEL`），以便在默认 slot 之外需要调用 Zhizengzeng Responses API 时能够正常工作。  
+> 若要给 `verify_fidelity` 接本地 chart-to-table 模型，可单独配置 `CHART2TABLE_API_BASE` / `CHART2TABLE_API_KEY` / `CHART2TABLE_MODEL`，或直接使用 `ONECHART_*` / `UNICHART_*` 同名变量；验证器会优先走这组专用配置，而不是复用 judge 的共享 VLM。
 
 ## 运行方式
 
