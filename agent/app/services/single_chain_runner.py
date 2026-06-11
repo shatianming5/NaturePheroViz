@@ -143,12 +143,12 @@ class SlotLLMClient:
             self.retries = 2
         self._session = requests.Session()
 
-    def chat_json(self, messages: list[dict[str, Any]]) -> Dict[str, Any]:
+    def chat_json(self, messages: list[dict[str, Any]], temperature: Optional[float] = None) -> Dict[str, Any]:
         headers = {"Authorization": f"Bearer {self.key}", "Content-Type": "application/json"}
         payload: Dict[str, Any] = {
             "model": self.model,
             "messages": messages,
-            "temperature": 0.2,
+            "temperature": 0.2 if temperature is None else float(temperature),
         }
         if os.getenv("LLM_FORCE_JSON", "1") != "0":
             payload["response_format"] = {"type": "json_object"}
@@ -484,14 +484,14 @@ def _needs_theme_guard(body: str) -> bool:
     return bool(re.search(r"theme\s*\[|theme\.get", body))
 
 
-def _llm_generate_slots(stage: str, payload: Dict[str, Any]) -> Dict[str, Any]:
+def _llm_generate_slots(stage: str, payload: Dict[str, Any], temperature: Optional[float] = None) -> Dict[str, Any]:
     prompt = _build_stage_prompt(stage, payload)
     messages = [
         {"role": "system", "content": SYSTEM_PROMPT},
         {"role": "user", "content": prompt},
     ]
     try:
-        response = _get_llm_client().chat_json(messages)
+        response = _get_llm_client().chat_json(messages, temperature=temperature)
     except Exception as exc:  # noqa: BLE001
         return {"slots": {}, "notes": f"llm_error: {exc}", "prompt": prompt, "response": {"error": str(exc)}}
 
@@ -542,6 +542,23 @@ def _load_tabular(excel_path: str, sheet: Optional[str]) -> pd.DataFrame:
         sheet_name = 0 if sheet is None else sheet
         return pd.read_excel(path, sheet_name=sheet_name)
     return pd.read_csv(path)
+
+
+def _best_of_n_count() -> int:
+    raw = os.getenv("BEST_OF_N") or os.getenv("BON_N") or "3"
+    try:
+        value = int(raw)
+    except ValueError:
+        value = 3
+    return max(1, value)
+
+
+def _candidate_temperature(round_idx: int, candidate_idx: int, total_candidates: int) -> float:
+    if total_candidates <= 1:
+        return 0.2
+    if round_idx <= 1:
+        return 0.2
+    return 0.7
 
 
 def run_chain(
@@ -634,256 +651,308 @@ def run_chain(
         {"round": 0, "feedback": feedback_text, "spec_keys": list(spec.keys())},
     )
 
+    best_of_n = _best_of_n_count()
+
     for round_idx in range(1, max(1, rounds) + 1):
         emit("round_start", {"round": round_idx, "feedback": feedback_text})
-        stage_logs: Dict[str, Any] = {}
+        round_candidates = best_of_n if round_idx > 1 else 1
 
-        stage_payloads = {
-            "L1": {
-                "data_profile": profile,
-                "intent": base_intent,
-                "spec": spec,
-                "feedback": feedback_text,
-                "slot_keys": ["spec.compose", "spec.theme_defaults"],
-            },
-            "L2": {
-                "df_head": df.head(8).to_dict(orient="list"),
-                "spec": spec,
-                "feedback": feedback_text,
-                "slot_keys": ["data.prepare", "data.aggregate", "data.encode"],
-            },
-            "L3": {
-                "dff_head": df.head(8).to_dict(orient="list"),
-                "spec": spec,
-                "feedback": feedback_text,
-                "slot_keys": ["marks.*", "scales.*", "colorbar.apply"],
-            },
-            "L4": {
-                "spec": spec,
-                "feedback": feedback_text,
-                "slot_keys": ["axes.*", "legend.apply", "grid.apply", "annot.*", "theme.*"],
-            },
-        }
+        def run_candidate(candidate_idx: int) -> Dict[str, Any]:
+            candidate_ctx = copy.deepcopy(ctx)
+            candidate_spec = copy.deepcopy(spec)
+            stage_logs: Dict[str, Any] = {}
+            candidate_temperature = _candidate_temperature(round_idx, candidate_idx, round_candidates)
+            stage_payloads = {
+                "L1": {
+                    "data_profile": profile,
+                    "intent": base_intent,
+                    "spec": candidate_spec,
+                    "feedback": feedback_text,
+                    "slot_keys": ["spec.compose", "spec.theme_defaults"],
+                },
+                "L2": {
+                    "df_head": df.head(8).to_dict(orient="list"),
+                    "spec": candidate_spec,
+                    "feedback": feedback_text,
+                    "slot_keys": ["data.prepare", "data.aggregate", "data.encode"],
+                },
+                "L3": {
+                    "dff_head": df.head(8).to_dict(orient="list"),
+                    "spec": candidate_spec,
+                    "feedback": feedback_text,
+                    "slot_keys": ["marks.*", "scales.*", "colorbar.apply"],
+                },
+                "L4": {
+                    "spec": candidate_spec,
+                    "feedback": feedback_text,
+                    "slot_keys": ["axes.*", "legend.apply", "grid.apply", "annot.*", "theme.*"],
+                },
+            }
 
-        forbidden_history = ctx.get('_forbidden_history', {})
-        for _layer_key, _payload in stage_payloads.items():
-            history_list = forbidden_history.get(_layer_key, [])
-            if history_list:
-                recent_entries = history_list[-2:]
-                summary = " | ".join(
-                    f"round {entry.get('round')}: {entry.get('summary')}"
-                    for entry in recent_entries
-                    if entry.get('summary')
+            forbidden_history = candidate_ctx.get('_forbidden_history', {})
+            for _layer_key, _payload in stage_payloads.items():
+                history_list = forbidden_history.get(_layer_key, [])
+                if history_list:
+                    recent_entries = history_list[-2:]
+                    summary = " | ".join(
+                        f"round {entry.get('round')}: {entry.get('summary')}"
+                        for entry in recent_entries
+                        if entry.get('summary')
+                    )
+                    if summary:
+                        _payload["forbidden_notes"] = summary
+
+            ok_by_layer: Dict[str, Dict[str, str]] = {}
+            for layer, payload in stage_payloads.items():
+                stage_name = _STAGE_NAMES.get(layer, layer)
+                emit(
+                    "stage_start",
+                    {
+                        "round": round_idx,
+                        "candidate": candidate_idx,
+                        "stage": layer,
+                        "stage_name": stage_name,
+                        "hint": _STAGE_SLOT_HINT.get(layer, ""),
+                    },
                 )
-                if summary:
-                    _payload["forbidden_notes"] = summary
-
-        ok_by_layer: Dict[str, Dict[str, str]] = {}
-        for layer, payload in stage_payloads.items():
-            stage_name = _STAGE_NAMES.get(layer, layer)
-            emit(
-                "stage_start",
-                {
-                    "round": round_idx,
-                    "stage": layer,
-                    "stage_name": stage_name,
-                    "hint": _STAGE_SLOT_HINT.get(layer, ""),
-                },
-            )
-            if round_idx == 1 and layer in DEFAULT_STAGE_SLOTS_V2:
-                default_bundle = DEFAULT_STAGE_SLOTS_V2[layer]
-                raw_slots = dict(default_bundle.get("slots", {}))
-                notes_default = default_bundle.get("notes", "")
-                out = {
-                    "slots": raw_slots,
-                    "notes": notes_default,
-                    "prompt": "DEFAULT_V2",
-                    "response": {"source": "default_v2", "notes": notes_default},
-                }
-                forbidden_map: Dict[str, str] = {}
-                autofix_map: Dict[str, str] = {}
-            else:
-                out = _llm_generate_slots(layer, payload)
-                forbidden_map = (out.get("forbidden") if isinstance(out, dict) else {}) or {}
-                autofix_map = (out.get("autofix") if isinstance(out, dict) else {}) or {}
-            history_ref = ctx.setdefault('_forbidden_history', {}).setdefault(layer, [])
-            summary_text = ""
-            if forbidden_map:
-                summary_entries = [f"{slot}: {reason}" for slot, reason in forbidden_map.items()]
-                summary_text = '; '.join(summary_entries)
-                history_ref.append({"round": round_idx, "summary": summary_text})
-            elif autofix_map:
-                summary_autofix = '; '.join(f"{slot}: {label}" for slot, label in autofix_map.items())
-                if summary_autofix:
-                    history_ref.append({"round": round_idx, "summary": f"autofix {summary_autofix}"})
-            emit(
-                "llm_io",
-                {
-                    "round": round_idx,
-                    "stage": layer,
-                    "stage_name": stage_name,
-                    "prompt": out.get("prompt", "") if isinstance(out, dict) else "",
-                    "response": out.get("response") if isinstance(out, dict) else None,
-                },
-            )
-            out_dict = out if isinstance(out, dict) else {"slots": {}, "notes": "", "prompt": None, "response": None}
-            llm_slots = out_dict.get("slots", {}) or {}
-            ok_layer, rej_layer = _layer_guard(layer, llm_slots)
-            fallback_used: Optional[str] = None
-            fallback_slots: Dict[str, str] = {}
-            notes_text = out_dict.get("notes", "")
-            if not ok_layer and forbidden_map and layer in DEFAULT_STAGE_SLOTS_V2:
-                default_bundle = DEFAULT_STAGE_SLOTS_V2[layer]
-                fallback_slots = dict(default_bundle.get("slots", {}))
-                ok_layer, rej_default = _layer_guard(layer, fallback_slots)
-                fallback_used = "default_after_forbidden"
-                if rej_layer:
-                    rej_layer = {**rej_layer, **{f"default::{k}": v for k, v in rej_default.items()}}
+                if round_idx == 1 and layer in DEFAULT_STAGE_SLOTS_V2:
+                    default_bundle = DEFAULT_STAGE_SLOTS_V2[layer]
+                    raw_slots = dict(default_bundle.get("slots", {}))
+                    notes_default = default_bundle.get("notes", "")
+                    out = {
+                        "slots": raw_slots,
+                        "notes": notes_default,
+                        "prompt": "DEFAULT_V2",
+                        "response": {"source": "default_v2", "notes": notes_default},
+                    }
+                    forbidden_map: Dict[str, str] = {}
+                    autofix_map: Dict[str, str] = {}
                 else:
-                    rej_layer = rej_default
-                extra_note = "fallback: default_v2 (forbidden content removed)"
-                notes_text = f"{notes_text} {extra_note}".strip() if notes_text else extra_note
-                fallback_summary = f"{summary_text} (fallback: default_v2)" if summary_text else "fallback: default_v2 applied"
-                if history_ref:
-                    history_ref[-1]["summary"] = fallback_summary
-                else:
-                    history_ref.append({"round": round_idx, "summary": fallback_summary})
-            if layer == "L3" and not any(key.startswith("marks.") for key in ok_layer) and layer in DEFAULT_STAGE_SLOTS_V2:
-                default_bundle = DEFAULT_STAGE_SLOTS_V2[layer]
-                default_mark_candidates = dict(default_bundle.get("slots", {}))
-                default_ok, _ = _layer_guard(layer, default_mark_candidates)
-                default_marks = {k: v for k, v in default_ok.items() if k.startswith("marks.")}
-                if default_marks:
-                    ok_layer = {**default_marks, **ok_layer}
-                    fallback_slots.update(default_marks)
-                    extra_note = "fallback: default_v2 marks added"
+                    out = _llm_generate_slots(layer, payload, temperature=candidate_temperature)
+                    forbidden_map = (out.get("forbidden") if isinstance(out, dict) else {}) or {}
+                    autofix_map = (out.get("autofix") if isinstance(out, dict) else {}) or {}
+                history_ref = candidate_ctx.setdefault('_forbidden_history', {}).setdefault(layer, [])
+                summary_text = ""
+                if forbidden_map:
+                    summary_entries = [f"{slot}: {reason}" for slot, reason in forbidden_map.items()]
+                    summary_text = '; '.join(summary_entries)
+                    history_ref.append({"round": round_idx, "summary": summary_text})
+                elif autofix_map:
+                    summary_autofix = '; '.join(f"{slot}: {label}" for slot, label in autofix_map.items())
+                    if summary_autofix:
+                        history_ref.append({"round": round_idx, "summary": f"autofix {summary_autofix}"})
+                emit(
+                    "llm_io",
+                    {
+                        "round": round_idx,
+                        "candidate": candidate_idx,
+                        "stage": layer,
+                        "stage_name": stage_name,
+                        "prompt": out.get("prompt", "") if isinstance(out, dict) else "",
+                        "response": out.get("response") if isinstance(out, dict) else None,
+                    },
+                )
+                out_dict = out if isinstance(out, dict) else {"slots": {}, "notes": "", "prompt": None, "response": None}
+                llm_slots = out_dict.get("slots", {}) or {}
+                ok_layer, rej_layer = _layer_guard(layer, llm_slots)
+                fallback_used: Optional[str] = None
+                fallback_slots: Dict[str, str] = {}
+                notes_text = out_dict.get("notes", "")
+                if not ok_layer and forbidden_map and layer in DEFAULT_STAGE_SLOTS_V2:
+                    default_bundle = DEFAULT_STAGE_SLOTS_V2[layer]
+                    fallback_slots = dict(default_bundle.get("slots", {}))
+                    ok_layer, rej_default = _layer_guard(layer, fallback_slots)
+                    fallback_used = "default_after_forbidden"
+                    if rej_layer:
+                        rej_layer = {**rej_layer, **{f"default::{k}": v for k, v in rej_default.items()}}
+                    else:
+                        rej_layer = rej_default
+                    extra_note = "fallback: default_v2 (forbidden content removed)"
                     notes_text = f"{notes_text} {extra_note}".strip() if notes_text else extra_note
-                    fallback_used = f"{fallback_used},default_marks".strip(',') if fallback_used else "default_marks"
-                    fallback_summary = "fallback default_marks -> please draw using ax.* functions"
-                    if history_ref and history_ref[-1].get("round") == round_idx:
-                        summary_prev = history_ref[-1].get("summary") or ""
-                        combined = f"{summary_prev}; {fallback_summary}".strip('; ')
-                        history_ref[-1]["summary"] = combined
+                    fallback_summary = f"{summary_text} (fallback: default_v2)" if summary_text else "fallback: default_v2 applied"
+                    if history_ref:
+                        history_ref[-1]["summary"] = fallback_summary
                     else:
                         history_ref.append({"round": round_idx, "summary": fallback_summary})
-            stage_logs[layer] = {
-                "prompt": out_dict.get("prompt"),
-                "response": _snapshot(out_dict.get("response")),
-                "payload": _snapshot(payload),
-                "notes": notes_text,
-                "raw_slots": llm_slots,
-                "accepted_slots": ok_layer,
-                "rejected_slots": rej_layer,
-                "forbidden_slots": forbidden_map,
-                "autofix_slots": autofix_map,
-                "fallback": fallback_used,
-            }
-            if fallback_used:
-                stage_logs[layer]["fallback_slots"] = fallback_slots
-            ok_by_layer[layer] = ok_layer
+                if layer == "L3" and not any(key.startswith("marks.") for key in ok_layer) and layer in DEFAULT_STAGE_SLOTS_V2:
+                    default_bundle = DEFAULT_STAGE_SLOTS_V2[layer]
+                    default_mark_candidates = dict(default_bundle.get("slots", {}))
+                    default_ok, _ = _layer_guard(layer, default_mark_candidates)
+                    default_marks = {k: v for k, v in default_ok.items() if k.startswith("marks.")}
+                    if default_marks:
+                        ok_layer = {**default_marks, **ok_layer}
+                        fallback_slots.update(default_marks)
+                        extra_note = "fallback: default_v2 marks added"
+                        notes_text = f"{notes_text} {extra_note}".strip() if notes_text else extra_note
+                        fallback_used = f"{fallback_used},default_marks".strip(',') if fallback_used else "default_marks"
+                        fallback_summary = "fallback default_marks -> please draw using ax.* functions"
+                        if history_ref and history_ref[-1].get("round") == round_idx:
+                            summary_prev = history_ref[-1].get("summary") or ""
+                            combined = f"{summary_prev}; {fallback_summary}".strip('; ')
+                            history_ref[-1]["summary"] = combined
+                        else:
+                            history_ref.append({"round": round_idx, "summary": fallback_summary})
+                stage_logs[layer] = {
+                    "prompt": out_dict.get("prompt"),
+                    "response": _snapshot(out_dict.get("response")),
+                    "payload": _snapshot(payload),
+                    "notes": notes_text,
+                    "raw_slots": llm_slots,
+                    "accepted_slots": ok_layer,
+                    "rejected_slots": rej_layer,
+                    "forbidden_slots": forbidden_map,
+                    "autofix_slots": autofix_map,
+                    "fallback": fallback_used,
+                }
+                if fallback_used:
+                    stage_logs[layer]["fallback_slots"] = fallback_slots
+                ok_by_layer[layer] = ok_layer
+                emit(
+                    "stage_complete",
+                    {
+                        "round": round_idx,
+                        "candidate": candidate_idx,
+                        "stage": layer,
+                        "stage_name": stage_name,
+                        "accepted": list(ok_layer.keys()),
+                        "rejected": list(rej_layer.keys()),
+                        "notes": stage_logs[layer]["notes"],
+                        "fallback": fallback_used,
+                        "forbidden": list(forbidden_map.keys()),
+                        "autofix": list(autofix_map.keys()),
+                    },
+                )
+
+            slots: Dict[str, str] = {}
+            for layer in ("L1", "L2", "L3", "L4"):
+                slots.update(ok_by_layer.get(layer, {}))
+            emit("slots_assembled", {"round": round_idx, "candidate": candidate_idx, "slot_count": len(slots)})
+
+            py_code = assemble_with_slots(slots)
+            code_name = f"code_round_{round_idx}_cand_{candidate_idx}.py"
+            slots_name = f"slots_round_{round_idx}_cand_{candidate_idx}.json"
+            try:
+                (run_dir / code_name).write_text(py_code, encoding="utf-8")
+                (run_dir / slots_name).write_text(json.dumps(slots, ensure_ascii=False, indent=2), encoding="utf-8")
+            except Exception:
+                pass
+
+            out_png = str(run_dir / f"figure_round_{round_idx}_cand_{candidate_idx}.png")
+            emit("execution_start", {"round": round_idx, "candidate": candidate_idx, "output": out_png})
+            prev_spec = copy.deepcopy(candidate_spec)
+            exec_result = execute_script(py_code, df, base_intent, candidate_ctx, out_png)
+            updated_ctx = exec_result.get("ctx")
+            if isinstance(updated_ctx, dict):
+                candidate_ctx.update(updated_ctx)
+                new_spec = updated_ctx.get("spec")
+                if isinstance(new_spec, dict):
+                    try:
+                        validated_spec = validate_spec(new_spec)
+                    except Exception as exc:
+                        candidate_spec = prev_spec
+                        candidate_ctx["spec"] = candidate_spec
+                        fallback_note = f"spec_validation_failed: {exc}"
+                        stage_log = stage_logs.get("L1") if isinstance(stage_logs, dict) else None
+                        if isinstance(stage_log, dict):
+                            existing = stage_log.get("notes") or ""
+                            stage_log["notes"] = f"{existing} {fallback_note}".strip() if existing else fallback_note
+                            stage_log["fallback"] = stage_log.get("fallback") or "spec_validation"
+                        history = candidate_ctx.setdefault('_forbidden_history', {}).setdefault('L1', [])
+                        if not history or history[-1].get("round") != round_idx or history[-1].get("summary") != fallback_note:
+                            history.append({"round": round_idx, "summary": fallback_note})
+                    else:
+                        candidate_spec = validated_spec
+                        candidate_ctx["spec"] = candidate_spec
+                else:
+                    candidate_ctx["spec"] = candidate_spec
+            stderr_preview = (exec_result.get("stderr") or "").strip()
             emit(
-                "stage_complete",
+                "execution_end",
                 {
                     "round": round_idx,
-                    "stage": layer,
-                    "stage_name": stage_name,
-                    "accepted": list(ok_layer.keys()),
-                    "rejected": list(rej_layer.keys()),
-                    "notes": stage_logs[layer]["notes"],
-                    "fallback": fallback_used,
-                    "forbidden": list(forbidden_map.keys()),
-                    "autofix": list(autofix_map.keys()),
+                    "candidate": candidate_idx,
+                    "stderr": stderr_preview[:200],
+                    "png_path": exec_result.get("png_path"),
                 },
             )
-
-        slots: Dict[str, str] = {}
-        for layer in ("L1", "L2", "L3", "L4"):
-            slots.update(ok_by_layer.get(layer, {}))
-
-        emit("slots_assembled", {"round": round_idx, "slot_count": len(slots)})
-
-        py_code = assemble_with_slots(slots)
-        # Persist assembled scaffold for this round to aid debugging
-        try:
-            (run_dir / f"code_round_{round_idx}.py").write_text(py_code, encoding="utf-8")
-            # Also persist accepted slots for this round
-            (run_dir / f"slots_round_{round_idx}.json").write_text(
-                json.dumps(slots, ensure_ascii=False, indent=2), encoding="utf-8"
+            png_for_judge = exec_result.get("png_path") or out_png
+            emit("judging_start", {"round": round_idx, "candidate": candidate_idx, "png_path": png_for_judge})
+            judge_result = judge(png_for_judge, exec_result.get("stderr", ""), df, candidate_spec)
+            scores = {
+                "visual_form": judge_result.get("visual_form", 0.0),
+                "data_fidelity": judge_result.get("data_fidelity", 0.0),
+                "series_cohesion": judge_result.get("series_cohesion", 0.0),
+                "overall_score": judge_result.get("overall_score", 0.0),
+            }
+            emit(
+                "judging_complete",
+                {
+                    "round": round_idx,
+                    "candidate": candidate_idx,
+                    "scores": scores,
+                    "diagnostics": len(judge_result.get("diagnostics", [])),
+                },
             )
-        except Exception:
-            pass
-        out_png = str(run_dir / f"figure_round_{round_idx}.png")
-
-        emit("execution_start", {"round": round_idx, "output": out_png})
-        prev_spec = copy.deepcopy(spec)
-        exec_result = execute_script(py_code, df, base_intent, ctx, out_png)
-        updated_ctx = exec_result.get("ctx")
-        if isinstance(updated_ctx, dict):
-            ctx.update(updated_ctx)
-            new_spec = updated_ctx.get("spec")
-            if isinstance(new_spec, dict):
-                try:
-                    validated_spec = validate_spec(new_spec)
-                except Exception as exc:
-                    spec = prev_spec
-                    ctx["spec"] = spec
-                    fallback_note = f"spec_validation_failed: {exc}"
-                    stage_log = stage_logs.get("L1") if isinstance(stage_logs, dict) else None
-                    if isinstance(stage_log, dict):
-                        existing = stage_log.get("notes") or ""
-                        stage_log["notes"] = f"{existing} {fallback_note}".strip() if existing else fallback_note
-                        stage_log["fallback"] = stage_log.get("fallback") or "spec_validation"
-                    history = ctx.setdefault('_forbidden_history', {}).setdefault('L1', [])
-                    if not history or history[-1].get("round") != round_idx or history[-1].get("summary") != fallback_note:
-                        history.append({"round": round_idx, "summary": fallback_note})
-                else:
-                    spec = validated_spec
-                    ctx["spec"] = spec
-            else:
-                ctx["spec"] = spec
-        stderr_preview = (exec_result.get("stderr") or "").strip()
-        emit(
-            "execution_end",
-            {
-                "round": round_idx,
-                "stderr": stderr_preview[:200],
+            debug_ctx = {}
+            if isinstance(candidate_ctx.get("_debug"), dict):
+                debug_ctx = candidate_ctx.get("_debug")
+            return {
+                "candidate_index": candidate_idx,
+                "temperature": candidate_temperature,
+                "exec_pass": bool(exec_result.get("ok")),
                 "png_path": exec_result.get("png_path"),
-            },
+                "scores": scores,
+                "diagnostics": judge_result.get("diagnostics", []),
+                "spec": candidate_spec,
+                "slots": slots,
+                "stderr": exec_result.get("stderr", ""),
+                "stages": stage_logs,
+                "debug": debug_ctx,
+                "ctx": candidate_ctx,
+                "code_path": str(run_dir / code_name),
+                "slots_path": str(run_dir / slots_name),
+            }
+
+        candidates = [run_candidate(candidate_idx) for candidate_idx in range(1, round_candidates + 1)]
+        ranked = sorted(
+            candidates,
+            key=lambda item: (
+                1 if item.get("exec_pass") else 0,
+                float((item.get("scores") or {}).get("overall_score", 0.0)),
+                -len(item.get("diagnostics") or []),
+                -item.get("candidate_index", 0),
+            ),
+            reverse=True,
         )
-
-        png_for_judge = exec_result.get("png_path") or out_png
-        emit("judging_start", {"round": round_idx, "png_path": png_for_judge})
-        judge_result = judge(png_for_judge, exec_result.get("stderr", ""), df, spec)
-        last_scores = {
-            "visual_form": judge_result.get("visual_form", 0.0),
-            "data_fidelity": judge_result.get("data_fidelity", 0.0),
-            "series_cohesion": judge_result.get("series_cohesion", 0.0),
-            "overall_score": judge_result.get("overall_score", 0.0),
-        }
-        emit(
-            "judging_complete",
-            {
-                "round": round_idx,
-                "scores": last_scores,
-                "diagnostics": len(judge_result.get("diagnostics", [])),
-            },
-        )
-
-        # Extract compact debug info from ctx (if scaffold provided it)
-        debug_ctx = {}
-        if isinstance(ctx.get("_debug"), dict):
-            debug_ctx = ctx.get("_debug")
-
+        chosen = ranked[0]
+        ctx = chosen.get("ctx") or ctx
+        spec = chosen.get("spec") or spec
+        last_scores = chosen.get("scores") or last_scores
         selected = {
             "round": round_idx,
-            "png_path": exec_result.get("png_path"),
+            "png_path": chosen.get("png_path"),
             "scores": last_scores,
-            "diagnostics": judge_result.get("diagnostics", []),
+            "diagnostics": chosen.get("diagnostics", []),
             "spec": spec,
-            "slots": slots,
-            "stderr": exec_result.get("stderr", ""),
-            "stages": stage_logs,
-            "debug": debug_ctx,
+            "slots": chosen.get("slots", {}),
+            "stderr": chosen.get("stderr", ""),
+            "stages": chosen.get("stages", {}),
+            "debug": chosen.get("debug", {}),
+            "selected_index": chosen.get("candidate_index", 1),
+            "candidates": [
+                {
+                    "candidate_index": item.get("candidate_index"),
+                    "temperature": item.get("temperature"),
+                    "exec_pass": item.get("exec_pass"),
+                    "png_path": item.get("png_path"),
+                    "scores": item.get("scores", {}),
+                    "diagnostics": item.get("diagnostics", []),
+                    "stderr": item.get("stderr", ""),
+                    "code_path": item.get("code_path"),
+                    "slots_path": item.get("slots_path"),
+                }
+                for item in candidates
+            ],
         }
 
         emit(
@@ -912,7 +981,7 @@ def run_chain(
             "L4": "allow=axes.*,legend.*,grid.*,annot.*,theme.*; deny=data.*,marks.*",
         }
         feedback_text = compose_feedback(
-            round_idx, last_scores, judge_result.get("diagnostics", []), layer_guards
+            round_idx, last_scores, selected.get("diagnostics", []), layer_guards
         )
         ctx["feedback_text"] = feedback_text
         emit("feedback_ready", {"round": round_idx, "feedback": feedback_text})

@@ -1,15 +1,19 @@
+import json
 from pathlib import Path
 import tempfile
 
 import matplotlib.pyplot as plt
 import importlib
+import re
 import pandas as pd
 import pytest
 
 from app.services.code_assembler import assemble_with_slots
+from app.services.bon_comparison import run_best_of_n_hard_case_compare
 from app.services import fidelity_verifier as fv
 from app.services.fidelity_verifier import verify_fidelity
 from app.services.judge import judge
+from app.services import single_chain_runner as scr
 from app.services.spec_deriver import derive_spec
 from app.services.spec_validator import validate_spec
 
@@ -499,6 +503,270 @@ def test_judge_overall_score_uses_configured_weights(tmp_path):
 
     assert "overall_score" in result
     assert result["overall_score"] == pytest.approx(expected)
+
+
+def test_run_chain_best_of_n_selects_highest_scored_exec_pass_after_round_one(tmp_path, monkeypatch):
+    data_path = tmp_path / "input.csv"
+    pd.DataFrame({"x": ["Jan", "Feb"], "value": [1.0, 2.0]}).to_csv(data_path, index=False)
+    monkeypatch.setattr(scr, "RUNS_DIR", tmp_path / "runs")
+
+    monkeypatch.setenv("BEST_OF_N", "3")
+
+    def fake_derive_spec(intent, profile):
+        return {
+            "layout": {"legend": {"loc": "best"}, "grid": {"y": True}, "titles": {"top": "t"}},
+            "scales": {"x": {"kind": "categorical"}, "y_left": {"kind": "linear"}, "y_right": {"kind": "linear"}},
+            "theme": {"palette_global": "tab10"},
+            "flags": {},
+            "overlays": [{"id": "line", "mark": "line", "x": "x", "y": "value", "yaxis": "left"}],
+        }
+
+    def fake_llm_generate_slots(stage, payload, temperature=None):
+        return {
+            "slots": {"spec.compose": "return spec"} if stage == "L1" else {},
+            "notes": "",
+            "prompt": "candidate",
+            "response": {"stage": stage},
+        }
+
+    def fake_execute_script(py_code, df, intent, ctx, out_png, timeout_s=15):
+        candidate_id = 1
+        match = re.search(r"_cand_(\d+)\.png$", out_png)
+        if match:
+            candidate_id = int(match.group(1))
+        out_path = Path(out_png)
+        out_path.write_bytes(b"png")
+        out_path.with_suffix(".svg").write_text('<svg xmlns="http://www.w3.org/2000/svg"></svg>', encoding="utf-8")
+        new_ctx = dict(ctx)
+        new_ctx["spec"] = dict(ctx.get("spec") or {})
+        new_ctx["_candidate_id"] = candidate_id
+        return {
+            "ok": candidate_id != 2,
+            "png_path": str(out_path),
+            "stderr": f"candidate-{candidate_id}",
+            "ctx": new_ctx,
+        }
+
+    score_map = {
+        1: {"visual_form": 0.7, "data_fidelity": 0.7, "series_cohesion": 0.7, "overall_score": 0.70, "diagnostics": []},
+        2: {"visual_form": 0.9, "data_fidelity": 0.9, "series_cohesion": 0.9, "overall_score": 0.90, "diagnostics": []},
+        3: {"visual_form": 0.8, "data_fidelity": 0.8, "series_cohesion": 0.8, "overall_score": 0.80, "diagnostics": []},
+    }
+
+    def fake_judge(png_path, exec_log, df, spec):
+        match = re.search(r"candidate-(\d+)", exec_log or "")
+        candidate_id = int(match.group(1)) if match else 1
+        result = dict(score_map[candidate_id])
+        result["fidelity_detail"] = {"rms_f1": 0.0, "rnss": 0.0, "mismatches": []}
+        result["pred_table"] = pd.DataFrame()
+        return result
+
+    monkeypatch.setattr(scr, "derive_spec", fake_derive_spec)
+    monkeypatch.setattr(scr, "validate_spec", lambda spec: spec)
+    monkeypatch.setattr(scr, "_llm_generate_slots", fake_llm_generate_slots)
+    monkeypatch.setattr(scr, "execute_script", fake_execute_script)
+    monkeypatch.setattr(scr, "judge", fake_judge)
+    monkeypatch.setattr(scr, "DEFAULT_STAGE_SLOTS_V2", {})
+
+    result = scr.run_chain(str(data_path), "goal", "line", rounds=2)
+
+    assert result["selected_index"] == 3
+    assert len(result["candidates"]) == 3
+    assert result["scores"]["overall_score"] == pytest.approx(0.80)
+    assert result["candidates"][1]["exec_pass"] is False
+
+
+def test_run_chain_round_one_uses_single_candidate_by_default(tmp_path, monkeypatch):
+    data_path = tmp_path / "input.csv"
+    pd.DataFrame({"x": ["Jan", "Feb"], "value": [1.0, 2.0]}).to_csv(data_path, index=False)
+    monkeypatch.setattr(scr, "RUNS_DIR", tmp_path / "runs")
+
+    monkeypatch.setenv("BEST_OF_N", "3")
+
+    def fake_derive_spec(intent, profile):
+        return {
+            "layout": {"legend": {"loc": "best"}, "grid": {"y": True}, "titles": {"top": "t"}},
+            "scales": {"x": {"kind": "categorical"}, "y_left": {"kind": "linear"}, "y_right": {"kind": "linear"}},
+            "theme": {"palette_global": "tab10"},
+            "flags": {},
+            "overlays": [{"id": "line", "mark": "line", "x": "x", "y": "value", "yaxis": "left"}],
+        }
+
+    def fake_execute_script(py_code, df, intent, ctx, out_png, timeout_s=15):
+        out_path = Path(out_png)
+        out_path.write_bytes(b"png")
+        out_path.with_suffix(".svg").write_text('<svg xmlns="http://www.w3.org/2000/svg"></svg>', encoding="utf-8")
+        new_ctx = dict(ctx)
+        new_ctx["spec"] = dict(ctx.get("spec") or {})
+        return {"ok": True, "png_path": str(out_path), "stderr": "", "ctx": new_ctx}
+
+    def fake_judge(png_path, exec_log, df, spec):
+        return {
+            "visual_form": 0.8,
+            "data_fidelity": 0.8,
+            "series_cohesion": 0.8,
+            "overall_score": 0.8,
+            "diagnostics": [],
+            "fidelity_detail": {"rms_f1": 0.0, "rnss": 0.0, "mismatches": []},
+            "pred_table": pd.DataFrame(),
+        }
+
+    monkeypatch.setattr(scr, "derive_spec", fake_derive_spec)
+    monkeypatch.setattr(scr, "validate_spec", lambda spec: spec)
+    monkeypatch.setattr(scr, "execute_script", fake_execute_script)
+    monkeypatch.setattr(scr, "judge", fake_judge)
+    monkeypatch.setattr(scr, "DEFAULT_STAGE_SLOTS_V2", {"L1": {"slots": {}, "notes": ""}, "L2": {"slots": {}, "notes": ""}, "L3": {"slots": {}, "notes": ""}, "L4": {"slots": {}, "notes": ""}})
+
+    result = scr.run_chain(str(data_path), "goal", "line", rounds=1)
+
+    assert result["selected_index"] == 1
+    assert len(result["candidates"]) == 1
+
+
+def test_run_chain_multiround_feedback_uses_chosen_diagnostics(tmp_path, monkeypatch):
+    data_path = tmp_path / "input.csv"
+    pd.DataFrame({"x": ["Jan", "Feb"], "value": [1.0, 2.0]}).to_csv(data_path, index=False)
+    monkeypatch.setattr(scr, "RUNS_DIR", tmp_path / "runs")
+
+    monkeypatch.setenv("BEST_OF_N", "2")
+
+    def fake_derive_spec(intent, profile):
+        return {
+            "layout": {"legend": {"loc": "best"}, "grid": {"y": True}, "titles": {"top": "t"}},
+            "scales": {"x": {"kind": "categorical"}, "y_left": {"kind": "linear"}, "y_right": {"kind": "linear"}},
+            "theme": {"palette_global": "tab10"},
+            "flags": {},
+            "overlays": [{"id": "line", "mark": "line", "x": "x", "y": "value", "yaxis": "left"}],
+        }
+
+    def fake_execute_script(py_code, df, intent, ctx, out_png, timeout_s=15):
+        out_path = Path(out_png)
+        out_path.write_bytes(b"png")
+        out_path.with_suffix(".svg").write_text('<svg xmlns="http://www.w3.org/2000/svg"></svg>', encoding="utf-8")
+        new_ctx = dict(ctx)
+        new_ctx["spec"] = dict(ctx.get("spec") or {})
+        return {"ok": True, "png_path": str(out_path), "stderr": out_png, "ctx": new_ctx}
+
+    judge_calls = {"n": 0}
+
+    def fake_judge(png_path, exec_log, df, spec):
+        judge_calls["n"] += 1
+        round_no = 1 if "round_1" in png_path else 2
+        candidate_no = 1 if "_cand_1" in png_path else 2
+        if round_no == 1:
+            score = 0.60
+            diagnostics = [{"key": f"round1-c{candidate_no}", "slot": "x", "hint": "h", "sev": 1}]
+        else:
+            score = 0.80 if candidate_no == 2 else 0.70
+            diagnostics = [{"key": f"round2-c{candidate_no}", "slot": "x", "hint": "h", "sev": 1}]
+        return {
+            "visual_form": score,
+            "data_fidelity": score,
+            "series_cohesion": score,
+            "overall_score": score,
+            "diagnostics": diagnostics,
+            "fidelity_detail": {"rms_f1": 0.0, "rnss": 0.0, "mismatches": []},
+            "pred_table": pd.DataFrame(),
+        }
+
+    feedback_calls = []
+
+    def fake_compose_feedback(round_idx, scores, diagnostics, layer_guards):
+        feedback_calls.append({"round": round_idx, "diagnostics": diagnostics, "scores": scores})
+        return f"feedback-{round_idx}"
+
+    monkeypatch.setattr(scr, "derive_spec", fake_derive_spec)
+    monkeypatch.setattr(scr, "validate_spec", lambda spec: spec)
+    monkeypatch.setattr(scr, "execute_script", fake_execute_script)
+    monkeypatch.setattr(scr, "judge", fake_judge)
+    monkeypatch.setattr(scr, "compose_feedback", fake_compose_feedback)
+    monkeypatch.setattr(scr, "DEFAULT_STAGE_SLOTS_V2", {"L1": {"slots": {}, "notes": ""}, "L2": {"slots": {}, "notes": ""}, "L3": {"slots": {}, "notes": ""}, "L4": {"slots": {}, "notes": ""}})
+
+    result = scr.run_chain(str(data_path), "goal", "line", rounds=2)
+
+    assert result["round"] == 2
+    assert result["selected_index"] == 2
+    assert feedback_calls[0]["diagnostics"] == [{"key": "round1-c1", "slot": "x", "hint": "h", "sev": 1}]
+def test_default_line_marks_emit_labels_for_multi_overlay_legend(tmp_path):
+    gt = pd.DataFrame(
+        {
+            "month": ["Jan", "Feb", "Mar"],
+            "actual": [120.0, 135.0, 150.0],
+            "target": [130.0, 140.0, 155.0],
+        }
+    )
+    spec = {
+        "layout": {
+            "legend": {"loc": "best", "ncol": 1, "frame": False},
+            "grid": {"x": False, "y": True, "minor": False},
+            "titles": {"top": "t"},
+            "title_align": "left",
+        },
+        "scales": {
+            "x": {"kind": "categorical", "range": None, "breaks": None},
+            "y_left": {"kind": "linear", "range": [None, None], "breaks": None},
+            "y_right": {"kind": "linear", "range": [None, None]},
+        },
+        "theme": {
+            "font": "Arial",
+            "fontsize": 9,
+            "axis_linewidth": 1.0,
+            "tick_len": 3.0,
+            "tick_width": 0.8,
+            "palette_global": "tab10",
+            "line_width": 1.5,
+            "marker_size": 36,
+        },
+        "flags": {"inherit_palette": True, "legend_outside": "auto", "safe_log_y": True, "max_overlays": 3, "tick_density": "normal"},
+        "overlays": [
+            {"id": "line", "mark": "line", "variant": "main", "x": "month", "y": "actual", "group": None, "yaxis": "left", "style": {"alpha": 0.9}},
+            {"id": "line_1", "mark": "line", "variant": "main", "x": "month", "y": "target", "group": None, "yaxis": "left", "style": {"alpha": 0.8, "linestyle": "--", "width": 1.4, "color": "#444444"}},
+        ],
+    }
+    slots = {}
+    for layer_slots in scr.DEFAULT_STAGE_SLOTS_V2.values():
+        slots.update(layer_slots.get("slots", {}))
+    py_code = assemble_with_slots(slots)
+    out_png = tmp_path / "default_multi_overlay.png"
+    ctx = {"spec": spec}
+
+    exec_result = scr.execute_script(
+        py_code,
+        gt,
+        {"chart_family": "line", "user_goal": "goal"},
+        ctx,
+        str(out_png),
+    )
+
+    assert exec_result["ok"] is True
+    svg_text = out_png.with_suffix(".svg").read_text(encoding="utf-8", errors="ignore")
+    assert 'id="legend_' in svg_text
+
+
+def test_best_of_n_hard_case_comparison_shows_real_gain(tmp_path):
+    summary = run_best_of_n_hard_case_compare(tmp_path / "bon_compare")
+
+    assert summary["comparison"]["bon_beats_single"] is True
+    assert summary["comparison"]["overall_gain"] > 0.1
+    assert summary["comparison"]["n3_selected_nontrivial_candidate"] is True
+    assert summary["n1"]["best_of_n"] == 1
+    assert summary["n3"]["best_of_n"] == 3
+    assert summary["n1"]["rounds_used"] == 2
+    assert summary["n3"]["rounds_used"] == 2
+    assert summary["n1"]["selected_index"] == 1
+    assert summary["n3"]["selected_index"] == 3
+    assert len(summary["n1"]["round2_candidates"]) == 1
+    assert len(summary["n3"]["round2_candidates"]) == 3
+
+    output_dir = tmp_path / "bon_compare"
+    json_path = output_dir / "bon_hard_case_compare.json"
+    csv_path = output_dir / "bon_hard_case_compare.csv"
+    assert json_path.exists()
+    assert csv_path.exists()
+
+    payload = json.loads(json_path.read_text(encoding="utf-8"))
+    assert payload["comparison"]["bon_beats_single"] is True
+    assert payload["n3"]["round2_candidates"][2]["overall_score"] > payload["n1"]["final_scores"]["overall_score"]
 
 
 def test_verify_fidelity_uses_vlm_table_fallback_when_svg_fails(tmp_path, monkeypatch):

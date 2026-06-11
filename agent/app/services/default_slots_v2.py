@@ -813,11 +813,13 @@ return spec_out
                         xa = pd.Categorical(xv.astype(str), categories=cats, ordered=True).codes
                     ya = pd.to_numeric(df[y], errors='coerce').to_numpy()
                     color = style_cfg.get('color') or colors[0]
+                    line_label = str(ov.get('label') or ov.get('legend') or ov.get('y') or ov_id)
                     (ln,) = ax.plot(
                         xa,
                         ya,
                         alpha=line_alpha,
                         linewidth=line_width,
+                        label=line_label,
                         color=color,
                         zorder=base_z,
                     )
