@@ -248,7 +248,10 @@ def polite_get(
     while True:
         attempt += 1
         try:
-            resp = requests.get(url, params=params, headers=hdrs, timeout=timeout)
+            # Tuple (connect, read) timeout: a scalar timeout is unreliable at the
+            # SSL read stage (a server that completes TLS then stops sending can
+            # hang recv() indefinitely on macOS). The read leg bounds that.
+            resp = requests.get(url, params=params, headers=hdrs, timeout=(15, timeout))
             if sleep:
                 time.sleep(sleep)
             resp.raise_for_status()
@@ -338,7 +341,7 @@ def download_binary(
     while True:
         attempt += 1
         try:
-            with requests.get(url, headers=headers, stream=True, timeout=(timeout, timeout)) as resp:
+            with requests.get(url, headers=headers, stream=True, timeout=(15, timeout)) as resp:
                 resp.raise_for_status()
                 expected = resp.headers.get("Content-Length")
                 if max_bytes is not None and expected is not None:
@@ -2386,7 +2389,7 @@ def build_parser() -> argparse.ArgumentParser:
     pr.add_argument("--headed", action="store_true")
     pr.add_argument("--browser-channel", default="none", help='Chromium channel ("msedge","chrome"). "none" = bundled.')
     pr.add_argument("--sleep-s", type=float, default=0.2)
-    pr.add_argument("--download-timeout-s", type=int, default=180)
+    pr.add_argument("--download-timeout-s", type=int, default=60, help="Per-file read timeout (s). Connect timeout is fixed at 15s. A stuck socket aborts and retries after this.")
     pr.add_argument("--download-retries", type=int, default=3)
     pr.add_argument("--retry-backoff-s", type=float, default=1.0)
     pr.add_argument("--max-file-size-mb", type=float, default=50.0, help="Skip source-data files larger than this many MB (0 = no cap). Default 50.")
