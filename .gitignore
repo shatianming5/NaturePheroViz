@@ -58,3 +58,5 @@ _sources/
 # eval audit artifacts (regenerable; keep report.md only)
 agent/eval/results/artifacts/
 agent/eval/results/silent_error_records.json
+agent/eval/results_nature/artifacts/
+agent/eval/results_nature/silent_error_records.json

@@ -132,6 +132,148 @@ def _fixtures() -> List[Fixture]:
 CORRUPTIONS = ["wrong_value", "scale_series", "drop_series", "swap_categories"]
 
 
+def _load_nature_fixtures(limit: int = 20, repo_root: Optional[Path] = None) -> List[Fixture]:
+    """Build fixtures from REAL crawled Nature source-data sheets.
+
+    A Nature pair gives (figure image + xlsx source data) but NO plotting code.
+    Per the approved design (option A): we treat the cleaned sheet as the
+    GROUND-TRUTH "values that should be drawn", and synthesize the standard
+    plotting code an agent should produce. Real-world rigor comes from the data
+    being genuine multi-column scientific tables (real magnitudes/units), not
+    toy [120,135,98]. We then inject corruptions and render exactly as for the
+    synthetic fixtures, so the same four judges compare on the same figure.
+    """
+    root = repo_root or Path(__file__).resolve().parents[2]
+    nature = root / "nature_pairs"
+    manifest = nature / "eval_alignment_probe.jsonl"
+    if not manifest.exists():
+        return []
+    sys.path.insert(0, str(root))
+    try:
+        import repair_headers as rh
+    except Exception as e:
+        print(f"[nature] cannot import repair_headers: {e}")
+        return []
+
+    probe = [json.loads(l) for l in manifest.read_text(encoding="utf-8").splitlines() if l.strip()]
+    # prefer clean, small, single-panel sheets — most likely to map cleanly to a chart
+    cands = [s for s in probe if 3 <= s.get("cols", 0) <= 8 and len(s.get("panels", [])) <= 1 and 3 <= s.get("rows", 0) <= 60]
+    fixtures: List[Fixture] = []
+    seen_sheets = set()
+    for s in cands:
+        if len(fixtures) >= limit:
+            break
+        key = (s["article_id"], s["sheet"])
+        if key in seen_sheets:
+            continue
+        seen_sheets.add(key)
+        try:
+            blocks = rh.repair_sheet(nature / s["data_path"], s["sheet"])
+        except Exception:
+            continue
+        ok = [b for b in blocks if b.get("status") == "ok"]
+        if not ok:
+            continue
+        fxt = _block_to_fixture(nature / s["data_path"], s["sheet"], ok[0], s, rh)
+        if fxt is None:
+            continue
+        # Self-consistency gate: a fixture is only usable if, on the CLEAN data,
+        # PlotTrace reads back values that match our reconstructed ground truth
+        # (fidelity ~1.0). This filters sheets where our x/y-column reconstruction
+        # disagrees with what the standard plot actually draws — i.e. it bounds the
+        # experiment to real sheets we can align cleanly (an honest coverage gate).
+        if _clean_self_consistent(fxt):
+            fixtures.append(fxt)
+    return fixtures
+
+
+def _clean_self_consistent(fx: "Fixture", thresh: float = 0.99) -> bool:
+    """Render the clean fixture, trace it, and check PlotTrace fidelity vs the
+    fixture's own ground truth is ~1.0. Skips fixtures we can't align cleanly."""
+    import tempfile
+    try:
+        with tempfile.TemporaryDirectory() as td:
+            art = render_with_trace(fx, fx.data, Path(td), "selfcheck")
+            res = judge_plottrace(art["trace_rows"], fx.data.copy(), fx.spec)
+        fid = res.get("fidelity")
+        return fid is not None and fid >= thresh
+    except Exception:
+        return False
+
+
+def _block_to_fixture(xlsx: Path, sheet: str, block: Dict[str, Any], meta: Dict[str, Any], rh) -> Optional[Fixture]:
+    """Turn one repaired block into a plottable Fixture: pick an x column (first
+    non-numeric label col, else first numeric col) and 1-3 numeric y columns as
+    series. Render as multi-line (the universal chart for tabular XY data)."""
+    import re as _re
+    try:
+        raw = pd.read_excel(xlsx, sheet_name=sheet, header=None, dtype=object)
+    except Exception:
+        return None
+    header = block.get("header") or []
+    df = _rebuild_block_df(raw, header)
+    if df is None or df.shape[0] < 3:
+        return None
+
+    # classify columns
+    numeric_cols = [c for c in df.columns if pd.to_numeric(df[c], errors="coerce").notna().mean() >= 0.6]
+    if len(numeric_cols) < 1:
+        return None
+    label_cols = [c for c in df.columns if c not in numeric_cols]
+    x_col = label_cols[0] if label_cols else numeric_cols[0]
+    y_cols = [c for c in numeric_cols if c != x_col][:3]
+    if not y_cols:
+        return None
+
+    # build a clean frame: x + y series, drop rows with NaN in any used col
+    use = [x_col] + y_cols
+    cdf = df[use].copy()
+    for yc in y_cols:
+        cdf[yc] = pd.to_numeric(cdf[yc], errors="coerce")
+    cdf = cdf.dropna(subset=y_cols, how="all").reset_index(drop=True)
+    cdf[x_col] = cdf[x_col].astype(str)
+    if cdf.shape[0] < 3:
+        return None
+
+    spec = {"overlays": [{"mark": "line", "x": x_col, "y": yc, "yaxis": "left"} for yc in y_cols]}
+
+    def _plot(d, ax, _ycols=tuple(y_cols), _x=x_col):
+        xvals = [str(v) for v in d[_x].tolist()]  # categorical axis: uniform str
+        for yc in _ycols:
+            ax.plot(xvals, pd.to_numeric(d[yc], errors="coerce"), label=str(yc), marker="o")
+
+    safe = _re.sub(r"[^A-Za-z0-9]+", "_", f"{meta['article_id']}_{sheet}")[:48]
+    return Fixture(f"nat_{safe}", cdf, spec, _plot, "line")
+
+
+def _rebuild_block_df(raw: pd.DataFrame, header: List[str]) -> Optional[pd.DataFrame]:
+    """Find the row in raw matching the repaired header, take rows below it."""
+    if not header:
+        return None
+    hdr_norm = [str(h).strip() for h in header if not str(h).startswith("col")]
+    if not hdr_norm:
+        # header was all synthetic; just take the widest numeric region
+        return None
+    for r in range(min(8, raw.shape[0])):
+        rowvals = [str(v).strip() for v in raw.iloc[r].tolist()]
+        if sum(1 for h in hdr_norm if h in rowvals) >= max(1, len(hdr_norm) // 2):
+            sub = raw.iloc[r + 1:].reset_index(drop=True)
+            sub.columns = [str(v).strip() if not pd.isna(v) else f"c{i}" for i, v in enumerate(raw.iloc[r].tolist())]
+            # dedupe column names
+            seen = {}
+            newcols = []
+            for c in sub.columns:
+                if c in seen:
+                    seen[c] += 1
+                    newcols.append(f"{c}.{seen[c]}")
+                else:
+                    seen[c] = 0
+                    newcols.append(c)
+            sub.columns = newcols
+            return sub
+    return None
+
+
 def _value_cols(spec: Dict[str, Any]) -> List[str]:
     cols = []
     for ov in spec.get("overlays", []):
@@ -147,6 +289,11 @@ def corrupt(df: pd.DataFrame, spec: Dict[str, Any], kind: str, rng: np.random.Ge
     ycols = _value_cols(spec)
     if not ycols:
         return None
+    # ensure value columns are float so cell writes can't raise dtype errors
+    # (real Nature columns may be inferred as int by pandas).
+    for yc in ycols:
+        if yc in out.columns:
+            out[yc] = pd.to_numeric(out[yc], errors="coerce").astype(float)
 
     if kind == "wrong_value":
         # change ONE cell by a clear margin (>> tolerance) but keep it in-range-ish
@@ -299,6 +446,9 @@ def main(argv: Optional[List[str]] = None) -> int:
     ap = argparse.ArgumentParser(description="Silent-error judge head-to-head audit")
     ap.add_argument("--out", default="eval/results", help="output dir for artifacts + report")
     ap.add_argument("--seed", type=int, default=0)
+    ap.add_argument("--source", choices=["synthetic", "nature", "both"], default="synthetic",
+                    help="fixture source: synthetic toy charts, real Nature sheets, or both")
+    ap.add_argument("--limit", type=int, default=20, help="max Nature fixtures to load")
     args = ap.parse_args(argv)
 
     out_dir = Path(args.out)
@@ -306,7 +456,16 @@ def main(argv: Optional[List[str]] = None) -> int:
     art_dir.mkdir(parents=True, exist_ok=True)
     rng = np.random.default_rng(args.seed)
 
-    fixtures = _fixtures()
+    if args.source == "synthetic":
+        fixtures = _fixtures()
+    elif args.source == "nature":
+        fixtures = _load_nature_fixtures(limit=args.limit)
+    else:
+        fixtures = _fixtures() + _load_nature_fixtures(limit=args.limit)
+    if not fixtures:
+        print(f"[error] no fixtures for source={args.source} (Nature needs nature_pairs/eval_alignment_probe.jsonl)")
+        return 1
+    print(f"[info] source={args.source}: {len(fixtures)} fixtures")
     records: List[Dict[str, Any]] = []
 
     # Per (corruption type, judge): tp/fn over corrupted charts; fp over clean charts.
