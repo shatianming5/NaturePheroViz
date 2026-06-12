@@ -170,7 +170,17 @@ class PlotTracer:
         def wrapper(ax_self, *args, **kwargs):
             # record first (best-effort), then always call through
             try:
+                # Skip decoration / reference artists that are NOT data:
+                #  - transform= (axes/figure-fraction coords, e.g. broken-axis marks)
+                #  - clip_on=False overlays, and explicit non-legend helper lines
                 label = kwargs.get("label")
+                is_decoration = (
+                    "transform" in kwargs
+                    or kwargs.get("clip_on") is False
+                    or (isinstance(label, str) and label == "_nolegend_")
+                )
+                if is_decoration:
+                    return original(ax_self, *args, **kwargs)
                 if method == "plot":
                     tracer._parse_plot(args, label, ax_self)
                 else:

@@ -39,7 +39,7 @@ def execute_script(
         with p_df.open("wb") as handle:
             pickle.dump(df, handle)
         p_intent.write_text(json.dumps(intent or {}, ensure_ascii=False), encoding="utf-8")
-        p_ctx.write_text(json.dumps(ctx or {}, ensure_ascii=False), encoding="utf-8")
+        p_ctx.write_text(json.dumps(ctx or {}, ensure_ascii=False, default=str), encoding="utf-8")
 
         shim.write_text(
             textwrap.dedent(
@@ -84,7 +84,7 @@ def execute_script(
                 else:
                     scaffold.run(df, intent, ctx, str(out_png))
 
-                p_ctx.write_text(json.dumps(ctx, ensure_ascii=False), encoding='utf-8')
+                p_ctx.write_text(json.dumps(ctx, ensure_ascii=False, default=str), encoding='utf-8')
                 """
             ).strip(),
             encoding="utf-8",

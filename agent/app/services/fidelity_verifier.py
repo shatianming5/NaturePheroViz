@@ -895,10 +895,33 @@ def verify_fidelity(svg_path: str, ground_truth_table: Any, spec: Dict[str, Any]
     if gt is None:
         gt = pd.DataFrame()
 
+    # JUDGE_MODE lets ablation experiments force a single judge path:
+    #   "trace" = execution trace only (ours), "svg" = SVG deconstruction only,
+    #   "auto"/unset = trace-first with SVG/VLM/CSV fallback (production default).
+    judge_mode = (os.getenv('JUDGE_MODE') or 'auto').strip().lower()
+
+    if judge_mode == 'svg':
+        svg_file = Path(svg_path) if svg_path else None
+        if not svg_file or not svg_file.exists():
+            return _nan_result()
+        try:
+            svg = _read_text(str(svg_file))
+            pred = _collect_predictions(svg, spec)
+        except Exception:
+            return _nan_result()
+        if pred.empty or gt.empty:
+            return _nan_result() if pred.empty else {'data_fidelity': 0.0, 'rms_f1': 0.0, 'rnss': 0.0, 'pred_table': pred, 'mismatches': []}
+        gt_norm, x_col, y_col, g_col = _normalize_ground_truth(gt, spec)
+        pred = _tag_predicted_series(pred, spec)
+        return _safe_match(pred, gt_norm, x_col, y_col, g_col)
+
     # PRIMARY: execution trace (exact). If a usable .trace.csv exists and yields
     # a non-NaN fidelity, it wins — SVG deconstruction is now the fallback.
     trace_result = _from_trace(png_path, svg_path or '', gt, spec)
     trace_ok = pd.notna(trace_result.get('data_fidelity'))
+
+    if judge_mode == 'trace':
+        return trace_result if trace_ok else _nan_result()
 
     if not svg_path:
         if trace_ok:
