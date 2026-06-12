@@ -524,8 +524,12 @@ MARK_FUNCTIONS = {
 
 def run(df: pd.DataFrame, intent: Dict[str, Any], ctx: Dict[str, Any], out_png: str) -> None:
     spec_base = (ctx or {}).get("spec", {})
-    spec = slot_spec_compose(spec_base, intent, ctx)
-    spec = slot_spec_theme_defaults(spec, intent, ctx)
+    # spec-transform slots may be LLM-generated; tolerate a slot that forgets to
+    # `return spec` (returns None) by keeping the last valid spec.
+    spec = slot_spec_compose(spec_base, intent, ctx) or spec_base
+    spec = slot_spec_theme_defaults(spec, intent, ctx) or spec
+    if not isinstance(spec, dict):
+        spec = spec_base if isinstance(spec_base, dict) else {}
     ctx['spec'] = spec
 
     # Sanitize overlays/x/y/group to ensure they reference real df columns
