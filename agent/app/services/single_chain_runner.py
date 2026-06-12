@@ -624,6 +624,7 @@ def run_chain(
     last_scores: Dict[str, float] = {"visual_form": 0.0, "data_fidelity": 0.0, "series_cohesion": 0.0, "overall_score": 0.0}
     feedback_text = ""
     selected: Optional[Dict[str, Any]] = None
+    best_selected: Optional[Dict[str, Any]] = None  # best successful result across rounds
 
     ctx: Dict[str, Any] = {
         "excel_path": excel_path,
@@ -964,6 +965,17 @@ def run_chain(
             },
         )
 
+        # Track the best SUCCESSFUL result across rounds. If a later round's
+        # candidates all fail to execute, we must not lose an earlier round's
+        # working chart — return the best successful one instead of a broken
+        # last round. (chosen still drives next-round feedback regardless.)
+        chosen_exec_ok = bool(chosen.get("exec_pass")) and bool(selected.get("png_path"))
+        chosen_score = float((last_scores or {}).get("overall_score", 0.0))
+        if chosen_exec_ok:
+            prev_best_score = float(((best_selected or {}).get("scores") or {}).get("overall_score", -1.0)) if best_selected else -1.0
+            if best_selected is None or chosen_score >= prev_best_score:
+                best_selected = selected
+
         artifact_path = run_dir / f"iteration_{round_idx}.json"
         artifact_path.write_text(
             json.dumps(selected, ensure_ascii=False, indent=2),
@@ -986,15 +998,19 @@ def run_chain(
         ctx["feedback_text"] = feedback_text
         emit("feedback_ready", {"round": round_idx, "feedback": feedback_text})
 
+    # Prefer the best successful result across all rounds: if the final round's
+    # candidates all failed to execute, fall back to an earlier working chart
+    # rather than returning a broken last round.
+    final_result = best_selected or selected
     emit(
         "finished",
         {
-            "round": selected["round"] if selected else 0,
-            "scores": last_scores,
+            "round": final_result["round"] if final_result else 0,
+            "scores": (final_result or {}).get("scores", last_scores),
             "run_dir": str(run_dir),
         },
     )
-    return selected or {}
+    return final_result or {}
 
 
 

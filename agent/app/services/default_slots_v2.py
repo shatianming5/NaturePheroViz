@@ -824,6 +824,17 @@ return spec_out
                         zorder=base_z,
                     )
                     arts.append(ln)
+                # categorical x: restore tick labels so the axis shows the
+                # category names (Jan/Feb/...), not the integer codes used to
+                # position the line. Without this the rendered ticks are numeric
+                # and downstream readers can't map positions back to categories.
+                if not is_time and not is_numeric:
+                    cats = meta.get('x_categories') or list(pd.Index(df[x].astype(str).unique()))
+                    try:
+                        ax.set_xticks(range(len(cats)))
+                        ax.set_xticklabels([str(c) for c in cats])
+                    except Exception:
+                        pass
                 return arts
 """
             ),
