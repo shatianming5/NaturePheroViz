@@ -54,3 +54,7 @@ CLIProxyAPI/
 
 # Local source-clone backups kept outside the integrated project history
 _sources/
+
+# eval audit artifacts (regenerable; keep report.md only)
+agent/eval/results/artifacts/
+agent/eval/results/silent_error_records.json

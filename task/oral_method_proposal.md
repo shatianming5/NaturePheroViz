@@ -99,6 +99,16 @@
    - **一步修复成功率**：同一 patch 模块分别由三判官驱动
 4. 预期：旧判官几乎全漏、VLM 部分漏（absent 时编造）、PlotTrace 高检出 + 高修复率。**若此表不显著为正，整个 thesis 削弱。**
 
+**✅ 已用合成 fixture 验证（`eval/silent_error_audit.py`，4 fixture × 4 损坏算子）**：
+| 维度 | Col-name(对照) | SVG/VisEval | **PlotTrace(我们)** |
+|---|---|---|---|
+| 检出 recall | 0% | 100% | 100% |
+| **定位精度**(指对损坏的列,不 flooding) | — | 71% | **100%** |
+| **clean 图误报** | 0/4 | 3/4 | **0/4** |
+| **clean 图保真分**(应≈1.0) | 0.75 | 0.25 | **1.00** |
+
+**关键发现**：SVG 的 100% recall 是**假象**——它对 bar 几何反解析有系统误差(clean 图保真分仅 0.25、误报 3/4),clean/corrupt 都判错故"恰好"全检出;定位只有 71%(常指错或满图 flooding)。铁证案例(revenue_bar 注入 E:99000→59400):SVG 报 5 个 mismatch 但**全指错**(每柱偏 ~3262 的几何噪声)、漏掉真正的 E;PlotTrace 报 1 个 mismatch 精确命中 E。**render-only 判官的 gap 不在 recall,在精度/定位**——正是执行追踪的结构性优势。下一步：把合成 fixture 换成真实 Nature 数据 + 接一步修复成功率。
+
 辅助：§3.1 覆盖率表；§4 层归因混淆矩阵；§5（可选）DPO held-out 曲线 + 噪声信号对照。
 
 ---
