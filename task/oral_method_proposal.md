@@ -1,6 +1,7 @@
 # Method 提案 v2：Execution-Traced Fidelity —— 用执行证据抓出并修复"画错的数"
 
 > 目标：顶会 Oral。本版据 GPT-5.4 round-1 review 收敛——**C1 单一主张扛全篇**，C2/C3 降为支撑/扩展，补全对齐层规格与决定性实验。
+> **状态：GPT-5.4 idea-refine 三轮收敛 7.0→8.3→8.5 READY**（全 7 维 ≥7）。method 已定型 + 决定性实验交付(合成+真实双版本)+ 7/7 图型覆盖表。READY 前提:措辞纪律(exact 仅限 RESOLVED 图型;repair 为 in-loop future work)。
 > 一句话卖点见 §0。
 
 ---
@@ -63,9 +64,19 @@
 
 `agent/app/services/plot_trace.py` 已实现并**自测通过 6 例**：bar、多折线（series 标签保留）、twinx 右轴、silent-error（真值 13万、代码画 9万 → 精确截获 90000，可 diff 出 wrong_value）、**分组柱偏移反推（offset x `{-0.2,0.2}` 经 tick snap 回原始类目 Q1/Q2/Q3）**、**twinx 轴分离（左右轴 series 落到不同 axis id）**。已接进真实子进程 scaffold（改 `sandbox_runner.py` shim，最小侵入、不碰 Jinja 模板），真实 agent run 产出 `figure_*.trace.csv`，**分组柱偏移已正确还原为类目**。对齐层（reviewer 标 CRITICAL）核心已落地；stacked 基线还原、transform/log 轴归一化为下一步。
 
-### 3.3 措辞收紧（reviewer 标 IMPORTANT）
+### 3.3 措辞收紧（reviewer 标 IMPORTANT；round-3 READY 的前提）
 
-删除绝对化表述：不说"natively covers 所有图型"，改"对 instrumented 且 RESOLVED 的图型 exact"；不说"exact oracle"，改"exact on supported chart families"。
+删除绝对化表述：不说"natively covers 所有图型"，改"对 instrumented 且 RESOLVED 的图型 exact"；不说"exact oracle"，改"exact on supported chart families"。**"exact" 只能用于 RESOLVED 图型**（见覆盖表）。**repair 写成 motivated-but-not-yet-demonstrated（in-loop future work），不得声称已证明端到端修复增益**——这是 GPT-5.4 round-3 给 READY 的明确前提。
+
+### 3.4 覆盖表（reviewer round-3 nice-to-have，已补，`eval/coverage_table.py`）
+
+PlotTrace 在各图型 clean 自洽(能否读回自身输入)：
+
+| 图型 | clean fidelity | 状态 |
+|---|---|---|
+| bar / line / scatter / grouped_bar / twinx / stacked_bar / fill_between | 1.00 | **RESOLVED (7/7)** |
+
+注：stacked/fill_between 也 RESOLVED，因为 PlotTrace 截的是**调用实参**(`ax.bar(x,b,bottom=a)`→读 b；`fill_between(x,0,y)`→读 y),实参=源数据值。这正是执行追踪的优势:堆叠基线/band 几何扭曲 render-only 判官所见,但不扭曲调用实参。AMBIGUOUS/UNSUPPORTED 图型回退 SVG/VLM,不声称 exact。
 
 ---
 

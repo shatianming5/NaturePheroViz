@@ -1,6 +1,7 @@
 # Method 提案 v2：Execution-Traced Fidelity —— 用执行证据抓出并修复"画错的数"
 
 > 目标：顶会 Oral。本版据 GPT-5.4 round-1 review 收敛——**C1 单一主张扛全篇**，C2/C3 降为支撑/扩展，补全对齐层规格与决定性实验。
+> **状态：GPT-5.4 idea-refine 三轮收敛 7.0→8.3→8.5 READY**（全 7 维 ≥7）。method 已定型 + 决定性实验交付(合成+真实双版本)+ 7/7 图型覆盖表。READY 前提:措辞纪律(exact 仅限 RESOLVED 图型;repair 为 in-loop future work)。
 > 一句话卖点见 §0。
 
 ---
@@ -61,11 +62,21 @@
 
 ### 3.2 已验证（本提案附带的 spike）
 
-`agent/app/services/plot_trace.py` 已实现并自测通过 4 例：**bar、多折线（series 标签保留）、twinx 右轴（一次 install 覆盖）、silent-error（真值 13万、代码画 9万 → 精确截获 90000，可 diff 出 wrong_value）**。证明对齐层在核心图型上成立。stacked/transform/hist 的归一化为下一步。
+`agent/app/services/plot_trace.py` 已实现并**自测通过 6 例**：bar、多折线（series 标签保留）、twinx 右轴、silent-error（真值 13万、代码画 9万 → 精确截获 90000，可 diff 出 wrong_value）、**分组柱偏移反推（offset x `{-0.2,0.2}` 经 tick snap 回原始类目 Q1/Q2/Q3）**、**twinx 轴分离（左右轴 series 落到不同 axis id）**。已接进真实子进程 scaffold（改 `sandbox_runner.py` shim，最小侵入、不碰 Jinja 模板），真实 agent run 产出 `figure_*.trace.csv`，**分组柱偏移已正确还原为类目**。对齐层（reviewer 标 CRITICAL）核心已落地；stacked 基线还原、transform/log 轴归一化为下一步。
 
-### 3.3 措辞收紧（reviewer 标 IMPORTANT）
+### 3.3 措辞收紧（reviewer 标 IMPORTANT；round-3 READY 的前提）
 
-删除绝对化表述：不说"natively covers 所有图型"，改"对 instrumented 且 RESOLVED 的图型 exact"；不说"exact oracle"，改"exact on supported chart families"。
+删除绝对化表述：不说"natively covers 所有图型"，改"对 instrumented 且 RESOLVED 的图型 exact"；不说"exact oracle"，改"exact on supported chart families"。**"exact" 只能用于 RESOLVED 图型**（见覆盖表）。**repair 写成 motivated-but-not-yet-demonstrated（in-loop future work），不得声称已证明端到端修复增益**——这是 GPT-5.4 round-3 给 READY 的明确前提。
+
+### 3.4 覆盖表（reviewer round-3 nice-to-have，已补，`eval/coverage_table.py`）
+
+PlotTrace 在各图型 clean 自洽(能否读回自身输入)：
+
+| 图型 | clean fidelity | 状态 |
+|---|---|---|
+| bar / line / scatter / grouped_bar / twinx / stacked_bar / fill_between | 1.00 | **RESOLVED (7/7)** |
+
+注：stacked/fill_between 也 RESOLVED，因为 PlotTrace 截的是**调用实参**(`ax.bar(x,b,bottom=a)`→读 b；`fill_between(x,0,y)`→读 y),实参=源数据值。这正是执行追踪的优势:堆叠基线/band 几何扭曲 render-only 判官所见,但不扭曲调用实参。AMBIGUOUS/UNSUPPORTED 图型回退 SVG/VLM,不声称 exact。
 
 ---
 
@@ -98,6 +109,26 @@
    - **判官 precision/recall**：PlotTrace(C1) vs VisEval/SVG vs 强 VLM judge
    - **一步修复成功率**：同一 patch 模块分别由三判官驱动
 4. 预期：旧判官几乎全漏、VLM 部分漏（absent 时编造）、PlotTrace 高检出 + 高修复率。**若此表不显著为正，整个 thesis 削弱。**
+
+**✅ 已用合成 fixture 验证（`eval/silent_error_audit.py`，4 fixture × 4 损坏算子）**：
+| 维度 | Col-name(对照) | SVG/VisEval | **PlotTrace(我们)** |
+|---|---|---|---|
+| 检出 recall | 0% | 100% | 100% |
+| **定位精度**(指对损坏的列,不 flooding) | — | 71% | **100%** |
+| **clean 图误报** | 0/4 | 3/4 | **0/4** |
+| **clean 图保真分**(应≈1.0) | 0.75 | 0.25 | **1.00** |
+
+**关键发现**：SVG 的 100% recall 是**假象**——它对 bar 几何反解析有系统误差(clean 图保真分仅 0.25、误报 3/4),clean/corrupt 都判错故"恰好"全检出;定位只有 71%(常指错或满图 flooding)。铁证案例(revenue_bar 注入 E:99000→59400):SVG 报 5 个 mismatch 但**全指错**(每柱偏 ~3262 的几何噪声)、漏掉真正的 E;PlotTrace 报 1 个 mismatch 精确命中 E。**render-only 判官的 gap 不在 recall,在精度/定位**——正是执行追踪的结构性优势。
+
+**✅ 已接真实 Nature 数据复跑（`--source nature`，15 个自洽 sheet，接法 A：真值驱动生成标准绘图代码）**：
+| 维度 | Col-name | SVG/VisEval | **PlotTrace(我们)** |
+|---|---|---|---|
+| 检出 recall | 0% | 90% | 65% |
+| **定位精度** | 0% | **0%** | **65%** |
+| **clean 图误报** | 0/15 | 14/15 | **0/15** |
+| **clean 图保真分** | 0.75 | 0.14 | **1.00** |
+
+**真实数据比合成更能立论**：SVG 在真实多列科学图上几何反解析**彻底失效**(clean 保真分 0.14、误报 14/15、**定位精度 0%**),其 90% recall 是纯噪声;PlotTrace clean 保真 1.00、0 误报、定位 65%。铁证(WSe₂ 结合能图注入 Basal列×0.7):PlotTrace 精确指出 `x=0.9: -4.1→-2.87`,SVG 直接 `svg-empty-pred`(读不出这张真实图)。**这个 gap 在合成数据上 SVG 还能蒙对,在真实数据上才彻底显现——这正是"必须用真实数据"的理由。** 加了自洽性预过滤(clean 图 trace==真值才纳入),诚实界定可干净对齐的真实 sheet。下一步：扩到更多自洽 sheet + 接一步修复成功率。
 
 辅助：§3.1 覆盖率表；§4 层归因混淆矩阵；§5（可选）DPO held-out 曲线 + 噪声信号对照。
 
