@@ -152,19 +152,41 @@ def _llm_code(item: Dict[str, Any], prompt_text: str, model: str) -> Optional[st
     extra = f"\nA second dataframe `df2` columns={list(item['df2'].columns)}." if "df2" in item else ""
     prompt = f"""pandas `df` columns={cols}.{extra}
 {prompt_text}
-Assign the result to `result`. Return ONLY strict JSON: {{"code": "<pandas code defining result>"}}."""
+The dataframe(s) `df`{"/`df2`" if "df2" in item else ""} ALREADY EXIST in scope with the real data.
+Do NOT re-create or re-assign them, do NOT import anything, do NOT print.
+Use only the given `df`{"/`df2`" if "df2" in item else ""}, assign the final answer to `result`.
+Return ONLY strict JSON: {{"code": "<pandas code defining result>"}}."""
     try:
         r = requests.post(base + "/chat/completions",
                           headers={"Authorization": f"Bearer {key}", "Content-Type": "application/json"},
                           json={"model": model, "messages": [{"role": "user", "content": prompt}],
-                                "temperature": 0.0, "response_format": {"type": "json_object"}, "max_tokens": 400},
-                          timeout=(10, 45))
+                                "temperature": 0.0, "max_tokens": 4000},
+                          timeout=(10, 90))
         r.raise_for_status()
-        c = r.json()["choices"][0]["message"]["content"]
+        choices = r.json().get("choices") or []
+        if not choices:
+            return None
+        c = choices[0]["message"]["content"]
         m = re.search(r"\{.*\}", c, re.S)
         return json.loads(m.group(0) if m else c).get("code")
     except Exception:
         return None
+
+
+def _sanitize_code(code: str) -> str:
+    """Strip markdown fences and drop lines that re-create df/df2 or import — the
+    real frames are pre-injected, so a model that hallucinates `df = pd.DataFrame(...)`
+    must NOT clobber them (that would measure the model on fake data)."""
+    code = re.sub(r"^```[a-zA-Z]*\n?|```$", "", code.strip(), flags=re.M)
+    kept = []
+    for ln in code.splitlines():
+        s = ln.strip()
+        if re.match(r"^(import|from)\s", s):
+            continue
+        if re.match(r"^df2?\s*=", s):  # re-assigns df / df2 at statement start
+            continue
+        kept.append(ln)
+    return "\n".join(kept)
 
 
 def _exec(item: Dict[str, Any], code: str) -> Optional[pd.DataFrame]:
@@ -172,11 +194,18 @@ def _exec(item: Dict[str, Any], code: str) -> Optional[pd.DataFrame]:
     if "df2" in item:
         ns["df2"] = item["df2"].copy()
     try:
-        exec(code, ns)  # noqa: S102
+        exec(_sanitize_code(code), ns)  # noqa: S102
         res = ns.get("result")
         if isinstance(res, pd.Series):
             res = res.to_frame()
-        return res if isinstance(res, pd.DataFrame) else None
+        if isinstance(res, pd.DataFrame):
+            return res
+        # scalar result (e.g. a weighted mean) -> wrap into a 1-cell frame so the
+        # oracle (_single_value) and _gold_correct (scalar branch) can read it.
+        # Both scan for the single numeric cell, so the column name is irrelevant.
+        if isinstance(res, (int, float, np.integer, np.floating)) and not isinstance(res, bool):
+            return pd.DataFrame({"value": [float(res)]})
+        return None
     except Exception:
         return None
 
