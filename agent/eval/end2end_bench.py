@@ -39,6 +39,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 import matplotlib
 matplotlib.use("Agg")
+matplotlib.rcParams["font.family"] = "DejaVu Sans"  # server has no Arial
 import matplotlib.pyplot as plt  # noqa: E402
 import numpy as np  # noqa: E402
 import pandas as pd  # noqa: E402
@@ -128,7 +129,7 @@ Return ONLY strict JSON: {{"code": "<plotting code body using df and ax>"}}. No 
                           headers={"Authorization": f"Bearer {key}", "Content-Type": "application/json"},
                           json={"model": model, "messages": [{"role": "user", "content": prompt}],
                                 "temperature": 0.2, "response_format": {"type": "json_object"}, "max_tokens": 400},
-                          timeout=(10, 60))
+                          timeout=(10, 45))
         r.raise_for_status()
         content = r.json()["choices"][0]["message"]["content"]
         m = re.search(r"\{.*\}", content, re.S)

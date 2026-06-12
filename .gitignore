@@ -63,3 +63,7 @@ agent/eval/results_nature/silent_error_records.json
 agent/eval/results_e2e/e2e_records.json
 agent/eval/results_repair/repair_gain_records.json
 agent/eval/results_complex/complex_records.json
+agent/eval/results_transform/transform_records.json
+agent/eval/results_gonogo/
+agent/eval/results_nature_e2e/
+agent/eval/results_complex/complex_records.json

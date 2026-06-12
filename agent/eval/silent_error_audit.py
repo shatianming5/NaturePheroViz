@@ -132,7 +132,7 @@ def _fixtures() -> List[Fixture]:
 CORRUPTIONS = ["wrong_value", "scale_series", "drop_series", "swap_categories"]
 
 
-def _load_nature_fixtures(limit: int = 20, repo_root: Optional[Path] = None) -> List[Fixture]:
+def _load_nature_fixtures(limit: int = 20, repo_root: Optional[Path] = None, max_per_article: int = 0) -> List[Fixture]:
     """Build fixtures from REAL crawled Nature source-data sheets.
 
     A Nature pair gives (figure image + xlsx source data) but NO plotting code.
@@ -160,9 +160,15 @@ def _load_nature_fixtures(limit: int = 20, repo_root: Optional[Path] = None) -> 
     cands = [s for s in probe if 3 <= s.get("cols", 0) <= 8 and len(s.get("panels", [])) <= 1 and 3 <= s.get("rows", 0) <= 60]
     fixtures: List[Fixture] = []
     seen_sheets = set()
+    per_article: Dict[str, int] = {}
     for s in cands:
         if len(fixtures) >= limit:
             break
+        # cross-article diversity: cap fixtures per article so a benchmark isn't
+        # dominated by one paper's many sheets (matters for representative
+        # measurement of silent-error rates).
+        if max_per_article and per_article.get(s["article_id"], 0) >= max_per_article:
+            continue
         key = (s["article_id"], s["sheet"])
         if key in seen_sheets:
             continue
@@ -184,6 +190,7 @@ def _load_nature_fixtures(limit: int = 20, repo_root: Optional[Path] = None) -> 
         # experiment to real sheets we can align cleanly (an honest coverage gate).
         if _clean_self_consistent(fxt):
             fixtures.append(fxt)
+            per_article[s["article_id"]] = per_article.get(s["article_id"], 0) + 1
     return fixtures
 
 
