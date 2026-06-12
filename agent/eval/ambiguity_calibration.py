@@ -184,11 +184,23 @@ def _exec(item: Dict[str, Any], code: str) -> Optional[pd.DataFrame]:
 def main(argv: Optional[List[str]] = None) -> int:
     ap = argparse.ArgumentParser(description="Ambiguity-calibration: model failure vs prompt underspecification")
     ap.add_argument("--out", default="eval/results_ambcal")
+    ap.add_argument("--bench", action="store_true",
+                    help="use the systematic 48-case transform_bench grid (12 classes x4) instead of the built-in 6")
     args = ap.parse_args(argv)
     if not os.getenv("LLM_API_BASE") or not os.getenv("LLM_API_KEY"):
         print("[error] needs LLM_API_BASE / LLM_API_KEY."); return 1
 
-    items = _items()
+    if args.bench:
+        from collections import Counter
+        from eval.transform_bench import _cases
+        seen: Counter = Counter()
+        items = []
+        for c in _cases():
+            seen[c["op"]] += 1
+            items.append({**c, "name": f"{c['op']}#{seen[c['op']]}"})
+        print(f"[bench] {len(items)} systematic cases across {len(seen)} operator-semantic classes")
+    else:
+        items = _items()
     # counters
     silent = {cond: 0 for cond in ("ambiguous", "clarified")}   # exec ok but wrong (ground truth)
     total = {cond: 0 for cond in ("ambiguous", "clarified")}

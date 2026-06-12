@@ -157,6 +157,98 @@ def c_pooled_rate(inp, params, result) -> ContractResult:
     return ContractResult("pooled_rate", True, "rate does not match pooled sum/sum")
 
 
+def c_median_not_mean(inp, params, result) -> ContractResult:
+    df = inp["df"]; grp, val = params["group"], params["value"]; out = params.get("out", val)
+    if result is None or grp not in result.columns:
+        return ContractResult("median_not_mean", True, "missing group column")
+    med = df.groupby(grp)[val].median(); mean = df.groupby(grp)[val].mean()
+    vcol = out if out in result.columns else next((c for c in result.columns if c != grp), None)
+    if vcol is None:
+        return ContractResult("median_not_mean", True, "no value column")
+    rmap = dict(zip(result[grp].astype(str), _num(result[vcol])))
+    if all(_close(rmap.get(str(g), None), med[g]) for g in med.index):
+        return ContractResult("median_not_mean", False, "matches per-group median")
+    if all(_close(rmap.get(str(g), None), mean[g]) for g in mean.index):
+        return ContractResult("median_not_mean", True, "got MEAN; should be MEDIAN")
+    return ContractResult("median_not_mean", True, "does not match median")
+
+
+def c_cumulative_running(inp, params, result) -> ContractResult:
+    # invariant: a running/cumulative series is monotonic in count and its LAST
+    # value equals the total sum of the delta column (cumulative, not per-row).
+    df = inp["df"]; val = params["value"]; out = params.get("out", "balance")
+    if result is None or out not in result.columns:
+        return ContractResult("cumulative_running", True, f"missing {out}")
+    got = _num(result[out]); total = float(_num(df[val]).sum())
+    if len(got) == len(df) and _close(got[-1], total):
+        return ContractResult("cumulative_running", False, f"last cum == total {total}")
+    # silent slip: returned the raw per-row values (no cumulation) -> last != total
+    if len(got) == len(df) and np.allclose(np.sort(got), np.sort(_num(df[val])), atol=1e-6):
+        return ContractResult("cumulative_running", True, "returned raw per-row values, not cumulative")
+    return ContractResult("cumulative_running", True, f"last value {got[-1] if len(got) else None} != total {total}")
+
+
+def c_topn_with_ties(inp, params, result) -> ContractResult:
+    # invariant: keeping top-n by VALUE with ties = all rows whose value-rank
+    # (min method, descending) is <= n. So if rows tie for rank 1, they all count
+    # toward the n slots. Expected count = #rows with rank <= n.
+    df = inp["df"]; col, n = params["value"], params["n"]
+    if result is None or col not in result.columns:
+        return ContractResult("topn_with_ties", True, f"missing {col}")
+    ranks = pd.Series(_num(df[col])).rank(method="min", ascending=False)
+    expected = int((ranks <= n).sum())
+    if len(result) == expected:
+        return ContractResult("topn_with_ties", False, f"kept all {expected} rows with rank<= {n}")
+    if len(result) == n and expected > n:
+        return ContractResult("topn_with_ties", True, f"kept exactly {n}, dropped ties (should keep {expected})")
+    return ContractResult("topn_with_ties", True, f"kept {len(result)}, expected {expected}")
+
+
+def c_nan_as_zero_sum(inp, params, result) -> ContractResult:
+    # invariant: summing with NaN treated as 0 => per-group total equals sum of
+    # non-missing (pandas sum already skips NaN, so a group with [10, NaN] => 10).
+    df = inp["df"]; grp, val = params["group"], params["value"]
+    if result is None or grp not in result.columns or val not in result.columns:
+        return ContractResult("nan_as_zero_sum", True, "missing columns")
+    correct = df.assign(**{val: df[val].fillna(0)}).groupby(grp)[val].sum()
+    rmap = dict(zip(result[grp].astype(str), _num(result[val])))
+    if all(_close(rmap.get(str(g), None), correct[g]) for g in correct.index):
+        return ContractResult("nan_as_zero_sum", False, "NaN treated as 0 in sums")
+    # silent slip: produced NaN totals (didn't fill) -> a group total is NaN
+    if any(np.isnan(v) for v in rmap.values()):
+        return ContractResult("nan_as_zero_sum", True, "a group total is NaN (NaN not treated as 0)")
+    return ContractResult("nan_as_zero_sum", True, "group totals don't match NaN-as-0 sums")
+
+
+def c_count_includes_empty(inp, params, result) -> ContractResult:
+    # invariant: counting per category must include categories with 0 rows.
+    df = inp["df"]; cat = params["category"]
+    n_categories = len(df[cat].cat.categories) if isinstance(df[cat].dtype, pd.CategoricalDtype) else df[cat].nunique()
+    if result is None:
+        return ContractResult("count_includes_empty", True, "no result")
+    if len(result) >= n_categories:
+        return ContractResult("count_includes_empty", False, f"all {n_categories} categories present")
+    return ContractResult("count_includes_empty", True, f"only {len(result)} categories, should include all {n_categories} (zero-count ones dropped)")
+
+
+def c_proportion_true(inp, params, result) -> ContractResult:
+    # invariant: proportion (mean of boolean) per group is in [0,1] and equals
+    # (#True)/(#rows), NOT the count of True.
+    df = inp["df"]; grp, flag, out = params["group"], params["flag"], params.get("out", "pass_rate")
+    if result is None or out not in result.columns or grp not in result.columns:
+        return ContractResult("proportion_true", True, f"missing {out}/{grp}")
+    correct = df.groupby(grp)[flag].mean()
+    countT = df.groupby(grp)[flag].sum()
+    rmap = dict(zip(result[grp].astype(str), _num(result[out])))
+    if all(_close(rmap.get(str(g), None), correct[g]) for g in correct.index):
+        return ContractResult("proportion_true", False, "matches proportion in [0,1]")
+    if any((v is not None and not np.isnan(v) and v > 1.0) for v in rmap.values()):
+        return ContractResult("proportion_true", True, "value > 1 — looks like COUNT of True, not proportion")
+    if all(_close(rmap.get(str(g), None), float(countT[g])) for g in countT.index):
+        return ContractResult("proportion_true", True, "got COUNT of True; should be proportion")
+    return ContractResult("proportion_true", True, "does not match proportion")
+
+
 # registry: operator-semantic-type -> contract fn
 CONTRACTS: Dict[str, Callable] = {
     "weighted_mean": c_weighted_mean,
@@ -165,6 +257,12 @@ CONTRACTS: Dict[str, Callable] = {
     "dedup_then_agg": c_dedup_then_agg,
     "left_join_keep_all": c_left_join_keep_all,
     "pooled_rate": c_pooled_rate,
+    "median_not_mean": c_median_not_mean,
+    "cumulative_running": c_cumulative_running,
+    "topn_with_ties": c_topn_with_ties,
+    "nan_as_zero_sum": c_nan_as_zero_sum,
+    "count_includes_empty": c_count_includes_empty,
+    "proportion_true": c_proportion_true,
 }
 
 
@@ -243,12 +341,60 @@ def _selftest() -> int:
     if not check("pooled_rate", {"df": df6}, pp6, wrong6).fired:
         fails.append("pooled_rate did NOT fire on mean-of-ratios slip")
 
+    # median_not_mean
+    d = pd.DataFrame({"grp": ["x", "x", "x", "y", "y", "y"], "v": [1.0, 2.0, 9.0, 4.0, 5.0, 60.0]})
+    pp = {"group": "grp", "value": "v"}
+    cok = d.groupby("grp", as_index=False)["v"].median()
+    cw = d.groupby("grp", as_index=False)["v"].mean()
+    if check("median_not_mean", {"df": d}, pp, cok).fired: fails.append("median fired on CORRECT")
+    if not check("median_not_mean", {"df": d}, pp, cw).fired: fails.append("median did NOT fire on mean slip")
+
+    # cumulative_running
+    d = pd.DataFrame({"day": [1, 2, 3, 4], "delta": [10, -5, 8, -3]})
+    pp = {"value": "delta", "out": "balance"}
+    cok = d.sort_values("day").assign(balance=lambda x: x["delta"].cumsum())[["day", "balance"]]
+    cw = d.assign(balance=d["delta"])[["day", "balance"]]  # raw, not cumulative
+    if check("cumulative_running", {"df": d}, pp, cok).fired: fails.append("cumulative fired on CORRECT")
+    if not check("cumulative_running", {"df": d}, pp, cw).fired: fails.append("cumulative did NOT fire on raw-values slip")
+
+    # topn_with_ties
+    d = pd.DataFrame({"name": list("abcd"), "score": [10, 9, 9, 7]})
+    pp = {"value": "score", "n": 2}
+    cok = d[d["score"] >= 9].reset_index(drop=True)        # keeps a,b,c (ties at 9)
+    cw = d.sort_values("score", ascending=False).head(2).reset_index(drop=True)  # drops a tie
+    if check("topn_with_ties", {"df": d}, pp, cok).fired: fails.append("topn fired on CORRECT")
+    if not check("topn_with_ties", {"df": d}, pp, cw).fired: fails.append("topn did NOT fire on dropped-tie slip")
+
+    # nan_as_zero_sum
+    d = pd.DataFrame({"grp": ["x", "x", "y"], "v": [10.0, np.nan, 5.0]})
+    pp = {"group": "grp", "value": "v"}
+    cok = d.assign(v=d["v"].fillna(0)).groupby("grp", as_index=False)["v"].sum()
+    cw = pd.DataFrame({"grp": ["x", "y"], "v": [np.nan, 5.0]})  # x total NaN (didn't fill)
+    if check("nan_as_zero_sum", {"df": d}, pp, cok).fired: fails.append("nan_sum fired on CORRECT")
+    if not check("nan_as_zero_sum", {"df": d}, pp, cw).fired: fails.append("nan_sum did NOT fire on NaN-total slip")
+
+    # count_includes_empty
+    d = pd.DataFrame({"cat": pd.Categorical(["a", "a", "c"], categories=["a", "b", "c"]), "v": [1, 2, 3]})
+    pp = {"category": "cat"}
+    cok = d.groupby("cat", observed=False).size().reset_index(name="n")     # 3 rows incl b=0
+    cw = d.groupby("cat", observed=True).size().reset_index(name="n")        # 2 rows, drops b
+    if check("count_includes_empty", {"df": d}, pp, cok).fired: fails.append("count_empty fired on CORRECT")
+    if not check("count_includes_empty", {"df": d}, pp, cw).fired: fails.append("count_empty did NOT fire on dropped-zero slip")
+
+    # proportion_true
+    d = pd.DataFrame({"grp": ["x", "x", "x", "y", "y"], "passed": [True, False, True, False, False]})
+    pp = {"group": "grp", "flag": "passed", "out": "pass_rate"}
+    cok = d.groupby("grp", as_index=False)["passed"].mean().rename(columns={"passed": "pass_rate"})
+    cw = d.groupby("grp", as_index=False)["passed"].sum().rename(columns={"passed": "pass_rate"})  # count not proportion
+    if check("proportion_true", {"df": d}, pp, cok).fired: fails.append("proportion fired on CORRECT")
+    if not check("proportion_true", {"df": d}, pp, cw).fired: fails.append("proportion did NOT fire on count slip")
+
     if fails:
         print("ORACLE SELFTEST FAILED:")
         for f in fails:
             print("  -", f)
         return 1
-    print("ORACLE SELFTEST PASSED: 6 contracts each FIRE on the silent slip and PASS on the correct result (goldless).")
+    print("ORACLE SELFTEST PASSED: 12 contracts each FIRE on the silent slip and PASS on the correct result (goldless).")
     return 0
 
 
