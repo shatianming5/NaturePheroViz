@@ -621,6 +621,7 @@ def _build_report(tp, fn, fp, clean_n, skipped, clean_fid, loc_hit, loc_tot) -> 
     lines.append("- **SVG/VisEval** reverse-engineers rendered geometry. It may *fire* often, but on clean bar charts it also misreads (low clean fidelity / false alarms) and floods mismatches → its detection is largely **noise, not localization**.")
     lines.append("- **PlotTrace (ours)** reads the exact arrays passed to matplotlib → high recall, high localization, fidelity≈1.0 on clean charts, zero false alarms. Detection here is **exact, not noise**.")
     lines.append("- The thesis holds when PlotTrace dominates on **localization + clean-fidelity**, not just raw recall — that is the gap render-only judges cannot close.")
+    lines.append("- *Repair* (judge feedback → agent regenerates code) is left to the in-loop experiment; a deterministic write-back patch is not discriminative here because localization already captures whether a judge can point at the right cell.")
     return "\n".join(lines)
 
 

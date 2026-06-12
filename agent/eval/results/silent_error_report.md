@@ -36,3 +36,4 @@ Only judges that emit per-point mismatches (SVG, PlotTrace) are scored here.
 - **SVG/VisEval** reverse-engineers rendered geometry. It may *fire* often, but on clean bar charts it also misreads (low clean fidelity / false alarms) and floods mismatches → its detection is largely **noise, not localization**.
 - **PlotTrace (ours)** reads the exact arrays passed to matplotlib → high recall, high localization, fidelity≈1.0 on clean charts, zero false alarms. Detection here is **exact, not noise**.
 - The thesis holds when PlotTrace dominates on **localization + clean-fidelity**, not just raw recall — that is the gap render-only judges cannot close.
+- *Repair* (judge feedback → agent regenerates code) is left to the in-loop experiment; a deterministic write-back patch is not discriminative here because localization already captures whether a judge can point at the right cell.
