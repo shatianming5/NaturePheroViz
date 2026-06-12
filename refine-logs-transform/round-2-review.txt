@@ -1,0 +1,713 @@
+I’m checking the repo instructions and the claimed evidence paths first, then I’ll independently verify the four novelty edges against the literature with web search.The workspace path in the prompt doesn’t exist in this shell, so I’m resolving the actual checkout location before I inspect the evidence files.I can score the revision from the proposal text, but I can’t inspect the claimed local artifacts because that repo path is not mounted here. I’m moving to literature re-verification now and will treat the empirical claims as author-reported unless I can find public artifacts.I’ve confirmed the main candidate papers. I’m fanning out literature checks so I can judge each novelty edge against the actual paper scope rather than the proposal’s summary.While those checks run, I’m pulling the primary-source abstracts/project pages for the main comparator papers so the final judgment cites what they actually claimI'll research mlinspect thoroughly across its primary sources —.I'll search for SemGuard ( paper, GitHub repo, and related work.I'll research CodeT and related work systematically across multiple sources simultaneously.ASE 2025) across multiple sources simultaneously.I have direct abstracts for CodeT, Zhong, DS-1000, and ARCADE. I’m filling the last gap on `mlinspect` with a clean primary-source summary instead of relying on a PDF blob.Good, found it on arXiv. Let me fetch the full abstract and related details.Found the correct arXiv ID: 2509.24507. Let me fetch it now.The primary-source picture is now clear enough to anchor the comparisons. I’m waiting on the subagent syntheses for each edge, then I’llNow convert that into the round-2 scorecard and verdict. let me search for close follow-ons and the common-mode error problem specifically:Let me get more of the paper to understand its evaluation benchmarks, domain scope, and what it considers "semantic":Now I have a comprehensive picture. Let me also check the remainder of the paper for any mention of dataframes, pandas, or similar topics:Now let me check for any NL-intent or semantic contract functionality, and look at the demo notebook structure:Now let me search for key follow-on papers and the specific CodeT failure modes:Let me search specifically for relevant follow-ons and the specific CodeT limitations literature:I now have exhaustive coverage of mlinspect's full source code, all checks, all inspections, operator taxonomy, and published papers. Here is the complete analysis.
+
+---
+
+## mlinspect Novelty-Threat Analysis
+
+### Summary
+
+mlinspect is a **data distribution debugger for ML pipelines** that monkey-patches pandas/sklearn/numpy/statsmodels to extract a DAG of pipeline operators, then runs pluggable *inspections* (statistical, lineage) and *checks* (fairness, leakage). It operates at the operator level and does materialize row traces, but its entire problem framing, detection machinery, and goals are orthogonal to the proposal. **It has zero NL-intent awareness, no semantic contract mechanism, and cannot detect wrong join keys or wrong aggregation semantics.**
+
+---
+
+### 1. Repositories Discovered
+
+| Source | URL |
+|--------|-----|
+| GitHub repo | https://github.com/stefan-grafberger/mlinspect |
+| CIDR 2020 paper | https://stefan-grafberger.com/mlinspect-cidr.pdf |
+| SIGMOD 2021 demo | https://stefan-grafberger.com/mlinspect-demo.pdf |
+| VLDB Journal 2022 | https://stefan-grafberger.com/mlinspect-journal.pdf |
+
+---
+
+### 2. What mlinspect Actually Inspects — Core Facts
+
+#### 2a. Operator taxonomy (exhaustive,I now have comprehensive, primary-source facts. Here is the full report.
+
+---
+
+## SemGuard (ASE 2025) — Verified Core Facts
+
+### Primary Source
+**arXiv:2509.24507** — "SemGuard: Real-Time Semantic Evaluator for Correcting LLM-Generated Code"
+- Authors: Qinglin Wang, Zhihong Sun, Ruyun Wang, Tao Huang, Zhi Jin, Ge Li, Chen Lyu
+- Accepted: 40th IEEE/ACM ASE 2025
+- URL: https://arxiv.org/abs/2509.24507
+- GitHub: https://github.com/wwwql/SemGuard
+
+---
+
+### Dimension-by-Dimension Verified Facts
+
+#### 1. Task Domain
+SemGuard targets **generic competitive programming and algorithmic code generation** (Python and Java). Benchmarks used:
+- **SemDiff** — 998 competition-level problems from **CodeNet** (~14M submissions, 50+ languages)
+- **SemDiff-Java** — Java counterpart of SemDiff
+- **MBPP** — 974 short Python tasks (basic programming puzzles)
+- **LiveCodeBench** — real problems from **LeetCode, AtCoder, CodeForces**
+
+> *"Large Language Models (LLMs) can translate natural language requirements into code, yet empirical analyses... reveal that semantic errors—programs that compile but behave incorrectly—constitute the majority of observed faults"* (Abstract, arXiv:2509.24507)
+
+**Zero mention of dataframes, pandas, NL→DataFrame transforms, tabular data, relational data, or data analysis tasks anywhere in the paper.**
+
+#### 2. Granularity: Line-level, NOT operator-level
+SemGuard is explicitly and per from source)
+
+From `mlinspect/inspections/_inspection_input.py`:
+
+```python
+class OperatorType(Enum):
+    DATA_SOURCE       = "Data Source"
+    MISSING_OP        = "Encountered unsupported operation! Fallback: Data Source"
+    SELECTION         = "Selection"            # e.g. dropna, boolean-Let me look for MBR-Exec and the Semantic Parsing / NL-to-Dataframe space:vasively **line-level**:
+
+> *"SemGuard, a semantic-evaluator-driven framework that performs **real-time, line-level semantic supervision**"* (Abstract)
+
+> *"the evaluator... flags deviations on partial code, rolls back to the **faulty line**, and guides regeneration"*
+
+The mechanism: after eachindexing
+    PROJECTION        = "Projection"           # column sub-selection
+    PROJECTION_MODIFY = "Projection (Modify)"  # __setitem__, replace
+    TRANSFORMER       = "Transformer"          # sklearn transformers
+    CONCATENATION     = "Concatenation"        # sklearn ColumnTransformer concat
+    ESTIMATOR         = "Estimator"
+    SCORE             = "Score"
+    TRAIN_DATA        = "Train Data"
+    TRAIN_LABELS      = "Train Labels"
+    TEST_DATA         = "Test Data"
+    TEST_LABELS       = "Test Labels"
+    JOIN              = "Join"                  line `L_t` is generated during autoregressive decoding, the evaluator scores the growing prefix; if score < 0.5, it rolls back to the beginning of that line (arXiv:2509.24507, §III-C). The token penalty targets "the first non-ind# pandas merge
+    GROUP_BY_AGG      = "Groupby and Aggregate"
+    TRAIN_TEST_SPLIT  = "Train Test Split"
+```
+**Source:** `stefan-grafberger/mlinspect:mlinspect/inspections/_inspection_input.py`
+
+#### 2b. All built-in Inspections (complete list)
+
+From `mlinspect/inspections/__init__.py`:
+
+| Inspection | What it does |
+|---|---|
+| `MaterializeFirstOutputRows(n)` | Captures the first *ented token on the faulty line." This is completely different from **operator-level** reasoning (e.g., reasoning about what a `.groupby()` or `.merge()` step computes relative to the NL intent).
+
+#### 3. Whether It Reasons About DataFrame Relational Semantics
+**No.** There is no reasoning about:
+- join semantn* actual data rows output by each DAG node |
+| `HistogramForColumns(cols)` | Computes value-count histograms for named columns at each operator |
+| `IntersectionalHistogramForColumns` | Intersectional (multi-column cross) histograms |
+| `RowLineage(n)` | Row-level provenance: tracks which input rows contributed to each output row via `LineageIdics (inner/left/outer, key cardinality)
+- groupby/aggregation scope or correct group key selection
+- tie-breaking or sort stability
+- aggregation function selection (sum vs. count vs. mean)
+- column projection correctness
+- filter predicate intent
+
+SemGuard's notion of "semantic correctness" is the(operator_id, row_id)` sets |
+| `CompletenessOfColumns` | Null/missing value counts per column per operator |
+| `CountDistinctOfColumns` | Distinct value counts per column |
+| `ColumnPropagation` | Tracks which columns flow through each operator |
+| `ArgumentCapturing` | Captures the non-data arguments (kwargs) of each function call |
+
+**Source:** `stefan-grafberger PL-theoretic one: does the program produce the correct output on a competitive programming judge? It is entirely agnostic to relational or DataFrame-specific semantics.
+
+#### 4. Whether It Needs Reference Semantics, Generated Tests, or Gold Outputs
+This is the most nuanced dimension, and it splits into/mlinspect:mlinspect/inspections/__init__.py`
+
+#### 2c. All built-in Checks (complete list)
+
+From `mlinspect/checks/__init__.py`:
+
+| Check | What it detects |
+|---|---|
+| `NoBiasIntroducedFor(sensitive_cols)` | At JOIN and SELECTION operators, tests whether the *relative histogram ratio* of a protected column (e.g. `race`, `gender`) changes more than a threshold **training time** vs **inference time**:
+
+**At inference time**: SemGuard does *not* require test cases or gold outputs:
+> *"flags deviations on partial code, rolls back to the faulty line, and guides regeneration—**without executing the program or requiring test cases**"* (Abstract)
+
+**At training time**: SemGuard absolutely requires reference implementations. The SemDiff dataset is |
+| `SimilarRemovalProbabilitiesFor(sensitive_cols)` | Computes removal probability per group across JOIN/SELECTION; flags if one group is disproportionately removed (disparate impact) |
+| `NoIllegalFeatures` | Traverses the DAG to see if protected columns (`race`, `gender`, `age`) appear in `TRAIN_DATA` nodes |
+
+**Source:** `stefan-grafberger/mlinspect:m built by pairing each incorrect CodeNet submission with a corresponding **correct** solution from the same user on the same problem (§III-A):
+- Pairs are filtered for Jaccard similarity J > 0.9 (near-identical except at the deviation point)
+- Every "correct" solution islinspect/checks/__init__.py`
+
+#### 2d. Supported pandas/sklearn APIs (monkey-patched)
+
+From `mlinspect/monkeypatching/README.md`:
+
+| Function | Operator type assigned |
+|---|---|
+| `pd.read_csv`, `pd.DataFrame`, `pd.Series` | DATA_SOURCE |
+| `df.__getitem__(str)` | PROJECTION |
+| `df.__getitem__(series re-executed in a sandbox against **ground-truth answers**
+- The training signal is the binary label "correct/incorrect" derived from known-correct reference programs
+
+So: **no test cases at inference time**, but **requires reference implementations and ground-truth outputs to construct training data**)` | SELECTION |
+| `df.dropna()` | SELECTION |
+| `df.merge()` | JOIN |
+| `df.groupby()` + `.agg()` | GROUP_BY_AGG |
+| `df.replace()`, `df.__setitem__()` | PROJECTION_MODIFY |
+| `ColumnTransformer`, `SimpleImputer`, `StandardScaler`, etc. | TRANSFORMER |
+| `DecisionTreeClassifier`, `LogisticRegression`, etc. | ESTIMATOR |
+
+**Source:** `stefan-grafberger/mlinspect:mlinspect/monkeypatching/README.md`
+
+---
+
+### 3. Deep Dive: What. The proposal claims "without gold outputs/tests/reference implementations" — if this means at inference time (detection phase), it matches SemGuard superficially. If it means avoiding reference implementations entirely (including training), SemGuard cannot claim this.
+
+#### 5. Whether It Evaluates/Corrects Generic Code vs. Intent-Faithfulness for DataFrame Transforms
+SemGuard evaluates **generic functional correctness** (pass/fail on mlinspect Checks vs. What the Proposal Claims
+
+#### Does mlinspect check intent-faithfulness of a generated DataFrame transform against NL intent?
+
+**No. Categorically and completely absent.** There is no concept of NL intent anywhere in the codebase. The system operates on already-written Python code; it never knows what the user *meant test judge), not **NL intent-faithfulness** for structured data transforms. It asks: "Does this partial code deviate from a correct implementation of the same algorithmic problem?" It does not ask: "Does this DataFrame chain faithfully implement the NL description of a data manipulation?" These are different questions — the latter requires understanding what the user* to write. There is no string parsing of comments, docstrings, or natural language descriptions. The DAG captures *what was executed*, not *what was intended*.
+
+#### Does mlinspect detect wrong join keys?
+
+**No.** When mlinspect encounters a `df.merge()`, it classifies it as a `JOIN` operator and then:
+1. Comp meant (e.g., "compute average salary per department, excluding nulls") and whether the generated pandas chain actually implements that semantics.
+
+#### 6. Mechanism
+SemGuard's core mechanism is a **lightweight binary classifier** (1.3B-parameter DeepSeekCoder fine-tuned with a linearutes histograms of sensitive columns before/after the join (fairness check)
+2. Propagates row lineage through the join (RowLineage)
+3. Records the join arguments via `ArgumentCapturing`
+
+It **never validates** whether the join key is semantically correct relative to any intent. It does not check cardinality explosion, fanout multiplication, accidental cross-join + sigmoid head) embedded *inside the LLM decoder* during autoregressive token generation. It scores partial code prefixes in real time. This is architecturally distinct from **typed operator-level semantic contracts over execution traces** — which implies:
+- Executing the code (or parts of it) to obtain an execution trace
+- Checking typed invariants/, or wrong-column join. The only thing flagged about a join is: *did it change the histogram of `race`/`gender` beyond a threshold?*
+
+**Relevant code** from `_no_bias_introduced_for.py`:
+```python
+relevant_nodes = [node for node in dag.nodes 
+    if node.operatorcontracts at operator boundaries
+- Using formal or semi-formal relational properties
+
+SemGuard never executes code at inference time; it makes a static judgment on the text of the partial program (arXiv:2509.24507, §III-C).
+
+---
+
+### Summary Table
+
+| Dimension | SemGuard (ASE 2025) | Your_info.operator in {OperatorType.JOIN, OperatorType.SELECTION} or ...]
+# → checks histogram ratio change only; zero logic about join-key correctness
+```
+
+#### Does mlinspect detect wrong aggregation semantics?
+
+**No.** `GROUP_BY_AGG` is a recognized operator type, but no check targets it forLet me search for the critical follow-on papers on code execution consistency and the specific dataframe/pandas NL Proposal |
+|---|---|---|
+| **Task domain** | Competitive programming (Python/Java) | NL→DataFrame transforms |
+| **Granularity** | Line-level (during decoding) | Operator-level |
+| **Mechanism** | Fine-tuned binary LM classifier | Typed semantic contracts |
+| **Uses execution traces** | No (static, during decoding) | Yes (over execution traces) |
+| **Relational semantics** (join, groupby, agg scope, ties) | None | Core focus |
+| **Gold outputs / test semantic correctness. The fairness checks (`NoBiasIntroducedFor`, `SimilarRemovalProbabilitiesFor`) explicitly focus only on `JOIN` and `SELECTION` operators — GROUP_BY_AGG is not examined at all by built-in checks. There is no contract verifying: "the user wanted a `mean` but `sum` was used,"-to-code space: cases at inference** | Not required | Not required |
+| **Reference implementations for training** | Required (CodeNet correct solutions) | Claimed not required |
+| **Evaluates** | Generic algorithmic correctness | NL intent-faithfulness for data transforms |
+| **Intervention point** | During generation (constrained decoding) | Post-generation analysis |
+| **Benchmarks** | MBPP, LiveCodeBench, CodeNet, LeetCode | Pandas/ or "the group-by column is wrong."
+
+From `_no_bias_introduced_for.py` and `_similar_removal_probabilities_for.py`, the `get_relevant_nodes_and_histograms` method:
+```python
+relevant_nodes = [node for node in dag.nodes 
+    if node.operator_info.operator in {OperatorType.JOIN, OperatorType.SELECTION}
+    # GROUP_BY_AGG is never included
+    ...]
+```
+
+#### Does mlinspect doDataFrame NL→code |
+
+---
+
+### Verdict: **SURVIVES**
+
+The overlap between SemGuard and the described proposal is **superficial and terminological only**: both address "semantic errors in LLM-generated code" and both claim to operate without test cases at inference time. Every meaningful technical dimension is orthogonal:
+
+1. **Domain is entirely different**: SemGuard is about competitive programming algorithms (sorting, dynamic programming, graph problems); anything with execution traces in the sense of row-level output validation?
+
+**Partially, but not semantically.** `MaterializeFirstOutputRows(n)` materializes the first n rows of each operator's output. `RowLineage` tracks which input rows contributed to output rows. But this information is:
+- Used only as input to the bias/ the proposal targets relational/tabular DataFrame transforms — a structurally different task class with its own semantic properties.
+
+2. **Granularity is different**: Line-level (SemGuard) vs. operator-level (proposal). These are not the same abstraction. A pandas chain's operators don't map 1:1 to codefairness checks (histogram comparison)
+- Never compared against any expected/intended output
+- Never matched against NL descriptions of what the output should contain
+
+---
+
+### 4. mlinspect's Fundamental Problem Framing vs. the Proposal
+
+| Dimension | mlinspect | Proposed System |
+|---|---|---|
+| **Input** | Human-written Python ML pipeline code | LLM-generated lines, and operator-level reasoning requires understanding the *relational* input/output of each step (what schema comes in, what schema goes out, are the semantics of a join key correct), not just whether a line of code is statistically correlated with correct solutions.
+
+3. **The proposal's core code from NL prompt |
+| **Problem** | Fairness/bias in training data due to preprocessing | Silent semantic errors from NL→code mistranslation |
+| **Error model** | Demographic distribution shift in protected attributes | Wrong operator semantics (wrong join key, wrong agg column, wrong filter predicate) |
+| **Detection claim — typed operator-level semantic contracts over execution traces, reasoning about joins/groupby/aggregation scope/ties — has no counterpart in SemGuard**. SemGuard has no typed contracts, no trace inspection, and no relational schema reasoning.
+
+4. **The proposal's "no reference implementations" claim is stronger than SemGuard's**: SemGuard's evaluator requires thousands of correct CodeNet solutions as training signal. mechanism** | Histogram ratio change + removal probability across operator boundary | Typed semantic contracts specifying operator-level invariants derived from NL intent |
+| **NL intent** | Not present (zero NL awareness) | Central: intent is the reference ground truth |
+| **Checks defined by** | Fairness threshold A proposal using typed structural contracts derivable from operator specifications (e.g., a `.groupby(key).agg(f)` contract is formalizable from the pandas API semantics alone) can in principle avoid any reference implementations altogether — a genuinely harder and different parameters (`min_allowed_relative_ratio_change`) | Semantic contracts tied to the NL description |
+| **Silent error detection** | Detects disparate row removal (fairness silence) | Detects wrong-semantics silence (logically-plausible-but-wrong output) |
+| **Join handling problem.
+
+5. **Intent-faithfulness vs. generic correctness**: The proposal targets whether the transform faithfully implements the NL description (e.g., "average salary per department" → is `.groupby('dept')['salary'].mean()` correct given the NL intent?). SemGuard targets whether an algorithm produces the right answer on a judge — with no notion of NL intent mapping.
+
+**The** | Flags demographic histogram shift after join | Flags wrong join key, wrong join type, unintended fanout |
+| **Aggregation handling** | Not checked at all | Checks correctness of agg function and group-by column against intent |
+
+---
+
+### 5. Related Work / Adjacent Papers (Not mlinspect But proposal's claimed distinction is factually supported by the primary-source evidence.** SemGuard does not address, mention, or approximate operator-level DataFrame semantics, relational reasoning, typed contracts over traces, or NL→structured-transform intent-faithfulness. The only risk of confusion is the shared use of the word "semantic" — but the communities mean different things by it. Relevant to Know)
+
+- **Grafberger et al. VLDB 2022** (journal version): extends to "data distribution debugging" across the full pipeline for fairness, still purely distributional, no NL-intent.
+- **Shankar et al. arXiv:2108.13557** (ML observability): discusses silent failures in deployed ML pipelines (distribution shift, anomalous features), but also has no NL-intent verification component.
+
+---
+
+### 6. Gaps / Caveats
+
+- The CIDR 2020 and VLDB Journal 2022 PDFs were binary and could not be parsed —Let me look directly at the CodeT paper analysis page and search for the MBR-Exec paper and pandas-related NL code but all claims above are verified directly against the full source code and the fully-readable SIGMOD demo materials. The paper abstracts are consistent with the code.
+- There is no fork or extension of mlinspect found that adds NL-intent checking; a search of the GitHub generation work: network would be needed to confirm this definitively, but nothing in the primary repo or its stated roadmap points in that direction.
+- `ArgumentCapturing` *does* capture kwargs (including join `on=` keys, `agg=` functions), which means mlinspect *could theoretically* be extended to validate those arguments against a spec — but no such extension exists, and the proposal's claim is about a *new typed contract layer*, not about argument capturing per se.
+
+---
+
+## Verdict: **SURVIVES**
+
+mlinspect poses **no novelty threat** to the proposal. The justification is precise and multi-dimensional:
+
+1. **Problem domain is orthogonal**: mlinspect targets *fairness/bias* in *human-authored* ML training pipelines. The proposal targets *semantic intent-faithfulness* of *LLM-generated* NL→DataFrame transforms. These are different problems in different settings.
+
+2. **No NL-intent mechanism**: mlinspect contains zero machinery for NL understanding, intent specification, or NLet me search more specifically for key papers relevant to the proposal:L→code faithfulness checking. The entire concept of "does this transform mean what the user described?" is architecturally absent.
+
+3. **Wrong join key detection: absent in mlinspect**: mlinspect's join handling is purely demographic-distributional. It never validates join-key correctness, fanout, or semantic appropriateness.
+
+4. **Wrong aggregation detection: absent in mlinspect**: GROUP_BY_AGG is recognized as an operator type but is explicitly *excluded* from all built-in checks.
+
+5. **Semantic contracts: absent in mlinspect**: mlinspect has hardcoded fairness thresholds, not typed contracts expressing operator-level semantic invariants derived from user intent.
+
+The proposal's claimed distinction — *typed operator-level semantic contracts over execution traces tied to NL intent, to detect silent semantic errors in LLM-generated transforms* — is entirely outside mlinspect's design space. A reviewer citing mlinspect as prior art would be conflating distributional fairness debugging with semantic correctness verification, which are categorically different.Let me search more targeted queries for the actual execution-based consistency and dataframe-specific papers:Now I have all the evidence I need. Let me compile the complete analysis.
+
+---
+
+## Comprehensive Prior-Art Analysis: Zhong et al. 2020 vs. Goldless NL→DataFrame Semantic Contract Proposal
+
+---
+
+### 1. Paper Identity — Verified
+
+**Full citation:** Ruiqi Zhong, Tao Yu, Dan Klein. "Semantic Evaluation for Text-to-SQL with Distilled Test Suites." *EMNLP 2020 (Long Paper).*
+- ArXiv: https://arxiv.org/abs/2010.02840 (submitted 6 Oct 2020)
+- ACL Anthology: https://aclanthology.org/2020.emnlp-main.29
+- Primary code: https://github.com/ruiqi-zhong/TestSuiteEval
+- Official eval repo: https://github.com/taoyds/test-suite-sql-eval
+
+---
+
+### 2. What the Paper Actually Proposes
+
+The paper introduces **Test Suite Accuracy** as a replacement for exact-set-match accuracy onExcellent - I found MBR-Exec. Spider/SParC/CoSQL benchmarks. Its motivation: the prevailing exact-match metric produces ~2.5–8.1% ** Let me get full details:false negatives** (penalizing correct but differently-written SQL). The paper proposes a tighter upper-bound on semantic accuracy by running both gold and predicted queries against a pre-distilled set of databases and comparing output denotations.
+
+---
+
+### 3. Does the Method Require Gold SQL Queries?
+
+**YES — emphatically, at both phases.**
+
+#### Phase 1: Test Suite Construction (Offline, per benchmark)
+
+From `fuzz/neighbor.py` (https://raw.githubusercontent.com/ruiqi-zhong/TestSuiteEval/main/fuzz/neighbor.py):
+
+The construction pipeline:
+1. Parse each **gold SQL** to extract token structure
+2. Generate **neighbor queries** from the gold by: token substitution (operator swap, value perturbation, column replacement, string truncation) and span dropping
+3. Generate thousands of random databases using `DBFuzzer` (type-aware fuzzing respecting schema constraints, FKs, PKs, unique columns — from `fuzz/fuzz.py`)
+4. **Distill** a small subset of databases that maximizes "code coverage" — i.e., for each neighbor query, at least one selected database produces a different denotation from the gold SQL
+
+This process is 100% gold-SQL-anchored. Without gold SQL, you cannot define "neighbor" (what are you neighboring?), cannot define coverage (coverage of *what* branches?), and cannot distill.
+
+#### Phase 2: Evaluation (Online, per prediction)
+
+From `exec_eval.py` (https://raw.githubusercontent.com/taoyds/test-suite-sql-eval/master/exec_eval.py),Now let me get more detailed information about the EvalPlus paper (on LLM sample killing / common-mode failure), and check the Semantic Voting paper content: the core function signature:
+
+```python
+def eval_exec_match(db: str, p_str: str, g_str: str, plug_value: bool,
+                    keep_distinct: bool, progress_bar_for_each_datapoint: bool) -> int:
+    # ...
+    for db_path in ranger:
+        g_flag, g_denotation = asyncio.run(exec_on_db(db_path, g_str))  # GOLD executed
+        p_flag, p_denotation = asyncio.run(exec_on_db(db_path, pred))   # predicted executed
+        assert g_flag != 'exception', 'gold query %s has error on database file %s' % (g_str, db_path)
+        if not result_eq(g_denotation, p_denotation, order_matters=order_matters):
+            pred_passes = 0
+```
+
+Gold SQL (`g_str`) is a **mandatory positional argument**. The hard `assert` means gold must execute successfully on every test database — there is no fallback. The CLI also expresses this clearly:
+
+```
+python3 evaluation.py --gold [gold file] --pred [predicted file] --etype exec --db [database dir] ...
+```
+
+`--gold` is not optional. The `--plug_value` flag goes further: it extracts literal values from the *gold SQL* and substitutes them into the prediction for systems that don't predict values — requiring even deeper access to gold internals.
+
+**Verdict on gold-dependency: Completely gold-dependent at both construction and evaluation time. There is no "goldless" mode.**
+
+---
+
+### 4. How Distilled Test Suites Are Constructed — Mechanistic Detail
+
+The distillation pipeline has three algorithmic stages, all verified from source:
+
+**Stage A — Neighbor Query Generation** (`fuzz/neighbor.py`):
+- `generate_neighbor_queries_path(sqlite_path, query)` takes a gold SQL and generates semantically-distinct variants by:
+  - `drop_any_span`: removes every valid sub-span of tokens (clauses, conditions, column refs)
+  - Token replacement: swaps operators (`>` ↔ `<`, `AND` ↔ `OR`, `MAX` ↔ `MIN`), numeric literals (±1, random multiples), string literals (truncations, wildcard additions), column names (any column in schema)
+  - Filters to syntactically executable neighbors only
+- These neighbors are "bugs you could plausibly make" — the test suite must be able to discriminate them from gold
+
+**Stage B — Random Database Generation** (`fuzz/fuzz.py`):
+- `DBFuzzer` generates randomized tables respecting: SQLite column types (int, float, date, string, bool, blob,Two edge checks are complete and consistent with the primary sources. I’m waiting on `CodeT` and `Zhong-2020` to finish before I lock the novelty verdicts and score adjustments. decimal), primary key uniqueness, foreign key referential integrity, unique column constraints
+- `get_fuzz()` randomizes both table sizes and cell values using type-appropriate distributions
+- Values from the **gold SQL's literals** are seeded into the fuzzer (`QUERY_VALUES_WEIGHT = 30`) to ensure coverage of comparison conditions
+
+**Stage C — Greedy Distillation** (described in paper, driven by coverage logic):
+- Iteratively select databases from the random pool that maximize the number of neighbor queries that are distinguishable from gold SQL
+- A neighbor is "covered" if on at least one selected database, `result_eq(gold_denotation, neighbor_denotation) == False`
+- Stop when all or most neighbors are covered, or budget is reached
+
+**Key implication**: The distillation is *per-gold-query*, stored offline (as `.sqlite` files), and reused for evaluation. The test suite for Spider is publicly distributed: https://drive.google.com/file/d/1mkCx2GOFIqNesD4y8TDAO1yX1QZORP5w/view
+
+---
+
+### 5. Is the Method "Goldless at Evaluation Time" — Even Partially?
+
+**No.** The framing often seen in summaries — "at evaluation time, just execute the predicted query against the test suite" — is **misleading**. The evaluation:
+
+1. Requires executing **gold SQL** on every test database
+2. Requires a hard `assert` that gold always succeeds
+3. Uses gold's order-sensitivity (`order_matters = 'order by' in g_str.lower()`) to set comparison semantics
+4. The `--plug_value` mode extracts value literals from gold SQL to splice into predictions
+
+The test suite databases were built from gold. Their coverage properties are only meaningful when gold is also run. Omitting gold from evaluation would reduce the method to plain single-database execution accuracy, losing all the semantic-equivalence guarantees the paper claims.
+
+---
+
+### 6. Transfer to Pandas/DataFrame Transform Semantics
+
+**Transfer is negligible to none.** The mismatch is multi-layered:
+
+| Dimension | Zhong et al. (SQL/SQLite) | NL→DataFrame (pandas) |
+|---|---|---|
+| **Result type** | Bag of tuples (unordered rows, fixed columns) | DataFrame with *index*, *named columns*, *dtypes*, *row order*, *MultiIndex* |
+| **Equivalence semantics** | `result_eq` with bag semantics + column permutation | Must preserve index identity, column ordering, NaN propagation, dtype precision |
+| **Schema model** | Fixed relational schema with declared types | Dynamic: `.assign()`, `.rename()`, `.pivot()` create columns at runtime |
+| **Fuzzer coverage** | SQLite types: int/float/date/string/bool/BLOB | Pandas types: numpy dtypes, categorical, datetime64, timedelta, sparse |
+| **NaN handling** | SQL NULL propagates through comparisons → WHERE filters NULLs | Pandas NaN propagates differently; `groupby` drops NaN groups by default; `.sum()` treats NaN as 0 |
+| **Code coverage model** | SQL structural branches (WHERE predicates, HAVING, JOIN, AGG operators) | Pandas operator chains: `.groupby().transform()` vs `.groupby().agg()`, `.merge()` join type, `.loc[]` vs `.iloc[]` |
+| **Neighbor generation** | Token substitution in SQL AST (swap `AND`↔`OR`, drop clauses) | Would need pandas AST perturbation (swap `left`↔`right` in merge, change `axis=0` to `axis=1`, change `how='inner'` to `how='outer'`) — no such tool exists |
+| **Value plugging** | `--plug_value` extracts literals from SQL WHERE clauses | No analog: pandas transform conditions are Python expressions, not SQL literals |
+| **Execution model** | SQLite cursor, result = list of tuples | pandas chain, result = DataFrame object with behavioral state |
+
+The paper's own authors note: *"We look forward to similar evaluations in other semantic parsing domains"* — explicitly acknowledging that the method has not been extended beyond SQL.
+Source: https://github.com/taoyds/test-suite-sql-eval README
+
+There is no published work extending Zhong et al.'s test suite approach to pandas or dataframe transforms. A search of arXiv for `"test suite evaluation pandas dataframe"` returns zero results.
+
+---
+
+### 7. Precise Contrast with the Proposal Being Defended
+
+The proposal claims **goldless detection of silent semantic errors in NL→DataFrame transforms using typed operator-level semantic contracts over execution traces**.
+
+| Property | Zhong et al. 2020 | The Proposal |
+|---|---|---|
+| Requires gold program | **Yes, mandatorily at both construction and evaluation time** | **No (goldless)** |
+| Semantic error detection mechanism | Denotation comparison (end-to-end output equality) | Typed operator-level contracts checked against execution traces |
+| Error detection target | False negatives in *evaluation metrics* (wrong queries that happen to match on the original DB) | Silent semantic errors in *deployed transforms* (transforms that don't crash but compute wrong results) |
+| Unit of analysis | Full query output vs. full gold output | Per-operator postconditions (e.g., `groupby.sum` output should have NaN rows only where all inputs are NaN) |
+| Target language | SQL (SQLite dialect only) | Pandas/Python dataframe operations |
+| Schema model | Fixed relational schema | Dynamic dataframe columns |
+| Known extensions to pandas | None | Proposed novelty |
+
+---
+
+### 8. Verdict: **SURVIVES**
+
+The rebuttal argument against Zhong et al. 2020 as prior art is **strong on four independent grounds**:
+
+**Ground 1 — Gold dependency (most decisive):** The proposal's central novelty claim is *goldless* operation. Zhong et al. is *maximally gold-dependent*: gold SQL is required to generate neighbors, to distill databases, and to run evaluation. The methods differ in exactly theNow let me check for any specific pandas/dataframe NL verification work, plus AlphaCode's filtering approach, and the specific literature on common-mode error in LLM code: dimension the proposal claims as novel. A reviewer confusing "test suite" with "goldless" is simply wrong about what the paper does.
+
+**Ground 2 — Domain non-transfer:** Zhong et al. is mechanically coupled to SQL/SQLite: the fuzzer handles SQLite types, the neighbor generator operates on SQL ASTs, the `result_eq` function implements SQL bag semantics. None of this machinery operates on pandas DataFrames. No published extension to pandas exists.
+
+**Ground 3 — Different error class targeted:** Zhong et al. reduces false negatives in *benchmark evaluation metrics* — it is a better *scoring tool* for a benchmark, not a runtime error detector. The proposal targets *silent semantic errors in deployed NL2Code systems* — a problem Zhong et al. does not address, does not discuss, and does not evaluate.
+
+**Ground 4 — Different mechanism:** Denotation comparison (run both programs, compare outputs) is categorically different from operator-level semantic contracts over execution traces (check precondition/postcondition signatures per operator without a reference output). The latter is more related to runtime assertion checking / dependent types than to equivalence testing.
+
+The only partial overlap is the shared intuition that "execution on varied data" is more discriminative than structural matching — but this intuition is too broad to constitute specific prior art, and Zhong et al.'s instantiation of it requires gold at every step.
+
+**Formal verdict: SURVIVES.** Zhong et al. 2020 does not constitute a threat to novelty for a goldless, operator-contract-based, pandas-domain semantic error detection proposal.Now I have sufficient information to compose a comprehensive verdict. Let me do one final targeted check on any NL-to-pandas specific semantic testing work:These two papers are very relevant. Let me fetch them:`Zhong-2020` came back exactly as expected: it is gold-SQL dependent both to build and to score the test suites, so that edge survives cleanly. I’m giving `CodeT` one more pass; if it doesn’t finish, I already have enough primary-source evidence to judge that edge directly.I now have comprehensive data to deliver a full analysis. Here is my complete report:
+
+---
+
+## Research Report: CodeT as Prior-Art Threat to Proposal on Oracle-Free Silent Semantic Error Detection in NL→DataFrame Transforms
+
+---
+
+### 1. Summary
+
+CodeT is **real and significant prior art** for the general principle of oracle-free execution-based code correctness assessment, but it is **not an invalidating threat** to the specific proposal. The "common-mode error breaks CodeT" rebuttal is **technically sound and survives** for mechanistic reasons that are precisely documented in the literature. However, there is a newer and closer prior-art threat — the "Incoherence" paper (AAAI 2026) — that the proposal must also address. No paper in the literature targets NL→DataFrame transforms with typed operator-level semantic contracts over execution traces.
+
+---
+
+### 2. Core Facts With URLs
+
+---
+
+#### 2A. CodeT — The Primary Prior Art
+
+**Paper:** "CodeT: Code Generation with Generated Tests"
+**Authors:** Bei Chen, Fengji Zhang, Anh Nguyen, Daoguang Zan, Zeqi Lin, Jian-Guang Lou, Weizhu Chen (Microsoft Corporation)
+**Venue:** ICLR 2023 (arXiv:2207.10397, July 2022)
+**URL:** https://arxiv.org/abs/2207.10397
+**Citations:** ~629 (Google Scholar)
+
+**What CodeT actually does:**
+
+1. **Test case generation**: Given a programming problem, CodeT prompts the SAME LLM (Codex) to generate M test cases by completing `assert` statements with input-output pairs. No human tests, no gold outputs are needed. The prompt adds `# check the correctness of [entry_point]` followed by a partial `assert` statement.
+
+2. **Code generation**: Same LLM generates N code solutions.
+
+3. **Dual execution agreement** (RANSAC-inspired): Each code solution x is executed on each test case y. A "consensus set" S is formed: S_x = all code solutions that pass exactly the same tests as x; S_y = all tests that x passes. Score = |S_x| × |S_y|. The solution from the highest-scoring consensus set is selected.
+
+4. **Key assumption (verbatim from paper):** *"incorrect code solutions are often diverse, and the probability of having a functionality agreement between two incorrect code solutions by chance is very low."*
+
+5. **Benchmarks**: HumanEval, MBPP, APPS, CodeContests — all **general algorithmic programming** tasks.
+
+6. **Task type**: Code **selection** from a pool of N candidates. NOT error detection in a single generated code.
+
+7. **Domain**: General competitive programming. **No DataFrame, pandas, or data transformation tasks anywhere**.
+
+8. **Results**: Pass@1 on HumanEval: 47.0% → 65.8% (absolute +18.8%) with code-davinci-002.
+
+---
+
+#### 2B. MBR-Exec — Closest Concurrent Work to CodeT
+
+**Paper:** "Natural Language to Code Translation with Execution"
+**Authors:** Freda Shi, Daniel Fried, Marjan Ghazvininejad, Luke Zettlemoyer, Sida I. Wang
+**Venue:** EMNLP 2022
+**URL:** https://aclanthology.org/2022.emnlp-main.231/
+**Citations:** ~170
+
+**What MBR-Exec does:** Selects programs by marginalizing over implementations that share the same execution results on a small set of test inputs (no expected outputs required). Uses minimum Bayes risk decoding. Unlike CodeT, it doesn't generate expected outputs — it compares execution outputs across programs. Also subject to common-mode failure.
+
+---
+
+#### 2C. AlphaCode — Related Execution Filtering
+
+**Paper:** "Competition-Level Code Generation with AlphaCode"
+**Authors:** Yujia Li et al. (DeepMind)
+**Venue:** Science 2022 / arXiv:2203.07814
+**URL:** https://arxiv.org/abs/2203.07814
+
+Generates very large pools of solutions, filters by parsing/execution, clusters by execution output on provided test cases. Requires at least some test inputs (problem-provided). Also competitive programming only.
+
+---
+
+#### 2D. SemanticVote — Key Follow-On
+
+**Paper:** "Semantic Voting: Execution-Grounded Consensus for LLM Code Generation"
+**Authors:** Shan Jiang, Zijian Yi, Chenguang Zhu (UT Austin)
+**Year:** May 2026
+**URL:** https://arxiv.org/abs/2605.08680
+
+**Critical quote on the failure mode:**
+> *"if inputs miss a boundary case, an incorrect plurality can look identical to the correct behavior."*
+
+This paper explicitly acknowledges the common-mode error failure mode of CodeT-family methods. Clusters candidates by execution fingerprints on LLM-generated inputs. Covers HumanEval+ only. Does NOT target DataFrames.
+
+---
+
+#### 2E. "Incoherence" — Closest Competitor to the Proposal
+
+**Paper:** "Incoherence as Oracle-less Measure of Error in LLM-Based Code Generation"
+**Authors:** Thomas J.-M. Valentin, Ardi Madadi, Gaetano Sapia, Marcel Böhme
+**Venue:** AAAI 2026 (v1: arXiv June 2025, AAAI March 2026)
+**URL:** https://arxiv.org/abs/2507.00057
+**Note:** This is the STRONGEST potential prior-art challenge.
+
+**What it does:** Defines "incoherence" as the probability that two independently sampled programs for the same task behave differently on the same inputs. If two programs behave identically, this is taken as empirical evidence of correctness. Claims: detects ~2/3 of incorrect programs with zero false positives, without any oracle. Tests on MBPP + HumanEval across 16 LLMs.
+
+**Critical structural flaw for the proposal's domain:**
+> *"If the two programs behave identically across a representative input distribution, we gain empirical confidence in their correctness."*
+
+This is precisely the definition of the common-mode error failure: if the LLM systematically produces the same wrong DataFrame transform (e.g., `groupby('region').sum()` instead of `groupby('region').mean()`), all samples will be identical → incoherence = 0 → paper says "probably correct" → FALSE NEGATIVE. This method still does NOT target DataFrames and does NOT use typed operator-level contracts.
+
+---
+
+#### 2F. EvalPlus — Evidence for Common-Mode Errors in Practice
+
+**Paper:** "Is Your Code Generated by ChatGPT Really Correct? Rigorous Evaluation of Large Language Models for Code Generation"
+**Authors:** Jiawei Liu, Chunqiu Steven Xia, Yifeng Wang, Lingming Zhang
+**Venue:** NeurIPS 2023
+**URL:** https://arxiv.org/abs/2305.01210
+
+Augmented HumanEval by 80× additional tests, finding that **up to 28.9% of "passing" programs actually fail on more rigorous tests**. Documents "LLM sample killing" — different LLMs fail systematically on the same tasks. This is empirical evidence for common-mode errors at scale.
+
+---
+
+### 3. Does the "Common-Mode Error Breaks CodeT" Rebuttal Survive?
+
+**YES — it SURVIVES with high confidence. Here is the precise mechanism:**
+
+**CodeT's RANSAC assumption (the fatal flaw for DataFrames):**
+CodeT scores consensus sets by |S_x| × |S_y| — rewarding code solutions with MANY agreeing solutions AND MANY passing tests. This means the **majority behavior wins**, regardless of whether that majority is correct.
+
+**The common-mode failure scenario for NL→DataFrame (concrete example):**
+
+- NL intent: "compute the average sales per region"
+- LLM systematically generates: `df.groupby('region')['revenue'].sum()` (wrong: sum vs. mean, wrong column)
+- LLM-generated test cases: `assert result.loc['North', 'revenue'] == df[df['region']=='North']['revenue'].sum()` (encoding the same wrong understanding)
+- Result: Most code solutions are in the consensus set for the wrong behavior; the test cases all agree with it
+- CodeT score for the wrong behavior: MAXIMAL
+- CodeT's selected "best" solution: THE WRONG ONE
+
+**The reason this is structural, not incidental:**
+
+LLMs learn from correlated training data. For NL→DataFrame tasks:
+- Systematic misidentification of aggregation functions (sum vs. mean, count vs. nunique)
+- Systematic wrong column selection when schema is ambiguous
+- Systematic wrong join key when multiple candidate keys exist
+- Systematic loss of sort order after operations
+
+These produce correlated errors — not "diverse incorrect solutions." This directly violates CodeT's explicit assumption.
+
+**This applies to MBR-Exec, SemanticVote, and Incoherence equally:**
+All four methods rely on the statistical assumption that correlated errors are rare. For DataFrame transforms with systematically biased LLM generation, this assumption fails.
+
+**Key differentiator for the proposal:**
+Typed operator-level semantic contracts (e.g., "merge with `how='left'` must preserve all rows of left frame"; "groupby().agg() must produce exactly one row per group"; "nunique() must return value ≤ n_rows") are **derived from the pandas API specification** — they are **independent of what the LLM generates**. They constitute a separate signal channel that CodeT and its follow-ons entirely lack.
+
+---
+
+### 4. Verdict
+
+**SURVIVES — with caveats**
+
+**Why SURVIVES:**
+
+| Dimension | CodeT | MBR-Exec | Incoherence | Proposal |
+|---|---|---|---|---|
+| Targets NL→DataFrames | ❌ No | ❌ No | ❌ No | ✅ Yes |
+| Task: selection vs. detection | Selection | Selection | Detection proxy | Detection |
+| Requires generated tests | ✅ Yes | ❌ No | ❌ No | ❌ No (uses contracts) |
+| Requires gold outputs | ❌ No | ❌ No | ❌ No | ❌ No |
+| Immune to common-mode errors | ❌ Fails | ❌ Fails | ❌ Fails | ✅ (if contracts are API-derived) |
+| Operator-level typed contracts | ❌ No | ❌ No | ❌ No | ✅ Yes |
+| Published prior art | 2022 | 2022 | 2025 | — |
+
+**Key differentiating factors that make the rebuttal defensible:**
+1. CodeT/MBR-Exec/Incoherence all fail under systematic LLM bias — empirically confirmed by EvalPlus and explicitly acknowledged in SemanticVote
+2. No paper in any search targets NL→DataFrame semantic correctness using typed contracts
+3. Typed operator-level contracts from pandas API semantics constitute an **independent, non-LLM-biased signal channel** — this is the genuine novel contribution
+
+**Caveats the proposal MUST address:**
+
+1. **Scope the "first method" claim precisely**: Not "first oracle-free method" (CodeT, MBR-Exec predate this) but "first method using typed operator-level semantic contracts over execution traces for NL→DataFrame transforms."
+
+2. **Defend contract independence**: The rebuttal's survival depends on the contracts being derived from the pandas API type specification, not from LLM-generated descriptions of intent. If the contracts themselves are LLM-generated, they are also subject to common-mode bias → rebuttal collapses.
+
+3. **Address "Incoherence" (AAAI 2026)**: This is the closest competitor mechanism-wise (oracle-free error detection, no gold tests). Differentiate on: domain (DataFrame vs. algorithmic), failure mode (common-mode), and mechanism (contracts vs. behavioral divergence).
+
+4. **Clarify task framing**: CodeT is a code SELECTION method; the proposal is an error DETECTION method. These are distinct tasks, which helps the novelty case.
+
+---
+
+### 5. Gaps and Uncertainties
+
+- **No paper found** that targets NL→DataFrame transformation intent-faithfulness using any oracle-free method — this space appears genuinely unoccupied
+- The "Incoherence" paper (AAAI 2026) was not explicitly compared to the proposal, but its mechanism makes it the closest conceptual prior art after CodeT
+- The proposal's mechanism (typed operator-level contracts) was not directly searchable on arxiv in any prior-art paper — search across multiple formulations returned no matches in the DataFrame/pandas domain
+- "Oracle-guided program selection" (Fan et al., ISSTA 2024; ACM DOI:10.1145/3650212.3680308) was referenced but full text was inaccessible (403); it appears relevant to the selection framing but not to typed contracts for DataFramesI could not inspect the claimed local artifacts in this environment, so the empirical judgment below is based on the proposal text plus arithmetic/internal-consistency checks, while the literature judgments are independently re-verified from web sources.
+
+**Top Findings**
+- The revision is materially better: the thesis is now much crisper, the ambiguity-pair design is the right move, and the bimodal operator pattern is genuinely interesting.
+- The biggest remaining gap is still comparative evidence. The paper’s strongest claim is “better than existing ways to catch silent semantic errors,” but the proposal still does not show the same-table head-to-head against `exec-pass`, output-validity checks, self-check, or `CodeT`/multi-implementation agreement.
+- The cherry-pick objection is reduced, not eliminated. `12` ambiguity classes x `4` instances is far better than `16` hand traps, and the bimodal counts are internally consistent (`5` classes at `8/8`, `1` at `4/8`, total `44/96`). But it is still only `48` cases, still author-taxonomized, and still lacks held-out real-task validation.
+- The oracle section has a credibility hole: `192` generations minus `56` silent errors leaves `136` nominal negatives, yet the proposal reports `0/135` false positives. That one missing case needs an explicit accounting table.
+
+**Scorecard**
+- `ProblemFidelity: 9`
+- `MethodSpec: 7`
+  Weakness: the invariants-first oracle is plausible, but the protocol is not yet fully specified or fully accounted for.
+  Fix: publish the full confusion matrix over all `192` generations, exact exclusion rules, per-contract definitions, and an abstain policy for uncovered operators.
+  Priority: `CRITICAL`
+- `ContribQuality: 7`
+  Weakness: the core contribution is not yet comparatively established; right now it is a strong self-contained prototype plus controlled benchmark.
+  Fix: run `exec-pass`, value/range checks, self-check, and `CodeT`/consistency-style baselines on the same grid, then add a real-task slice from the Nature corpus.
+  Priority: `CRITICAL`
+- `FrontierLeverage: 8`
+- `Feasibility: 8`
+- `ValidationFocus: 6`
+  Weakness: validation is still mostly on author-designed controlled cases; the plotting control is too easy, and the clarification study uses one author-written clarification per case.
+  Fix: add matched non-ambiguous transform controls, multiple independent clarifications per prompt, and held-out real tasks.
+  Priority: `CRITICAL`
+- `VenueReadiness: 6`
+  Weakness: the paper is not oral-ready with loose accounting, no external validity, and no baseline table.
+  Fix: add one master results table, confidence intervals, benchmark terminology cleanup (`48 cases`, not `48 classes`), and a short artifact appendix.
+  Priority: `IMPORTANT`
+
+`OVERALL SCORE: 7.5/10` by the stated weighting. It does **not** clear the Oral bar (`>= 8`).
+
+**P0 Closure**
+- `P0-4 (cherry-pick objection): partial`
+  The grid is a real improvement over `n=16`, and the bimodal result is meaningful. But `48` cases is still below the requested `50-100`, only `4` instances per class, and there is no held-out real-task validation.
+- `P0-2 (model failure vs prompt underspecification): partial`
+  The `46% -> 12%` drop is strong evidence that ambiguity matters and that the benchmark is not merely measuring arbitrary failure. But one author-written clarification per case is not enough to fully isolate underspecification from prompt-design artifact, especially with the `weighted_mean` reversal.
+- `P0-3 (one crisp idea): yes`
+  The paper is now centered on one defensible idea: typed operator-semantic contracts over execution traces. Demoting consistency voting was the right move.
+- `P0-1 (invariants-first oracle): partial`
+  Conceptually addressed, empirically promising, but still not fully closed until the oracle is compared directly against the alternatives it is supposed to beat.
+
+**Novelty Edges After Literature Check**
+- `CodeT: SURVIVES`
+  `CodeT` is generated-test plus dual-execution agreement for candidate selection, not intent-faithfulness for `NL -> DataFrame` transforms. Common-mode semantic error is a real blind spot for that family. This does, however, remain a required baseline.
+- `SemGuard (ASE 2025): SURVIVES`
+  It is line-level, decoding-time semantic supervision for generic algorithmic code, with no relational DataFrame semantics, no operator contracts, and no execution-trace checking.
+- `Zhong-2020: SURVIVES`
+  Distilled test suites require the gold SQL both to build the suite and to evaluate predictions. That is not goldless.
+- `mlinspect: SURVIVES`
+  It instruments ML/data pipelines for lineage and distribution/fairness checks, not NL intent-faithfulness. It does not tell you that the join key, grouping scope, or aggregation semantics are wrong.
+
+I also re-checked the round-1 benchmark threats: `DS-1000` and `ARCADE` both rely on reference solutions and/or test-based evaluation, so they remain relevant baselines, not novelty killers.
+
+**P0 Items Still Blocking Oral**
+- No real head-to-head baseline table against the methods the paper claims to surpass.
+- Cherry-pick objection only partially closed: `48` controlled cases is not enough by itself.
+- Ambiguity calibration is good but not yet publication-grade causal isolation.
+- Oracle accounting inconsistency (`135` vs expected `136`) is unresolved.
+- Contract scalability / coverage / abstain behavior is still under-argued.
+
+`Verdict: REVISE`
+
+It is improved from the round-1 `6.9`, but it still does **not** clear Oral (`>= 8`).  
+
+Primary sources checked: `CodeT` (arXiv/OpenReview `2207.10397`), `SemGuard` (arXiv `2509.24507`, ASE 2025), `Zhong et al.` (ACL Anthology `2020.emnlp-main.29` plus `TestSuiteEval` repo), `mlinspect` (CIDR project page and source), `DS-1000` project page, and `ARCADE` benchmark README.I’ve already closed the review, but the `CodeT` sub-check finished just now. I’m pulling it to confirm whether it changes the edge verdict or overall score.Addendum on `CodeT`: it does not change the review.
+
+`CodeT` still rates as `SURVIVES`. The completed check confirms the primary point: it is a generated-tests plus execution-consensus method for candidate selection, and its core assumption is that wrong programs are diverse. That is exactly the assumption your proposed rebuttal attacks. For `NL -> DataFrame` transforms, correlated mistakes like wrong aggregation, wrong grouping scope, or wrong join semantics can easily produce high-consensus wrong answers, so the common-mode objection is technically valid.
+
+Two useful refinements:
+- The paper should scope the claim narrowly: not “first oracle-free method” in all of code generation, but “first typed operator-contract method for `NL -> DataFrame` semantic error detection without gold/test/reference implementations.”
+- There is a newer adjacent threat worth citing: `Incoherence as Oracle-less Measure of Error in LLM-Based Code Generation` (AAAI 2026 / arXiv 2025). It is still weaker than your proposal on this specific domain, but it is closer than plain `CodeT` and should be addressed in related work.
+
+So the edge verdict stays:
+- `CodeT: SURVIVES`
+
+And the overall verdict stays:
+- `Overall score: 7.5`
+- `Verdict: REVISE`
+- `Does not clear Oral`
