@@ -27,14 +27,14 @@ they are NOT the same 189/192 numbers and must not be cross-added.
 | 4 | significantly better than existing means | baseline head-to-head | baseline | 57 silent / 132 correct | ours 100%/0%; exec-pass/validity/consistency 0% recall; self-check 61%/40% |
 | 5 | external validity (real data) | nature_real_transform | real-slice | 18 amb / 18 clar | ambiguous silent 13/18 = 72% [CI 49-88]; recall 19/19 = 100% [83-100]; FP 0/17 = 0% [0-18] |
 | 6 | scalability (one contract per new op) | scalability_demo | scal | 3 unseen ops | BEFORE abstain 0% recall + 0 FP; AFTER 1 contract → recall up, FP 0/5 |
-| 7 | typed attribution localizes the operator | attribution_eval | attr | 29 silent / 938 cross-evals | attribution recall 29/29 = 100%; cross-fire 188/938 = 20%* |
+| 7 | typed attribution localizes the operator | attribution_eval | attr | 26 silent / 1104 cross-evals | attribution recall 26/26 = 100%; cross-fire 90/1104 = 8% (after schema + shape gates) |
 
-\* cross-fire = running an UNRELATED contract on a correct result. The 20% is a
-stress-test artifact: in normal use the oracle calls the contract for the known
-operator (attribution recall 100%). The cross-fire mostly comes from contracts that
-should ABSTAIN on mismatched params (missing-column → currently fires) rather than
-truly misattributing — a contract-hardening item, not a correctness issue, since the
-true-op contract always fires correctly.
+\* attribution recall uses the true-op contract's raw verdict (a missing expected
+output column on the RIGHT operator is a real silent error). cross-fire counts only
+substantive fires of OTHER-op contracts — a 'missing column' fire means that
+operator doesn't apply (shape mismatch → abstain), not a mis-attribution. The
+params schema gate + this shape gate together cut cross-fire from 20% to 8%, all at
+the measurement layer, so the baseline 100% recall is untouched.
 
 ## Necessity of goldless (no-gold ablation)
 

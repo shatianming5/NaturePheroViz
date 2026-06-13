@@ -114,16 +114,24 @@ def main(argv: Optional[List[str]] = None) -> int:
                 if r is None:
                     continue
                 correct = _gold_correct(item, r)
-                fired = _run_all_contracts(inp, item["params"], r)
                 true_op = item["op"]
+                # substantive cross-fire (shape-mismatch 'missing' fires excluded)
+                fired = _run_all_contracts(inp, item["params"], r)
                 if not correct:
+                    # attribution recall uses the TRUE-op contract's RAW verdict:
+                    # for the true operator, a missing expected output column IS a
+                    # real silent error (the model produced the wrong shape), so it
+                    # should count as a localized detection — unlike the cross-fire
+                    # case where a missing column means the operator doesn't apply.
+                    own = oracle_check(true_op, inp, item["params"], r)
+                    true_fired = bool(own and own.fired)
                     attr_total += 1
-                    attr_hit += int(fired.get(true_op, False))
+                    attr_hit += int(true_fired)
                     rows.append({"name": item["name"], "cond": cond, "model": m,
-                                 "true_op": true_op, "true_fired": fired.get(true_op, False),
-                                 "other_fired": [op for op, f in fired.items() if f and op != true_op]})
+                                 "true_op": true_op, "true_fired": true_fired,
+                                 "other_substantive": [op for op, f in fired.items() if f and op != true_op]})
                 else:
-                    # cross-fire: count other-op contracts that fire on a correct result
+                    # cross-fire: substantive fires of OTHER-op contracts on a correct result
                     for op, f in fired.items():
                         if op == true_op:
                             continue
@@ -132,9 +140,14 @@ def main(argv: Optional[List[str]] = None) -> int:
 
     def pct(n, d): return f"{100*n/d:.0f}%" if d else "n/a"
     lines = ["# Typed-attribution accuracy: does the oracle localize to the right operator?\n",
+             "Two metrics with deliberately different gates:",
+             "- recall uses the TRUE-op contract's raw verdict (for the right operator, a",
+             "  missing expected output column IS a real silent error — wrong output shape).",
+             "- cross-fire counts only SUBSTANTIVE fires of OTHER-op contracts (a fire that is",
+             "  merely 'missing column' means that operator doesn't apply — recorded as abstain).\n",
              "## (1) Attribution recall (true-op contract fires on its silent errors)",
              f"- {attr_hit}/{attr_total} = {pct(attr_hit, attr_total)}",
-             "\n## (2) Cross-fire specificity (other-op contracts on CORRECT results)",
+             "\n## (2) Cross-fire specificity (substantive other-op fires on CORRECT results)",
              f"- {cross_fire}/{cross_total} other-op contract evaluations fired = {pct(cross_fire, cross_total)} "
              "(lower = more operator-specific)",
              "\n## Reading",
