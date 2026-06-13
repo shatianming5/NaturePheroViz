@@ -35,13 +35,21 @@ from eval.transform_bench import _cases  # noqa: E402
 
 
 def _run_all_contracts(inp, params, result) -> Dict[str, bool]:
-    """Run every contract on this result via check() (so the schema gate applies);
-    return {op: fired}. A contract whose required params/columns aren't present
-    abstains (check returns None) and is recorded as not-fired."""
+    """Run every contract on this result and return {op: substantively_fired}.
+
+    A contract counts as firing ONLY when it actually evaluated the operator's
+    invariant and found it violated. Two non-substantive cases are recorded as
+    NOT fired (they are abstentions, not detections):
+      - the schema gate in check() returns None (required params/columns absent);
+      - the contract fires merely because the OUTPUT column it expects is absent
+        (detail mentions 'missing') — that means the operator doesn't apply to this
+        result's shape, not that a silent error was localized here.
+    This makes cross-fire measure true mis-attribution, not shape mismatch."""
     out = {}
     for op in ORACLE.CONTRACTS:
         r = oracle_check(op, inp, params, result)
-        out[op] = bool(r and r.fired)
+        substantive = bool(r and r.fired and "missing" not in r.detail.lower())
+        out[op] = substantive
     return out
 
 
