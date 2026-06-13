@@ -312,6 +312,37 @@ def c_cumcount_per_group(inp, params, result) -> ContractResult:
     return ContractResult("cumcount_per_group", True, f"group start values {dict(starts.astype(int))} differ — global count, not reset per group")
 
 
+def c_rank_pct(inp, params, result) -> ContractResult:
+    # invariant: percentile rank lies in [0,1] (or (0,1]); the silent slip returns
+    # an ABSOLUTE integer rank (1..n) instead, so values exceed 1.
+    df = inp["df"]; val = params["value"]; out = params.get("out", "pct")
+    if result is None or out not in result.columns:
+        return ContractResult("rank_pct", True, f"missing {out}")
+    v = _num(result[out])
+    v = v[~np.isnan(v)]
+    if len(v) and v.max() <= 1.0 + 1e-9 and v.min() >= 0.0 - 1e-9:
+        return ContractResult("rank_pct", False, "percentile ranks in [0,1]")
+    if len(v) and v.max() > 1.0 + 1e-9:
+        return ContractResult("rank_pct", True, f"max rank {v.max():.0f} > 1 — looks like ABSOLUTE rank, should be percentile in [0,1]")
+    return ContractResult("rank_pct", True, "ranks not in [0,1]")
+
+
+def c_clip_outlier(inp, params, result) -> ContractResult:
+    # invariant: clipping to [lo, hi] CAPS values but KEEPS every row (n unchanged)
+    # and yields min>=lo, max<=hi. The silent slip FILTERS (drops out-of-range rows),
+    # shrinking n. params: value, lo, hi.
+    df = inp["df"]; val = params["value"]; lo, hi = params["lo"], params["hi"]
+    out = params.get("out", val)
+    if result is None or out not in result.columns:
+        return ContractResult("clip_outlier", True, f"missing {out}")
+    if len(result) != len(df):
+        return ContractResult("clip_outlier", True, f"row count {len(result)} != {len(df)} — clipping must KEEP all rows (looks like a FILTER)")
+    v = _num(result[out]); v = v[~np.isnan(v)]
+    if len(v) and v.min() >= lo - 1e-9 and v.max() <= hi + 1e-9:
+        return ContractResult("clip_outlier", False, f"all rows kept and capped to [{lo}, {hi}]")
+    return ContractResult("clip_outlier", True, f"values outside [{lo}, {hi}] after clip (min {v.min():.2f}, max {v.max():.2f})")
+
+
 # registry: operator-semantic-type -> contract fn
 CONTRACTS: Dict[str, Callable] = {
     "weighted_mean": c_weighted_mean,
@@ -330,14 +361,60 @@ CONTRACTS: Dict[str, Callable] = {
     "zscore_within_group": c_zscore_within_group,
     "dense_rank": c_dense_rank,
     "cumcount_per_group": c_cumcount_per_group,
+    "rank_pct": c_rank_pct,
+    "clip_outlier": c_clip_outlier,
+}
+
+
+# Schema gate: per op, the params keys that name INPUT columns which must exist in
+# inp["df"] for the contract to be applicable. Keys naming OUTPUT columns (out,
+# share_col) are excluded — they live in the result, not the input. If any required
+# key is missing from params, or names a column absent from the input frame, check()
+# abstains (returns None) instead of firing. This is what makes an unrelated contract
+# stay silent on a result it doesn't match (removes cross-attribution false fires).
+_REQUIRED_PARAMS: Dict[str, Tuple[str, ...]] = {
+    "weighted_mean": ("value", "weight"),
+    "within_group_share": ("group",),
+    "pct_point": ("new", "old"),
+    "dedup_then_agg": ("key", "value", "group"),
+    "left_join_keep_all": (),
+    "pooled_rate": ("group", "num", "den"),
+    "median_not_mean": ("group", "value"),
+    "cumulative_running": ("value",),
+    "topn_with_ties": ("value", "n"),
+    "nan_as_zero_sum": ("group", "value"),
+    "count_includes_empty": ("category",),
+    "proportion_true": ("group", "flag"),
+    "zscore_within_group": ("group", "value"),
+    "dense_rank": ("value",),
+    "cumcount_per_group": ("group",),
+    "rank_pct": ("value",),
+    "clip_outlier": ("value", "lo", "hi"),
 }
 
 
 def check(op_type: str, inp: Dict[str, pd.DataFrame], params: Dict[str, Any], result: Optional[pd.DataFrame]) -> Optional[ContractResult]:
-    """Run the invariant contract for op_type over a produced result (goldless)."""
+    """Run the invariant contract for op_type over a produced result (goldless).
+
+    Schema gate: a contract only fires if its REQUIRED params keys are present AND
+    the input columns they name actually exist in inp["df"]. Otherwise the operator
+    is not applicable and we ABSTAIN (return None) rather than fire — this is the
+    contract-hardening that removes cross-attribution false fires (an unrelated
+    contract evaluated on a result whose schema it doesn't match must stay silent)."""
     fn = CONTRACTS.get(op_type)
     if fn is None:
         return None
+    req = _REQUIRED_PARAMS.get(op_type, ())
+    if any(k not in params for k in req):
+        return None  # params don't match this operator -> abstain
+    df = inp.get("df")
+    if df is not None:
+        for k in req:
+            col = params.get(k)
+            # the required keys name INPUT columns (value/weight/group/...); if the
+            # named column isn't in the input frame, this contract doesn't apply.
+            if isinstance(col, str) and col not in df.columns:
+                return None  # named input column absent -> abstain
     try:
         return fn(inp, params, result)
     except Exception as e:

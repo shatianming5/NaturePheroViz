@@ -74,15 +74,38 @@ def _cases() -> List[Dict[str, Any]]:
         "ambiguous": "Add 'occurrence' = a running count of events for each user. Keep user, event, occurrence.",
         "clarified": "Add 'occurrence' = a running count that RESETS per user (each user's first event is 1, then 2, 3...). Keep user, event, occurrence.",
     })
+
+    # rank_pct: percentile rank in [0,1] vs absolute integer rank
+    df4 = pd.DataFrame({"player": list("abcdef"), "elo": [1200, 1850, 1500, 1500, 2100, 1000]})
+    cases.append({
+        "op": "rank_pct", "df": df4, "contract": "c_rank_pct",
+        "params": {"value": "elo", "out": "pct"},
+        "gold": lambda d: d.assign(pct=d["elo"].rank(pct=True)),
+        "ambiguous": "Add 'pct' ranking players by elo. Keep player, elo, pct.",
+        "clarified": "Add 'pct' = the PERCENTILE rank of elo, a value in [0,1] (rank(pct=True)), not an absolute 1..n rank. Keep player, elo, pct.",
+    })
+
+    # clip_outlier: clip caps values but keeps all rows (vs filter that drops rows)
+    df5 = pd.DataFrame({"sensor": list("abcdefgh"), "reading": [5.0, 120.0, 47.0, 3.0, 99.0, 150.0, 60.0, -8.0]})
+    cases.append({
+        "op": "clip_outlier", "df": df5, "contract": "c_clip_outlier",
+        "params": {"value": "reading", "lo": 0.0, "hi": 100.0, "out": "reading"},
+        "gold": lambda d: d.assign(reading=d["reading"].clip(0.0, 100.0)),
+        "ambiguous": "Limit 'reading' to the range 0 to 100. Keep sensor, reading.",
+        "clarified": "CLIP 'reading' to [0, 100]: cap values above 100 to 100 and below 0 to 0, KEEPING every row (do not drop out-of-range rows). Keep sensor, reading.",
+    })
     for c in cases:
-        c["result_kind"] = "frame"  # _gold_correct needs this; all three are frame outputs
+        c["result_kind"] = "frame"  # _gold_correct needs this; all are frame outputs
     return cases
 
 
 def _authoring_effort() -> Dict[str, int]:
     """Line count of each added contract = authoring effort proxy."""
     out = {}
-    for name in ("c_zscore_within_group", "c_dense_rank", "c_cumcount_per_group"):
+    for c in _cases():
+        name = c["contract"]
+        if name in out:
+            continue
         fn = getattr(ORACLE, name)
         src = inspect.getsource(fn)
         out[name] = len([l for l in src.splitlines() if l.strip()])
@@ -173,7 +196,7 @@ def main(argv: Optional[List[str]] = None) -> int:
     aft = sum(f["after_recall"] for f in fam.values()); afp = sum(f["after_fp"] for f in fam.values())
 
     def pct(n, d): return f"{100*n/d:.0f}%" if d else "n/a"
-    lines = ["# Scalability demo: 3 previously-unseen operator families, one contract each\n",
+    lines = [f"# Scalability demo: {len(fam)} previously-unseen operator families, one contract each\n",
              "| family | added-contract lines | silent | BEFORE recall (abstain) | AFTER recall | AFTER FP |",
              "|---|---|---|---|---|---|"]
     for op, f in fam.items():
