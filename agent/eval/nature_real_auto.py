@@ -74,7 +74,7 @@ def _tasks_from_table(df: pd.DataFrame, cat: str, nums: List[str], art: str, she
     base[cat] = base[cat].astype(str)
     if base[cat].nunique() < 2 or len(base) < 6:
         return out
-    tag = f"{art}:{sheet}"
+    tag = f"{art}:{sheet}:{cat}"
 
     # median_not_mean
     out.append({
@@ -104,6 +104,34 @@ def _tasks_from_table(df: pd.DataFrame, cat: str, nums: List[str], art: str, she
                 "ambiguous": f"The average {v} (one number, column 'wavg').",
                 "clarified": f"The {w}-WEIGHTED average {v} (weight each {v} by {w}; column 'wavg').",
             })
+
+    # pooled_rate (two numeric columns -> per-group total/total rate)
+    if len(nums) >= 2:
+        num_c, den_c = nums[0], nums[1]
+        pr = df[[cat, num_c, den_c]].dropna().copy()
+        pr[cat] = pr[cat].astype(str)
+        if pr[cat].nunique() >= 2 and len(pr) >= 6 and (pr[den_c] > 0).all():
+            out.append({
+                "name": f"pooled::{tag}", "op": "pooled_rate", "df": pr.copy(),
+                "params": {"group": cat, "num": num_c, "den": den_c, "out": "rate"}, "result_kind": "frame",
+                "gold": (lambda d, _c=cat, _n=num_c, _d=den_c: d.groupby(_c).apply(
+                    lambda g: g[_n].sum() / g[_d].sum(), include_groups=False).reset_index(name="rate")),
+                "ambiguous": f"The {num_c}-to-{den_c} rate per {cat}. Columns {cat}, rate.",
+                "clarified": f"The rate per {cat} = TOTAL {num_c} / TOTAL {den_c} in that group (pooled sum/sum, NOT the mean of per-row ratios). Columns {cat}, rate.",
+            })
+
+    # nan_as_zero_sum (if the value column actually has NaNs within groups)
+    base_full = df[[cat, v]].copy()
+    base_full[cat] = base_full[cat].astype(str)
+    if base_full[v].isna().any() and base_full.dropna(subset=[cat])[cat].nunique() >= 2:
+        bz = base_full.dropna(subset=[cat])
+        out.append({
+            "name": f"nanzero::{tag}", "op": "nan_as_zero_sum", "df": bz.copy(),
+            "params": {"group": cat, "value": v}, "result_kind": "frame",
+            "gold": (lambda d, _c=cat, _v=v: d.assign(**{_v: d[_v].fillna(0)}).groupby(_c, as_index=False)[_v].sum()),
+            "ambiguous": f"Total {v} per {cat}. Columns {cat}, {v}.",
+            "clarified": f"Total {v} per {cat}, treating MISSING values as 0. Columns {cat}, {v}.",
+        })
     return out
 
 
@@ -120,7 +148,7 @@ def _build(pairs_root: str, max_tasks: int) -> List[Dict[str, Any]]:
             xl = pd.ExcelFile(f)
         except Exception:
             continue
-        for sh in xl.sheet_names[:6]:
+        for sh in xl.sheet_names:
             if len(tasks) >= max_tasks:
                 break
             try:
@@ -129,7 +157,11 @@ def _build(pairs_root: str, max_tasks: int) -> List[Dict[str, Any]]:
                 continue
             if not cats or not nums:
                 continue
-            new = _tasks_from_table(df, cats[0], nums, art, str(sh))
+            # one task-set per categorical column (a table with Chr AND treatment
+            # yields two independent groupings) — up to 3 cat columns per sheet.
+            new = []
+            for cat in cats[:3]:
+                new += _tasks_from_table(df, cat, nums, art, str(sh))
             # validate each task's gold + oracle-pass before accepting
             for t in new:
                 if len(tasks) >= max_tasks:
