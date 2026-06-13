@@ -132,16 +132,31 @@ def _gold_correct(item: Dict[str, Any], result: Optional[pd.DataFrame]) -> bool:
 
 
 def _frame_equal(a: pd.DataFrame, b: pd.DataFrame) -> bool:
+    """True if result `a` contains all of gold `b`'s columns with matching values.
+
+    Subset match on columns: extra intermediate columns in `a` (e.g. a model that
+    keeps a 'total_sales_region' helper alongside the required 'share') do NOT make
+    the result wrong, as long as every gold column is present and its values match
+    after row-alignment. Values must still match (a wrong value in a gold column is
+    still wrong), so this only forgives harmless extra columns, not semantic errors."""
     try:
+        a = a.copy(); a.columns = [str(c) for c in a.columns]
+        b = b.copy(); b.columns = [str(c) for c in b.columns]
+        if not set(b.columns).issubset(set(a.columns)):
+            return False
+        if len(a) != len(b):
+            return False
+        # restrict result to the gold columns, then compare as sets of rows
+        a = a[list(b.columns)]
+
         def norm(d):
-            d = d.copy(); d.columns = [str(c) for c in d.columns]
-            d = d[sorted(d.columns)]
+            d = d[sorted(d.columns)].copy()
             for c in d.columns:
                 if pd.api.types.is_float_dtype(d[c]):
                     d[c] = d[c].round(6)
             return d.sort_values(list(d.columns)).reset_index(drop=True)
         na, nb = norm(a), norm(b)
-        return na.shape == nb.shape and list(na.columns) == list(nb.columns) and na.equals(nb)
+        return na.equals(nb)
     except Exception:
         return False
 
