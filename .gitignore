@@ -74,3 +74,6 @@ agent/eval/results_clarify/clarify_records.json
 agent/eval/results_baseline/baseline_records.json
 agent/eval/results_scalability/scalability_records.json
 agent/eval/results_attribution/attribution_records.json
+agent/eval/results_qwen_7B/qwen_records.json
+agent/eval/results_qwen_14B/qwen_records.json
+agent/eval/results_qwen_32B/qwen_records.json
