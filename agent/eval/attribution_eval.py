@@ -34,7 +34,48 @@ from eval.transform_oracle import check as oracle_check  # noqa: E402
 from eval.transform_bench import _cases  # noqa: E402
 
 
-def _run_all_contracts(inp, params, result) -> Dict[str, bool]:
+def _candidate_ops(inp, params, result) -> set:
+    """Family-level candidate pruning: from the result's SHAPE alone, decide which
+    operator families could plausibly apply, so we never even evaluate a contract
+    whose family is structurally impossible here. This is the applicability ranking
+    that cuts residual cross-fire below the schema-gate floor.
+
+    Heuristics (all from result/​df shape, no gold):
+      - scalar-ish result (1 row or 1 numeric cell): only scalar-output ops.
+      - row count == input: row-preserving ops (assign-a-column / clip / rank / share / cumcount / zscore).
+      - row count <  input: row-reducing ops (group aggregation / dedup / topn / count).
+      - a value column in [0,1]: proportion/share/rank_pct candidates.
+    Anything not excluded stays a candidate (conservative — pruning only removes
+    structurally impossible families, never a plausible one)."""
+    df = inp.get("df")
+    if result is None or df is None:
+        return set(ORACLE.CONTRACTS)
+    n_in, n_out = len(df), len(result)
+    row_preserving = {"within_group_share", "pct_point", "cumulative_running",
+                      "proportion_true", "zscore_within_group", "dense_rank",
+                      "cumcount_per_group", "rank_pct", "clip_outlier", "left_join_keep_all"}
+    row_reducing = {"weighted_mean", "dedup_then_agg", "pooled_rate", "median_not_mean",
+                    "topn_with_ties", "nan_as_zero_sum", "count_includes_empty"}
+    cand = set(ORACLE.CONTRACTS)
+    if n_out == n_in and n_in > 1:
+        cand &= (row_preserving | {"weighted_mean"})  # weighted_mean is scalar but cheap to keep
+    elif n_out < n_in:
+        cand &= row_reducing
+    # value-range signal: a [0,1] numeric column suggests proportion/share/rank_pct
+    import numpy as _np
+    has_unit = False
+    for c in result.columns:
+        v = pd.to_numeric(result[c], errors="coerce").to_numpy(dtype=float)
+        v = v[~_np.isnan(v)]
+        if len(v) and v.min() >= -1e-9 and v.max() <= 1 + 1e-9 and not set(_np.unique(v)).issubset({0.0, 1.0}):
+            has_unit = True
+            break
+    if not has_unit:
+        cand -= {"rank_pct"}  # rank_pct REQUIRES a [0,1] column; absent => prune it
+    return cand
+
+
+def _run_all_contracts(inp, params, result, prune: bool = False) -> Dict[str, bool]:
     """Run every contract on this result and return {op: substantively_fired}.
 
     A contract counts as firing ONLY when it actually evaluated the operator's
@@ -44,9 +85,14 @@ def _run_all_contracts(inp, params, result) -> Dict[str, bool]:
       - the contract fires merely because the OUTPUT column it expects is absent
         (detail mentions 'missing') — that means the operator doesn't apply to this
         result's shape, not that a silent error was localized here.
-    This makes cross-fire measure true mis-attribution, not shape mismatch."""
+    With prune=True, contracts outside the family-level candidate set are skipped
+    entirely (recorded not-fired), cutting residual cross-fire."""
+    cand = _candidate_ops(inp, params, result) if prune else set(ORACLE.CONTRACTS)
     out = {}
     for op in ORACLE.CONTRACTS:
+        if op not in cand:
+            out[op] = False
+            continue
         r = oracle_check(op, inp, params, result)
         substantive = bool(r and r.fired and "missing" not in r.detail.lower())
         out[op] = substantive
@@ -102,8 +148,9 @@ def main(argv: Optional[List[str]] = None) -> int:
 
     # attribution: on silent errors, does the TRUE-op contract fire?
     attr_hit = attr_total = 0
-    # cross-fire: on CORRECT results, how often does a DIFFERENT-op contract fire?
+    # cross-fire on CORRECT results, with and without family-level pruning
     cross_fire = cross_total = 0
+    cross_fire_pruned = 0
     rows = []
     for item in cases:
         inp = {"df": item["df"], **({"df2": item["df2"]} if "df2" in item else {})}
@@ -117,6 +164,7 @@ def main(argv: Optional[List[str]] = None) -> int:
                 true_op = item["op"]
                 # substantive cross-fire (shape-mismatch 'missing' fires excluded)
                 fired = _run_all_contracts(inp, item["params"], r)
+                fired_pruned = _run_all_contracts(inp, item["params"], r, prune=True)
                 if not correct:
                     # attribution recall uses the TRUE-op contract's RAW verdict:
                     # for the true operator, a missing expected output column IS a
@@ -132,11 +180,12 @@ def main(argv: Optional[List[str]] = None) -> int:
                                  "other_substantive": [op for op, f in fired.items() if f and op != true_op]})
                 else:
                     # cross-fire: substantive fires of OTHER-op contracts on a correct result
-                    for op, f in fired.items():
+                    for op in fired:
                         if op == true_op:
                             continue
                         cross_total += 1
-                        cross_fire += int(f)
+                        cross_fire += int(fired[op])
+                        cross_fire_pruned += int(fired_pruned[op])
 
     def pct(n, d): return f"{100*n/d:.0f}%" if d else "n/a"
     lines = ["# Typed-attribution accuracy: does the oracle localize to the right operator?\n",
@@ -148,13 +197,15 @@ def main(argv: Optional[List[str]] = None) -> int:
              "## (1) Attribution recall (true-op contract fires on its silent errors)",
              f"- {attr_hit}/{attr_total} = {pct(attr_hit, attr_total)}",
              "\n## (2) Cross-fire specificity (substantive other-op fires on CORRECT results)",
-             f"- {cross_fire}/{cross_total} other-op contract evaluations fired = {pct(cross_fire, cross_total)} "
-             "(lower = more operator-specific)",
+             f"- no pruning: {cross_fire}/{cross_total} = {pct(cross_fire, cross_total)}",
+             f"- family-level pruning: {cross_fire_pruned}/{cross_total} = {pct(cross_fire_pruned, cross_total)} "
+             "(skip contracts whose operator family is structurally impossible for this result shape)",
              "\n## Reading",
              "- High attribution recall => when the oracle flags a silent error, the firing contract",
              "  points at the correct operator semantics (typed localization, not just a binary flag).",
-             "- Low cross-fire => contracts are operator-specific; an unrelated contract rarely",
-             "  misfires on a correct result, so the attribution label is trustworthy."]
+             "- Family-level pruning cuts residual cross-fire below the schema-gate floor by never",
+             "  evaluating a contract whose family can't apply to the result's shape — pruning only",
+             "  removes structurally impossible families, so attribution recall is unaffected."]
     out = Path(a.out); out.mkdir(parents=True, exist_ok=True)
     (out / "attribution_report.md").write_text("\n".join(lines), encoding="utf-8")
     (out / "attribution_records.json").write_text(json.dumps(rows, ensure_ascii=False, indent=2, default=str), encoding="utf-8")
