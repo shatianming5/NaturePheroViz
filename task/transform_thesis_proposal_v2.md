@@ -43,9 +43,26 @@
 - **解读**:错误随澄清大幅消退 ⇒ 这些是**真实的模型语义失败**(可被澄清修复),不是"任务本身有歧义、谁都做不对"。残留 12%(median 50%、count_empty 50% 澄清后仍错)是**真正顽固**的难点,诚实保留。
 - **诚实反例**:weighted_mean 出现"模糊 0%、澄清 37%"的反转(唯一非单调类)——澄清提示反而诱导 Claude 做 `df.assign` 广播。论文据此讨论"澄清非总是单调改善",不掩盖。
 
-### 1.3 对照:绘图任务 silent 错率 0%(问题特异性)
+### 1.3 held-out 真实数据切片:现象在真实 Nature 表上不仅保持、还更严重(外部效度)
+
+回应 round-2 的核心 P0("48 网格是作者合成的,缺外部效度")。取 **9 张真实 Nature 源数据表**(6 篇论文、跨光合/神经/基因组/海洋/药理),用**真实科学列名**(ETR/PAR/VAF/log2FoldChange/ddCt/CHRM4 activity)作输入,套**同一套**算子语义分类 + 模糊/澄清 + goldless oracle。
+
+| 指标 | 合成 48 网格 | **真实 Nature 切片** |
+|---|---|---|
+| 模糊 silent 率 | 46% | **72%**(13/18,更高) |
+| 澄清后 silent 率 | 12% | **28%**(5/18) |
+| oracle recall | 100% | **100%**(18/18) |
+| oracle 误报 | 0% | **0%**(0/18) |
+
+- **现象更严重**:真实科学列名 + 真实分布让 silent 率从 46% 升到 72% ⇒ 彻底反驳"silent error 是合成玩具表的产物"——它在真实数据上更糟。
+- **oracle 零退化**:goldless 契约在**从未调过的真实数据**上 recall/FP 仍 100%/0% ⇒ 比"在自家网格上 100%"强得多的迁移证据。
+- **澄清仍大降错**(72%→28%),与合成版一致,再证模型语义失败而非任务欠定义。
+- **诚实**:median 类在真实表偏多(真实 Nature 表多为"分组+测量值"形态);路线 B(从 figure caption 反推作者真实意图)已试并放弃——1362 图仅 32 个 caption 含变换词且都是生物学结论、无可机器对齐的 gold。
+
+### 1.4 对照:绘图任务 silent 错率 0%(问题特异性)
 
 - 同样的强 LLM 在"给定干净数据画标准图"上 silent error 率 **0%**(20 跨文章真实任务,GPT-4o/Claude 全对)——证明**问题特异于"语义有歧义的数据变换"**,不是 LLM 普遍不可靠,也不是我们的测量在无差别报警。
+
 
 ---
 
@@ -80,7 +97,7 @@ silent error 归类到算子语义(聚合粒度 / 权重 / 分组范围 / join h
    - **本方法(invariants-first 契约)**:recall **56/56 = 100%**,FP **0/135 = 0%**(48 类网格)。
    - 待补 baseline 对照:① exec-pass(预期 0 检出,silent 不崩);② 输出合法性/值域;③ LLM-self-check(预期受同源盲区限制);④ 多实现一致性(预期在 common-mode 类上失效)。指标:检出 precision/recall + 算子归因准确率。
 4. **必要性消融(待补)**:证明"无 gold output"下仍能检出(否则退化成 text2SQL)。
-5. **外部效度(待补)**:从 154 篇 Nature / 1362 图-源数据配对里抽真实变换任务,验证 benchmark 之外的泛化。
+5. **外部效度(已得)**:9 张真实 Nature 源数据表(6 篇、跨学科、真实科学列名)做 held-out 切片,**模糊 silent 72%(比合成 46% 更高)、oracle recall 100% / FP 0%**——现象在真实数据上更严重、oracle 零退化(详见 §1.3)。
 
 ---
 
@@ -118,9 +135,15 @@ round-1 结论:novelty 真实但三条边界 razor-thin。五维矩阵(无 gold 
 
 ---
 
-## 7. 距 Oral 还差(round-2 要查的)
+## 7. 距 Oral 还差(round-2 后更新)
 
-1. **baseline head-to-head 跑实**(§3.3 ①②③④)——目前只有本方法的 100%/0%,缺与 exec-pass/self-check/一致性的同表对照。这是"显著高于现有手段"的硬证据,必须补。
-2. **真实任务外部效度**(§3.5)——从 Nature 配对抽变换任务,证明 48 类之外泛化。
-3. **契约可扩展性论证**——回答"换个算子怎么办",给半自动抽取或安全退化方案,否则被批"手写 12 条不 scalable"。
-4. **related work 写死 SemGuard 边界**——行级算法语义 vs 关系型算子语义。
+**已解决(round-2 → 现在)**:
+- ✅ **外部效度**:9 张真实 Nature 表 held-out 切片,模糊 silent 72%、oracle 100%/0%(§1.3)。
+- ✅ **账目透明**:192 全账混淆矩阵(135 正确 + 56 silent + 1 crash),堵掉 round-2 的"135 vs 136"疑点。
+
+**仍需补(冲 Oral ≥8)**:
+1. **baseline head-to-head 跑实(最关键,CRITICAL)**(§3.3 ①②③④)——目前只有本方法的 100%/0%,缺与 exec-pass/输出值域/self-check/CodeT 一致性的**同表对照**。这是"显著高于现有手段"的硬证据,round-2 反复点名。
+2. **契约可扩展性论证**——回答"换个算子怎么办",给半自动抽取或安全退化(abstain)方案,否则被批"手写 12 条不 scalable"。
+3. **related work 写死 SemGuard 边界 + cite 新威胁 Incoherence(AAAI 2026)**——行级算法语义 vs 关系型算子语义;Incoherence 是 oracle-less 检测,机制上比 CodeT 更近,须区分(域:DataFrame;失败模式:common-mode;机制:contracts vs 行为分歧)。
+4. **"first"措辞收窄**——非"first oracle-free",而是"first **typed operator-contract** method for NL→DataFrame semantic error detection without gold/test/reference"。
+5. **歧义校准升级**——每 case 多条独立澄清(现仅 1 条作者写的),做发表级因果隔离;解释 weighted_mean 0%→37% 反转。
