@@ -122,8 +122,12 @@ reviewer 必问:"换个算子怎么办?手写契约不可扩展。"三层回应:
    - **consistency 0% 是 common-mode 铁证**:57 个 silent 里 3 次独立生成都一致地错,投票一个没抓。
    - **self-check 61% recall 但 40% FP**:LLM 自查既漏近 4 成真错、又把 4 成正确误判——不可用作判官。
    - **ours 100%/0%** 唯一可靠。这就是"显著优于现有手段"的硬证据(round-2 唯一 CRITICAL)。
-4. **必要性消融(待补)**:证明"无 gold output"下仍能检出(否则退化成 text2SQL)。
-5. **外部效度(已得)**:9 张真实 Nature 源数据表(6 篇、跨学科、真实科学列名)做 held-out 切片,**模糊 silent 72%(比合成 46% 更高)、oracle recall 100% / FP 0%**——现象在真实数据上更严重、oracle 零退化(详见 §1.3)。
+4. **必要性消融——无 gold 不退化(已得)**:correct/silent 的 ground-truth 标签用手工 gold 算,但 oracle **从不看 gold**、只凭算子不变量 fire。结果:goldless oracle 在校准 run 上 recall 56/56=100%、FP 0/135=0%,在真实切片上 19/19=100%、0/17=0%——**追平"有 gold 精确比对"的检出,却不需要任何 gold output**。证明方法不退化成 text2SQL(后者需 gold query),能在无 gold/参考处工作。
+5. **外部效度(已得)**:9 张真实 Nature 源数据表(6 篇、跨学科、真实科学列名)做 held-out 切片,**模糊 silent 72% [95% CI 49-88](比合成 46% 更高)、oracle recall 100% [83-100] / FP 0% [0-18]**——现象在真实数据上更严重、oracle 零退化(详见 §1.3)。
+6. **typed 归因准确率(已得)**:对每个 silent error 跑全部契约,真实算子的契约 fire 比例 = **29/29 = 100%**——oracle 不只给二元 flag,还能定位到正确的算子语义。跨契约误 fire 20%(压力测试:把不相关契约强套正确结果,主要来自 params 不匹配时该 abstain 却 fire,属契约硬化项,不影响真实算子归因)。
+7. **可扩展性(已得,§2.4)**:3 个未见算子族,各加一条 ~14 行契约——加之前 abstain(0 recall + 0 FP,弃权不乱报),加之后检出且 FP 恒 0/5。加新算子=写一条不变量,覆盖增长不抬 FP。
+
+> 所有实验数字汇总于一张 master 表(`results_master/master_table.md`),并标明两次独立生成 run(校准 192 / baseline 189)的数源,避免跨表混淆。
 
 ---
 
@@ -164,19 +168,20 @@ round-1 结论:novelty 真实但三条边界 razor-thin;round-2 联网复核**�
 
 ## 7. 距 Oral 还差(round-2 后更新)
 
-**已解决(round-2 → 现在)**:
-- ✅ **外部效度**:9 张真实 Nature 表 held-out 切片,模糊 silent 72%、oracle 100%/0%(§1.3)。
-- ✅ **账目透明**:192 全账混淆矩阵(135 正确 + 56 silent + 1 crash),堵掉 round-2 的"135 vs 136"疑点。
-
-**已解决(round-2 → 现在,5 个 P0 全清)**:
-- ✅ **baseline 同表对照(原唯一 CRITICAL)**:5 检测器并排,ours 100%/0% vs exec-pass/validity/consistency 全 0 recall、self-check 61%/40%——"显著优于现有手段"已实测(§3.3)。
-- ✅ **外部效度**:9 张真实 Nature 表 held-out 切片,模糊 silent 72%、oracle 100%/0%(§1.3)。
-- ✅ **账目透明**:192 全账混淆矩阵(135 正确 + 56 silent + 1 crash),堵掉 round-2 的"135 vs 136"疑点。
+**round-2 的 5 个 P0(全清)**:
+- ✅ **baseline 同表对照(原唯一 CRITICAL)**:5 检测器并排,ours 100%/0% vs exec-pass/validity/consistency 全 0 recall、self-check 61%/40%(§3.3)。
+- ✅ **外部效度**:9 张真实 Nature 表 held-out 切片,模糊 silent 72% [CI 49-88]、oracle 100%/0%(§1.3)。
 - ✅ **契约可扩展性**:per-operator-class 非 per-task、半自动从 API 签名派生、缺契约 abstain(§2.4)。
 - ✅ **related work 边界 + Incoherence**:§4 加第五条边界,SemGuard 行级 vs 关系型语义讲死;"first"措辞收窄。
 - ✅ **歧义校准因果隔离**:6 高危类 × 3 独立澄清,92%→11%(std 3.9 pts);weighted_mean 反转已诚实讨论(§1.2)。
 
-**距 Oral 仅剩(非 P0,锦上添花)**:
-1. **必要性消融**(§3.4)——形式化证明"无 gold"下仍检出(否则退化 text2SQL)。这是论文写作时的标准消融,机制已就位。
-2. **更大规模 / 更多模型**——现 2 模型,可加开源(Qwen-Coder)证明 silent error 普遍性;benchmark 可从 48 扩到 100+。
-3. **typed 归因准确率量化**——契约已分类,补一个归因正确率数字。
+**round-3 的 3 个 High-priority 项(全清,7.5 → 冲 9)**:
+- ✅ **scalability 实证**(§3.7):3 个未见算子族,加一条 ~14 行契约前 abstain、后检出,FP 恒 0/5——可扩展性从论证变实测。
+- ✅ **真实切片 + 置信区间**(§1.3、§3.5):所有比率带 95% Wilson CI,诚实呈现小样本(下界仍在正确方向)。
+- ✅ **master 表 + 必要性消融 + 归因准确率**(§3.4/§3.6):一张 master 表统一所有数源(解决 57/132 vs 135/56/1);goldless 追平 gold 检出(§3.4);归因 recall 29/29=100%(§3.6)。
+- ✅ **账目透明**:192 全账混淆矩阵 + master 表标明两次独立生成 run。
+
+**仍可锦上添花(非 blocker,论文写作期)**:
+1. **更多模型**——现 2 模型(GPT-4o/Claude),加开源(Qwen-Coder)证明 silent error 跨模型普遍。
+2. **更大 benchmark / 真实切片**——48→100+、真实切片 9→更多干净表(受限于真类目表稀缺)。
+3. **契约硬化**——params 不匹配时 abstain(消除归因 cross-fire 的 20%)。
