@@ -249,6 +249,69 @@ def c_proportion_true(inp, params, result) -> ContractResult:
     return ContractResult("proportion_true", True, "does not match proportion")
 
 
+# ============================================================================
+# SCALABILITY DEMO (round-3): three PREVIOUSLY-UNSEEN operator families, each
+# added as ONE contract, to show "a new operator = one invariant" rather than a
+# redesign. Authoring effort per contract ~ the functions below (≈10 lines each).
+# ============================================================================
+
+def c_zscore_within_group(inp, params, result) -> ContractResult:
+    # invariant: a within-group z-score standardizes EACH group to mean~0 / std~1,
+    # so per-group mean of the output ~ 0. The silent slip uses the GLOBAL mean/std,
+    # leaving per-group means != 0 (groups keep their original offset).
+    df = inp["df"]; grp, val = params["group"], params["value"]; out = params.get("out", "z")
+    if result is None or out not in result.columns or grp not in result.columns:
+        return ContractResult("zscore_within_group", True, f"missing {out}/{grp}")
+    g = result.groupby(grp)[out].mean()
+    if all(abs(float(m)) <= 1e-3 for m in g):
+        return ContractResult("zscore_within_group", False, "per-group mean ~ 0 (standardized within group)")
+    # global z-score: overall mean ~ 0 but per-group means are not
+    if abs(float(_num(result[out]).mean())) <= 1e-3:
+        return ContractResult("zscore_within_group", True, "standardized GLOBALLY (per-group means != 0); should be within-group")
+    return ContractResult("zscore_within_group", True, f"per-group means {dict(g.round(3))} != 0")
+
+
+def c_dense_rank(inp, params, result) -> ContractResult:
+    # invariant: dense rank gives consecutive ranks with NO gaps after ties
+    # (1,2,2,3). The silent slip uses 'min' rank, which leaves gaps (1,2,2,4).
+    df = inp["df"]; val = params["value"]; out = params.get("out", "rank")
+    if result is None or out not in result.columns:
+        return ContractResult("dense_rank", True, f"missing {out}")
+    ranks = sorted(set(int(x) for x in _num(result[out]) if not np.isnan(x)))
+    if not ranks:
+        return ContractResult("dense_rank", True, "no ranks")
+    consecutive = ranks == list(range(ranks[0], ranks[0] + len(ranks)))
+    if consecutive and ranks[0] == 1:
+        return ContractResult("dense_rank", False, "dense ranks consecutive from 1, no gaps")
+    # min-rank slip: gaps appear (max rank > #distinct ranks)
+    if max(ranks) > len(ranks):
+        return ContractResult("dense_rank", True, f"rank gaps present (max {max(ranks)} > {len(ranks)} distinct) — looks like MIN rank, should be DENSE")
+    return ContractResult("dense_rank", True, f"ranks {ranks} not dense from 1")
+
+
+def c_cumcount_per_group(inp, params, result) -> ContractResult:
+    # invariant: a per-group running count RESETS each group AND increases by 1
+    # within the group (0,1,2 or 1,2,3). Two silent slips: (a) a global cumulative
+    # count that never resets (later groups start above the first), or (b) a constant
+    # (e.g. all 1s / a group size) that resets but does not increase.
+    df = inp["df"]; grp = params["group"]; out = params.get("out", "occurrence")
+    if result is None or out not in result.columns or grp not in result.columns:
+        return ContractResult("cumcount_per_group", True, f"missing {out}/{grp}")
+    starts = result.groupby(grp)[out].min()
+    base = float(starts.min())
+    reset = all(_close(float(s), base) for s in starts) and base in (0.0, 1.0)
+    # within-group monotonic increase by 1 (allow 0- or 1-based)
+    def _incr(s):
+        v = _num(s.to_numpy())
+        return len(v) <= 1 or np.allclose(np.diff(v), 1.0)
+    increasing = all(_incr(g[out]) for _, g in result.groupby(grp))
+    if reset and increasing:
+        return ContractResult("cumcount_per_group", False, f"per-group counter resets at {base:.0f} and increments by 1")
+    if reset and not increasing:
+        return ContractResult("cumcount_per_group", True, "resets per group but does NOT increment by 1 (constant/size, not a running count)")
+    return ContractResult("cumcount_per_group", True, f"group start values {dict(starts.astype(int))} differ — global count, not reset per group")
+
+
 # registry: operator-semantic-type -> contract fn
 CONTRACTS: Dict[str, Callable] = {
     "weighted_mean": c_weighted_mean,
@@ -263,6 +326,10 @@ CONTRACTS: Dict[str, Callable] = {
     "nan_as_zero_sum": c_nan_as_zero_sum,
     "count_includes_empty": c_count_includes_empty,
     "proportion_true": c_proportion_true,
+    # scalability-demo families (round-3): each is one added contract.
+    "zscore_within_group": c_zscore_within_group,
+    "dense_rank": c_dense_rank,
+    "cumcount_per_group": c_cumcount_per_group,
 }
 
 
