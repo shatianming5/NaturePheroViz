@@ -77,3 +77,4 @@ agent/eval/results_attribution/attribution_records.json
 agent/eval/results_qwen_7B/qwen_records.json
 agent/eval/results_qwen_14B/qwen_records.json
 agent/eval/results_qwen_32B/qwen_records.json
+agent/eval/results_real_auto/real_auto_records.json
