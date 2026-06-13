@@ -104,9 +104,20 @@ reviewer 必问:"换个算子怎么办?手写契约不可扩展。"三层回应:
 
 1. **silent-error benchmark(已得)**:48 类网格,模糊 silent 率 46%、分层双峰。**第一个 silent-transform-error benchmark**,本身是领域贡献。
 2. **歧义校准(已得)**:模糊 46% → 澄清 12%,证明是模型失败而非任务欠定义。
-3. **oracle 检出 head-to-head(部分已得,待扩 baseline)**:
-   - **本方法(invariants-first 契约)**:recall **56/56 = 100%**,FP **0/135 = 0%**(48 类网格)。
-   - 待补 baseline 对照:① exec-pass(预期 0 检出,silent 不崩);② 输出合法性/值域;③ LLM-self-check(预期受同源盲区限制);④ 多实现一致性(预期在 common-mode 类上失效)。指标:检出 precision/recall + 算子归因准确率。
+3. **检出 head-to-head(已得,同表对照)**:48 网格同一批 LLM 产物(57 silent / 132 correct)上,5 个检测器并排:
+
+   | 检测器 | recall(真错上报警) | FP(正确上误报) |
+   |---|---|---|
+   | **ours(invariants 契约)** | **57/57 = 100%** | **0/132 = 0%** |
+   | exec-pass(代码跑通) | 0/57 = 0% | 0% |
+   | output-validity(形状/值域) | 0/57 = 0% | 0% |
+   | LLM-self-check(同模型自查) | 35/57 = 61% | **53/132 = 40%** |
+   | consistency(CodeT 式 K=3 一致) | 0/57 = 0% | 0% |
+
+   - **exec-pass / validity / consistency 全 0 检出**:现有"能跑/形状对/多次一致"对 silent 语义错零效。
+   - **consistency 0% 是 common-mode 铁证**:57 个 silent 里 3 次独立生成都一致地错,投票一个没抓。
+   - **self-check 61% recall 但 40% FP**:LLM 自查既漏近 4 成真错、又把 4 成正确误判——不可用作判官。
+   - **ours 100%/0%** 唯一可靠。这就是"显著优于现有手段"的硬证据(round-2 唯一 CRITICAL)。
 4. **必要性消融(待补)**:证明"无 gold output"下仍能检出(否则退化成 text2SQL)。
 5. **外部效度(已得)**:9 张真实 Nature 源数据表(6 篇、跨学科、真实科学列名)做 held-out 切片,**模糊 silent 72%(比合成 46% 更高)、oracle recall 100% / FP 0%**——现象在真实数据上更严重、oracle 零退化(详见 §1.3)。
 
@@ -153,9 +164,15 @@ round-1 结论:novelty 真实但三条边界 razor-thin;round-2 联网复核**�
 - ✅ **外部效度**:9 张真实 Nature 表 held-out 切片,模糊 silent 72%、oracle 100%/0%(§1.3)。
 - ✅ **账目透明**:192 全账混淆矩阵(135 正确 + 56 silent + 1 crash),堵掉 round-2 的"135 vs 136"疑点。
 
-**仍需补(冲 Oral ≥8)**:
-1. **baseline head-to-head 跑实(最关键,CRITICAL)**(§3.3 ①②③④)——目前只有本方法的 100%/0%,缺与 exec-pass/输出值域/self-check/CodeT 一致性的**同表对照**。这是"显著高于现有手段"的硬证据,round-2 反复点名。
-2. **契约可扩展性论证**——回答"换个算子怎么办",给半自动抽取或安全退化(abstain)方案,否则被批"手写 12 条不 scalable"。
-3. **related work 写死 SemGuard 边界 + cite 新威胁 Incoherence(AAAI 2026)**——行级算法语义 vs 关系型算子语义;Incoherence 是 oracle-less 检测,机制上比 CodeT 更近,须区分(域:DataFrame;失败模式:common-mode;机制:contracts vs 行为分歧)。
-4. **"first"措辞收窄**——非"first oracle-free",而是"first **typed operator-contract** method for NL→DataFrame semantic error detection without gold/test/reference"。
-5. **歧义校准升级**——每 case 多条独立澄清(现仅 1 条作者写的),做发表级因果隔离;解释 weighted_mean 0%→37% 反转。
+**已解决(round-2 → 现在,5 个 P0 全清)**:
+- ✅ **baseline 同表对照(原唯一 CRITICAL)**:5 检测器并排,ours 100%/0% vs exec-pass/validity/consistency 全 0 recall、self-check 61%/40%——"显著优于现有手段"已实测(§3.3)。
+- ✅ **外部效度**:9 张真实 Nature 表 held-out 切片,模糊 silent 72%、oracle 100%/0%(§1.3)。
+- ✅ **账目透明**:192 全账混淆矩阵(135 正确 + 56 silent + 1 crash),堵掉 round-2 的"135 vs 136"疑点。
+- ✅ **契约可扩展性**:per-operator-class 非 per-task、半自动从 API 签名派生、缺契约 abstain(§2.4)。
+- ✅ **related work 边界 + Incoherence**:§4 加第五条边界,SemGuard 行级 vs 关系型语义讲死;"first"措辞收窄。
+- ✅ **歧义校准因果隔离**:6 高危类 × 3 独立澄清,92%→11%(std 3.9 pts);weighted_mean 反转已诚实讨论(§1.2)。
+
+**距 Oral 仅剩(非 P0,锦上添花)**:
+1. **必要性消融**(§3.4)——形式化证明"无 gold"下仍检出(否则退化 text2SQL)。这是论文写作时的标准消融,机制已就位。
+2. **更大规模 / 更多模型**——现 2 模型,可加开源(Qwen-Coder)证明 silent error 普遍性;benchmark 可从 48 扩到 100+。
+3. **typed 归因准确率量化**——契约已分类,补一个归因正确率数字。

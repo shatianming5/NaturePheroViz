@@ -71,3 +71,4 @@ agent/eval/results_ambcal/ambcal_records.json
 agent/eval/results_ambcal_bench/ambcal_records.json
 agent/eval/results_real_slice/real_slice_records.json
 agent/eval/results_clarify/clarify_records.json
+agent/eval/results_baseline/baseline_records.json
