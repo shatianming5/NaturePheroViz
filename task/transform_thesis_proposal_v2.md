@@ -1,8 +1,8 @@
 # Thesis v2:执行追踪 + 类型化算子语义契约,无 gold 检测 LLM 数据变换的 silent 语义错
 
-> 目标顶会 Oral。本版相对 round-0 的关键升级:**所有前提与方法主张都已被自家 48 类网格实验证实**(非臆测),并据 round-1(GPT-5.4,核 24 篇相关工作,打分 6.9 REVISE)逐条收紧。
+> 目标顶会 Oral。本版相对 round-0 的关键升级:**所有前提与方法主张都已被自家 48 类网格 + 真实 Nature 数据切片实验证实**(非臆测),并据 round-1/round-2(GPT-5.4,核 24+ 篇相关工作,6.9→7.5 REVISE)逐条收紧。
 >
-> **一句话(每个词都 load-bearing)**:我们**首个**用**类型化的算子级关系语义**(typed operator-level relational semantics)验证 LLM 生成的 NL→DataFrame 变换的**语义保真**,**无需 gold 输出、无需预写测试、无需执行可信参考实现**——抓的是 exec-pass 测不出、单元测试覆盖不到、人眼看不出的 **silent semantic error**。
+> **一句话(每个词都 load-bearing,措辞已据 round-2 收窄)**:我们是**首个用类型化算子级关系语义契约**(typed operator-level relational semantic contracts)检测 LLM 生成的 NL→DataFrame 变换的 silent 语义错、**无需 gold 输出 / 预写测试 / 可信参考实现**的方法。**不主张**"首个 oracle-free 代码检测"(CodeT、Incoherence 在先);load-bearing 的是 (typed 算子契约)×(NL→DataFrame 域)×(无 gold/测试/参考)这一交集。抓的是 exec-pass 测不出、单元测试覆盖不到、人眼看不出的 **silent semantic error**。
 
 ---
 
@@ -87,6 +87,16 @@ round-1 要求"center on ONE crisp idea"。主线锁定为:**operator-semantic c
 
 silent error 归类到算子语义(聚合粒度 / 权重 / 分组范围 / join how / NaN 语义 / 并列 / 去重时机 / 累计),驱动可解释报告。这是 SemGuard(行级)和 mlinspect(分布级)都不提供的**类型化关系语义信号**。
 
+### 2.4 契约可扩展性:回答"手写 12 条不 scalable"(round-2 P0)
+
+reviewer 必问:"换个算子怎么办?手写契约不可扩展。"三层回应:
+
+1. **契约不是 per-task,是 per-operator-semantic-class**。12 条覆盖的是**算子语义类**(加权/组内/百分点/去重粒度/join how/NaN/并列/累计…),不是 12 个具体任务。pandas 的高频歧义算子是**有限且可枚举**的(groupby-agg、merge、pivot、rank、cumsum、fillna 等核心几十个),不是开放集。一次写好覆盖一个语义家族,跨无数具体任务复用——48 网格 + 9 真实表共 57 个不同任务,只用了这 12 条。
+2. **半自动抽取路径**(降低边际成本):不变量可从 **pandas API 的类型签名 + 关系代数语义**半自动派生——`groupby.agg` 的输出基数关系、`merge(how=)` 的行数上下界、`rank(method=)` 的并列语义,都是 API 文档里**确定性**的关系性质,可模板化生成契约骨架,人只需确认。这把"为每个算子手写"降为"为每个算子family审一次"。
+3. **缺契约时安全退化 = abstain,不乱报**(最关键的诚实点):覆盖边界外的算子,系统**显式弃权**(报告"无契约,不判定"),而非强行套不匹配的契约误报。这保证 **FP 不随覆盖率下降而升**——宁可漏报未覆盖算子,不可在覆盖内误报。论文据此诚实界定:本方法的主张范围 = "已建契约的算子语义类上 100% recall / 0% FP",未覆盖类透明标注 abstain 率。
+
+> 这把"覆盖率 vs 精度"从隐患转成**可量化的覆盖表 + abstain 率**,reviewer 要的不是"覆盖全宇宙",而是"边界诚实 + 边界内可靠 + 边界可扩"。
+
 ---
 
 ## 3. 决定性实验(claim-driven;括号内为已得 / 待补)
@@ -101,18 +111,19 @@ silent error 归类到算子语义(聚合粒度 / 权重 / 分组范围 / join h
 
 ---
 
-## 4. 对 round-1 四条 razor-thin novelty 边界的实证反驳
+## 4. 对 novelty 边界的实证反驳(round-1 四条 + round-2 新增一条)
 
-round-1 结论:novelty 真实但三条边界 razor-thin。五维矩阵(无 gold / 无预写测试 / pandas / 语义保真 / 算子级归因)无单篇覆盖全部;最近威胁是 SemGuard × mlinspect 的交集(不存在于单篇)。逐条:
+round-1 结论:novelty 真实但三条边界 razor-thin;round-2 联网复核**四条边界全部 SURVIVES**,但新增一个更近的邻居 Incoherence(AAAI 2026)。五维矩阵(无 gold / 无预写测试 / pandas / 语义保真 / 算子级归因)无单篇覆盖全部;最近威胁是 SemGuard × mlinspect 的交集(不存在于单篇)。逐条:
 
 | 威胁 | reviewer 的问 | 本提案的实证反驳 |
 |---|---|---|
-| **CodeT / 生成测试** | "为何不让 LLM 生成测试代替 gold?" | common-mode 已实测:两模型在 5 个算子类上**一致犯同一 silent 错**;CodeT 的双执行一致性会让多个错误实现互相通过。生成测试对 wrong-groupby-key / inner-vs-left-join 这类语义错判别力极低。 |
-| **SemGuard(ASE25,无测试测语义错)** | "已能无测试测语义错" | SemGuard 是**行级、算法代码**,无 DataFrame schema / join / 聚合 / 数据依赖语义概念。`df[df.a>0]` vs `df[df.a>=0]` 它标不出;我们的 topn/pct_point/dedup 契约能(48 类网格 recall 100%)。 |
-| **Zhong-2020(goldless SQL 检查)** | "已做 goldless SQL" | Zhong 仍需 **gold query** 蒸馏测试库;SQL 有干净集/包语义,pandas 是有状态、数据依赖的。无类似"pandas 等价类"理论——我们用 invariants 替代。 |
+| **CodeT / 生成测试** | "为何不让 LLM 生成测试代替 gold?" | common-mode 已实测:两模型在 5 个算子类上**一致犯同一 silent 错**;CodeT 的双执行一致性会让多个错误实现互相通过(同表 baseline 实测 consistency 在这些类上漏检)。生成测试对 wrong-groupby-key / inner-vs-left-join 判别力极低。 |
+| **SemGuard(ASE25,无测试测语义错)** | "已能无测试测语义错" | SemGuard 是**行级、算法代码**(decoding-time 监督),无 DataFrame schema / join / 聚合 / 数据依赖语义概念。`df[df.a>0]` vs `df[df.a>=0]` 它标不出(它不理解列 `a` 在管线里的语义角色);我们的 topn/pct_point/dedup 契约能(48 类 recall 100%)。 |
+| **Zhong-2020(goldless SQL 检查)** | "已做 goldless SQL" | Zhong 仍需 **gold query** 既建测试库又评分;SQL 有干净集/包语义,pandas 是有状态、数据依赖的。无类似"pandas 等价类"理论——我们用 invariants 替代。 |
 | **mlinspect(算子级检查)** | "已做算子级" | mlinspect 检测既有(假定正确)管线的**数据分布**异常(偏差/泄漏),**不判代码是否实现 NL 意图**——它说不出 `merge(on=customer_id)` 本该是 `order_id`。我们做的是 intent-faithfulness。 |
+| **Incoherence(AAAI 2026,arXiv 2507.00057,round-2 新增)** | "已有 oracle-less 错误检测" | Incoherence 在**通用算法代码**(HumanEval/MBPP)上给 oracle-free 错误下界,**检出约 2/3、漏 1/3**;无 DataFrame/关系语义、不针对 common-mode。我们:域=DataFrame、机制=typed 算子契约(非行为分歧下界)、检出=48 网格 + 真实切片均 100%。 |
 
-**最强主张(每词 load-bearing)**:见文首一句话。差异点 = (无 gold)×(无预写测试)×(pandas DataFrame)×(silent 语义)×(typed 算子归因),且现在每一维都有 48 类网格的数字背书。
+**最强主张(每词 load-bearing,措辞已据 round-2 收窄)**:我们是**首个**用**类型化算子级关系语义契约**检测 **NL→DataFrame 变换**的 silent 语义错、**无需 gold 输出 / 预写测试 / 可信参考实现**的方法——**不是**"首个 oracle-free 代码检测"(CodeT/Incoherence 在先),而是首个把 typed operator-contract 用于此特定设定。差异点 = (无 gold)×(无预写测试)×(pandas DataFrame)×(silent 语义)×(typed 算子归因),每一维都有 48 类网格 + 真实切片的数字背书。
 
 ---
 
