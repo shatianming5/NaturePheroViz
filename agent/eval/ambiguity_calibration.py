@@ -172,11 +172,19 @@ Do NOT re-create or re-assign them, do NOT import anything, do NOT print.
 Use only the given `df`{"/`df2`" if "df2" in item else ""}, assign the final answer to `result`.
 Return ONLY strict JSON: {{"code": "<pandas code defining result>"}}."""
     try:
+        # GPT-5 / o-series reasoning models reject `max_tokens` and `temperature`;
+        # they use `max_completion_tokens` and a fixed temperature. Branch on name.
+        ml = model.lower()
+        reasoning = ml.startswith(("gpt-5", "o1", "o3", "o4")) or "codex" in ml
+        payload: Dict[str, Any] = {"model": model, "messages": [{"role": "user", "content": prompt}]}
+        if reasoning:
+            payload["max_completion_tokens"] = 8000  # reasoning eats tokens before the answer
+        else:
+            payload["temperature"] = 0.0
+            payload["max_tokens"] = 4000
         r = requests.post(base + "/chat/completions",
                           headers={"Authorization": f"Bearer {key}", "Content-Type": "application/json"},
-                          json={"model": model, "messages": [{"role": "user", "content": prompt}],
-                                "temperature": 0.0, "max_tokens": 4000},
-                          timeout=(10, 90))
+                          json=payload, timeout=(10, 180))
         r.raise_for_status()
         choices = r.json().get("choices") or []
         if not choices:
