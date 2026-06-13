@@ -238,9 +238,14 @@ def main(argv: Optional[List[str]] = None) -> int:
     ap.add_argument("--out", default="eval/results_ambcal")
     ap.add_argument("--bench", action="store_true",
                     help="use the systematic 48-case transform_bench grid (12 classes x4) instead of the built-in 6")
+    ap.add_argument("--models", default=None,
+                    help="comma-separated model list to override the default GPT-4o/Claude pair")
     args = ap.parse_args(argv)
     if not os.getenv("LLM_API_BASE") or not os.getenv("LLM_API_KEY"):
         print("[error] needs LLM_API_BASE / LLM_API_KEY."); return 1
+
+    models = [m.strip() for m in args.models.split(",")] if args.models else MODELS
+    print(f"[models] {models}")
 
     if args.bench:
         from collections import Counter
@@ -262,7 +267,7 @@ def main(argv: Optional[List[str]] = None) -> int:
     for item in items:
         rec = {"item": item["name"]}
         for cond in ("ambiguous", "clarified"):
-            for m in MODELS:
+            for m in models:
                 code = _llm_code(item, item[cond], m)
                 result = _exec(item, code) if code else None
                 exec_ok = result is not None
