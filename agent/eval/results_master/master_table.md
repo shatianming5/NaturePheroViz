@@ -26,8 +26,9 @@ they are NOT the same 189/192 numbers and must not be cross-added.
 | 3 | goldless oracle catches them | 48-grid | calibration | 56 silent / 135 correct | recall 56/56 = 100%, FP 0/135 = 0% |
 | 4 | significantly better than existing means | baseline head-to-head | baseline | 57 silent / 132 correct | ours 100%/0%; exec-pass/validity/consistency 0% recall; self-check 61%/40% |
 | 5 | external validity (real data) | nature_real_transform | real-slice | 18 amb / 18 clar | ambiguous silent 13/18 = 72% [CI 49-88]; recall 19/19 = 100% [83-100]; FP 0/17 = 0% [0-18] |
-| 6 | scalability (one contract per new op) | scalability_demo | scal | 3 unseen ops | BEFORE abstain 0% recall + 0 FP; AFTER 1 contract → recall up, FP 0/5 |
-| 7 | typed attribution localizes the operator | attribution_eval | attr | 26 silent / 1104 cross-evals | attribution recall 26/26 = 100%; cross-fire 90/1104 = 8% (after schema + shape gates) |
+| 6 | scalability (one contract per new op) | scalability_demo | scal | 5 unseen ops | BEFORE abstain 0/9 recall + 0 FP; AFTER 1 contract each → recall up, FP 0/11 |
+| 7 | typed attribution localizes the operator | attribution_eval | attr | 25 silent / 1136 cross-evals | attribution recall 25/25 = 100%; cross-fire 8% (88/1136) → 2% (25/1136) with family pruning |
+| 8 | phenomenon generalizes across models + scale | qwen_local_eval | qwen (gpudev2) | 48-grid x 3 sizes | ambiguous silent 7B 65% / 14B 54% / 32B 44% (vs closed 46%); oracle recall ≥96%, FP 0% all sizes |
 
 \* attribution recall uses the true-op contract's raw verdict (a missing expected
 output column on the RIGHT operator is a real silent error). cross-fire counts only
