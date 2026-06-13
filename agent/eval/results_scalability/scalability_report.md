@@ -1,11 +1,13 @@
-# Scalability demo: 3 previously-unseen operator families, one contract each
+# Scalability demo: 5 previously-unseen operator families, one contract each
 
 | family | added-contract lines | silent | BEFORE recall (abstain) | AFTER recall | AFTER FP |
 |---|---|---|---|---|---|
 | zscore_within_group | 14 | 4 | 0/4 (0%) | 1/4 (25%) | 0/0 (n/a) |
 | dense_rank | 16 | 2 | 0/2 (0%) | 2/2 (100%) | 0/2 (0%) |
-| cumcount_per_group | 21 | 1 | 0/1 (0%) | 1/1 (100%) | 0/3 (0%) |
-| **TOTAL** | ~17/contract | 7 | 0/7 (0%) | 4/7 (57%) | 0/5 (0%) |
+| cumcount_per_group | 21 | 0 | 0/0 (n/a) | 0/0 (n/a) | 0/4 (0%) |
+| rank_pct | 13 | 1 | 0/1 (0%) | 0/1 (0%) | 0/3 (0%) |
+| clip_outlier | 14 | 2 | 0/2 (0%) | 2/2 (100%) | 0/2 (0%) |
+| **TOTAL** | ~15/contract | 9 | 0/9 (0%) | 5/9 (56%) | 0/11 (0%) |
 
 ## Reading
 - BEFORE (operator uncovered): recall 0% because the oracle ABSTAINS (check() -> None);

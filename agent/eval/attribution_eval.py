@@ -35,15 +35,13 @@ from eval.transform_bench import _cases  # noqa: E402
 
 
 def _run_all_contracts(inp, params, result) -> Dict[str, bool]:
-    """Run every contract on this result; return {op: fired}. Contracts that error
-    on incompatible params are treated as not-fired (they abstain by raising)."""
+    """Run every contract on this result via check() (so the schema gate applies);
+    return {op: fired}. A contract whose required params/columns aren't present
+    abstains (check returns None) and is recorded as not-fired."""
     out = {}
-    for op, fn in ORACLE.CONTRACTS.items():
-        try:
-            r = fn(inp, params, result)
-            out[op] = bool(r and r.fired)
-        except Exception:
-            out[op] = False  # incompatible contract abstains
+    for op in ORACLE.CONTRACTS:
+        r = oracle_check(op, inp, params, result)
+        out[op] = bool(r and r.fired)
     return out
 
 

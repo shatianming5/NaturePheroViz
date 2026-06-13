@@ -96,7 +96,7 @@ reviewer 必问:"换个算子怎么办?手写契约不可扩展。"三层回应:
 
 1. **契约不是 per-task,是 per-operator-semantic-class**。12 条覆盖的是**算子语义类**(加权/组内/百分点/去重粒度/join how/NaN/并列/累计…),不是 12 个具体任务。pandas 的高频歧义算子是**有限且可枚举**的(groupby-agg、merge、pivot、rank、cumsum、fillna 等核心几十个),不是开放集。一次写好覆盖一个语义家族,跨无数具体任务复用——48 网格 + 9 真实表共 57 个不同任务,只用了这 12 条。
 2. **半自动抽取路径**(降低边际成本):不变量可从 **pandas API 的类型签名 + 关系代数语义**半自动派生——`groupby.agg` 的输出基数关系、`merge(how=)` 的行数上下界、`rank(method=)` 的并列语义,都是 API 文档里**确定性**的关系性质,可模板化生成契约骨架,人只需确认。这把"为每个算子手写"降为"为每个算子family审一次"。
-3. **缺契约时安全退化 = abstain,不乱报**(最关键的诚实点):覆盖边界外的算子,系统**显式弃权**(报告"无契约,不判定"),而非强行套不匹配的契约误报。这保证 **FP 不随覆盖率下降而升**——宁可漏报未覆盖算子,不可在覆盖内误报。论文据此诚实界定:本方法的主张范围 = "已建契约的算子语义类上 100% recall / 0% FP",未覆盖类透明标注 abstain 率。
+3. **缺契约时安全退化 = abstain,不乱报**(最关键的诚实点,已实现 schema 门):覆盖边界外的算子,系统**显式弃权**而非强行套不匹配的契约误报。实现机制:`check()` 有一道 **schema 兼容门**——契约只在其声明的必需 params 键存在、且这些键命名的输入列确实在 df 里时才评估,否则返回 None(abstain)。这保证 **FP 不随覆盖率下降而升**:5 族 demo 加到更多算子,FP 仍恒 0/11;归因压力测试里"不相关契约误 fire"也由此门消除。论文据此诚实界定:本方法的主张范围 = "已建契约的算子语义类上高 recall / 0 FP",未覆盖类透明标注 abstain。
 
 > 这把"覆盖率 vs 精度"从隐患转成**可量化的覆盖表 + abstain 率**,reviewer 要的不是"覆盖全宇宙",而是"边界诚实 + 边界内可靠 + 边界可扩"。
 
@@ -127,7 +127,7 @@ reviewer 必问:"换个算子怎么办?手写契约不可扩展。"三层回应:
 4. **必要性消融——无 gold 不退化(已得)**:correct/silent 的 ground-truth 标签用手工 gold 算,但 oracle **从不看 gold**、只凭算子不变量 fire。结果:goldless oracle 在校准 run 上 recall 56/56=100%、FP 0/135=0%,在真实切片上 19/19=100%、0/17=0%——**追平"有 gold 精确比对"的检出,却不需要任何 gold output**。证明方法不退化成 text2SQL(后者需 gold query),能在无 gold/参考处工作。
 5. **外部效度(已得)**:9 张真实 Nature 源数据表(6 篇、跨学科、真实科学列名)做 held-out 切片,**模糊 silent 72% [95% CI 49-88](比合成 46% 更高)、oracle recall 100% [83-100] / FP 0% [0-18]**——现象在真实数据上更严重、oracle 零退化(详见 §1.3)。
 6. **typed 归因准确率(已得)**:对每个 silent error 跑全部契约,真实算子的契约 fire 比例 = **29/29 = 100%**——oracle 不只给二元 flag,还能定位到正确的算子语义。跨契约误 fire 20%(压力测试:把不相关契约强套正确结果,主要来自 params 不匹配时该 abstain 却 fire,属契约硬化项,不影响真实算子归因)。
-7. **可扩展性(已得,§2.4)**:3 个未见算子族,各加一条 ~14 行契约——加之前 abstain(0 recall + 0 FP,弃权不乱报),加之后检出且 FP 恒 0/5。加新算子=写一条不变量,覆盖增长不抬 FP。
+7. **可扩展性(已得,§2.4)**:**5 个未见算子族**(zscore_within_group / dense_rank / cumcount_per_group / rank_pct / clip_outlier),各加一条 ~13-21 行契约。加之前 abstain(BEFORE recall 0/9=0%,FP 0),加之后可检出族 recall 跳到 100%(dense_rank/clip_outlier),**FP 恒 0/11**。coverage-by-family:dense_rank/clip_outlier 一条契约即 100%;zscore 25%、rank_pct 0%——**单条契约覆盖不全这些算子的所有错法**,诚实暴露覆盖边界。但 FP 始终 0 + 边界外 abstain ⇒ 加新算子=写一条不变量,覆盖增长**绝不抬 FP**;"一条够 vs 需要参数敏感变体"由 coverage 表显式标注。
 
 > 所有实验数字汇总于一张 master 表(`results_master/master_table.md`),并标明两次独立生成 run(校准 192 / baseline 189)的数源,避免跨表混淆。
 
