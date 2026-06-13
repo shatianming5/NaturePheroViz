@@ -196,6 +196,66 @@ def _cases() -> List[Dict[str, Any]]:
                         "Add 'pass_rate' per group from the passed column. Columns grp, pass_rate.",
                         "Add 'pass_rate' = FRACTION of rows where passed is True, per group (a value in [0,1]). Columns grp, pass_rate."))
 
+    # --- class 13: zscore_within_group (4) ---
+    zs_sets = [
+        (["A", "A", "A", "B", "B", "B"], [10.0, 12.0, 11.0, 50.0, 52.0, 51.0]),
+        (["x", "x", "y", "y", "y"], [1.0, 3.0, 20.0, 22.0, 24.0]),
+        (["g1", "g1", "g1", "g2", "g2"], [5.0, 7.0, 9.0, 100.0, 104.0]),
+        (["p", "p", "q", "q"], [2.0, 6.0, 30.0, 38.0]),
+    ]
+    for grp, val in zs_sets:
+        df = pd.DataFrame({"batch": grp, "value": val})
+        cases.append(_C("zscore_within_group", df, {"group": "batch", "value": "value", "out": "z"},
+                        lambda d: d.assign(z=d.groupby("batch")["value"].transform(lambda s: (s - s.mean()) / s.std(ddof=0))),
+                        "Add 'z' = the z-score of value. Keep batch, value, z.",
+                        "Add 'z' = z-score of value computed WITHIN each batch (subtract that batch's own mean, divide by that batch's own std). Keep batch, value, z."))
+
+    # --- class 14: dense_rank (4) ---
+    dr_sets = [[10, 9, 9, 7], [5, 5, 5, 1], [8, 7, 6, 6, 6], [100, 90, 90, 80, 70]]
+    for scores in dr_sets:
+        df = pd.DataFrame({"team": [f"t{i}" for i in range(len(scores))], "pts": scores})
+        cases.append(_C("dense_rank", df, {"value": "pts", "out": "rank"},
+                        lambda d: d.assign(rank=d["pts"].rank(method="dense", ascending=False).astype(int)),
+                        "Add 'rank' ranking teams by pts (highest = 1). Keep team, pts, rank.",
+                        "Add 'rank' by pts (highest=1) using DENSE ranking: tied teams share a rank and the next rank is consecutive with NO gaps (1,2,2,3). Keep team, pts, rank."))
+
+    # --- class 15: cumcount_per_group (4) ---
+    cc_sets = [
+        (["u1", "u1", "u1", "u2", "u2", "u3"]),
+        (["a", "a", "b", "b", "b"]),
+        (["x", "y", "y", "y", "z", "z"]),
+        (["g", "g", "g", "g"]),
+    ]
+    for users in cc_sets:
+        df = pd.DataFrame({"user": users, "event": [f"e{i}" for i in range(len(users))]})
+        cases.append(_C("cumcount_per_group", df, {"group": "user", "out": "occurrence"},
+                        lambda d: d.assign(occurrence=d.groupby("user").cumcount() + 1),
+                        "Add 'occurrence' = a running count of events for each user. Keep user, event, occurrence.",
+                        "Add 'occurrence' = a running count that RESETS per user (each user's first event is 1, then 2, 3...). Keep user, event, occurrence."))
+
+    # --- class 16: rank_pct (4) ---
+    rp_sets = [[1200, 1850, 1500, 1500, 2100, 1000], [10, 20, 30, 40], [5, 5, 8, 9, 9], [100, 50, 75, 60, 90]]
+    for elo in rp_sets:
+        df = pd.DataFrame({"player": [f"p{i}" for i in range(len(elo))], "elo": elo})
+        cases.append(_C("rank_pct", df, {"value": "elo", "out": "pct"},
+                        lambda d: d.assign(pct=d["elo"].rank(pct=True)),
+                        "Add 'pct' ranking players by elo. Keep player, elo, pct.",
+                        "Add 'pct' = the PERCENTILE rank of elo, a value in [0,1] (rank(pct=True)), not an absolute 1..n rank. Keep player, elo, pct."))
+
+    # --- class 17: clip_outlier (4) ---
+    cl_sets = [
+        ([5.0, 120.0, 47.0, 3.0, 99.0, 150.0, 60.0, -8.0], 0.0, 100.0),
+        ([1.0, 2.0, 50.0, 99.0, 200.0], 0.0, 100.0),
+        ([-20.0, 5.0, 10.0, 15.0, 30.0], 0.0, 20.0),
+        ([0.5, 1.5, 2.5, 3.5, 4.5], 1.0, 3.0),
+    ]
+    for vals, lo, hi in cl_sets:
+        df = pd.DataFrame({"sensor": [f"s{i}" for i in range(len(vals))], "reading": vals})
+        cases.append(_C("clip_outlier", df, {"value": "reading", "lo": lo, "hi": hi, "out": "reading"},
+                        lambda d, _lo=lo, _hi=hi: d.assign(reading=d["reading"].clip(_lo, _hi)),
+                        f"Limit 'reading' to the range {lo} to {hi}. Keep sensor, reading.",
+                        f"CLIP 'reading' to [{lo}, {hi}]: cap values above {hi} and below {lo}, KEEPING every row (do not drop out-of-range rows). Keep sensor, reading."))
+
     return cases
 
 
