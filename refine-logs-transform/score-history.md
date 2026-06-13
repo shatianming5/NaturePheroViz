@@ -5,6 +5,8 @@
 | 1     | 9  | 6  | 7  | 7  | 7  | 6  | 5  | 6.9 | REVISE |
 | 2     | 9  | 7  | 7  | 8  | 8  | 6  | 6  | 7.5 | REVISE |
 | 3     | 9.0 | 7.8 | 8.1 | 8.0 | 8.3 | 7.8 | 7.5 | 8.1 | REVISE (clears Oral >=8) |
+| 4     | 9.0 | 8.7 | 8.8 | 8.5 | 8.8 | 8.4 | 8.2 | 8.7 | REVISE (clears Oral, not READY) |
+| 5     | 9.0 | 9.1 | 9.0 | 8.9 | 8.9 | 9.2 | 9.1 | 9.0 | READY (>=9) |
 
 R1 (GPT-5.4, 24 related works checked): novel enough for a serious paper, NOT yet Oral.
 Novelty = intersection (goldless + no-tests + dataframe transforms + silent semantic + typed attribution).
@@ -31,3 +33,13 @@ Remaining to fully clean (not core-idea, write-time): (1) prospective scalabilit
 unseen operator families (authoring effort + abstain rate before/after); (2) expand real slice
 beyond 18 cases with CIs; (3) necessity ablation + coverage/abstain table + typed-attribution
 accuracy in one master table.
+
+R5 (GPT-5.4): 8.7 -> 9.0, READY (>=9). "now reads like a submission package, not a strong
+prototype with loose ends." All round-4 package gaps closed: (1) 5-family coverage table
+converts extensibility from assertion to measured evidence with honest boundaries (MethodSpec
+9.1); (2) canonical reconciliation + master table + Wilson CIs fix all bookkeeping (ValFocus
+9.2, VenueReadiness 9.1); (3) dual-gate attribution keeps recall 100% while cutting cross-fire
+20%->8% (Feasibility 8.9, "partial" only because 8% residual is real not erased).
+Remaining (optional, write-time, NOT blockers): add an open model (Qwen-Coder) for FrontierLeverage
+8.9->9; family-level candidate pruning to push cross-fire below 8% for Feasibility.
+Trajectory: 6.9 -> 7.5 -> 8.1 -> 8.7 -> 9.0 across 5 rounds.
