@@ -135,15 +135,22 @@ def _tasks_from_table(df: pd.DataFrame, cat: str, nums: List[str], art: str, she
     return out
 
 
-def _build(pairs_root: str, max_tasks: int) -> List[Dict[str, Any]]:
+def _build(pairs_root: str, max_tasks: int, max_per_article: int = 15) -> List[Dict[str, Any]]:
+    """Generate real tasks, capping how many come from any single article so the
+    slice spans many independent papers (not just a few big-table articles).
+    max_per_article bounds per-article contribution -> task DIVERSITY across papers."""
     import glob
+    from collections import Counter
     files = sorted(glob.glob(str(Path(pairs_root) / "*" / "data" / "*.xlsx")))
     tasks: List[Dict[str, Any]] = []
+    per_art: Counter = Counter()
     seen_tables = 0
     for f in files:
         if len(tasks) >= max_tasks:
             break
         art = Path(f).parts[-3]
+        if per_art[art] >= max_per_article:
+            continue  # this article already contributed its cap -> move on
         try:
             xl = pd.ExcelFile(f)
         except Exception:
@@ -164,7 +171,7 @@ def _build(pairs_root: str, max_tasks: int) -> List[Dict[str, Any]]:
                 new += _tasks_from_table(df, cat, nums, art, str(sh))
             # validate each task's gold + oracle-pass before accepting
             for t in new:
-                if len(tasks) >= max_tasks:
+                if len(tasks) >= max_tasks or per_art[art] >= max_per_article:
                     break
                 try:
                     g = t["gold"](t["df"])
@@ -173,6 +180,7 @@ def _build(pairs_root: str, max_tasks: int) -> List[Dict[str, Any]]:
                     if oc is not None and oc.fired:
                         continue  # oracle false-fires on gold -> skip (keep slice clean)
                     tasks.append(t)
+                    per_art[art] += 1
                 except Exception:
                     continue
             if new:
@@ -180,8 +188,8 @@ def _build(pairs_root: str, max_tasks: int) -> List[Dict[str, Any]]:
     return tasks
 
 
-def _offline(pairs_root: str, max_tasks: int) -> int:
-    tasks = _build(pairs_root, max_tasks)
+def _offline(pairs_root: str, max_tasks: int, max_per_article: int = 15) -> int:
+    tasks = _build(pairs_root, max_tasks, max_per_article)
     from collections import Counter
     by_op = Counter(t["op"] for t in tasks)
     arts = len(set(t["name"].split("::")[1].split(":")[0] for t in tasks))
@@ -205,18 +213,20 @@ def main(argv: Optional[List[str]] = None) -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--pairs-root", default="../nature_pairs/articles")
     ap.add_argument("--max-tasks", type=int, default=60)
+    ap.add_argument("--max-per-article", type=int, default=15,
+                    help="cap tasks from any single article so the slice spans many papers")
     ap.add_argument("--offline", action="store_true")
     ap.add_argument("--out", default="eval/results_real_auto")
     a = ap.parse_args(argv)
 
     if a.offline:
-        return _offline(a.pairs_root, a.max_tasks)
+        return _offline(a.pairs_root, a.max_tasks, a.max_per_article)
     if not os.getenv("LLM_API_BASE") or not os.getenv("LLM_API_KEY"):
         print("[error] needs LLM_API_BASE / LLM_API_KEY (or --offline)."); return 1
 
     from eval.ambiguity_calibration import _llm_code, _exec, _gold_correct, MODELS
 
-    tasks = _build(a.pairs_root, a.max_tasks)
+    tasks = _build(a.pairs_root, a.max_tasks, a.max_per_article)
     arts = len(set(t["name"].split("::")[1].split(":")[0] for t in tasks))
     print(f"[real-auto] {len(tasks)} real tasks across {arts} articles x (ambiguous, clarified) x {len(MODELS)} models", flush=True)
 
