@@ -104,7 +104,11 @@ reviewer 必问:"换个算子怎么办?手写契约不可扩展。"三层回应:
 
 1. **silent-error benchmark(已得)**:48 类网格,模糊 silent 率 46%、分层双峰。**第一个 silent-transform-error benchmark**,本身是领域贡献。
 2. **歧义校准(已得)**:模糊 46% → 澄清 12%,证明是模型失败而非任务欠定义。
-3. **检出 head-to-head(已得,同表对照)**:48 网格同一批 LLM 产物(57 silent / 132 correct)上,5 个检测器并排:
+3. **检出 head-to-head(已得,同表对照)**:48 网格同一批 LLM 产物上 5 个检测器并排。
+
+   > **数源说明(避免与 §1 校准混淆)**:这是一次**独立的 baseline run**(为给 consistency 检测器额外生成 K=3 实现而重跑),产出 **189 个 exec-ok 结果(57 silent / 132 correct)**——与 §1.1/§7 校准 run 的 192 次(135 correct + 56 silent + 1 crash)是**两次独立生成**,温度 0 下因 LLM 抽样仍有自然抖动(56↔57 silent),各自内部自洽,不应跨表相加。论文终稿会用**同一次** run 同时驱动校准与 baseline,合并为一张 master 账目表。
+
+   同一批产物(57 silent / 132 correct),5 检测器:
 
    | 检测器 | recall(真错上报警) | FP(正确上误报) |
    |---|---|---|

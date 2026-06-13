@@ -1,0 +1,33 @@
+I’m treating this as a round-3 review, not a rewrite. First I’ll inspect the repository instructions and the concrete experiment artifacts behind the claimed five P0 closures, then I’ll rescore on the same rubric.The provided path does not exist in the current container, so I’m checking whether the proposal repo is mounted elsewhere and whether the evidence files are accessible at all. If the artifacts aren’t present, I can only score the written claims, not verify them.I haven’t found the stated repository or any scoped `AGENTS.md` in this container. I’m now checking whether the proposal artifacts were copied into the current checkout under different paths.The stated repo path `/Users/tommy/Downloads/NaturePheroViz` was not mounted in this container, and I could not inspect the claimed artifact files or rerun scripts. So this is a round-3 evidence-sufficiency review of the proposal text you provided, not an independent reproduction.
+
+The proposal is materially stronger than round-2. The decisive improvement is the same-grid, same-generation head-to-head: that is exactly the missing experiment I asked for. The real-data slice and the 3-wording clarification study also directly address the right objections. Two claims are still overstated, though: `contract scalability` is not closed “with real data” because it remains an argument, and the `accounting hole` is not fully closed because the proposal still contains incompatible totals (`57 silent / 132 correct` in the detector table vs `135 correct + 56 silent + 1 crash` in the full matrix).
+
+| Dimension | Round-3 |
+|---|---:|
+| ProblemFidelity | 9.0 |
+| MethodSpec | 7.8 |
+| ContribQuality | 8.1 |
+| FrontierLeverage | 8.0 |
+| Feasibility | 8.3 |
+| ValidationFocus | 7.8 |
+| VenueReadiness | 7.5 |
+| Overall | 8.1 |
+
+For scores `< 8`:
+
+- `MethodSpec 7.8`: Weakness: scalability is principled but not empirically demonstrated. Concrete fix: add a prospective expansion on 2-3 unseen operator families, reporting contract authoring effort, abstain rate before/after, and recall/FP after adding them. Priority: `High`.
+- `ValidationFocus 7.8`: Weakness: the real-data slice is important but still small (`18` ambiguous cases). Concrete fix: expand to a predeclared held-out set across more papers/operator classes and report confidence intervals, not just point estimates. Priority: `High`.
+- `VenueReadiness 7.5`: Weakness: the manuscript still has unresolved accounting inconsistency and is missing one standard necessity package. Concrete fix: reconcile all totals in one master table, then add the no-gold necessity ablation, coverage/abstain table, and typed-attribution accuracy. Priority: `High`.
+
+Explicit answers:
+
+- Baseline head-to-head closes the CRITICAL “significantly better than existing means” P0: `partial`.
+  The experiment design is sufficient and likely does close it substantively, but the current count inconsistency prevents me from marking it fully closed as written.
+- Real-data slice closes external validity: `yes`.
+  It is small, but it is enough to kill the “purely synthetic toy grid” objection.
+- 3-wording clarification closes the causal-isolation P0: `yes`.
+  The low cross-wording variance is exactly the right evidence.
+- OVERALL SCORE and Oral threshold: `8.1`, `yes`, it now clears Oral.
+- Verdict: `REVISE`. It is not `READY (>=9)`, but it does now clear Oral `>= 8`.
+
+Bottom line: this is now an oral-clearing thesis in substance, but not a fully cleaned oral package yet. The remaining work is not on the core idea; it is on rigor of accounting, bounded-coverage evidence, and one short scalability/necessity appendix.
