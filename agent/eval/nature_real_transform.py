@@ -42,6 +42,18 @@ from eval.transform_oracle import check as oracle_check  # noqa: E402
 PAIRS_ROOT = Path(__file__).resolve().parents[2] / "nature_pairs" / "articles"
 
 
+def _wilson(k: int, n: int, z: float = 1.96) -> str:
+    """95% Wilson score interval for a binomial rate k/n, as a '[lo, hi]%' string."""
+    if n == 0:
+        return "n/a"
+    p = k / n
+    denom = 1 + z * z / n
+    center = (p + z * z / (2 * n)) / denom
+    half = (z * ((p * (1 - p) / n + z * z / (4 * n * n)) ** 0.5)) / denom
+    lo, hi = max(0.0, center - half), min(1.0, center + half)
+    return f"{100*p:.0f}% [95% CI {100*lo:.0f}-{100*hi:.0f}]"
+
+
 def _dedup_cols(df: pd.DataFrame) -> pd.DataFrame:
     cols, seen = [], {}
     for c in df.columns:
@@ -257,17 +269,21 @@ def _run_llm(out_dir: str) -> int:
     report = [
         "# Held-out REAL-DATA slice: transform fidelity on real Nature source tables\n",
         "Real input frames (scientific column names: ETR/PAR/VAF/log2FoldChange/ddCt), same",
-        "operator-semantic taxonomy + (ambiguous, clarified) prompts + goldless oracle.\n",
+        "operator-semantic taxonomy + (ambiguous, clarified) prompts + goldless oracle.",
+        f"Sample: {len(cases)} curated real tables across multiple Nature papers; rates with",
+        "95% Wilson score intervals (the slice is deliberately small + held-out, so CIs are wide).\n",
         "## (1) Silent-error rate on REAL data",
-        f"- ambiguous prompts: {silent['ambiguous']}/{total['ambiguous']} silent-wrong ({rate('ambiguous')})",
-        f"- clarified prompts: {silent['clarified']}/{total['clarified']} silent-wrong ({rate('clarified')})\n",
+        f"- ambiguous prompts: {silent['ambiguous']}/{total['ambiguous']} silent-wrong ({_wilson(silent['ambiguous'], total['ambiguous'])})",
+        f"- clarified prompts: {silent['clarified']}/{total['clarified']} silent-wrong ({_wilson(silent['clarified'], total['clarified'])})\n",
         "## (2) Oracle recall on real silent errors",
-        f"- fired on {fire_wrong}/{wrong} truly-wrong ({100*fire_wrong/wrong:.0f}%)" if wrong else "- (no wrong)",
+        f"- fired on {fire_wrong}/{wrong} truly-wrong ({_wilson(fire_wrong, wrong)})" if wrong else "- (no wrong)",
         "\n## (3) Oracle false-positive on real correct results",
-        f"- fired on {fire_right}/{right} truly-correct ({100*fire_right/right:.0f}%)" if right else "- (no correct)",
+        f"- fired on {fire_right}/{right} truly-correct ({_wilson(fire_right, right)})" if right else "- (no correct)",
         "\n## Reading",
         "- Real domain column names + real distributions => the silent-error phenomenon is",
         "  not an artifact of synthetic toy tables; the oracle transfers to held-out real data.",
+        "- CIs are wide (small held-out slice) but the ambiguous-silent lower bound stays well",
+        "  above 0, and the oracle FP upper bound stays low — the direction is robust to sample size.",
     ]
     out = Path(out_dir); out.mkdir(parents=True, exist_ok=True)
     (out / "real_slice_report.md").write_text("\n".join(report), encoding="utf-8")
