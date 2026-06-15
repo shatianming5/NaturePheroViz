@@ -557,17 +557,26 @@ def _diagnose(spec: Dict[str, Any], df_cols: List[str], overlays_n: int, png_pat
     return diagnostics
 
 
-def judge(png_path: str, exec_log: str, df, spec: Dict[str, Any]) -> Dict[str, Any]:
+def judge(png_path: str, exec_log: str, df, spec: Dict[str, Any], use_verifier: bool = True) -> Dict[str, Any]:
     overlays = spec.get('overlays') or []
     overlays_n = len(overlays)
     df_cols = list(getattr(df, 'columns', []))
     svg_path = str(Path(png_path).with_suffix('.svg')) if png_path else ''
-    fidelity = verify_fidelity(
-        svg_path=svg_path,
-        ground_truth_table=df if df is not None else None,
-        spec=spec or {},
-        png_path=png_path,
-    )
+    if use_verifier:
+        fidelity = verify_fidelity(
+            svg_path=svg_path,
+            ground_truth_table=df if df is not None else None,
+            spec=spec or {},
+            png_path=png_path,
+        )
+    else:
+        fidelity = {
+            'data_fidelity': float('nan'),
+            'rms_f1': float('nan'),
+            'rnss': float('nan'),
+            'mismatches': [],
+            'pred_table': pd.DataFrame(),
+        }
     cohesion_score, cohesion_diagnostics = _series_cohesion(spec or {}, df_cols, png_path, df)
 
     vlm_result = _call_vlm_judge(spec, df_cols, png_path, exec_log)

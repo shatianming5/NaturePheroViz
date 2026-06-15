@@ -564,6 +564,27 @@
   },
   "debug": {},
   "selected_index": 1,
+  "ablation": {
+    "use_verifier": true,
+    "use_best_of_n": true,
+    "use_pheromone": true,
+    "best_of_n": 1
+  },
+  "pheromone_summary": {
+    "total": 3,
+    "by_type": {
+      "constraint": 0,
+      "style": 2,
+      "geom": 0,
+      "layout": 1,
+      "ref": 0
+    }
+  },
+  "pheromone_tail": [
+    "low.contrast.series.2 -> theme.palette 改用 ColorBlindSafe 或区分 alpha/线型",
+    "legend.missing.multi -> legend.apply 多系列图应显示图例或在图内直接标注系列",
+    "series.style.conflict -> theme.palette 多系列应使用不同颜色或线型，避免视觉混淆"
+  ],
   "candidates": [
     {
       "candidate_index": 1,

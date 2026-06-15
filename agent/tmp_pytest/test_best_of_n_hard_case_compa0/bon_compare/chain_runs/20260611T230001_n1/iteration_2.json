@@ -205,7 +205,7 @@
             }
           ]
         },
-        "feedback": "[ROUND 1] Goal: {goal}  Chart: {chart_family}\nPrev J: Overall=0.51  VisualForm=1.00  DataFidelity=0.00  SeriesCohesion=0.55\nDiagnostics (top-5):\n - low.contrast.series.2 (sev=1) -> slot theme.palette 改用 ColorBlindSafe 或区分 alpha/线型\n - legend.missing.multi (sev=2) -> slot legend.apply 多系列图应显示图例或在图内直接标注系列\n - series.style.conflict (sev=1) -> slot theme.palette 多系列应使用不同颜色或线型，避免视觉混淆\nLayer guards:\n- L2 allow=data.*; deny=ax/plt/text/legend/grid/theme\n- L3 allow=marks.*,scales.*,colorbar.apply; deny=axes.*,legend.*,grid.*,annot.*,theme.*\n- L4 allow=axes.*,legend.*,grid.*,annot.*,theme.*; deny=data.*,marks.*\nReturn JSON ONLY:\n{\n  \"slots\": { \"<slot.key>\": \"<FUNCTION BODY ONLY>\" , ... },\n  \"notes\": \"<design intent / risks>\"\n}",
+        "feedback": "[ROUND 1] Goal: {goal}  Chart: {chart_family}\nPrev J: Overall=0.51  VisualForm=1.00  DataFidelity=0.00  SeriesCohesion=0.55\nDiagnostics (top-5):\n - low.contrast.series.2 (sev=1) -> slot theme.palette 改用 ColorBlindSafe 或区分 alpha/线型\n - legend.missing.multi (sev=2) -> slot legend.apply 多系列图应显示图例或在图内直接标注系列\n - series.style.conflict (sev=1) -> slot theme.palette 多系列应使用不同颜色或线型，避免视觉混淆\nLayer guards:\n- L2 allow=data.*; deny=ax/plt/text/legend/grid/theme\n- L3 allow=marks.*,scales.*,colorbar.apply; deny=axes.*,legend.*,grid.*,annot.*,theme.*\n- L4 allow=axes.*,legend.*,grid.*,annot.*,theme.*; deny=data.*,marks.*\nReturn JSON ONLY:\n{\n  \"slots\": { \"<slot.key>\": \"<FUNCTION BODY ONLY>\" , ... },\n  \"notes\": \"<design intent / risks>\"\n}\nPheromone memory:\nPheromone: total=3\nPheromone by type: constraint=0, geom=0, layout=1, ref=0, style=2\n- L1 style gain=0.51 low.contrast.series.2 -> theme.palette\n- L1 layout gain=0.51 legend.missing.multi -> legend.apply\n- L1 style gain=0.51 series.style.conflict -> theme.palette",
         "slot_keys": [
           "spec.compose",
           "spec.theme_defaults"
@@ -324,7 +324,7 @@
             }
           ]
         },
-        "feedback": "[ROUND 1] Goal: {goal}  Chart: {chart_family}\nPrev J: Overall=0.51  VisualForm=1.00  DataFidelity=0.00  SeriesCohesion=0.55\nDiagnostics (top-5):\n - low.contrast.series.2 (sev=1) -> slot theme.palette 改用 ColorBlindSafe 或区分 alpha/线型\n - legend.missing.multi (sev=2) -> slot legend.apply 多系列图应显示图例或在图内直接标注系列\n - series.style.conflict (sev=1) -> slot theme.palette 多系列应使用不同颜色或线型，避免视觉混淆\nLayer guards:\n- L2 allow=data.*; deny=ax/plt/text/legend/grid/theme\n- L3 allow=marks.*,scales.*,colorbar.apply; deny=axes.*,legend.*,grid.*,annot.*,theme.*\n- L4 allow=axes.*,legend.*,grid.*,annot.*,theme.*; deny=data.*,marks.*\nReturn JSON ONLY:\n{\n  \"slots\": { \"<slot.key>\": \"<FUNCTION BODY ONLY>\" , ... },\n  \"notes\": \"<design intent / risks>\"\n}",
+        "feedback": "[ROUND 1] Goal: {goal}  Chart: {chart_family}\nPrev J: Overall=0.51  VisualForm=1.00  DataFidelity=0.00  SeriesCohesion=0.55\nDiagnostics (top-5):\n - low.contrast.series.2 (sev=1) -> slot theme.palette 改用 ColorBlindSafe 或区分 alpha/线型\n - legend.missing.multi (sev=2) -> slot legend.apply 多系列图应显示图例或在图内直接标注系列\n - series.style.conflict (sev=1) -> slot theme.palette 多系列应使用不同颜色或线型，避免视觉混淆\nLayer guards:\n- L2 allow=data.*; deny=ax/plt/text/legend/grid/theme\n- L3 allow=marks.*,scales.*,colorbar.apply; deny=axes.*,legend.*,grid.*,annot.*,theme.*\n- L4 allow=axes.*,legend.*,grid.*,annot.*,theme.*; deny=data.*,marks.*\nReturn JSON ONLY:\n{\n  \"slots\": { \"<slot.key>\": \"<FUNCTION BODY ONLY>\" , ... },\n  \"notes\": \"<design intent / risks>\"\n}\nPheromone memory:\nPheromone: total=3\nPheromone by type: constraint=0, geom=0, layout=1, ref=0, style=2\n- L1 style gain=0.51 low.contrast.series.2 -> theme.palette\n- L1 layout gain=0.51 legend.missing.multi -> legend.apply\n- L1 style gain=0.51 series.style.conflict -> theme.palette",
         "slot_keys": [
           "data.prepare",
           "data.aggregate",
@@ -444,7 +444,7 @@
             }
           ]
         },
-        "feedback": "[ROUND 1] Goal: {goal}  Chart: {chart_family}\nPrev J: Overall=0.51  VisualForm=1.00  DataFidelity=0.00  SeriesCohesion=0.55\nDiagnostics (top-5):\n - low.contrast.series.2 (sev=1) -> slot theme.palette 改用 ColorBlindSafe 或区分 alpha/线型\n - legend.missing.multi (sev=2) -> slot legend.apply 多系列图应显示图例或在图内直接标注系列\n - series.style.conflict (sev=1) -> slot theme.palette 多系列应使用不同颜色或线型，避免视觉混淆\nLayer guards:\n- L2 allow=data.*; deny=ax/plt/text/legend/grid/theme\n- L3 allow=marks.*,scales.*,colorbar.apply; deny=axes.*,legend.*,grid.*,annot.*,theme.*\n- L4 allow=axes.*,legend.*,grid.*,annot.*,theme.*; deny=data.*,marks.*\nReturn JSON ONLY:\n{\n  \"slots\": { \"<slot.key>\": \"<FUNCTION BODY ONLY>\" , ... },\n  \"notes\": \"<design intent / risks>\"\n}",
+        "feedback": "[ROUND 1] Goal: {goal}  Chart: {chart_family}\nPrev J: Overall=0.51  VisualForm=1.00  DataFidelity=0.00  SeriesCohesion=0.55\nDiagnostics (top-5):\n - low.contrast.series.2 (sev=1) -> slot theme.palette 改用 ColorBlindSafe 或区分 alpha/线型\n - legend.missing.multi (sev=2) -> slot legend.apply 多系列图应显示图例或在图内直接标注系列\n - series.style.conflict (sev=1) -> slot theme.palette 多系列应使用不同颜色或线型，避免视觉混淆\nLayer guards:\n- L2 allow=data.*; deny=ax/plt/text/legend/grid/theme\n- L3 allow=marks.*,scales.*,colorbar.apply; deny=axes.*,legend.*,grid.*,annot.*,theme.*\n- L4 allow=axes.*,legend.*,grid.*,annot.*,theme.*; deny=data.*,marks.*\nReturn JSON ONLY:\n{\n  \"slots\": { \"<slot.key>\": \"<FUNCTION BODY ONLY>\" , ... },\n  \"notes\": \"<design intent / risks>\"\n}\nPheromone memory:\nPheromone: total=3\nPheromone by type: constraint=0, geom=0, layout=1, ref=0, style=2\n- L1 style gain=0.51 low.contrast.series.2 -> theme.palette\n- L1 layout gain=0.51 legend.missing.multi -> legend.apply\n- L1 style gain=0.51 series.style.conflict -> theme.palette",
         "slot_keys": [
           "marks.*",
           "scales.*",
@@ -544,7 +544,7 @@
             }
           ]
         },
-        "feedback": "[ROUND 1] Goal: {goal}  Chart: {chart_family}\nPrev J: Overall=0.51  VisualForm=1.00  DataFidelity=0.00  SeriesCohesion=0.55\nDiagnostics (top-5):\n - low.contrast.series.2 (sev=1) -> slot theme.palette 改用 ColorBlindSafe 或区分 alpha/线型\n - legend.missing.multi (sev=2) -> slot legend.apply 多系列图应显示图例或在图内直接标注系列\n - series.style.conflict (sev=1) -> slot theme.palette 多系列应使用不同颜色或线型，避免视觉混淆\nLayer guards:\n- L2 allow=data.*; deny=ax/plt/text/legend/grid/theme\n- L3 allow=marks.*,scales.*,colorbar.apply; deny=axes.*,legend.*,grid.*,annot.*,theme.*\n- L4 allow=axes.*,legend.*,grid.*,annot.*,theme.*; deny=data.*,marks.*\nReturn JSON ONLY:\n{\n  \"slots\": { \"<slot.key>\": \"<FUNCTION BODY ONLY>\" , ... },\n  \"notes\": \"<design intent / risks>\"\n}",
+        "feedback": "[ROUND 1] Goal: {goal}  Chart: {chart_family}\nPrev J: Overall=0.51  VisualForm=1.00  DataFidelity=0.00  SeriesCohesion=0.55\nDiagnostics (top-5):\n - low.contrast.series.2 (sev=1) -> slot theme.palette 改用 ColorBlindSafe 或区分 alpha/线型\n - legend.missing.multi (sev=2) -> slot legend.apply 多系列图应显示图例或在图内直接标注系列\n - series.style.conflict (sev=1) -> slot theme.palette 多系列应使用不同颜色或线型，避免视觉混淆\nLayer guards:\n- L2 allow=data.*; deny=ax/plt/text/legend/grid/theme\n- L3 allow=marks.*,scales.*,colorbar.apply; deny=axes.*,legend.*,grid.*,annot.*,theme.*\n- L4 allow=axes.*,legend.*,grid.*,annot.*,theme.*; deny=data.*,marks.*\nReturn JSON ONLY:\n{\n  \"slots\": { \"<slot.key>\": \"<FUNCTION BODY ONLY>\" , ... },\n  \"notes\": \"<design intent / risks>\"\n}\nPheromone memory:\nPheromone: total=3\nPheromone by type: constraint=0, geom=0, layout=1, ref=0, style=2\n- L1 style gain=0.51 low.contrast.series.2 -> theme.palette\n- L1 layout gain=0.51 legend.missing.multi -> legend.apply\n- L1 style gain=0.51 series.style.conflict -> theme.palette",
         "slot_keys": [
           "axes.*",
           "legend.apply",
@@ -564,6 +564,27 @@
   },
   "debug": {},
   "selected_index": 1,
+  "ablation": {
+    "use_verifier": true,
+    "use_best_of_n": true,
+    "use_pheromone": true,
+    "best_of_n": 1
+  },
+  "pheromone_summary": {
+    "total": 6,
+    "by_type": {
+      "constraint": 0,
+      "style": 4,
+      "geom": 0,
+      "layout": 2,
+      "ref": 0
+    }
+  },
+  "pheromone_tail": [
+    "low.contrast.series.2 -> theme.palette 改用 ColorBlindSafe 或区分 alpha/线型",
+    "legend.missing.multi -> legend.apply 多系列图应显示图例或在图内直接标注系列",
+    "series.style.conflict -> theme.palette 多系列应使用不同颜色或线型，避免视觉混淆"
+  ],
   "candidates": [
     {
       "candidate_index": 1,
@@ -600,5 +621,12 @@
       "code_path": "E:\\黄妍\\科研\\6.3\\NaturePheroViz\\agent\\tmp_pytest\\test_best_of_n_hard_case_compa0\\bon_compare\\chain_runs\\20260611T230001_n1\\code_round_2_cand_1.py",
       "slots_path": "E:\\黄妍\\科研\\6.3\\NaturePheroViz\\agent\\tmp_pytest\\test_best_of_n_hard_case_compa0\\bon_compare\\chain_runs\\20260611T230001_n1\\slots_round_2_cand_1.json"
     }
-  ]
+  ],
+  "stop_reason": "no_progress",
+  "stop_detail": {
+    "stall_rounds": 2,
+    "stall_delta": 0.01,
+    "overall_score": 0.5115384615384615,
+    "improvement": 0.0
+  }
 }

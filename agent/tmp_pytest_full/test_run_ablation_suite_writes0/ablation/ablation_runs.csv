@@ -1,0 +1,5 @@
+case,config,excel_path,chart_family,ok,error,rounds_used,selected_index,overall_score,visual_form,data_fidelity,series_cohesion,stop_reason,use_verifier,use_best_of_n,use_pheromone,png_path
+demo,full,E:\黄妍\科研\6.3\NaturePheroViz\agent\data\sales_demo.csv,bar,True,,2,1,0.68,0.7,0.5800000000000001,0.78,score_threshold,True,True,True,runs/fake/figure.png
+demo,no_verifier,E:\黄妍\科研\6.3\NaturePheroViz\agent\data\sales_demo.csv,bar,True,,2,1,0.58,0.7,0.48000000000000004,0.6799999999999999,score_threshold,False,True,True,runs/fake/figure.png
+demo,no_bestof,E:\黄妍\科研\6.3\NaturePheroViz\agent\data\sales_demo.csv,bar,True,,2,1,0.63,0.7,0.53,0.73,score_threshold,True,False,True,runs/fake/figure.png
+demo,no_pheromone,E:\黄妍\科研\6.3\NaturePheroViz\agent\data\sales_demo.csv,bar,True,,2,1,0.65,0.7,0.55,0.75,score_threshold,True,True,False,runs/fake/figure.png

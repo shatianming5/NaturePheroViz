@@ -14,8 +14,9 @@ import requests
 
 from app.services.code_assembler import assemble_with_slots
 from app.services.default_slots_v2 import DEFAULT_STAGE_SLOTS_V2
-from app.services.feedback_builder import compose_feedback
+from app.services.feedback_builder import compose_feedback, format_pheromone_summary
 from app.services.judge import judge
+from app.services.pheromones import EvidenceType, PheromoneLink, PheroStore
 from app.services.sandbox_runner import execute_script
 from app.services.slot_registry import ALLOWED_BY_LAYER
 from app.services.spec_deriver import derive_spec
@@ -561,6 +562,72 @@ def _candidate_temperature(round_idx: int, candidate_idx: int, total_candidates:
     return 0.7
 
 
+def _env_flag(name: str, default: bool = False) -> bool:
+    raw = os.getenv(name)
+    if raw is None:
+        return default
+    return raw.strip().lower() not in {"", "0", "false", "no"}
+
+
+def _stall_delta() -> float:
+    raw = os.getenv("STALL_DELTA") or os.getenv("BUDGET_FORCE_DELTA") or "0.01"
+    try:
+        value = float(raw)
+    except ValueError:
+        value = 0.01
+    return max(0.0, value)
+
+
+def _diag_to_etype(key: str) -> EvidenceType:
+    lower = str(key or "").lower()
+    if "legend" in lower or "title" in lower:
+        return EvidenceType.layout
+    if "scale" in lower or "axis" in lower or "ratio" in lower:
+        return EvidenceType.constraint
+    if "contrast" in lower or "palette" in lower or "style" in lower:
+        return EvidenceType.style
+    if "mapping" in lower or "value" in lower or "series" in lower:
+        return EvidenceType.geom
+    return EvidenceType.ref
+
+
+def _append_pheromone_links(
+    store: PheroStore,
+    round_idx: int,
+    diagnostics: list[Dict[str, Any]],
+    last_scores: Dict[str, float],
+    prev_overall: Optional[float],
+) -> None:
+    current_overall = float(last_scores.get("overall_score", 0.0) or 0.0)
+    gain = current_overall if prev_overall is None else current_overall - prev_overall
+    for diag in diagnostics[:5]:
+        key = str(diag.get("key") or "")
+        slot = str(diag.get("slot") or "")
+        hint = str(diag.get("hint") or "")
+        store.append(
+            PheromoneLink(
+                level=round_idx,
+                etype=_diag_to_etype(key),
+                delta={"overall_score": gain, "severity": float(diag.get("sev", 1) or 1)},
+                patch={"slot": slot, "key": key, "hint": hint},
+                msg=f"{key} -> {slot} {hint}".strip(),
+            )
+        )
+
+
+def _pheromone_feedback_suffix(store: PheroStore, tail_n: int = 3) -> str:
+    if not store.links:
+        return ""
+    lines = ["Pheromone memory:"]
+    lines.extend(format_pheromone_summary(store.summary()))
+    for link in store.tail(tail_n):
+        slot = str((link.patch or {}).get("slot") or "?")
+        key = str((link.patch or {}).get("key") or "")
+        gain = float((link.delta or {}).get("overall_score", 0.0) or 0.0)
+        lines.append(f"- L{link.level} {link.etype.value} gain={gain:.2f} {key} -> {slot}")
+    return "\n".join(lines)
+
+
 def run_chain(
     excel_path: str,
     user_goal: str,
@@ -569,7 +636,14 @@ def run_chain(
     sheet: Optional[str] = None,
     intent: Optional[Dict[str, Any]] = None,
     progress_callback: Optional[Callable[[str, Dict[str, Any]], None]] = None,
+    use_verifier: bool = True,
+    use_best_of_n: bool = True,
+    use_pheromone: bool = True,
 ) -> Dict[str, Any]:
+    use_verifier = bool(use_verifier) and not _env_flag("NO_VERIFIER", default=False)
+    use_best_of_n = bool(use_best_of_n) and not _env_flag("NO_BESTOF", default=False)
+    use_pheromone = bool(use_pheromone) and not _env_flag("NO_PHEROMONE", default=False)
+
     def emit(event: str, payload: Optional[Dict[str, Any]] = None) -> None:
         if progress_callback is None:
             return
@@ -642,16 +716,23 @@ def run_chain(
     # Debug toggle propagated into scaffold for richer diagnostics/overlays
     debug_env = os.getenv("DEBUG_RUN", "").strip().lower()
     ctx["debug"] = debug_env not in {"", "0", "false", "no"}
-    force_all_rounds_raw = os.getenv("FORCE_ALL_ROUNDS", "")
-    force_all_rounds = force_all_rounds_raw.strip().lower() not in {"", "0", "false", "no"}
+    force_all_rounds = _env_flag("FORCE_ALL_ROUNDS", default=False)
     ctx["force_all_rounds"] = force_all_rounds
+    ctx["use_pheromone"] = use_pheromone
+    phero_store = PheroStore()
 
     emit(
         "context_ready",
         {"round": 0, "feedback": feedback_text, "spec_keys": list(spec.keys())},
     )
 
-    best_of_n = _best_of_n_count()
+    best_of_n = _best_of_n_count() if use_best_of_n else 1
+    stall_rounds = 0
+    prev_overall: Optional[float] = None
+    deeper_retry_used = False
+    stop_reason = "budget_exhausted"
+    stop_detail: Dict[str, Any] = {"max_rounds": max(1, rounds)}
+    stall_threshold = _stall_delta()
 
     for round_idx in range(1, max(1, rounds) + 1):
         emit("round_start", {"round": round_idx, "feedback": feedback_text})
@@ -877,7 +958,13 @@ def run_chain(
             )
             png_for_judge = exec_result.get("png_path") or out_png
             emit("judging_start", {"round": round_idx, "candidate": candidate_idx, "png_path": png_for_judge})
-            judge_result = judge(png_for_judge, exec_result.get("stderr", ""), df, candidate_spec)
+            judge_result = judge(
+                png_for_judge,
+                exec_result.get("stderr", ""),
+                df,
+                candidate_spec,
+                use_verifier=use_verifier,
+            )
             scores = {
                 "visual_form": judge_result.get("visual_form", 0.0),
                 "data_fidelity": judge_result.get("data_fidelity", 0.0),
@@ -939,6 +1026,14 @@ def run_chain(
             "stages": chosen.get("stages", {}),
             "debug": chosen.get("debug", {}),
             "selected_index": chosen.get("candidate_index", 1),
+            "ablation": {
+                "use_verifier": use_verifier,
+                "use_best_of_n": use_best_of_n,
+                "use_pheromone": use_pheromone,
+                "best_of_n": best_of_n,
+            },
+            "pheromone_summary": phero_store.summary() if use_pheromone else {"total": 0, "by_type": {}},
+            "pheromone_tail": [link.msg for link in phero_store.tail(3)] if use_pheromone else [],
             "candidates": [
                 {
                     "candidate_index": item.get("candidate_index"),
@@ -964,16 +1059,65 @@ def run_chain(
             },
         )
 
-        artifact_path = run_dir / f"iteration_{round_idx}.json"
-        artifact_path.write_text(
-            json.dumps(selected, ensure_ascii=False, indent=2),
-            encoding="utf-8",
-        )
-        emit("artifact_written", {"round": round_idx, "path": str(artifact_path)})
+        prior_overall = prev_overall
+        current_overall = float(last_scores.get("overall_score", 0.0))
+        improvement = None if prior_overall is None else current_overall - prior_overall
+        if improvement is None:
+            stall_rounds = 0
+        elif improvement <= stall_threshold:
+            stall_rounds += 1
+        else:
+            stall_rounds = 0
+        prev_overall = current_overall
+        if use_pheromone:
+            _append_pheromone_links(
+                phero_store,
+                round_idx,
+                selected.get("diagnostics", []),
+                last_scores,
+                prior_overall,
+            )
+            selected["pheromone_summary"] = phero_store.summary()
+            selected["pheromone_tail"] = [link.msg for link in phero_store.tail(3)]
 
         if (not force_all_rounds) and last_scores["overall_score"] >= 0.75:
+            stop_reason = "score_threshold"
+            stop_detail = {"threshold": 0.75, "overall_score": current_overall}
+            selected["stop_reason"] = stop_reason
+            selected["stop_detail"] = stop_detail
+            artifact_path = run_dir / f"iteration_{round_idx}.json"
+            artifact_path.write_text(
+                json.dumps(selected, ensure_ascii=False, indent=2),
+                encoding="utf-8",
+            )
+            emit("artifact_written", {"round": round_idx, "path": str(artifact_path)})
             emit("round_success", {"round": round_idx, "scores": last_scores})
             break
+
+        request_deeper_retry = False
+        if (not force_all_rounds) and stall_rounds >= 1 and round_idx >= 2:
+            if round_idx < max(1, rounds) and not deeper_retry_used:
+                deeper_retry_used = True
+                request_deeper_retry = True
+                selected["deeper_retry_forced"] = True
+            else:
+                stop_reason = "no_progress"
+                stop_detail = {
+                    "stall_rounds": stall_rounds + 1,
+                    "stall_delta": stall_threshold,
+                    "overall_score": current_overall,
+                    "improvement": improvement,
+                    "deeper_retry_used": deeper_retry_used,
+                }
+                selected["stop_reason"] = stop_reason
+                selected["stop_detail"] = stop_detail
+                artifact_path = run_dir / f"iteration_{round_idx}.json"
+                artifact_path.write_text(
+                    json.dumps(selected, ensure_ascii=False, indent=2),
+                    encoding="utf-8",
+                )
+                emit("artifact_written", {"round": round_idx, "path": str(artifact_path)})
+                break
 
         layer_guards = {
             "L2": "allow=data.*; deny=ax/plt/text/legend/grid/theme",
@@ -983,15 +1127,43 @@ def run_chain(
         feedback_text = compose_feedback(
             round_idx, last_scores, selected.get("diagnostics", []), layer_guards
         )
+        if request_deeper_retry:
+            feedback_text = (
+                f"{feedback_text}\n"
+                "Deeper retry required:\n"
+                "- Previous round did not improve enough.\n"
+                "- Change more than surface styling; revisit mapping, mark choice, scale, legend, and layout together.\n"
+                "- Prefer a materially different repair over a local tweak."
+            )
+        if use_pheromone:
+            suffix = _pheromone_feedback_suffix(phero_store)
+            if suffix:
+                feedback_text = f"{feedback_text}\n{suffix}"
         ctx["feedback_text"] = feedback_text
         emit("feedback_ready", {"round": round_idx, "feedback": feedback_text})
 
+        if round_idx >= max(1, rounds):
+            stop_reason = "budget_exhausted"
+            stop_detail = {"max_rounds": max(1, rounds), "overall_score": current_overall}
+            selected["stop_reason"] = stop_reason
+            selected["stop_detail"] = stop_detail
+        artifact_path = run_dir / f"iteration_{round_idx}.json"
+        artifact_path.write_text(
+            json.dumps(selected, ensure_ascii=False, indent=2),
+            encoding="utf-8",
+        )
+        emit("artifact_written", {"round": round_idx, "path": str(artifact_path)})
+
+    if selected is not None:
+        selected.setdefault("stop_reason", stop_reason)
+        selected.setdefault("stop_detail", stop_detail)
     emit(
         "finished",
         {
             "round": selected["round"] if selected else 0,
             "scores": last_scores,
             "run_dir": str(run_dir),
+            "stop_reason": selected.get("stop_reason") if selected else stop_reason,
         },
     )
     return selected or {}

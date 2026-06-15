@@ -223,6 +223,9 @@ def main() -> None:
     parser.add_argument("--rounds", type=int, default=3)
     parser.add_argument("--sheet", default=None)
     parser.add_argument("--intent", default=None, help="JSON string of intent")
+    parser.add_argument("--no-verifier", action="store_true", help="Disable fidelity verifier and fall back to heuristic data_fidelity")
+    parser.add_argument("--no-bestof", action="store_true", help="Disable Best-of-N and force N=1")
+    parser.add_argument("--no-pheromone", action="store_true", help="Disable pheromone guidance")
     args = parser.parse_args()
 
     intent_payload = _parse_intent(args.intent)
@@ -278,11 +281,14 @@ def main() -> None:
                 args.excel_path,
                 args.user_goal,
                 args.chart_family,
-                rounds=args.rounds,
-                sheet=args.sheet,
-                intent=intent_payload,
-                progress_callback=handle_progress,
-            )
+            rounds=args.rounds,
+            sheet=args.sheet,
+            intent=intent_payload,
+            progress_callback=handle_progress,
+            use_verifier=not args.no_verifier,
+            use_best_of_n=not args.no_bestof,
+            use_pheromone=not args.no_pheromone,
+        )
         except Exception as exc:  # pragma: no cover - propagate but prettify
             error = exc
             state["phase"] = "执行失败"
@@ -309,6 +315,14 @@ def main() -> None:
     summary.add_row("视觉表现", f"{scores.get('visual_form', 0.0):.2f}")
     summary.add_row("数据保真", f"{scores.get('data_fidelity', 0.0):.2f}")
     summary.add_row("系列一致性", f"{scores.get('series_cohesion', 0.0):.2f}")
+    summary.add_row("停止原因", str(result.get("stop_reason", "-")))
+    ablation = result.get("ablation") or {}
+    summary.add_row(
+        "实验开关",
+        f"verifier={'on' if ablation.get('use_verifier', True) else 'off'} / "
+        f"bestof={'on' if ablation.get('use_best_of_n', True) else 'off'} / "
+        f"pheromone={'on' if ablation.get('use_pheromone', True) else 'off'}",
+    )
     if result.get("png_path"):
         summary.add_row("图像输出", _trim(result["png_path"], 60))
     console.print(Panel(summary, title="链路结果", border_style="green"))
