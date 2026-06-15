@@ -1,4 +1,4 @@
-from __future__ import annotations
+﻿from __future__ import annotations
 
 import json
 import copy
@@ -698,6 +698,7 @@ def run_chain(
     last_scores: Dict[str, float] = {"visual_form": 0.0, "data_fidelity": 0.0, "series_cohesion": 0.0, "overall_score": 0.0}
     feedback_text = ""
     selected: Optional[Dict[str, Any]] = None
+    best_selected: Optional[Dict[str, Any]] = None  # best successful result across rounds
 
     ctx: Dict[str, Any] = {
         "excel_path": excel_path,
@@ -1080,6 +1081,15 @@ def run_chain(
             selected["pheromone_summary"] = phero_store.summary()
             selected["pheromone_tail"] = [link.msg for link in phero_store.tail(3)]
 
+        # Track the best successful result across rounds. If a later round's
+        # candidates all fail to execute, do not lose an earlier working chart.
+        chosen_exec_ok = bool(chosen.get("exec_pass")) and bool(selected.get("png_path"))
+        chosen_score = float((last_scores or {}).get("overall_score", 0.0))
+        if chosen_exec_ok:
+            prev_best_score = float(((best_selected or {}).get("scores") or {}).get("overall_score", -1.0)) if best_selected else -1.0
+            if best_selected is None or chosen_score >= prev_best_score:
+                best_selected = selected
+
         if (not force_all_rounds) and last_scores["overall_score"] >= 0.75:
             stop_reason = "score_threshold"
             stop_detail = {"threshold": 0.75, "overall_score": current_overall}
@@ -1157,16 +1167,20 @@ def run_chain(
     if selected is not None:
         selected.setdefault("stop_reason", stop_reason)
         selected.setdefault("stop_detail", stop_detail)
+    final_result = best_selected or selected
+    if final_result is not None:
+        final_result.setdefault("stop_reason", stop_reason)
+        final_result.setdefault("stop_detail", stop_detail)
     emit(
         "finished",
         {
-            "round": selected["round"] if selected else 0,
-            "scores": last_scores,
+            "round": final_result["round"] if final_result else 0,
+            "scores": (final_result or {}).get("scores", last_scores),
             "run_dir": str(run_dir),
             "stop_reason": selected.get("stop_reason") if selected else stop_reason,
         },
     )
-    return selected or {}
+    return final_result or {}
 
 
 

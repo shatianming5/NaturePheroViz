@@ -1,0 +1,438 @@
+I’m checking the repo-local instructions first, because they govern anything I read or edit. The tool environment appears to be mounted differently from the path in your prompt, so I’m locating the workspace and the applicable `AGENTS.md` files before I assess the proposal.The repo path in the prompt is not directly mounted under that absolute path here. I’m using the session metadata to recover the actual mounted workspace, then I’ll read the governing instructions and proceed with the novelty audit.I found the active tool workspace is a different repo than the path in your prompt, and there’s no visible `NaturePheroViz` checkout mounted here. Since your request is a proposal-level review and the full proposal text is already in the prompt, I can proceed from that text once I confirm there isn’t a higher-level `AGENTS.md` affecting this environment.I have enough context to move into the actual novelty check. Next I’m pulling the closest adjacent literature and I’ll judge whether your claimed differentiators survive contact with it, rather than just comparing against generic benchmark families.I'll conduct a comprehensive literature search across all six areas simultaneously. Let me fetch papers and resources in parallel.Let me now fetch the correct key papers across all six areas:Good progress on several papers. Now let me fetch the remaining critical papers:Let me now search for more specific papers I need for each area:Let me fetch the specific papers I need with correct IDs:Found ARCADE. Let me now fetch it and several more critical papers:Let me now fetch several more targeted papers for the missing areas:Let me now search for the remaining critical areas - data provenance and silent errors in data science:Let me now fetch the most important remaining papers for provenance/lineage and semantic bugs:Let me search for the most important remaining papers on data provenance systems and silent errors in data science:Let me fetch a few more crucial papers I've identified:Let me fetch a few more specific papers:Let me fetch ExeDS and a few more final papers:I now have sufficient material for a comprehensive assessment. Let me compile the full research report.
+
+---
+
+# Novelty Assessment: Detecting Silent Semantic Errors in LLM-Generated Pandas/Dataframe Code (No Gold Outputs, No Tests)
+
+---
+
+## Executive Summary
+
+This proposed paper sits at the intersection of six distinct fields — none of which individually covers its core niche. The closest threats are **DS-1000** and **ARCADE** (which evaluate pandas codegen but use gold outputs/tests), **ExeDS** (execution-based DS evaluation with desired outputs), **SemGuard** (semantic error detection without tests — but on general code, not dataframes), and **Smoke/mlinspect** (operator-level data lineage — but as runtime infrastructure, not LLM verification). The combination of (a) no gold output, (b) no pre-written tests, (c) pandas/dataframe domain, (d) semantic fidelity verification, and (e) typed operator-level attribution is **not covered by any single existing work**. However, the space around it is crowded, and reviewers will attack on all five dimensions individually.
+
+---
+
+## Area 1: Text-to-SQL Evaluation/Verification
+
+### 1.1 Spider (Yu et al., 2018) — EMNLP 2018
+📄 `arxiv:1809.08887` · https://arxiv.org/abs/1809.08887
+
+**What it does:** Introduces a large-scale cross-domain text-to-SQL benchmark (10,181 questions, 200 databases). Primary metric is *exact-match accuracy* against a gold SQL string.
+
+**Covers the proposal's niche?** ❌ **No.** Exact-match is purely structural; it doesn't handle semantic equivalence of alternative correct queries, and entirely depends on a gold query/output. No mechanism for verifying semantic fidelity without a gold reference.
+
+---
+
+### 1.2 Test Suite Accuracy for Text-to-SQL (Zhong et al., 2020) — EMNLP 2020
+📄 `arxiv:2010.02840` · https://arxiv.org/abs/2010.02840
+
+**What it does:** Proposes *test suite accuracy* to approximate semantic correctness — generates a suite of database instances, runs both gold and predicted SQL, and checks if outputs match across instances. It distills a small test suite achieving high code coverage.
+
+**Covers the proposal's niche?** ⚠️ **Partially and dangerously so.** This is the closest analogy in text-to-SQL — it moves beyond surface-form matching toward semantic equivalence without relying on a single gold output. However: (a) it **still requires a gold query** to generate the test suite, (b) it is SQL-specific (set/bag semantics, relational algebra), and (c) it focuses on *query equivalence*, not *intent-to-code semantic fidelity* in dataframe pipelines. **Reviewers will cite this as a precursor — you must explicitly acknowledge and differentiate.**
+
+---
+
+### 1.3 BIRD (Li et al., 2023) — NeurIPS 2023
+📄 `arxiv:2305.03111` · https://arxiv.org/abs/2305.03111
+
+**What it does:** Large-scale text-to-SQL benchmark with 12,751 pairs and 95 databases (33.4 GB), emphasizing *database value comprehension*, dirty data, and SQL efficiency. Uses execution accuracy. Even ChatGPT achieves only 40.08% vs. human 92.96%.
+
+**Covers the proposal's niche?** ❌ **No.** Execution accuracy against known gold outputs; SQL-only; no mechanism for detecting semantically-wrong-but-executing queries without gold comparison.
+
+---
+
+### 1.4 DAIL-SQL (Gao et al., 2023)
+📄 `arxiv:2308.15363` · https://arxiv.org/abs/2308.15363
+
+**What it does:** Systematically compares prompt engineering strategies (question representation, example selection/organization) for LLM-based text-to-SQL; achieves 86.6% execution accuracy on Spider.
+
+**Covers the proposal's niche?** ❌ **No.** A generation/prompting paper, not a verification paper. Gold outputs always present.
+
+---
+
+### 1.5 DIN-SQL (Pourreza & Rafiei, 2023) — NeurIPS 2023
+📄 `arxiv:2304.11015` · https://arxiv.org/abs/2304.11015
+
+**What it does:** Decomposes text-to-SQL generation into sub-problems fed back to an LLM; achieves 85.3% execution accuracy on Spider, 55.9% on BIRD.
+
+**Covers the proposal's niche?** ❌ **No.** Same as above — generation with gold-answer evaluation. No goldless verification.
+
+---
+
+### **Key Text-to-SQL Gap:** The "goldless" checking problem has no established solution even in SQL, let alone in pandas. Zhong et al. 2020 is the closest precedent but still requires gold queries to construct test suites.
+
+---
+
+## Area 2: Data Science/Code Generation Benchmarks
+
+### 2.1 DS-1000 (Lai et al., 2022) — ICML 2023
+📄 `arxiv:2211.11501` · https://arxiv.org/abs/2211.11501
+
+**What it does:** 1,000 data science problems across 7 Python libraries (NumPy, Pandas, SciPy, etc.) from StackOverflow. Uses **multi-criteria evaluation**: functional correctness via **pre-written test cases** + surface-form constraints (API usage restrictions). Claims 1.8% false positive rate. Best model (Codex-002) achieves 43.3%.
+
+**Covers the proposal's niche?** ❌ **No.** Requires pre-written test cases AND surface-form constraints. Evaluates *pass/fail*, not *semantic fidelity*. No operator-level attribution, no goldless checking.
+
+---
+
+### 2.2 ARCADE (Yin et al., 2022/2023) — ACL 2023
+📄 `arxiv:2212.09248` · https://arxiv.org/abs/2212.09248
+
+**What it does:** 1,082 NL-to-pandas code generation problems in Jupyter notebooks (multi-turn, multi-modal context). Evaluates by executing generated code and comparing output to **gold execution output**. Introduces PaChiNCo (62B pandas-specialized LM).
+
+**Covers the proposal's niche?** ❌ **No — and this is the most dangerous competitor.** ARCADE is the de facto pandas codegen benchmark but: (a) evaluates against **gold execution outputs** from reference notebooks, (b) treats correctness as binary match, (c) provides no operator-level error attribution, and (d) cannot operate without gold outputs. **The proposal must explicitly position against ARCADE.**
+
+---
+
+### 2.3 ExeDS (Huang et al., 2022) — ACL DaSH Workshop 2022
+📄 https://aclanthology.org/2022.dash-1.5/
+
+**What it does:** 534 Jupyter notebook problems with code context, task description, reference program, and **desired execution output**. Shows that models with high surface-form (BLEU/CodeBLEU) scores fail execution, motivating execution-based metrics over string similarity.
+
+**Covers the proposal's niche?** ❌ **No.** Requires a desired execution output as gold. Key insight is that string similarity ≠ semantic correctness — which is philosophically aligned with the proposal, but the solution still depends on gold outputs.
+
+---
+
+### 2.4 HumanEval (Chen et al., 2021)
+📄 `arxiv:2107.03374` · https://arxiv.org/abs/2107.03374
+
+**What it does:** 164 hand-written Python programming challenges, each with a docstring and test cases. Evaluates pass@k over generated samples. The standard code generation benchmark.
+
+**Covers the proposal's niche?** ❌ **No.** Algorithmic problems with pre-written unit tests; no data transformation specificity; no goldless verification.
+
+---
+
+### 2.5 EvalPlus (Liu et al., 2023) — NeurIPS 2023
+📄 `arxiv:2305.01210` · https://arxiv.org/abs/2305.01210
+
+**What it does:** Extends HumanEval by 80× with automatically generated test cases (LLM + mutation-based), building HumanEval+. Finds that prior reported pass@k overstates performance by up to 19-29% due to insufficient tests.
+
+**Covers the proposal's niche?** ⚠️ **Adjacent but not covering.** Makes the important point that test-coverage gaps allow false positives — but fixes this by *adding more tests*, not by detecting errors without tests. **The proposal's contribution is orthogonal:** rather than needing better tests, can we detect semantic errors *without any tests at all?*
+
+---
+
+### 2.6 DA-Code (Huang et al., 2024) — EMNLP 2024
+📄 https://aclanthology.org/2024.emnlp-main.748/
+
+**What it does:** Agent-style data analysis benchmark evaluating LLMs on complex data science tasks involving multiple analytical steps, evaluated by executing generated code.
+
+**Covers the proposal's niche?** ❌ **No.** Still execution-with-gold-answer evaluation.
+
+---
+
+## Area 3: Execution-Based Evaluation and Self-Debugging
+
+### 3.1 Self-Debugging (Chen et al., 2023)
+📄 `arxiv:2304.05128` · https://arxiv.org/abs/2304.05128
+
+**What it does:** Teaches LLMs to debug their own code via few-shot demonstrations, including "rubber duck debugging" — explaining code in natural language without human feedback. On Spider (no unit tests), improves by 2-3% overall and 9% on hardest problems using code explanation.
+
+**Covers the proposal's niche?** ⚠️ **Important near-miss.** The Spider experiment with no unit tests is directly relevant — the model explains its own SQL and catches errors without a test harness. But: (a) it's SQL not pandas/dataframes, (b) it still uses execution feedback when available, (c) it doesn't attribute errors to specific operators, and (d) it doesn't formalize "semantic fidelity" — it just improves accuracy on the Spider metric.
+
+---
+
+### 3.2 Is Self-Repair Good? (Olausson et al., 2023) — ICLR 2024
+📄 `arxiv:2306.09896` · https://arxiv.org/abs/2306.09896
+
+**What it does:** Analyzes Code Llama, GPT-3.5, GPT-4 self-repair on HumanEval and APPS. Finds that self-repair gains are often modest and bottlenecked by the model's ability to provide *feedback on its own code*. Artificially boosting feedback quality dramatically improves repair.
+
+**Covers the proposal's niche?** ⚠️ **Indirectly relevant but supports the proposal.** The finding that "self-repair is bottlenecked by feedback quality" motivates designing better structured semantic-checking signals — which is what the proposal does. However, this paper doesn't address goldless verification or dataframe-specific semantics.
+
+---
+
+### 3.3 CodeT (Chen et al., 2022)
+📄 `arxiv:2207.10397` · https://arxiv.org/abs/2207.10397
+
+**What it does:** Uses the same LLM to generate test cases for its own code samples, then selects solutions via dual execution agreement (consistent outputs + agreement with other samples). Lifts HumanEval pass@1 from 47.0% to 65.8%.
+
+**Covers the proposal's niche?** ⚠️ **Critically related — and a genuine threat to novelty.** CodeT operates without pre-written gold tests by using generated tests. However: (a) it still *generates and runs tests*, producing gold-by-proxy outputs, (b) it assumes test cases can be meaningfully generated (hard for complex pandas transformations with real DataFrames), and (c) it doesn't provide operator-level attribution. **The proposal's distinction is that it avoids execution of tests entirely.**
+
+---
+
+### 3.4 TiCoder / Interactive Test-Driven Code Gen (Lahiri et al., 2022)
+📄 `arxiv:2208.05950` · https://arxiv.org/abs/2208.05950
+
+**What it does:** Interactive workflow where an LLM generates test cases to formalize user intent, then prunes/ranks code suggestions using those tests. Improves pass@1 on MBPP by 22-38% and HumanEval by 25-54%.
+
+**Covers the proposal's niche?** ❌ **Requires user interaction for test validation** — explicitly interactive, requires lightweight user feedback. Not goldless.
+
+---
+
+## Area 4: LLM-as-Judge for Code Correctness
+
+### 4.1 MT-Bench / LLM-as-a-Judge (Zheng et al., 2023) — NeurIPS 2023
+📄 `arxiv:2306.05685` · https://arxiv.org/abs/2306.05685
+
+**What it does:** Uses GPT-4 as a judge to evaluate model outputs on open-ended questions (MT-Bench). Demonstrates that strong LLM judges achieve >80% agreement with human preferences. Identifies biases (position, verbosity, self-enhancement).
+
+**Covers the proposal's niche?** ⚠️ **General framework for LLM-as-judge, not code-specific.** Applied to chat assistants, not code semantic correctness. Doesn't address the oracle problem for code: when LLM judges disagree with execution results, which is right?
+
+---
+
+### 4.2 MCTS-Judge (Wang et al., 2025)
+📄 `arxiv:2502.12468` · https://arxiv.org/abs/2502.12468
+
+**What it does:** Uses MCTS test-time scaling for LLM-as-judge code correctness evaluation, synthesizing test cases as part of the judging process, then using execution of those cases.
+
+**Covers the proposal's niche?** ⚠️ **Partially covers goldless correctness checking but still generates+runs tests.** Focused on algorithmic code (LeetCode-style), not dataframe transformations.
+
+---
+
+### 4.3 LLM-as-Judge for Reference-less Code Validation (Vo et al., 2025)
+📄 `arxiv:2506.11237` · https://arxiv.org/abs/2506.11237
+
+**What it does:** Uses LLM-as-judge for reference-less automatic code validation and refinement in Bash/IT automation, showing agreement with execution-based evaluation.
+
+**Covers the proposal's niche?** ⚠️ **Reference-less code judging is directly related**, but: (a) Bash/IT automation, not pandas, (b) correctness judged holistically by LLM (no structured operator-level attribution), (c) no typed lineage or dataframe semantics. **This is a genuine novelty threat for the "LLM-as-judge without gold" component** — the proposal must show why a flat LLM judge is insufficient and structural operator-level attribution is necessary.
+
+---
+
+### 4.4 SemGuard (Wang et al., 2025) — ASE 2025
+📄 `arxiv:2509.24507` · https://arxiv.org/abs/2509.24507
+
+**What it does:** Real-time, line-level semantic supervision of LLM code generation **without executing the program or requiring test cases**. Trains a semantic evaluator on SemDiff (a dataset marking where correct/incorrect implementations diverge). Shows semantic errors constitute >60% of faults on DeepSeek-Coder-6.7B; reduces semantic error rate by 19.86% vs. ROCODE.
+
+**Covers the proposal's niche?** ⚠️ **This is the most directly threatening paper.** SemGuard: (a) detects semantic errors without tests or execution, (b) provides line-level attribution. However: (a) targets general algorithmic code (HumanEval, MBPP, LiveCodeBench), not pandas/dataframe transformations, (b) no notion of dataframe-typed operator semantics (merge joins, groupby aggregation semantics, etc.), (c) detection method is a learned evaluator on SemDiff — not a structured/interpretable typed attribution. **The proposal must cite SemGuard and show the dataframe-specific challenge (schematized data, data-dependent behavior, relational semantics) requires domain-specific operator-level attribution that SemGuard cannot provide.**
+
+---
+
+## Area 5: Data Provenance/Lineage and Trace-Based Debugging
+
+### 5.1 Smoke (Psallidas & Wu, 2018) — VLDB 2018
+📄 `arxiv:1801.07237` · https://arxiv.org/abs/1801.07237
+
+**What it does:** In-memory database engine for fine-grained data lineage capture at interactive speed. Captures row-level lineage through relational operators (joins, filters, aggregations) at sub-150ms latency. Supports debugging, visualization, and cleaning applications.
+
+**Covers the proposal's niche?** ❌ **No.** Smoke is a runtime lineage infrastructure for relational databases (not pandas), focused on *performance* of lineage capture, not semantic verification of generated code. It doesn't address LLM code generation or goldless checking.
+
+---
+
+### 5.2 mlinspect (Grafberger et al., 2022) — VLDB Journal
+📄 https://link.springer.com/article/10.1007/s00778-021-00726-w
+
+**What it does:** Automatically detects data distribution bugs in ML pipelines using a library inspection approach. Instruments pandas/scikit-learn pipelines to check for distribution issues (label leakage, group disparities, etc.) without modifying user code.
+
+**Covers the proposal's niche?** ⚠️ **Meaningfully related.** mlinspect operates at the operator level (inspecting individual pandas/sklearn operations), detects semantic data issues without tests, and targets real dataframe pipelines. However: (a) focuses on *data distribution bugs* (bias, leakage), not *semantic intent mismatches* between NL specification and generated code, (b) assumes you already have the correct pipeline (not LLM-generated code), (c) no NL-to-code component.
+
+---
+
+### 5.3 Geyser (Psallidas et al., 2023) — ACM SIGMOD Companion 2023
+📄 https://dl.acm.org/doi/abs/10.1145/3555041.3589717
+
+**What it does:** Provenance extraction and applications over data science scripts (Python/pandas). Extracts fine-grained provenance from Jupyter notebooks to support debugging and reuse.
+
+**Covers the proposal's niche?** ⚠️ **Adjacent.** Geyser works on Python/pandas scripts and extracts lineage. But it's a static/dynamic provenance extraction tool, not a semantic verification system for LLM-generated code.
+
+---
+
+### 5.4 Fine-Grained Provenance for Data Science Pipelines (Chapman et al., 2024)
+📄 https://dl.acm.org/doi/abs/10.1145/3644385
+
+**What it does:** Tracks fine-grained provenance across pandas dataframes as objects, supporting debugging and insight into data science pipelines.
+
+**Covers the proposal's niche?** ⚠️ **Relevant infrastructure.** Provides typed operator-level provenance for pandas operations — which is precisely the infrastructure the proposal would need. But it's a provenance *tracking* system for existing pipelines, not a semantic *verification* system for LLM-generated pipelines.
+
+---
+
+### 5.5 XProv (Zhao, 2025)
+📄 `arxiv:2506.18252` · https://arxiv.org/abs/2506.18252
+
+**What it does:** Vision paper proposing cross-library lineage specification using intermediate representations; discusses how to infer lineage patterns from materialized graphs. Explicitly mentions pandas.
+
+**Covers the proposal's niche?** ❌ **No — it's a vision paper about lineage architecture**, not about semantic verification of LLM code.
+
+---
+
+### 5.6 Data Linter (Hynes et al., 2017) — NIPS MLSys Workshop
+📄 http://learningsys.org/nips17/assets/papers/paper_19.pdf
+
+**What it does:** Lightweight automated sanity-checking for ML datasets — checks for common data issues (encoding errors, unexpected distributions, duplicates) without gold references.
+
+**Covers the proposal's niche?** ⚠️ **Philosophically related (goldless automated checking).** But operates on *data quality*, not *code semantic correctness*. No LLM component.
+
+---
+
+## Area 6: Semantic Correctness / Silent Errors in Data Science Code
+
+### 6.1 Bug Analysis in Jupyter Notebook Projects (de Santana et al., 2022/2024)
+📄 `arxiv:2210.06893` · https://arxiv.org/abs/2210.06893
+
+**What it does:** Systematic empirical study of bugs in 105 open-source GitHub Jupyter projects (14,740 commits) + 30,416 StackOverflow posts + 19 interviews. Proposes a bug taxonomy. Finds that **logical/semantic bugs** are common but underreported since they don't crash the notebook.
+
+**Covers the proposal's niche?** ✅ **Directly motivates the problem.** This paper characterizes the prevalence and types of semantic/logical bugs in data science notebooks — precisely the kind of silent errors the proposal aims to detect. But it's a *characterization* study, not a detection method. **Cite this as the motivating evidence.**
+
+---
+
+### 6.2 Panko / Spreadsheet Silent Errors (Panko & Aurigemma, 2010)
+📄 `arxiv:1009.2785` · https://arxiv.org/abs/1009.2785
+
+**What it does:** Studies error detection in human-developed spreadsheets. Identifies "silent errors" (semantic mistakes that produce wrong answers without any crash or alert), finding they're prevalent and difficult to detect.
+
+**Covers the proposal's niche?** ✅ **Classic foundational motivation.** Spreadsheet silent errors are the historical antecedent to the same problem in pandas. But spreadsheets are not programmatic, and there's no LLM generation or operator-level typing.
+
+---
+
+### 6.3 SemGuard (Wang et al., 2025) — ASE 2025
+*(Already covered in Area 4 above — most important concurrent work)*
+
+---
+
+### 6.4 Data-Aware Static Analysis for ML Code (Meijer et al., 2026)
+📄 `arxiv:2606.09957` · https://arxiv.org/abs/2606.09957
+
+**What it does:** Uses data characteristics combined with static analysis to detect semantic faults in ML code — e.g., detecting that a train/test split leaks labels.
+
+**Covers the proposal's niche?** ⚠️ **Relevant but narrower.** Targets specific ML semantic bugs (leakage, wrong metrics) via static analysis + data properties; not LLM-generated pandas transformations in general.
+
+---
+
+---
+
+# Novelty Matrix: Does Any Single Paper Cover the Core Niche?
+
+| Paper | No Gold Output | No Pre-written Tests | Pandas/DataFrame Domain | Semantic Fidelity | Operator-Level Attribution |
+|-------|:-:|:-:|:-:|:-:|:-:|
+| DS-1000 | ❌ | ❌ | ✅ | ⚠️ | ❌ |
+| ARCADE | ❌ | ❌ | ✅ | ⚠️ | ❌ |
+| ExeDS | ❌ | ❌ | ✅ | ⚠️ | ❌ |
+| Test Suite (Zhong 2020) | ❌ (needs gold query) | ⚠️ (generates tests) | ❌ | ✅ | ❌ |
+| CodeT | ❌ (proxy) | ⚠️ (generates tests) | ❌ | ⚠️ | ❌ |
+| Self-Debugging | ⚠️ (Spider) | ⚠️ | ❌ | ⚠️ | ❌ |
+| MT-Bench/LLM-Judge | ✅ | ✅ | ❌ | ⚠️ | ❌ |
+| SemGuard | ✅ | ✅ | ❌ | ✅ | ⚠️ (line-level) |
+| mlinspect | ✅ | ✅ | ✅ | ⚠️ (distribution) | ✅ |
+| Chapman et al. 2024 | ✅ | ✅ | ✅ | ❌ (lineage only) | ✅ |
+| Smoke | ✅ | ✅ | ❌ (SQL) | ❌ | ✅ |
+| **This proposal** | **✅** | **✅** | **✅** | **✅** | **✅** |
+
+**Conclusion: No existing paper checks all five boxes.** The closest is the SemGuard (no tests, semantic errors) × mlinspect (pandas, operator-level) intersection — but that combination doesn't exist in a single paper.
+
+---
+
+# Ruthless Novelty Assessment
+
+## Where novelty is **real and defensible:**
+
+1. **No-gold + no-test verification for pandas transformations.** This combination is uncovered. All existing pandas/DS benchmarks (DS-1000, ARCADE, ExeDS) require gold outputs. The proposal's core setting is genuinely new.
+
+2. **Typed operator-level attribution.** Neither SemGuard (which gives line-level annotations) nor mlinspect (which is for existing pipelines) provides *typed relational semantics for each pandas operator* as a verification signal. Characterizing groupby aggregation bugs vs. merge key errors vs. filter predicate inversions is not done anywhere.
+
+3. **Semantic fidelity vs. execution correctness distinction.** The paper forces a distinction that the community blurs: code can *execute* without error and still be *semantically wrong* relative to intent. This is strongly motivated by de Santana et al. (2022) and Panko (2010) but not systematically addressed by any ML/NLP paper.
+
+## Where novelty is **fragile — prepare defenses:**
+
+1. **"Why not just use CodeT / generate test cases?"** Reviewers will ask why LLM-generated tests can't replace gold outputs. Response: (a) for dataframes with real data, test generation requires specifying expected output schemas and values, which is as hard as specifying gold; (b) generated tests for pandas code have very low discriminative coverage for semantic errors like wrong groupby keys or unintended left vs. inner joins; (c) CodeT's dual-execution agreement fails when multiple wrong implementations agree with each other.
+
+2. **"SemGuard already detects semantic errors without tests."** Response: SemGuard's SemDiff dataset is for algorithmic code; it has no notion of dataframe schemas, join semantics, aggregation semantics, or the data-dependent behavior of pandas operations. A filter `df[df['a'] > 0]` is syntactically and structurally similar to `df[df['a'] >= 0]` — SemGuard cannot flag this because it doesn't understand the semantic role of the column `a` in the pipeline.
+
+3. **"Test suite accuracy (Zhong 2020) already does goldless SQL checking."** Response: (a) Zhong et al. still needs a gold query to generate test databases; (b) SQL has clean formal semantics (set/bag); pandas operations are stateful, side-effect-prone, and data-dependent; (c) no analogous "pandas equivalence class" theory exists.
+
+4. **"mlinspect already does operator-level checking."** Response: mlinspect detects data *distribution* anomalies (bias, leakage) in *existing, presumably correct* pipelines. It doesn't reason about whether a pipeline correctly implements a stated NL intent — i.e., it can't tell you if `merge(on='customer_id')` was supposed to be `merge(on='order_id')`.
+
+---
+
+# Key Citations Summary
+
+| # | Paper | Venue | arXiv/Link | Relevance |
+|---|-------|-------|------------|-----------|
+| 1 | Spider (Yu et al.) | EMNLP 2018 | [1809.08887](https://arxiv.org/abs/1809.08887) | Text-to-SQL benchmark w/ gold |
+| 2 | Test Suite Accuracy (Zhong et al.) | EMNLP 2020 | [2010.02840](https://arxiv.org/abs/2010.02840) | **Closest SQL goldless analog** |
+| 3 | BIRD (Li et al.) | NeurIPS 2023 | [2305.03111](https://arxiv.org/abs/2305.03111) | Large-scale text-to-SQL eval |
+| 4 | DAIL-SQL (Gao et al.) | VLDB 2024 | [2308.15363](https://arxiv.org/abs/2308.15363) | LLM prompt engineering for SQL |
+| 5 | DIN-SQL (Pourreza & Rafiei) | NeurIPS 2023 | [2304.11015](https://arxiv.org/abs/2304.11015) | Decomposed SQL generation |
+| 6 | DS-1000 (Lai et al.) | ICML 2023 | [2211.11501](https://arxiv.org/abs/2211.11501) | **Primary DS codegen benchmark** |
+| 7 | ARCADE (Yin et al.) | ACL 2023 | [2212.09248](https://arxiv.org/abs/2212.09248) | **Primary pandas codegen benchmark** |
+| 8 | ExeDS (Huang et al.) | ACL DaSH 2022 | [aclanthology 2022](https://aclanthology.org/2022.dash-1.5/) | Exec-based DS eval w/ gold |
+| 9 | HumanEval (Chen et al.) | 2021 | [2107.03374](https://arxiv.org/abs/2107.03374) | Code gen with test cases |
+| 10 | EvalPlus (Liu et al.) | NeurIPS 2023 | [2305.01210](https://arxiv.org/abs/2305.01210) | Tests can miss semantic errors |
+| 11 | Self-Debugging (Chen et al.) | ICLR 2024 | [2304.05128](https://arxiv.org/abs/2304.05128) | Goldless rubber duck debugging |
+| 12 | Self-Repair (Olausson et al.) | ICLR 2024 | [2306.09896](https://arxiv.org/abs/2306.09896) | Feedback quality bottleneck |
+| 13 | CodeT (Chen et al.) | ICLR 2023 | [2207.10397](https://arxiv.org/abs/2207.10397) | LLM-generated tests for selection |
+| 14 | MT-Bench (Zheng et al.) | NeurIPS 2023 | [2306.05685](https://arxiv.org/abs/2306.05685) | LLM-as-judge general framework |
+| 15 | **SemGuard** (Wang et al.) | ASE 2025 | [2509.24507](https://arxiv.org/abs/2509.24507) | **Closest: semantic errors w/o tests** |
+| 16 | Smoke (Psallidas & Wu) | VLDB 2018 | [1801.07237](https://arxiv.org/abs/1801.07237) | Fine-grained DB lineage |
+| 17 | mlinspect (Grafberger et al.) | VLDB J. 2022 | [link](https://link.springer.com/article/10.1007/s00778-021-00726-w) | **Operator-level ML pipeline checking** |
+| 18 | Chapman et al. | ACM ToDS 2024 | [link](https://dl.acm.org/doi/abs/10.1145/3644385) | Fine-grained pandas provenance |
+| 19 | Geyser (Psallidas et al.) | SIGMOD 2023 | [link](https://dl.acm.org/doi/abs/10.1145/3555041.3589717) | Provenance for DS scripts |
+| 20 | Data Linter (Hynes et al.) | NIPS MLSys 2017 | [link](http://learningsys.org/nips17/assets/papers/paper_19.pdf) | Automated goldless data sanity |
+| 21 | Bug Taxonomy: Jupyter (de Santana) | ACM TSE 2024 | [2210.06893](https://arxiv.org/abs/2210.06893) | **Motivating evidence: silent bugs** |
+| 22 | Panko & Aurigemma | EuSpRIG 2010 | [1009.2785](https://arxiv.org/abs/1009.2785) | Silent errors in spreadsheets |
+| 23 | TiCoder (Lahiri et al.) | 2022 | [2208.05950](https://arxiv.org/abs/2208.05950) | Interactive test-driven codegen |
+| 24 | InterCode (Yang et al.) | NeurIPS 2023 | [2306.14898](https://arxiv.org/abs/2306.14898) | Interactive code gen framework |
+
+---
+
+## Bottom Line for the Paper
+
+**The proposal is novel** along the intersection of all five dimensions. The claim space is genuine but the boundaries are razor-thin on three edges:
+
+1. **Against SemGuard:** You must show that general-purpose line-level semantic evaluation is insufficient for pandas because pandas operator semantics are *relational and data-dependent* in ways that require domain-specific typed attribution (schema tracking, join-key semantics, aggregation function semantics, window/groupby scope).
+
+2. **Against ARCADE/DS-1000:** You must prove you can detect errors that execution-with-gold misses (wrong joins producing plausible-looking outputs, wrong aggregation functions on homogeneous data), and that your method works where gold outputs are unavailable (truly novel scripts, proprietary data).
+
+3. **Against mlinspect:** You must show that intent-faithfulness checking (does code implement the NL intent?) is different from distribution-anomaly detection — mlinspect checks if the data flowing through is distributional-correct, not whether the operations match the user's stated intent.
+
+**The strongest possible contribution claim is:** *"We are the first to verify semantic fidelity of LLM-generated pandas transformations by leveraging typed operator-level relational semantics — without gold outputs, pre-written tests, or execution of the generated code."* Every word in that sentence is load-bearing and differentiates from prior work.I’ve got the main adjacency map. I’m now sanity-checking the highest-risk comparators so I don’t overstate novelty or lean on shaky parallels.**Novelty**
+1. The core claim is **not already done** by the obvious neighbors, but your current framing overstates the gap.
+- **Spider / BIRD / DIN-SQL / DAIL-SQL** are generation benchmarks measured by exact match or execution accuracy against gold queries/outputs. The closest real precursor is **Test Suite Accuracy** (Zhong et al., EMNLP 2020): it moves from string match to semantic equivalence, but still needs a gold query to distill test DBs. That is a precursor, not a collision.
+- **DS-1000** (Lai et al., ICML 2023), **ARCADE** (Yin et al., 2022/2023), and **ExeDS** (Huang et al., DaSH 2022) are the closest pandas/data-science lines. They all rely on hidden tests or desired outputs. They do **not** solve “is this transform faithful to intent without gold output?”
+- **Self-Debugging** (Chen et al., 2023), **CodeT** (Chen et al., 2022), **TiCoder**, **EvalPlus**: these are about repair, reranking, or generating better tests. They are adjacent, and CodeT is the most dangerous because it weakens the “no prewritten tests” story. But they still reduce correctness to test execution, not typed semantic verification of dataframe transforms.
+- **LLM-as-a-Judge** work is not a collision; it is too generic and does not give dataframe semantics or typed attribution.
+- **Smoke** and **mlinspect** are infrastructure/inspection ancestors. Smoke gives lineage; mlinspect gives operator-level pipeline inspection for data bugs. Neither verifies NL-intent faithfulness of LLM-generated transforms.
+
+Bottom line: **novel enough for a paper, yes; obviously Oral-novel today, no.** The novelty is in the **intersection**: goldless + no manual tests + dataframe transforms + silent semantic errors + typed operator attribution.
+
+2. Your three differentiators:
+- **(a) No gold output / no prewritten tests**: this is the strongest real differentiator. Prior work either uses gold outputs or synthesizes/runs tests. Reviewers will still say “generated invariants are just tests in disguise,” so you must define the distinction precisely.
+- **(b) Silent semantic ambiguity**: partly novel. Silent semantic bugs are known in spreadsheets and notebooks, and Jupyter bug-taxonomy work already motivates them. What is new is operationalizing this for **LLM-generated pandas transforms**.
+- **(c) Typed operator-level attribution**: novel in this setting. Provenance/inspection work has operator structure, but not attribution of **intent mismatch** like wrong aggregation scope, wrong join semantics, wrong denominator.
+
+**Method Bet**
+3. Strongest Oral bet: **(b) intent -> checkable invariants**, backed by a **small operator-semantic library**.
+- This is the only path that survives the “both models agree on the same wrong answer” failure mode.
+- It also gives the cleanest scientific claim: semantic contracts derived from intent, verified over traced intermediates.
+
+Dead end as primary thesis: **(a) multi-implementation consistency**.
+- It is fine as an uncertainty heuristic or abstention signal.
+- It is not a publishable core oracle, because common-mode error is exactly what your go/no-go already exposed.
+
+The operator-library path alone is high precision but risky for Oral if it looks like hand-coded benchmark rules. It should be a constrained module inside the invariant story, not the whole paper.
+
+4. The single most important missing experiment: **ambiguity-calibration pairs**.
+- For each task, create an ambiguous prompt and a minimally clarified version.
+- Show three things: silent error rate drops sharply after clarification; your verifier detects the ambiguous-case failures; and it does not over-flag the clarified controls.
+- Without this, reviewers can say you are measuring prompt underspecification, not model semantic failure.
+
+5. The 38%/25% go/no-go evidence is **good pivot evidence, not paper anchor evidence**.
+- `n=16` is too small.
+- Hand-crafted traps invite “cherry-picked” criticism.
+- To make it bulletproof: expand to `50-100` tasks, preregister the ambiguity taxonomy, include real tasks from notebooks/StackOverflow/ARCADE-style contexts, use multiple annotators for intended semantics, include clarified controls, and report across models/seeds.
+
+**Scores**
+- `ProblemFidelity 9`
+- `MethodSpec 6`
+- `ContribQuality 7`
+- `FrontierLeverage 7`
+- `Feasibility 7`
+- `ValidationFocus 6`
+- `VenueReadiness 5`
+- **Weighted overall: 6.9/10**
+
+For `<7`:
+- `MethodSpec 6`: weakness is oracle underspecification. Fix by committing to `invariants-first + operator library`, and demoting consistency to auxiliary. Priority `P0`.
+- `ValidationFocus 6`: weakness is trap-centric evidence. Fix with ambiguity-calibration pairs and real-task external validity. Priority `P0`.
+- `VenueReadiness 5`: weakness is that it currently reads like “benchmark + monkeypatch + heuristics.” Fix by centering one crisp idea: **operator-semantic contracts over execution traces**. Priority `P0`.
+
+**Simplification**
+Make the paper about one thing: **verifying semantic faithfulness of NL-to-dataframe transforms without gold outputs**. Drop broad “general code verification” language.
+
+**Modernization**
+Position explicitly against **Test Suite Accuracy, ARCADE, DS-1000, CodeT, Self-Debugging, EvalPlus, mlinspect**. Those are the papers reviewers will actually cite.
+
+**Drift Warning**
+If this becomes “we built a bigger pandas benchmark and a bunch of runtime checks,” it will read as incremental systems/eval work. The contribution has to be the **oracle**.
+
+**Verdict**
+`REVISE`.
+
+**Is this novel enough for Oral?**
+Not yet. It is **novel enough for a serious paper**, but **not yet clearly Oral-worthy**. It becomes Oral-caliber only if you prove that an invariants/typed-operator verifier catches **shared silent semantic errors on real tasks**, without gold outputs, and that the benchmark is not just a trap collection. Without that, it will be judged incremental over existing execution-, test-, and provenance-based code verification lines.

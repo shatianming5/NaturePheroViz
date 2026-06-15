@@ -859,17 +859,92 @@ def _pick_better_result(primary: Dict[str, Any], alternate: Dict[str, Any]) -> D
     return primary
 
 
+def _from_trace(png_path: Optional[str], svg_path: str, gt: pd.DataFrame, spec: Dict[str, Any]) -> Dict[str, Any]:
+    """Primary path: read the execution trace (<name>.trace.csv) dumped by
+    plot_trace during the subprocess render. This is the EXACT post-transform/
+    pre-render data the plotting code passed to matplotlib — no reverse
+    engineering from pixels/SVG. Columns: series,x,value[,axis].
+    Returns _nan_result() if no usable trace is present (caller falls back to SVG).
+    """
+    trace_candidates: List[Path] = []
+    if png_path:
+        trace_candidates.append(Path(png_path).with_suffix('.trace.csv'))
+    if svg_path:
+        trace_candidates.append(Path(svg_path).with_suffix('.trace.csv'))
+    trace_path = next((p for p in trace_candidates if p and p.exists()), None)
+    if not trace_path:
+        return _nan_result()
+    try:
+        tdf = pd.read_csv(trace_path)
+    except Exception:
+        return _nan_result()
+    if tdf.empty or not {'series', 'x', 'value'}.issubset(tdf.columns):
+        return _nan_result()
+
+    # Route through the same coercion the CSV fallback uses, so the series/x/value
+    # columns get normalized consistently with _safe_match's expectations
+    # (avoids g_col/series column-name mismatches).
+    pred = _coerce_pred_table(tdf[['series', 'x', 'value']], gt, spec)
+    if pred.empty:
+        return _nan_result()
+    if gt.empty:
+        return {'data_fidelity': 0.0, 'rms_f1': 0.0, 'rnss': 0.0, 'pred_table': pred, 'mismatches': []}
+
+    gt_norm, x_col, y_col, g_col = _normalize_ground_truth(gt, spec)
+    # _safe_match keys pred by g_col; _coerce_pred_table emits a 'series' column,
+    # so alias it to g_col when the ground truth groups by a differently-named col.
+    if g_col and g_col != 'series' and 'series' in pred.columns and g_col not in pred.columns:
+        pred = pred.rename(columns={'series': g_col})
+    return _safe_match(pred, gt_norm, x_col, y_col, g_col)
+
+
 def verify_fidelity(svg_path: str, ground_truth_table: Any, spec: Dict[str, Any], png_path: Optional[str] = None) -> Dict[str, Any]:
     gt = ground_truth_table if isinstance(ground_truth_table, pd.DataFrame) else pd.DataFrame(ground_truth_table or [])
     if gt is None:
         gt = pd.DataFrame()
 
+    # JUDGE_MODE lets ablation experiments force a single judge path:
+    #   "trace" = execution trace only (ours), "svg" = SVG deconstruction only,
+    #   "auto"/unset = trace-first with SVG/VLM/CSV fallback (production default).
+    judge_mode = (os.getenv('JUDGE_MODE') or 'auto').strip().lower()
+
+    if judge_mode == 'svg':
+        svg_file = Path(svg_path) if svg_path else None
+        if not svg_file or not svg_file.exists():
+            return _nan_result()
+        try:
+            svg = _read_text(str(svg_file))
+            pred = _collect_predictions(svg, spec)
+        except Exception:
+            return _nan_result()
+        if pred.empty or gt.empty:
+            return _nan_result() if pred.empty else {'data_fidelity': 0.0, 'rms_f1': 0.0, 'rnss': 0.0, 'pred_table': pred, 'mismatches': []}
+        gt_norm, x_col, y_col, g_col = _normalize_ground_truth(gt, spec)
+        pred = _tag_predicted_series(pred, spec)
+        return _safe_match(pred, gt_norm, x_col, y_col, g_col)
+
+    # PRIMARY: execution trace (exact). If a usable .trace.csv exists and yields
+    # a non-NaN fidelity, it wins — SVG deconstruction is now the fallback.
+    trace_result = _from_trace(png_path, svg_path or '', gt, spec)
+    trace_ok = pd.notna(trace_result.get('data_fidelity'))
+
+    if judge_mode == 'trace':
+        return trace_result if trace_ok else _nan_result()
+
     if not svg_path:
+        if trace_ok:
+            return trace_result
         return _fallback_after_svg_failure('', png_path, gt, spec)
 
     svg_file = Path(svg_path)
     if not svg_file.exists():
+        if trace_ok:
+            return trace_result
         return _fallback_after_svg_failure('', png_path, gt, spec)
+
+    # If the trace gave a confident result, use it directly (exact > estimated).
+    if trace_ok:
+        return trace_result
 
     try:
         svg = _read_text(str(svg_file))

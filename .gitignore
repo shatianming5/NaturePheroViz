@@ -23,6 +23,8 @@ outputs/
 nature_download/data/
 agent/runs/
 nature_download/outputs/
+# Crawled Nature figure+source-data pairs (large: images + xlsx, ~1.5GB). Local-only.
+nature_pairs/
 
 # Build and cache artifacts
 dist/
@@ -52,3 +54,32 @@ CLIProxyAPI/
 
 # Local source-clone backups kept outside the integrated project history
 _sources/
+
+# eval audit artifacts (regenerable; keep report.md only)
+agent/eval/results/artifacts/
+agent/eval/results/silent_error_records.json
+agent/eval/results_nature/artifacts/
+agent/eval/results_nature/silent_error_records.json
+agent/eval/results_e2e/e2e_records.json
+agent/eval/results_repair/repair_gain_records.json
+agent/eval/results_complex/complex_records.json
+agent/eval/results_transform/transform_records.json
+agent/eval/results_gonogo/
+agent/eval/results_nature_e2e/
+agent/eval/results_complex/complex_records.json
+agent/eval/results_ambcal/ambcal_records.json
+agent/eval/results_ambcal_bench/ambcal_records.json
+agent/eval/results_real_slice/real_slice_records.json
+agent/eval/results_clarify/clarify_records.json
+agent/eval/results_baseline/baseline_records.json
+agent/eval/results_scalability/scalability_records.json
+agent/eval/results_attribution/attribution_records.json
+agent/eval/results_qwen_7B/qwen_records.json
+agent/eval/results_qwen_14B/qwen_records.json
+agent/eval/results_qwen_32B/qwen_records.json
+agent/eval/results_real_auto/real_auto_records.json
+agent/eval/results_bench68/ambcal_records.json
+agent/eval/results_multimodel/ambcal_records.json
+agent/eval/results_real206/real_auto_records.json
+agent/eval/results_real500/real_auto_records.json
+agent/eval/results_real841/real_auto_records.json

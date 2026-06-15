@@ -2,12 +2,15 @@
 
 import json
 import pickle
+import shutil
 import subprocess
 import sys
 import tempfile
 import textwrap
 from pathlib import Path
 from typing import Any, Dict
+
+_PLOT_TRACE_SRC = Path(__file__).resolve().parent / "plot_trace.py"
 
 
 def execute_script(
@@ -26,11 +29,17 @@ def execute_script(
         p_intent = tmp / "intent.json"
         p_ctx = tmp / "ctx.json"
 
+        # Copy plot_trace into the subprocess workdir so the shim can import it
+        # and instrument matplotlib Artists in-process (execution-traced fidelity).
+        trace_available = _PLOT_TRACE_SRC.exists()
+        if trace_available:
+            shutil.copy(_PLOT_TRACE_SRC, tmp / "plot_trace.py")
+
         scaffold.write_text(py_code, encoding="utf-8")
         with p_df.open("wb") as handle:
             pickle.dump(df, handle)
         p_intent.write_text(json.dumps(intent or {}, ensure_ascii=False), encoding="utf-8")
-        p_ctx.write_text(json.dumps(ctx or {}, ensure_ascii=False), encoding="utf-8")
+        p_ctx.write_text(json.dumps(ctx or {}, ensure_ascii=False, default=str), encoding="utf-8")
 
         shim.write_text(
             textwrap.dedent(
@@ -53,8 +62,29 @@ def execute_script(
                 df = pickle.loads(p_df.read_bytes())
                 intent = json.loads(p_int.read_text(encoding="utf-8"))
                 ctx = json.loads(p_ctx.read_text(encoding="utf-8"))
-                scaffold.run(df, intent, ctx, str(out_png))
-                p_ctx.write_text(json.dumps(ctx, ensure_ascii=False), encoding='utf-8')
+
+                # Execution-traced fidelity: instrument matplotlib Artists so we
+                # capture the ACTUAL arrays the plotting code passes to ax.bar/
+                # plot/scatter/... (post-transform, pre-render). Dumped next to the
+                # PNG as <name>.trace.csv (series,x,value). Non-fatal if unavailable.
+                _tracer = None
+                try:
+                    from plot_trace import PlotTracer
+                    _tracer = PlotTracer()
+                except Exception:
+                    _tracer = None
+
+                if _tracer is not None:
+                    with _tracer.install():
+                        scaffold.run(df, intent, ctx, str(out_png))
+                    try:
+                        _tracer.dump_csv(str(Path(out_png).with_suffix(".trace.csv")))
+                    except Exception:
+                        pass
+                else:
+                    scaffold.run(df, intent, ctx, str(out_png))
+
+                p_ctx.write_text(json.dumps(ctx, ensure_ascii=False, default=str), encoding='utf-8')
                 """
             ).strip(),
             encoding="utf-8",
