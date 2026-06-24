@@ -420,6 +420,11 @@ def _assign_series(pred_df: pd.DataFrame, gt_df: pd.DataFrame, x_col: str, g_col
         return pred_df
 
     pred = pred_df.copy()
+    if g_col not in pred.columns:
+        pred[g_col] = None
+    if g_col not in gt_df.columns:
+        pred[g_col] = pred[g_col].fillna('').astype(str)
+        return pred
     pred[g_col] = pred[g_col].astype(object)
 
     gt = gt_df.copy()
@@ -448,6 +453,9 @@ def _safe_match(pred: pd.DataFrame, gt: pd.DataFrame, x_col: str, y_col: str, g_
     gt_df = gt.copy()
     if gt_df.empty:
         return {'data_fidelity': 0.0, 'rms_f1': 0.0, 'rnss': 0.0, 'pred_table': pred, 'mismatches': []}
+
+    if g_col and g_col not in gt_df.columns:
+        g_col = None
 
     gt_df[x_col] = gt_df[x_col].astype(str)
     gt_df[y_col] = pd.to_numeric(gt_df[y_col], errors='coerce')

@@ -1,0 +1,356 @@
+{
+  "round": 1,
+  "png_path": "E:\\黄妍\\科研\\6.3\\NaturePheroViz\\agent\\tmp_pytest_a45doc\\test_run_chain_no_verifier_dis0\\runs\\20260616T001840\\figure_round_1_cand_1.png",
+  "scores": {
+    "visual_form": 0.8,
+    "data_fidelity": 0.8,
+    "series_cohesion": 0.8,
+    "overall_score": 0.8
+  },
+  "diagnostics": [],
+  "spec": {
+    "layout": {
+      "legend": {
+        "loc": "best"
+      },
+      "grid": {
+        "y": true
+      },
+      "titles": {
+        "top": "t"
+      }
+    },
+    "scales": {
+      "x": {
+        "kind": "categorical"
+      },
+      "y_left": {
+        "kind": "linear"
+      },
+      "y_right": {
+        "kind": "linear"
+      }
+    },
+    "theme": {
+      "palette_global": "tab10"
+    },
+    "flags": {},
+    "overlays": [
+      {
+        "id": "line",
+        "mark": "line",
+        "x": "x",
+        "y": "value",
+        "yaxis": "left"
+      }
+    ]
+  },
+  "slots": {},
+  "stderr": "",
+  "stages": {
+    "L1": {
+      "prompt": "DEFAULT_V2",
+      "response": {
+        "source": "default_v2",
+        "notes": ""
+      },
+      "payload": {
+        "data_profile": {
+          "columns": {
+            "x": "string",
+            "value": "numeric"
+          },
+          "n": 2
+        },
+        "intent": {
+          "chart_family": "line",
+          "user_goal": "goal"
+        },
+        "spec": {
+          "layout": {
+            "legend": {
+              "loc": "best"
+            },
+            "grid": {
+              "y": true
+            },
+            "titles": {
+              "top": "t"
+            }
+          },
+          "scales": {
+            "x": {
+              "kind": "categorical"
+            },
+            "y_left": {
+              "kind": "linear"
+            },
+            "y_right": {
+              "kind": "linear"
+            }
+          },
+          "theme": {
+            "palette_global": "tab10"
+          },
+          "flags": {},
+          "overlays": [
+            {
+              "id": "line",
+              "mark": "line",
+              "x": "x",
+              "y": "value",
+              "yaxis": "left"
+            }
+          ]
+        },
+        "feedback": "",
+        "slot_keys": [
+          "spec.compose",
+          "spec.theme_defaults"
+        ]
+      },
+      "notes": "",
+      "raw_slots": {},
+      "accepted_slots": {},
+      "rejected_slots": {},
+      "forbidden_slots": {},
+      "autofix_slots": {},
+      "fallback": null
+    },
+    "L2": {
+      "prompt": "DEFAULT_V2",
+      "response": {
+        "source": "default_v2",
+        "notes": ""
+      },
+      "payload": {
+        "df_head": {
+          "x": [
+            "Jan",
+            "Feb"
+          ],
+          "value": [
+            1.0,
+            2.0
+          ]
+        },
+        "spec": {
+          "layout": {
+            "legend": {
+              "loc": "best"
+            },
+            "grid": {
+              "y": true
+            },
+            "titles": {
+              "top": "t"
+            }
+          },
+          "scales": {
+            "x": {
+              "kind": "categorical"
+            },
+            "y_left": {
+              "kind": "linear"
+            },
+            "y_right": {
+              "kind": "linear"
+            }
+          },
+          "theme": {
+            "palette_global": "tab10"
+          },
+          "flags": {},
+          "overlays": [
+            {
+              "id": "line",
+              "mark": "line",
+              "x": "x",
+              "y": "value",
+              "yaxis": "left"
+            }
+          ]
+        },
+        "feedback": "",
+        "slot_keys": [
+          "data.prepare",
+          "data.aggregate",
+          "data.encode"
+        ]
+      },
+      "notes": "",
+      "raw_slots": {},
+      "accepted_slots": {},
+      "rejected_slots": {},
+      "forbidden_slots": {},
+      "autofix_slots": {},
+      "fallback": null
+    },
+    "L3": {
+      "prompt": "DEFAULT_V2",
+      "response": {
+        "source": "default_v2",
+        "notes": ""
+      },
+      "payload": {
+        "dff_head": {
+          "x": [
+            "Jan",
+            "Feb"
+          ],
+          "value": [
+            1.0,
+            2.0
+          ]
+        },
+        "spec": {
+          "layout": {
+            "legend": {
+              "loc": "best"
+            },
+            "grid": {
+              "y": true
+            },
+            "titles": {
+              "top": "t"
+            }
+          },
+          "scales": {
+            "x": {
+              "kind": "categorical"
+            },
+            "y_left": {
+              "kind": "linear"
+            },
+            "y_right": {
+              "kind": "linear"
+            }
+          },
+          "theme": {
+            "palette_global": "tab10"
+          },
+          "flags": {},
+          "overlays": [
+            {
+              "id": "line",
+              "mark": "line",
+              "x": "x",
+              "y": "value",
+              "yaxis": "left"
+            }
+          ]
+        },
+        "feedback": "",
+        "slot_keys": [
+          "marks.*",
+          "scales.*",
+          "colorbar.apply"
+        ]
+      },
+      "notes": "",
+      "raw_slots": {},
+      "accepted_slots": {},
+      "rejected_slots": {},
+      "forbidden_slots": {},
+      "autofix_slots": {},
+      "fallback": null
+    },
+    "L4": {
+      "prompt": "DEFAULT_V2",
+      "response": {
+        "source": "default_v2",
+        "notes": ""
+      },
+      "payload": {
+        "spec": {
+          "layout": {
+            "legend": {
+              "loc": "best"
+            },
+            "grid": {
+              "y": true
+            },
+            "titles": {
+              "top": "t"
+            }
+          },
+          "scales": {
+            "x": {
+              "kind": "categorical"
+            },
+            "y_left": {
+              "kind": "linear"
+            },
+            "y_right": {
+              "kind": "linear"
+            }
+          },
+          "theme": {
+            "palette_global": "tab10"
+          },
+          "flags": {},
+          "overlays": [
+            {
+              "id": "line",
+              "mark": "line",
+              "x": "x",
+              "y": "value",
+              "yaxis": "left"
+            }
+          ]
+        },
+        "feedback": "",
+        "slot_keys": [
+          "axes.*",
+          "legend.apply",
+          "grid.apply",
+          "annot.*",
+          "theme.*"
+        ]
+      },
+      "notes": "",
+      "raw_slots": {},
+      "accepted_slots": {},
+      "rejected_slots": {},
+      "forbidden_slots": {},
+      "autofix_slots": {},
+      "fallback": null
+    }
+  },
+  "debug": {},
+  "selected_index": 1,
+  "ablation": {
+    "use_verifier": false,
+    "use_best_of_n": true,
+    "use_pheromone": false,
+    "best_of_n": 3
+  },
+  "pheromone_summary": {
+    "total": 0,
+    "by_type": {}
+  },
+  "pheromone_tail": [],
+  "candidates": [
+    {
+      "candidate_index": 1,
+      "temperature": 0.2,
+      "exec_pass": true,
+      "png_path": "E:\\黄妍\\科研\\6.3\\NaturePheroViz\\agent\\tmp_pytest_a45doc\\test_run_chain_no_verifier_dis0\\runs\\20260616T001840\\figure_round_1_cand_1.png",
+      "scores": {
+        "visual_form": 0.8,
+        "data_fidelity": 0.8,
+        "series_cohesion": 0.8,
+        "overall_score": 0.8
+      },
+      "diagnostics": [],
+      "stderr": "",
+      "code_path": "E:\\黄妍\\科研\\6.3\\NaturePheroViz\\agent\\tmp_pytest_a45doc\\test_run_chain_no_verifier_dis0\\runs\\20260616T001840\\code_round_1_cand_1.py",
+      "slots_path": "E:\\黄妍\\科研\\6.3\\NaturePheroViz\\agent\\tmp_pytest_a45doc\\test_run_chain_no_verifier_dis0\\runs\\20260616T001840\\slots_round_1_cand_1.json"
+    }
+  ],
+  "stop_reason": "score_threshold",
+  "stop_detail": {
+    "threshold": 0.75,
+    "overall_score": 0.8
+  }
+}

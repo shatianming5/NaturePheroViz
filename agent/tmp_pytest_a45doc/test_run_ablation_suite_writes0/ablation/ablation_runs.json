@@ -1,0 +1,158 @@
+{
+  "output_dir": "E:\\黄妍\\科研\\6.3\\NaturePheroViz\\agent\\tmp_pytest_a45doc\\test_run_ablation_suite_writes0\\ablation",
+  "rounds": 2,
+  "cases": [
+    {
+      "name": "demo",
+      "excel_path": "E:\\黄妍\\科研\\6.3\\NaturePheroViz\\agent\\data\\sales_demo.csv",
+      "user_goal": "g",
+      "chart_family": "bar"
+    }
+  ],
+  "configs": [
+    {
+      "name": "full",
+      "use_verifier": true,
+      "use_best_of_n": true,
+      "use_pheromone": true
+    },
+    {
+      "name": "no_verifier",
+      "use_verifier": false,
+      "use_best_of_n": true,
+      "use_pheromone": true
+    },
+    {
+      "name": "no_bestof",
+      "use_verifier": true,
+      "use_best_of_n": false,
+      "use_pheromone": true
+    },
+    {
+      "name": "no_pheromone",
+      "use_verifier": true,
+      "use_best_of_n": true,
+      "use_pheromone": false
+    }
+  ],
+  "runs": [
+    {
+      "case": "demo",
+      "config": "full",
+      "excel_path": "E:\\黄妍\\科研\\6.3\\NaturePheroViz\\agent\\data\\sales_demo.csv",
+      "chart_family": "bar",
+      "ok": true,
+      "error": "",
+      "rounds_used": 2,
+      "selected_index": 1,
+      "overall_score": 0.68,
+      "visual_form": 0.7,
+      "data_fidelity": 0.5800000000000001,
+      "series_cohesion": 0.78,
+      "stop_reason": "score_threshold",
+      "use_verifier": true,
+      "use_best_of_n": true,
+      "use_pheromone": true,
+      "png_path": "runs/fake/figure.png"
+    },
+    {
+      "case": "demo",
+      "config": "no_verifier",
+      "excel_path": "E:\\黄妍\\科研\\6.3\\NaturePheroViz\\agent\\data\\sales_demo.csv",
+      "chart_family": "bar",
+      "ok": true,
+      "error": "",
+      "rounds_used": 2,
+      "selected_index": 1,
+      "overall_score": 0.58,
+      "visual_form": 0.7,
+      "data_fidelity": 0.48000000000000004,
+      "series_cohesion": 0.6799999999999999,
+      "stop_reason": "score_threshold",
+      "use_verifier": false,
+      "use_best_of_n": true,
+      "use_pheromone": true,
+      "png_path": "runs/fake/figure.png"
+    },
+    {
+      "case": "demo",
+      "config": "no_bestof",
+      "excel_path": "E:\\黄妍\\科研\\6.3\\NaturePheroViz\\agent\\data\\sales_demo.csv",
+      "chart_family": "bar",
+      "ok": true,
+      "error": "",
+      "rounds_used": 2,
+      "selected_index": 1,
+      "overall_score": 0.63,
+      "visual_form": 0.7,
+      "data_fidelity": 0.53,
+      "series_cohesion": 0.73,
+      "stop_reason": "score_threshold",
+      "use_verifier": true,
+      "use_best_of_n": false,
+      "use_pheromone": true,
+      "png_path": "runs/fake/figure.png"
+    },
+    {
+      "case": "demo",
+      "config": "no_pheromone",
+      "excel_path": "E:\\黄妍\\科研\\6.3\\NaturePheroViz\\agent\\data\\sales_demo.csv",
+      "chart_family": "bar",
+      "ok": true,
+      "error": "",
+      "rounds_used": 2,
+      "selected_index": 1,
+      "overall_score": 0.65,
+      "visual_form": 0.7,
+      "data_fidelity": 0.55,
+      "series_cohesion": 0.75,
+      "stop_reason": "score_threshold",
+      "use_verifier": true,
+      "use_best_of_n": true,
+      "use_pheromone": false,
+      "png_path": "runs/fake/figure.png"
+    }
+  ],
+  "aggregates": [
+    {
+      "config": "full",
+      "cases": 1,
+      "ok_cases": 1,
+      "avg_overall_score": 0.68,
+      "avg_visual_form": 0.7,
+      "avg_data_fidelity": 0.5800000000000001,
+      "avg_series_cohesion": 0.78,
+      "avg_rounds_used": 2.0
+    },
+    {
+      "config": "no_verifier",
+      "cases": 1,
+      "ok_cases": 1,
+      "avg_overall_score": 0.58,
+      "avg_visual_form": 0.7,
+      "avg_data_fidelity": 0.48000000000000004,
+      "avg_series_cohesion": 0.6799999999999999,
+      "avg_rounds_used": 2.0
+    },
+    {
+      "config": "no_bestof",
+      "cases": 1,
+      "ok_cases": 1,
+      "avg_overall_score": 0.63,
+      "avg_visual_form": 0.7,
+      "avg_data_fidelity": 0.53,
+      "avg_series_cohesion": 0.73,
+      "avg_rounds_used": 2.0
+    },
+    {
+      "config": "no_pheromone",
+      "cases": 1,
+      "ok_cases": 1,
+      "avg_overall_score": 0.65,
+      "avg_visual_form": 0.7,
+      "avg_data_fidelity": 0.55,
+      "avg_series_cohesion": 0.75,
+      "avg_rounds_used": 2.0
+    }
+  ]
+}

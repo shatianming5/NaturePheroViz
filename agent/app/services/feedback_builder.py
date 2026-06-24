@@ -3,6 +3,18 @@
 from typing import Any, Dict, List
 
 
+def format_pheromone_summary(summary: Dict[str, Any]) -> List[str]:
+    lines: List[str] = []
+    total = int(summary.get("total", 0) or 0)
+    by_type = summary.get("by_type") or {}
+    lines.append(f"Pheromone: total={total}")
+    if isinstance(by_type, dict):
+        detail = ", ".join(f"{k}={int(v or 0)}" for k, v in sorted(by_type.items()))
+        if detail:
+            lines.append(f"Pheromone by type: {detail}")
+    return lines
+
+
 def compose_feedback(
     round_idx: int,
     last_scores: Dict[str, float],
