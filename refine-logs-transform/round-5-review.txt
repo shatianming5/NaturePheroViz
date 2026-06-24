@@ -1,0 +1,25 @@
+I’m checking the repository instructions and the cited artifacts before scoring. The workspace path in the prompt doesn’t currently resolve, so I’m locating the actual checkout and then I’ll verify the claimed round-5 closures against the files.The stated macOS path is not mounted in this container, so I can’t verify the repo files at that location directly. I’m searching for the project by name inside the available filesystem; if it isn’t present, I’ll score strictly from the proposal text and call that limitation out.Based on the round-5 writeup as submitted, this now crosses the `READY` bar. I could not audit the cited repo path in this container, so this is a proposal-level rescore, not a file-by-file artifact check.
+
+**Scores**
+- `ProblemFidelity 9.0` — the problem remains sharp, important, and well evidenced.
+- `MethodSpec 9.1` — the 5-family expansion closes the specific breadth gap from round-4. It does not prove universal scalability, but it converts extensibility from assertion into measured evidence with honest boundaries.
+- `ContribQuality 9.0` — the package is now coherent: benchmark, goldless operator-contract method, strong baselines, real-data transfer, reconciled accounting, and hardened attribution all line up.
+- `FrontierLeverage 8.9` — remaining weakness: only `GPT-4o` and `Claude` are tested. Concrete fix: add one strong open model family such as `Qwen-Coder` and show the same ambiguity / silent-error / detection pattern.
+- `Feasibility 8.9` — remaining weakness: attribution cross-fire is much better but not fully gone at `90/1104 = 8%`. Concrete fix: add contract applicability ranking or family-level candidate pruning, then report top-1 attribution precision or post-pruning cross-fire.
+- `ValidationFocus 9.2` — the canonical counts, Wilson CIs, and master table directly fix the prior bookkeeping weakness.
+- `VenueReadiness 9.1` — this now reads like a submission package, not a strong prototype with loose ends.
+
+`Weighted overall: 9.0/10.`
+
+**Closure checks**
+- `Does the 5-family coverage table close the MethodSpec breadth gap?` `yes`
+- `Does the canonical reconciliation + master table close the ValidationFocus count-inconsistency gap?` `yes`
+- `Does the dual-gate close the Feasibility/attribution caveat?` `partial`
+
+The third is only `partial` for a narrow reason: it removes the measurement artifact and makes the caveat non-blocking, but `8%` cross-fire is still a real residual, not a fully erased issue.
+
+**Decision**
+
+`OVERALL SCORE: 9.0`  
+`Is it now READY (>=9)? Yes.`  
+`Verdict: READY (>=9)`

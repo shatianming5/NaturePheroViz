@@ -1,0 +1,19 @@
+{
+  "task_id": "builtin_001",
+  "system": "ours",
+  "exec_pass": true,
+  "scores": {
+    "visual_form": 1.0,
+    "data_fidelity": 1.0,
+    "series_cohesion": 1.0
+  },
+  "fidelity_detail": {
+    "rms_f1": 1.0,
+    "rnss": 0.0,
+    "mismatches": []
+  },
+  "rounds_used": 1,
+  "tokens": 0,
+  "ground_truth_ref": "eval\\results_bench\\ours\\builtin_001\\plot_df.csv",
+  "notes": "elapsed=4.6s"
+}

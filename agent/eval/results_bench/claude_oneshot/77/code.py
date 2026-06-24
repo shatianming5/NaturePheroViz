@@ -1,0 +1,8 @@
+ax.plot(df['Country'], df['Fruits & Vegetables'], marker='o', linestyle='-', color='tab:green', label='Fruits & Vegetables')
+ax.set_xlabel('Country')
+ax.set_ylabel('Fruits & Vegetables')
+ax.set_title('Protein Consumption: Fruits & Vegetables by Country')
+ax.tick_params(axis='x', rotation=90)
+ax.legend()
+ax.grid(True, linestyle='--', alpha=0.5)
+ax.figure.tight_layout()

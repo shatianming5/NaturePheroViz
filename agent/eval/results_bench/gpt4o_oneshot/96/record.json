@@ -1,0 +1,19 @@
+{
+  "task_id": "96",
+  "system": "gpt4o_oneshot",
+  "exec_pass": true,
+  "scores": {
+    "visual_form": 0.0,
+    "data_fidelity": 1.0,
+    "series_cohesion": 0.0
+  },
+  "fidelity_detail": {
+    "rms_f1": 1.0,
+    "rnss": 0.0,
+    "mismatches": []
+  },
+  "rounds_used": 1,
+  "tokens": 0,
+  "ground_truth_ref": "eval\\results_bench\\gpt4o_oneshot\\96\\plot_df.csv",
+  "notes": ""
+}

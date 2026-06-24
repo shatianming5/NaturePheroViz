@@ -1,0 +1,38 @@
+我先按 round-4 复核标准重读 proposal，并检查当前目录链上的 `AGENTS.md` 约束，确保评分口径和输出格式都不偏。仓库路径看起来和消息里的 `cwd` 不一致；我先确认实际工作目录，再继续按 round-3 标准逐项复核。当前会话不在用户消息里的本地仓库，而是在一个独立工作区；这次任务只需复核你贴出的 proposal 文本，不依赖仓库文件。我再快速确认本工作区没有额外 `AGENTS.md` 覆盖，然后直接给 round-4 评分。**Rescore**
+
+- `ProblemFidelity 9.0`
+- `MethodSpec 8.7`
+- `ContribQuality 8.8`
+- `FrontierLeverage 8.5`
+- `Feasibility 8.8`
+- `ValidationFocus 8.4`
+- `VenueReadiness 8.2`
+
+`Weighted Overall: 8.7`
+
+This is stronger than round-3 and still oral-caliber in substance, but I would not call it `READY (>=9)` yet.
+
+**What Is Still <9**
+
+- `MethodSpec 8.7`: The round-3 gap has been materially reduced because scalability is now empirically shown, not just argued. The remaining weakness is breadth: the new-family demo is only 3 unseen operator families, one of them stays at `25%` after one contract, and the negative set is tiny. Fix: add 2-4 more unseen families, include a coverage-by-family table, and show when one contract is enough vs when parameter-sensitive variants need separate abstain logic. Priority `High`.
+- `ContribQuality 8.8`: The contribution package is now coherent and much stronger, but the “bounded-coverage oracle” story is still slightly under-developed relative to the size of the claim. Fix: make the central claim explicitly “reliable within covered operator-semantic classes, abstaining outside coverage,” then quantify coverage on the benchmark and real slice. Priority `Medium`.
+- `FrontierLeverage 8.5`: The positioning against CodeT / SemGuard / mlinspect / Incoherence is mostly solid, but this is still a likely attack surface in Q&A because the novelty lives in a narrow intersection. Fix: add one direct comparison figure or one-slide matrix with one concrete failure example per neighbor. Priority `Medium`.
+- `Feasibility 8.8`: The prototype clearly works, and the path to extension looks real. The remaining weakness is hardening: the reported `20%` cross-fire, even framed as a stress artifact, still signals incomplete abstain discipline. Fix: enforce parameter/schema compatibility gates before any contract can fire, then rerun attribution stress tests. Priority `Medium`.
+- `ValidationFocus 8.4`: Adding Wilson CIs was the right move, but the real-data slice is still small and the current text still exposes count inconsistencies: `§1.3` says clarified silent is `5/18` with recall/FP `18/18` and `0/18`, while the closure summary / necessity package says `6/18`, `19/19`, `0/17`. Fix: reconcile every real-slice denominator in one canonical table and, if possible, add either one more model or a modestly larger real slice. Priority `High`.
+- `VenueReadiness 8.2`: The necessity ablation and attribution package help a lot, but the document is not yet fully cleaned because the proposal text itself still contains contradictory real-data counts. Fix: collapse all reported numbers onto one master ledger keyed by run ID and make every section cite only those canonical counts. Priority `High`.
+
+**Gap-Closure Judgment**
+
+- Scalability demo closes the `MethodSpec` gap from “principled” to “empirical”: `yes`, narrowly. It proves the point exists; it does not yet make the scalability story fully mature.
+- Wilson CIs plus honest small-sample framing close the `ValidationFocus` gap: `partial`. They fix the reporting problem, not the small-`N` credibility ceiling.
+- Master table plus necessity ablation plus attribution close the `VenueReadiness` gap: `partial`. The scientific package is much better, but the written package still has internal accounting conflicts.
+
+**Overall**
+
+`OVERALL SCORE: 8.7`
+
+`READY (>=9)? No.`
+
+The gap to `9` is no longer “new capability missing.” It is a narrower package gap: one fully reconciled canonical results table, one more step of validation breadth, and contract-hardening that removes the attribution cross-fire caveat. That is achievable with the existing prototype; it does not require a new method.
+
+`Verdict: REVISE`

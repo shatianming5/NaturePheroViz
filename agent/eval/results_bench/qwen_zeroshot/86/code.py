@@ -1,0 +1,1 @@
+ax.pie(df.set_index('Version').T.values, labels=df['Version'].tolist(), colors=[plt.cm.tab10(i % 10) for i in range(len(df))], autopct='%1.1f%%', pctdistance=0.85, radius=1, wedgeprops=dict(width=0.3, edgecolor='white'), startangle=90, textprops={'fontsize': 8})

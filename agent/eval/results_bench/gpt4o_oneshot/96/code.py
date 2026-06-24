@@ -1,0 +1,6 @@
+df_plot = df[['Quarter', 'Huawei']].dropna()
+ax.plot(df_plot['Quarter'], df_plot['Huawei'], marker='o', linewidth=2)
+ax.set_xlabel('Quarter')
+ax.set_ylabel('Huawei')
+ax.set_title('Huawei Sales by Quarter')
+ax.tick_params(axis='x', rotation=45)

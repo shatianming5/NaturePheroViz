@@ -1,0 +1,1 @@
+ax.scatter(df['gene'], df['230-97_SCLC'])

@@ -1,0 +1,1 @@
+ax.plot(df['Country'], df['Fruits & Vegetables'], marker='o', linestyle='-', linewidth=2, markersize=6)

@@ -1,0 +1,1 @@
+ax.sunburst(df, path=['Major Area', 'Regions', 'Country'], values='Overall score', color_discrete_map={'Europe': 'darkgreen', 'Asia': 'yellow', 'Americas': 'blue', 'Oceania': 'purple', 'Africa': 'green'}, hole=0.4, title='Global Food Security Index, 2020<br><sub>Overall score 0-100, 100 = best environment</sub>')

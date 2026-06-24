@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+# Auto-push after every commit (optional).
+# Enable with: git config core.hooksPath .githooks
+# Disable for a single command by setting: DISABLE_AUTO_PUSH=1
+
+if [[ "${DISABLE_AUTO_PUSH:-}" == "1" ]]; then
+  exit 0
+fi
+
+# Only push if an upstream exists (avoids surprising new remote branches).
+if git rev-parse --abbrev-ref --symbolic-full-name '@{u}' >/dev/null 2>&1; then
+  git push
+fi

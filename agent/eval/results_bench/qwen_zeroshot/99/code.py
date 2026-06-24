@@ -1,0 +1,1 @@
+ax.violinplot([df[df['sex']=='Male']['size'], df[df['sex']=='Female']['size']], positions=[1, 2], showmeans=False, showmedians=True, showextrema=True)

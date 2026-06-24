@@ -1,0 +1,1 @@
+ax.sunburst(df, names='country', parents='continent', values='pop', color='lifeExp', color_kwargs={'cmap': 'RdBu', 'vcenter': np.average(df['lifeExp'], weights=df['pop'])}, legend=True)

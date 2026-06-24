@@ -1,0 +1,1 @@
+ax.plot(df['Series'], df['p position'])

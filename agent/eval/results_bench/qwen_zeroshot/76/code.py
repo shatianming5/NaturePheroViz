@@ -1,0 +1,1 @@
+ax.bar(df["Woman's millions of dollars"], df["Men's millions of dollars"])

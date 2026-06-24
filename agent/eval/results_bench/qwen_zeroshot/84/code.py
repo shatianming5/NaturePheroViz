@@ -1,0 +1,1 @@
+ax.bar(df['Temperature(K)'], df['Pressure(Gas)'])

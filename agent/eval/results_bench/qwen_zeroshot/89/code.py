@@ -1,0 +1,1 @@
+ax.pie(df['Data'], labels=df['Browser'], autopct='%1.1f%%', startangle=90, pctdistance=0.85, radius=1, wedgeprops=dict(width=0.3, edgecolor='white'), textprops={'fontsize': 10}, labeldistance=0.75)

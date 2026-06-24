@@ -1,0 +1,19 @@
+{
+  "task_id": "99",
+  "system": "claude_oneshot",
+  "exec_pass": true,
+  "scores": {
+    "visual_form": 0.0,
+    "data_fidelity": 0.1791044776119403,
+    "series_cohesion": 0.0
+  },
+  "fidelity_detail": {
+    "rms_f1": 0.1791044776119403,
+    "rnss": 0.0,
+    "mismatches": []
+  },
+  "rounds_used": 1,
+  "tokens": 0,
+  "ground_truth_ref": "eval\\results_bench\\claude_oneshot\\99\\plot_df.csv",
+  "notes": ""
+}

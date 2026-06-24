@@ -1,0 +1,11 @@
+{
+  "system": "gpt4o_oneshot",
+  "dataset": "builtin",
+  "tasks_total": 1,
+  "exec_pass": 1,
+  "exec_pass_rate": 1.0,
+  "mean_data_fidelity": 1.0,
+  "records": [
+    "builtin_001"
+  ]
+}

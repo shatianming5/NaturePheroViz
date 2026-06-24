@@ -1,0 +1,1 @@
+ax.bar(df['Major Area'], df['Overall score'])

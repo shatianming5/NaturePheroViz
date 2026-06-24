@@ -1,0 +1,1 @@
+ax.scatter(df['Petal Length(cm)'], df['Petal Width(cm)'], df['Sepal Length(cm)'], c=df['Species'].map({'setosa': 'red', 'versicolor': 'blue', 'virginica': 'green'}), label=df['Species'])

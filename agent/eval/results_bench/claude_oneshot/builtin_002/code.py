@@ -1,0 +1,1 @@
+ax.bar(df['cat'], df['rev']); ax.set_xlabel('Category'); ax.set_ylabel('Revenue'); ax.set_title('Revenue by Category')

@@ -1,0 +1,19 @@
+{
+  "task_id": "78",
+  "system": "ours",
+  "exec_pass": false,
+  "scores": {
+    "visual_form": 0.05,
+    "data_fidelity": 0.0,
+    "series_cohesion": 1.0
+  },
+  "fidelity_detail": {
+    "rms_f1": 0.0,
+    "rnss": 0.0,
+    "mismatches": []
+  },
+  "rounds_used": 3,
+  "tokens": 0,
+  "ground_truth_ref": "eval\\results_bench\\ours\\78\\plot_df.csv",
+  "notes": "elapsed=21.7s"
+}

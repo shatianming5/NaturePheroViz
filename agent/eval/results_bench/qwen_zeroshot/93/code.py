@@ -1,0 +1,1 @@
+ax.bar(df['t'], df['tot energy / Eh'])
