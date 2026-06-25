@@ -22,6 +22,22 @@ DEFAULT_SEARCH_URL = (
 
 NATURE_SEARCH_RESULT_CAP_MESSAGE = "We only show the first 1000 results for any query"
 
+# A realistic browser UA reduces (but does not eliminate) Nature/Springer bot
+# challenges on the search endpoint; a bare "Mozilla/5.0" is challenged more readily.
+_BROWSER_UA = (
+    "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 "
+    "(KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36"
+)
+
+
+def _is_bot_challenge(html: str) -> bool:
+    """Detect the Akamai/Cloudflare-style 'Client Challenge' interstitial that Nature
+    serves to rate-limited / automated clients (a tiny JS page with no real content)."""
+    if not html or len(html) > 20000:
+        return False
+    low = html.lower()
+    return ("client challenge" in low) or ("just a moment" in low and "enable javascript" in low)
+
 
 def _now_iso() -> str:
     return time.strftime("%Y-%m-%dT%H:%M:%S", time.localtime())
@@ -132,6 +148,10 @@ class SearchFetchResult:
     hit_result_cap: bool
 
 
+class SearchBlockedError(RuntimeError):
+    """Raised when Nature's search endpoint serves a bot-challenge (rate-limited)."""
+
+
 def fetch_search_article_urls(
     search_url: str,
     *,
@@ -142,7 +162,7 @@ def fetch_search_article_urls(
     sleep_s: float = 0.2,
 ) -> SearchFetchResult:
     sess = session or requests.Session()
-    headers = {"User-Agent": "Mozilla/5.0"}
+    headers = {"User-Agent": _BROWSER_UA}
 
     article_urls: list[str] = []
     seen: set[str] = set()
@@ -160,8 +180,21 @@ def fetch_search_article_urls(
             if page != 1
             else _replace_query_param(search_url, "page", None)
         )
-        resp = sess.get(url, headers=headers, timeout=60)
-        resp.raise_for_status()
+        # Retry with backoff on a bot-challenge interstitial (rate-limit), so a
+        # transient challenge doesn't silently look like "0 results".
+        resp = None
+        for attempt in range(1, 5):
+            resp = sess.get(url, headers=headers, timeout=60)
+            resp.raise_for_status()
+            if not _is_bot_challenge(resp.text):
+                break
+            if attempt < 4:
+                time.sleep(min(2.0 * attempt, 8.0))
+        if resp is not None and _is_bot_challenge(resp.text):
+            raise SearchBlockedError(
+                "Nature search is serving a bot-challenge (rate-limited). Wait and retry, "
+                "raise --sleep-s, or run from a different IP."
+            )
 
         soup = BeautifulSoup(resp.text, "html.parser")
         if total_results is None:
@@ -203,10 +236,12 @@ def fetch_search_results_count(
     session: Optional[requests.Session] = None,
 ) -> Optional[int]:
     sess = session or requests.Session()
-    headers = {"User-Agent": "Mozilla/5.0"}
+    headers = {"User-Agent": _BROWSER_UA}
     url = _replace_query_param(search_url, "page", None)
     resp = sess.get(url, headers=headers, timeout=60)
     resp.raise_for_status()
+    if _is_bot_challenge(resp.text):
+        return None  # rate-limited: treat as unparseable (caller skips / handles)
     soup = BeautifulSoup(resp.text, "html.parser")
     return _extract_search_results_count(soup)
 
@@ -229,7 +264,9 @@ def _infer_years_for_search(
         year_url = _replace_query_param(search_url, "date_range", f"{y}-{y}")
         count = fetch_search_results_count(year_url, session=session)
         if count is None:
-            raise SystemExit(f"Could not parse result count for year {y}.")
+            # One unparseable year must not kill the whole crawl — skip it.
+            time.sleep(sleep_s)
+            continue
         if count > 0:
             years.append(y)
             cumulative += count
@@ -1764,4 +1801,8 @@ def main(argv: Optional[Iterable[str]] = None) -> int:
 
 
 if __name__ == "__main__":
-    raise SystemExit(main())
+    try:
+        raise SystemExit(main())
+    except SearchBlockedError as e:
+        print(f"\n[blocked] {e}", file=sys.stderr)
+        raise SystemExit(2)
