@@ -221,3 +221,136 @@ round-1 结论:novelty 真实但三条边界 razor-thin;round-2 联网复核**�
 
 **仍可锦上添花(非 blocker,论文写作期)**:
 1. **更大 benchmark / 真实切片**——48→100+、真实切片 9→更多干净表(受限于真类目表稀缺)。
+
+---
+
+## 8. 下一阶段:从检测到定向修复(repair extension roadmap)
+
+> 状态:检测线(§1-§7)已 READY 9.0;本节是**下一阶段(repair)的方向与"还要做的事情"**,据 2026-06-24 组会纪要落地。
+> 完整讨论与邻居比对见 `task/aaai_repair_direction_memo.md`。
+> **本节是活文档,随实验推进勾选 ☑ / 更新数字。**
+>
+> ⚠️ **边界(与既有提案 deconflict)**:① 本 repair 属 **transform 线**(NL→DataFrame 语义/契约 judge),与 viz 线 `oral_method_proposal.md` 已命名的 "silent-error self-repair"(matplotlib 画错的数 / PlotTrace judge)是**不同对象、不同 judge 的不同论文**,headline 措辞不共用;② **C2(targeted repair)已由实验1 实证**(83% vs 10%,§8.4);**C3(abstain-routing)与 dual-agent 经实验为诚实负/中性结果**(不作 claim);仍沿用"不夸大未证部分、负结果照实报"的纪律;③ 本节是 §1-§7 detection 主线的**扩展**,detection 仍是独立、已 READY 的贡献,**不被本节替换**。
+>
+> 🧭 **主线决策(2026-06-25 已定 + 实验1 已扩样本验证)**:脊柱锁定 **typed operator-semantic attribution**(非 detection/repair/dual-agent 任一动作)。**实验1(generic vs targeted)真实 LLM 跑通并扩样本**:**N=87、3 模型跨厂商(gpt-4o + claude-sonnet-4.6 + gemini-3.5-flash)**,**targeted 80% [95%CI 71-87] vs generic 18% [12-28](CI 分离)**,over-repair 3%、无显著 per-family 回退 ⇒ 过 go/no-go 门、**主线升级为 attribution-driven targeted repair**。回落条款(NO-GO 退 detection)未触发。
+
+### 8.0 一句话定位
+
+> **把已 READY 的 `goldless operator-semantic detection` 闭环成 `typed, constrained, abstention-calibrated repair`**——主 claim:**typed semantic attribution 能比 generic self-repair 更可靠、更高效地修复真实 pandas notebook 里的 silent 语义错**。
+
+### 8.1 为什么"检测后定向修 + 双智能体"单独不够(避免撞 crowded 邻居)
+
+近两年 program/agent repair 已很拥挤,若主贡献只写成"先检测再修复"或"引入两个 agent 分工",reviewer 会问"和已有 agent repair 的本质区别"。需主动区分的最近邻居:
+
+| 邻居 | 年份 | 已覆盖的点 | 链接 |
+|---|---|---|---|
+| RepairAgent | 2024 | 自主收集信息 + 选工具 + 验证的 LLM repair agent | arxiv.org/abs/2403.17134 |
+| SEIDR | 2025 | iterative **multi-agent** debugging & repair | arxiv.org/abs/2503.07693 |
+| InspectCoder | 2025 | **dual-agent** + debugger 协作、runtime debugging | arxiv.org/abs/2510.18327 |
+| SelfHeal | 2026 | fix agent + critic agent(双智能体框架本身已不新) | arxiv.org/abs/2604.17699 |
+| PracRepair | 2026 | 先诊断形成 repair hypothesis 再迭代(接近 diagnosis-driven repair 叙述) | arxiv.org/abs/2606.17612 |
+
+→ **"双智能体"只能算实现手段,不能当第一创新点。**
+
+### 8.2 真正的 novelty 与四条贡献(headline 从"系统堆叠"改成"语义诊断如何驱动可靠修复")
+
+承接已有资产(§2.3 typed 归因、§2.4 abstain、§3.6 family 剪枝),把辨识度建立在**operator-level typed attribution 反向驱动受约束修复**这条线上:
+
+- **C1 — typed semantic diagnosis**:goldless、operator-level attribution(不止 binary detect,而是定位到出错的算子语义)。**已有**(§3.6 归因 recall 25/25=100%、cross-fire 2%)。
+- **C2 — contract-guided targeted repair**:把 violated invariant 转成**受约束 patch**(限定 slot / API / transformation),而非开放式 self-repair。**✅ 已证(实验1)**:targeted 83% vs generic 10%,逼近/超过 gold 天花板。
+- **C3 — abstain-aware repair routing**:~~诊断/覆盖不足时 abstain 或退回 generic 以减误修~~。**⚠️ repair-time 收益未获实证(实验2a:force 50% ≥ route 25% on uncovered,over-repair 均 0)**;降级——**abstain 仅作 detection-time 安全属性**(未覆盖算子 FP≈0,§3.7/§2.4),**不作 repair-time claim**。
+- **C4 — real-world validation**:**✅ 部分已证**:operator prevalence(实验3:12 族 1.64M 真实文件)+ 真实数据 coverage/abstain(§3.5 841 任务 recall 98%/FP 0%);受控 notebook 语料 per-notebook 统计为可选加强(需下载)。
+
+> **据实验更新的贡献结构**:**C1(检测)+ C2(targeted repair,8× 增益)是双主线**;C4 提供外部效度;**C3 与 dual-agent 均降级为诚实负/中性结果**(C3 repair-time 无收益;dual-agent 无增益反更贵),作"我们试过且诚实报告"的可信度资产,不进 headline。
+
+候选标题(择一收敛):
+- Typed Semantic Attribution for Reliable Repair of Data-Wrangling Code
+- Contract-Guided Targeted Repair with Abstention for Pandas Transformations
+- From Goldless Detection to Targeted Repair in Real-World Pandas Notebooks
+
+### 8.3 现有资产与关键缺口
+
+| 资产 | 文件 | 状态 |
+|---|---|---|
+| typed attribution 评测 | `agent/eval/attribution_eval.py` | ✅ 已有(recall 25/25、cross-fire 2%) |
+| operator contracts 库 | `agent/eval/transform_oracle.py` | ✅ 已有(核心 12 类成熟 + 5 族建设中) |
+| 在线 repair loop(**viz 线** render-bug) | `agent/app/services/single_chain_runner.py`、`agent/eval/repair_gain.py` | ⚠️ 存在但属绘图线(PlotTrace chart-vs-data),**未与 transform 线打通** |
+| transform 线 typed→targeted repair 闭环 | `agent/eval/transform_repair.py` | ✅ 已建+实验1 已出数(GO):targeted 83% vs generic 10% |
+
+> **核心缺口**:已能"检测 + 定位到 operator family",但还没把 typed diagnosis 变成 **online targeted repair policy**。这是下一阶段第一优先级。
+
+### 8.4 决定性实验(实验1 = go/no-go 门,P0)
+
+#### 实验1 — generic vs targeted repair(★ gating,先跑这个)
+
+**核心原则(立论命门)**:三臂**唯一变量 = 回灌的 feedback 内容**;模型、起点 buggy 代码、预算 N 轮、温度、随机种子、重写 prompt 模板**全部锁死**——否则增益归因不干净。
+
+- **样本**:`transform_bench._cases()` 中**模糊提示下 exec-ok 但 silent(gold 判错)** 的 case(真正需要修的);按 `op` 分层,记录 true operator family(per-family 指标用)。
+- **三臂(非两臂——加天花板才挡得住"那 gold 能修多少")**:
+
+  | 臂 | 回灌 feedback | 角色 |
+  |---|---|---|
+  | A. generic(下界) | "结果可能有误,请检查并修正" + 模型自查,**不给任何 typed 信息** | baseline,须是**最强无契约版**,不得打稻草人 |
+  | B. targeted(ours) | `violated invariant + 出错算子 + allowed patch scope`(`transform_oracle.check().detail` + `attribution_eval._run_all_contracts(prune=True)` 定位) | 主张 |
+  | C. gold-diff(天花板) | 直接 gold 对账("哪个值该是多少") | 上界,证明 goldless 的 B **逼近**有 gold 的 C |
+
+  → B 离 C 越近、离 A 越远 = 故事越硬。
+- **指标(per-arm × per-family)**:① final repair success(N 轮后 `_gold_correct` 判对率,主指标);② 平均轮数 / token / cost;③ **over-repair 率(双定义)**——(a) 修复后**新引入**其它契约 fire,(b) gold 上**本来对的子结构被改坏**;④ abstain 正确性(见消融)。
+- **避免循环论证(关键)**:repairer **全程只看 goldless 契约**,成功判据用**独立 gold**(`_gold_correct`,模型不可见)——与检测线"oracle 不看 gold、标签用 gold 算"同构,须在论文讲死。
+- **公平性(审稿人必攻,先堵)**:① generic 臂给**最强自查 prompt**,不得故意弱化;② 三臂共用**同一份 buggy 起点代码**(同一次模糊生成产物),不各自重生成;③ 温度固定(`_llm_code` 已 temp=0)、跨**多模型**(GPT-4o/Claude/≥1 开源)证明非单模型 artifact。
+- **go/no-go 门(写死,不事后挪)**:targeted **同时**满足 ① final success 显著 > generic、② **over-repair 率 ≤ 绝对阈值 10%**(注:generic 几乎不改动→over-repair 天然≈0,拿"不修"当基准不合理,故用绝对阈值而非"≤generic")、③ 轮数不增、④ **无显著 per-family 回退**(per-family Wilson CI **分离**才算回退;小样本噪声/§3.7 盲点的 raw 非赢透明列出但不否决,避免单族噪声否决压倒性总量) ⇒ 升级 repair 主线;否则回落 detection。
+- **新文件**:`agent/eval/transform_repair.py`,复用 `transform_bench._cases` / `ambiguity_calibration.{_llm_code,_exec,_gold_correct}` / `transform_oracle.check` / `attribution_eval._run_all_contracts`;LLM 走 `LLM_API_BASE/KEY/MODEL`;`--offline` 跑结构自测、`--resummarize <json>` 改门后从已存 JSON 重算。
+
+##### ✅ 实验1 结果(2026-06-25,首轮真实 LLM:gpt-4o + claude-sonnet-4.6,N=29 silent case,N轮=3)
+
+| 臂 | success | mean rounds | over-repair(a) 新fire | over-repair(b) 破坏正确 | 停机主因 |
+|---|---|---|---|---|---|
+| A generic(下界) | **3/29 = 10%** | 1.17 | 0% | 0% | 26/29 **fixpoint**(模型重导出同一错值) |
+| B targeted(ours) | **24/29 = 83%** | 1.14 | 1/29 = 3% | 0% | 27/29 contract_pass |
+| C gold-diff(天花板) | 22/29 = 76% | 1.45 | 1/29 = 3% | 0% | 22 gold_match / 6 budget |
+
+**go/no-go:全 PASS ⇒ VERDICT GO**(success 83%>10%、over-repair 3%≤10%、轮数不增、无 per-family 回退)。
+
+关键发现(诚实):
+- **8× 增益**:typed 契约 feedback 把 silent-error 修复率从 generic 的 10% 拉到 83%。
+- **B(83%)≥ C 天花板(76%)**:契约说清"你算成算术均值/比率,应是加权/百分点"比单纯给 gold 数字**更可操作**——`pct_point` B=4/4 而 C=1/4 最典型。这是比预期更强的结果。
+- **公平**:generic 主要靠 26/29 **fixpoint**失败(模型看不出 silent 错、重导出同值),malformed 仅 10%——非 harness artifact;且 generic 非全 0(`cumcount`1/1、`clip_outlier`2/4),未被人为压低。
+- **诚实边界**:`zscore_within_group` B=0/2(§3.7 单契约盲点)但 C=2/2(证明可补契约修复),与 §2.4/§3.7 覆盖边界自洽。
+- 数据留痕:`agent/eval/results_repair_targeted/`(`first_run_raw.log` 首轮原始 + 复跑生成的 report/json)。
+
+##### ✅✅ 实验1 扩样本复核(2026-06-25,**N=87、3 模型跨厂商** gpt-4o + claude-sonnet-4.6 + **gemini-3.5-flash**,带 95% Wilson CI)
+
+| 臂 | success [95% CI] | mean rounds | over-repair(a) | 停机主因 |
+|---|---|---|---|---|
+| A generic(下界) | **16/87 = 18% [12-28]** | 1.34 | 0% | 71 fixpoint / 8 malformed(9%) |
+| B targeted(ours) | **70/87 = 80% [71-87]** | 1.10 | 3/87 = 3% | 83 contract_pass |
+| C gold-diff(天花板) | 70/87 = 80% [71-87] | 1.33 | 2/87 = 2% | 70 gold_match / 14 budget |
+
+**go/no-go:GO**——targeted 80% [71-87] vs generic 18% [12-28] **CI 完全分离**;over-repair 3%≤10%;轮数不增;**无显著 per-family 回退**(唯一 raw 非赢 `zscore_within_group` targeted 1/8 vs generic 2/8,CI 重叠=噪声、且为 §3.7 已声明盲点,透明列出不否决)。
+- **跨厂商稳健**:加入 Google gemini-3.5-flash 后结论不变(targeted 仍 4-5× 于 generic),非单厂商/双模型 artifact;CI 收紧(±~8pt)。
+- **per-family**:targeted 在 10 族中 9 族 ≥ generic;`pct_point` 12/12 vs C 仅 6/12、`topn_with_ties` 12/12——契约反馈再证比 gold 数字更可操作。
+- 数据留痕:`agent/eval/results_repair_expanded/`(`run_raw.log` + report/json)。canonical N=29 首轮与 N=87 扩样本**结论一致**(83%/10% → 80%/18%,差异为采样)。
+
+#### 实验2 — 消融(`agent/eval/transform_repair_ablation.py`,实验1 过门后)
+- ⚠️ **abstain-aware routing 臂(C3 实证 → 未获支持,诚实负结果)**:`--mode abstain`(gpt-4o+claude,N=17)。covered 子集 route==force==**89%**(generic 0%)符合预期;但 **uncovered 子集:force 50% > route 25%**、over-repair 三策略均 **0%**。⇒ **repair 时的 abstain-routing 安全收益未被验证**——在未覆盖算子上硬给 targeted 反馈既没抬 over-repair(proxy 偏弱)也没掉成功率。诚实结论:**abstain 是 detection-time 属性**(未覆盖算子 FP≈0,§3.7),**不是已证的 repair-time 收益**;**C3 降级为 exploratory、不作 claim**(详见 `results_repair_ablation/ablation_abstain_report.md`)。
+- ✅ **single-agent vs dual-agent**:`--mode dual`(gpt-4o+claude,N=30)。**single 83% vs dual 77%**(dual 略**差**)、dual 成本 **2.2×** calls、over-repair 7% vs 3%。⇒ **dual-agent 不带来增益、反而更贵更易误修**,强证"headline 是 typed-attribution **signal**、非 agent 数";直接回答 reviewer"为何两个 agent"。**仅消融,不进 headline**。
+
+#### 实验3 — real-world operator prevalence + coverage/abstain(`agent/eval/operator_prevalence.py`,✅ 已出数)
+- ✅ **prevalence(GitHub 公开 Python 代码搜索,2026-06-25)**:12 个契约覆盖的算子族**全部高频出现于真实代码**,合计 **1,637,552 个文件**;最高危的也最常见——NaN 处理 304,896、cumulative 320,640、median 175,792、dedup 170,368、join-how 161,344。⇒ silent-error 面**非合成**,是真实世界最高频的 wrangling 算子。
+- ✅ **coverage/abstain(真实数据,复用 §3.5)**:841 任务/71 篇 recall 98%/FP 0%;未覆盖算子退化为 **abstain** 而非误报(配合实验2a 路由)。
+- ☐ **可选加强(需下载)**:受控 notebook 语料的 per-notebook 算子频率/abstain——PandasBench(2506.02345)/CoCoNote(2409.13551)/JunoBench(2510.18013)/ARCADE(2212.09248)/KGTorrent(2103.10558)。
+
+### 8.5 执行顺序(短期,gate-first)
+
+1. ✅ **P0(完成)**:`agent/eval/transform_repair.py` 建成 + 离线自测 + **实验1 真实 LLM 出数**(gpt-4o+claude,N=29):**GO**。
+2. ✅ **决策点(已过门)**:targeted 83% vs generic 10%、over-repair 3%、无回退 ⇒ **升级 repair 主线**(§8.2 标题)。
+3. ✅ 过门后实验全部跑完:实验2(✅ dual:single 83% vs dual 77%@2.2×→无增益;⚠️ abstain:repair-time 无收益、C3 降级)+ 实验3(✅ prevalence 1.64M 文件 + §3.5 coverage/abstain)。
+4. ✅ **扩样本复核完成**:N=29→**N=87、3 模型跨厂商(加 gemini-3.5-flash)、95% Wilson CI**——targeted 80% [71-87] vs generic 18% [12-28] **CI 分离**,跨厂商稳健。
+5. ☐ 据结果**收敛 AAAI 标题与主故事**:主线 = C1 检测 + C2 targeted repair;C3/dual-agent 作诚实负结果。可选:再加开源模型 / 更大 benchmark。
+
+### 8.6 双智能体的定位(降级为机制/消融)
+
+保留但重新定位——**目的是解耦 diagnosis 与 repair 的 search space,不是"看起来更复杂"**:
+- Agent A(diagnoser):输出 `operator posterior + violated invariants + allowed patch scope`。
+- Agent B(repairer):只在受限空间里改指定 slot / API / transformation。
+- ❌ 不可写成"因为流行 multi-agent 所以也做";双智能体仅作实现策略或消融项,不作 headline novelty。

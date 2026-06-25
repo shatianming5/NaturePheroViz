@@ -65,6 +65,12 @@ agent/eval/results_repair/repair_gain_records.json
 agent/eval/results_complex/complex_records.json
 agent/eval/results_transform/transform_records.json
 agent/eval/results_gonogo/
+# repair experiments (§8): keep report.md only; per-case json regenerable (data also in .py)
+agent/eval/results_repair_targeted/repair_targeted.json
+agent/eval/results_repair_expanded/repair_targeted.json
+agent/eval/results_repair_ablation/ablation_dual.json
+agent/eval/results_repair_ablation/ablation_abstain.json
+agent/eval/results_prevalence/operator_prevalence.json
 agent/eval/results_nature_e2e/
 agent/eval/results_complex/complex_records.json
 agent/eval/results_ambcal/ambcal_records.json
