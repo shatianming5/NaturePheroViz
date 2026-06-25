@@ -22,6 +22,8 @@
 #   COOLDOWN        seconds to wait between years                    (default 180)
 #   BLOCK_COOLDOWN  seconds to wait after a rate-limit block         (default 900)
 #   MAX_BLOCK_RETRY retries per year on block before skipping        (default 3)
+#   INITIAL_SLEEP   seconds to wait BEFORE the first search          (default 0)
+#                   (set to a few hours to let an aggressive IP rate-limit reset)
 set -u
 
 OUT="${OUT:-downloads}"
@@ -34,9 +36,15 @@ YEAR_START="${YEAR_START:-2016}"
 COOLDOWN="${COOLDOWN:-180}"
 BLOCK_COOLDOWN="${BLOCK_COOLDOWN:-900}"
 MAX_BLOCK_RETRY="${MAX_BLOCK_RETRY:-3}"
+INITIAL_SLEEP="${INITIAL_SLEEP:-0}"
 PY="${PY:-python3}"
 
 count_articles() { ls "$OUT/articles" 2>/dev/null | wc -l | tr -d ' '; }
+
+if [ "$INITIAL_SLEEP" -gt 0 ]; then
+  echo "[batched] initial cooldown ${INITIAL_SLEEP}s (let the search rate-limit reset) ..."
+  sleep "$INITIAL_SLEEP"
+fi
 
 echo "[batched] start target=$TARGET years=$YEAR_END..$YEAR_START workers=$WORKERS sleep=$SLEEP_S"
 echo "[batched] initial articles=$(count_articles)"
