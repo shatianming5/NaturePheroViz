@@ -647,6 +647,231 @@ def extract_pairs_from_article(page: Page, article_url: str) -> dict:
     )
 
 
+# ---------------------------------------------------------------------------
+# requests + BeautifulSoup port of extract_pairs_from_article.
+#
+# Nature/Springer serves automation browsers (playwright headless AND headed) a
+# "Client Challenge" bot-wall (0 figures), while a plain requests.get returns the
+# full article HTML with all figures + source-data links. This static port mirrors
+# the JS DOM extraction above so article discovery works without a real browser.
+# ---------------------------------------------------------------------------
+_DATA_EXT_RE = re.compile(r"\.(xlsx?|xlsm|csv|tsv|zip|txt)(?:\?|$)", re.I)
+_MOESM_ID_RE = re.compile(r"^MOESM\d+$", re.I)
+
+
+def _norm_text(t: Optional[str]) -> str:
+    return re.sub(r"\s+", " ", (t or "")).strip()
+
+
+def _abs_url(href: Optional[str], base: str) -> str:
+    if not href:
+        return ""
+    try:
+        return urljoin(base, href)
+    except Exception:
+        return href
+
+
+def _parse_figure_identity(caption: Optional[str], fallback_index: int) -> tuple[str, int]:
+    text = _norm_text(caption)
+    m = re.search(r"extended\s+data\s+fig(?:ure)?\.?\s*(\d+)", text, re.I)
+    if m:
+        return ("extended", int(m.group(1)))
+    m = re.search(r"^(?:fig\.?|figure)\s*(\d+)\b", text, re.I)
+    if m:
+        return ("main", int(m.group(1)))
+    return ("main", fallback_index)
+
+
+def _expand_figure_refs(text: str) -> list[int]:
+    out: set[int] = set()
+    normalized = re.sub(r"[\u2012\u2013\u2014\u2212]", "-", text or "")
+
+    def _range_sub(mm: "re.Match") -> str:
+        a, b = int(mm.group(1)), int(mm.group(2))
+        lo, hi = min(a, b), max(a, b)
+        for n in range(lo, hi + 1):
+            out.add(n)
+        return " "
+
+    without_ranges = re.sub(r"(\d+)\s*-\s*(\d+)", _range_sub, normalized)
+    for mm in re.finditer(r"\d+", without_ranges):
+        out.add(int(mm.group(0)))
+    return sorted(out)
+
+
+def _source_keys_from_label(label: Optional[str]) -> list[str]:
+    cleaned = re.sub(r"\([^)]*\)", " ", _norm_text(label))
+    patterns = [
+        ("extended", re.compile(r"source\s+data\s+extended\s+data\s+fig(?:ure)?s?\.?\s*([0-9,\sand\u2012\u2013\u2014\u2212-]+)", re.I)),
+        ("main", re.compile(r"source\s+data\s+fig(?:ure)?s?\.?\s*([0-9,\sand\u2012\u2013\u2014\u2212-]+)", re.I)),
+    ]
+    for kind, rgx in patterns:
+        m = rgx.search(cleaned)
+        if not m or not m.group(1):
+            continue
+        return [f"{kind}:{n}" for n in _expand_figure_refs(m.group(1))]
+    return []
+
+
+def _pick_data_links(root_el, base: str) -> list[str]:
+    seen: list[str] = []
+    for a in root_el.find_all("a", href=True):
+        u = _abs_url(a["href"], base)
+        if u and u not in seen:
+            seen.append(u)
+    return [u for u in seen if "static-content.springer.com" in u and _DATA_EXT_RE.search(u)]
+
+
+def extract_pairs_from_article_html(html: str, article_url: str) -> dict:
+    """Static (requests+BS4) equivalent of the playwright extract_pairs_from_article.
+    Returns the same dict shape: {articleUrl, doi, title, figureCount, sourceDataCount,
+    pairCount, figures, sourceData, pairs}."""
+    soup = BeautifulSoup(html, "html.parser")
+    base = article_url
+
+    meta_doi = None
+    for name in ("citation_doi", "dc.identifier", "dc.Identifier"):
+        el = soup.find("meta", attrs={"name": name})
+        if el and el.get("content"):
+            meta_doi = el["content"]
+            break
+    doi = re.sub(r"^doi\s*:", "", meta_doi, flags=re.I).strip() if meta_doi else None
+    h1 = soup.find("h1")
+    title = _norm_text(h1.get_text()) if h1 else None
+
+    raw_figures: list[dict] = []
+    for idx, fig in enumerate(soup.find_all("figure")):
+        figcap = fig.find("figcaption")
+        caption = _norm_text(figcap.get_text()) if figcap else None
+        img = fig.find("img")
+        img_url = None
+        if img:
+            for attr in ("src", "data-src", "data-original", "data-lazy-src"):
+                v = img.get(attr)
+                if v:
+                    img_url = v
+                    break
+        if img_url and img_url.startswith("//"):
+            img_url = "https:" + img_url
+        figure_page_url = None
+        link = fig.find("a", href=lambda h: h and "/figures/" in h)
+        if link:
+            figure_page_url = _abs_url(link.get("href"), base)
+        source_anchor_ids: list[str] = []
+        for a in fig.find_all("a", href=True):
+            h = a["href"]
+            if "#" in h:
+                anchor = h.split("#")[-1]
+                if _MOESM_ID_RE.match(anchor):
+                    source_anchor_ids.append(anchor)
+        kind, number = _parse_figure_identity(caption, idx + 1)
+        if not img_url:
+            continue  # JS filters out figures without an image
+        raw_figures.append({
+            "figureIndex": number, "figureKind": kind, "figureNumber": number,
+            "figureKey": f"{kind}:{number}", "caption": caption, "imgUrl": img_url,
+            "figurePageUrl": figure_page_url,
+            "sourceAnchorIds": list(dict.fromkeys(source_anchor_ids)),
+        })
+
+    figures: list[dict] = []
+    seen_figs: set[str] = set()
+    for fig in raw_figures:
+        key = f"{fig['figureKey']}|{fig['imgUrl']}"
+        if key in seen_figs:
+            continue
+        seen_figs.add(key)
+        figures.append(fig)
+
+    moesm_to_files: dict[str, list[str]] = {}
+    all_moesm: set[str] = set()
+    for f in figures:
+        all_moesm.update(f["sourceAnchorIds"])
+    for mid in all_moesm:
+        el = soup.find(id=mid)
+        if el is None:
+            continue
+        files = _pick_data_links(el, base)
+        if files:
+            moesm_to_files[mid] = files
+
+    source_data: list[dict] = []
+    for a in soup.find_all("a", href=True):
+        label = _norm_text(a.get_text())
+        href = _abs_url(a["href"], base)
+        if not label or not re.search(r"source\s*data", label, re.I):
+            continue
+        if "static-content.springer.com" not in href:
+            continue
+        if not _DATA_EXT_RE.search(href):
+            continue
+        source_data.append({"label": label, "url": href, "sourceKeys": _source_keys_from_label(label)})
+
+    pairs: list[dict] = []
+    seen_pairs: set[str] = set()
+
+    def _add_pair(fig: dict, data_url: str, source_label: Optional[str]) -> None:
+        pk = f"{fig['figureKey']}|{fig['imgUrl']}|{data_url}"
+        if pk in seen_pairs:
+            return
+        seen_pairs.add(pk)
+        pairs.append({
+            "figureIndex": fig["figureIndex"], "figureKind": fig["figureKind"],
+            "figureNumber": fig["figureNumber"], "figureKey": fig["figureKey"],
+            "figureCaption": fig["caption"], "imageUrl": fig["imgUrl"],
+            "dataUrl": data_url, "dataLabel": source_label, "figurePageUrl": fig["figurePageUrl"],
+        })
+
+    for fig in figures:
+        data_urls: list[str] = []
+        for mid in fig["sourceAnchorIds"]:
+            data_urls.extend(moesm_to_files.get(mid, []))
+        for du in list(dict.fromkeys(data_urls)):
+            _add_pair(fig, du, None)
+        for source in source_data:
+            if fig["figureKey"] not in source["sourceKeys"]:
+                continue
+            _add_pair(fig, source["url"], source["label"])
+
+    return {
+        "articleUrl": article_url, "doi": doi, "title": title,
+        "figureCount": len(figures), "sourceDataCount": len(source_data),
+        "pairCount": len(pairs), "figures": figures, "sourceData": source_data, "pairs": pairs,
+    }
+
+
+def extract_pairs_from_article_requests(
+    session: requests.Session,
+    article_url: str,
+    *,
+    timeout_s: int = 60,
+    retries: int = 3,
+    retry_backoff_s: float = 1.0,
+) -> dict:
+    """Fetch the article HTML with requests (bypasses the playwright bot-wall) and
+    extract figure/source-data pairs statically."""
+    headers = {
+        "User-Agent": (
+            "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 "
+            "(KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36"
+        )
+    }
+    last_err: Optional[BaseException] = None
+    for attempt in range(1, retries + 1):
+        try:
+            resp = session.get(article_url, headers=headers, timeout=timeout_s)
+            resp.raise_for_status()
+            return extract_pairs_from_article_html(resp.text, article_url)
+        except Exception as e:
+            last_err = e
+            if attempt >= retries:
+                break
+            time.sleep(retry_backoff_s * attempt)
+    assert last_err is not None
+    raise last_err
+
+
 def download_file(
     session: requests.Session,
     url: str,
@@ -934,7 +1159,9 @@ def _worker_process(
             print(f"[w{worker_id} {idx}/{len(urls)}] {article_id} {article_url}", flush=True)
 
             try:
-                extracted = extract_pairs_from_article(page, article_url)
+                extracted = extract_pairs_from_article_requests(
+                    session, article_url, retries=download_retries, retry_backoff_s=retry_backoff_s
+                )
                 extracted["articleUrl"] = article_url
                 extracted["articleId"] = article_id
 
@@ -1333,7 +1560,9 @@ def main(argv: Optional[Iterable[str]] = None) -> int:
                 attempted_articles += 1
 
                 try:
-                    extracted = extract_pairs_from_article(page, article_url)
+                    extracted = extract_pairs_from_article_requests(
+                        session, article_url, retries=args.download_retries, retry_backoff_s=args.retry_backoff_s
+                    )
                     extracted["articleUrl"] = article_url
                     extracted["articleId"] = article_id
 
