@@ -346,7 +346,10 @@ round-1 结论:novelty 真实但三条边界 razor-thin;round-2 联网复核**�
 2. ✅ **决策点(已过门)**:targeted 83% vs generic 10%、over-repair 3%、无回退 ⇒ **升级 repair 主线**(§8.2 标题)。
 3. ✅ 过门后实验全部跑完:实验2(✅ dual:single 83% vs dual 77%@2.2×→无增益;⚠️ abstain:repair-time 无收益、C3 降级)+ 实验3(✅ prevalence 1.64M 文件 + §3.5 coverage/abstain)。
 4. ✅ **扩样本复核完成**:N=29→**N=87、3 模型跨厂商(加 gemini-3.5-flash)、95% Wilson CI**——targeted 80% [71-87] vs generic 18% [12-28] **CI 分离**,跨厂商稳健。
-5. ☐ 据结果**收敛 AAAI 标题与主故事**:主线 = C1 检测 + C2 targeted repair;C3/dual-agent 作诚实负结果。可选:再加开源模型 / 更大 benchmark。
+5. 🟡 **扩数据量(2000–5000 篇 Nature)**:`download_nature_pairs.py` 已加 `--skip-images` + `--max-data-file-mb` 开关(单元/集成测试通过)。推荐(仅 transform 线、省 ~75% 存储):
+   `python download_nature_pairs.py --max-articles 5000 --skip-images --max-data-file-mb 20 --out-dir downloads`
+   预估存储:仅数据+20MB上限 ≈ **~9 GB@2000 / ~23 GB@5000**(全量含图为 ~40/~100 GB);benchmark 规模 ≈ **8000/20000 任务**(按 §3.5 比例)。
+6. ☐ 据结果**收敛 AAAI 标题与主故事**:主线 = C1 检测 + C2 targeted repair;C3/dual-agent 作诚实负结果。可选:再加开源模型。
 
 ### 8.6 双智能体的定位(降级为机制/消融)
 

@@ -656,10 +656,16 @@ def download_file(
     timeout_s: int = 180,
     retries: int = 3,
     retry_backoff_s: float = 1.0,
-) -> None:
+    max_bytes: Optional[int] = None,
+) -> str:
+    """Download `url` to `dest_path`. Returns a status string:
+    "exists" (already present), "ok" (downloaded), "too_large" (skipped because the
+    file exceeds `max_bytes` — checked via Content-Length and enforced while streaming),
+    or raises on a hard error. `max_bytes=None` means no cap.
+    """
     dest_path.parent.mkdir(parents=True, exist_ok=True)
     if dest_path.exists() and not overwrite and dest_path.stat().st_size > 0:
-        return
+        return "exists"
 
     headers = {"User-Agent": "Mozilla/5.0"}
     last_err: Optional[BaseException] = None
@@ -667,13 +673,36 @@ def download_file(
         try:
             with session.get(url, headers=headers, stream=True, timeout=timeout_s) as resp:
                 resp.raise_for_status()
+                # Pre-download skip when the server advertises a size over the cap.
+                if max_bytes is not None:
+                    clen = resp.headers.get("Content-Length")
+                    if clen is not None:
+                        try:
+                            if int(clen) > max_bytes:
+                                return "too_large"
+                        except ValueError:
+                            pass
                 tmp_path = dest_path.with_suffix(dest_path.suffix + ".part")
+                total = 0
+                too_large = False
                 with open(tmp_path, "wb") as f:
                     for chunk in resp.iter_content(chunk_size=1024 * 256):
-                        if chunk:
-                            f.write(chunk)
+                        if not chunk:
+                            continue
+                        total += len(chunk)
+                        # Enforce the cap mid-stream for servers without Content-Length.
+                        if max_bytes is not None and total > max_bytes:
+                            too_large = True
+                            break
+                        f.write(chunk)
+                if too_large:
+                    try:
+                        tmp_path.unlink()
+                    except OSError:
+                        pass
+                    return "too_large"
                 os.replace(tmp_path, dest_path)
-                return
+                return "ok"
         except Exception as e:
             last_err = e
             if attempt >= retries:
@@ -681,6 +710,7 @@ def download_file(
             time.sleep(retry_backoff_s * attempt)
     if last_err is not None:
         raise last_err
+    return "error"
 
 
 def ensure_pairs_downloaded(
@@ -693,6 +723,8 @@ def ensure_pairs_downloaded(
     download_timeout_s: int,
     download_retries: int,
     retry_backoff_s: float,
+    skip_images: bool = False,
+    max_data_bytes: Optional[int] = None,
 ) -> list[PairRecord]:
     records: list[PairRecord] = []
 
@@ -714,16 +746,10 @@ def ensure_pairs_downloaded(
         img_path = images_dir / img_name
         data_path = data_dir / data_name
 
-        download_file(
-            session,
-            img_url,
-            img_path,
-            overwrite=overwrite,
-            timeout_s=download_timeout_s,
-            retries=download_retries,
-            retry_backoff_s=retry_backoff_s,
-        )
-        download_file(
+        # Download the source-data file FIRST and honor the size cap: if it exceeds the
+        # cap (e.g. a multi-hundred-MB raw archive, not a usable table) the pair is
+        # unusable, so we drop it before wasting bandwidth on its image.
+        data_status = download_file(
             session,
             data_url,
             data_path,
@@ -731,7 +757,21 @@ def ensure_pairs_downloaded(
             timeout_s=download_timeout_s,
             retries=download_retries,
             retry_backoff_s=retry_backoff_s,
+            max_bytes=max_data_bytes,
         )
+        if data_status == "too_large":
+            continue
+
+        if not skip_images:
+            download_file(
+                session,
+                img_url,
+                img_path,
+                overwrite=overwrite,
+                timeout_s=download_timeout_s,
+                retries=download_retries,
+                retry_backoff_s=retry_backoff_s,
+            )
 
         records.append(
             PairRecord(
@@ -749,7 +789,7 @@ def ensure_pairs_downloaded(
                 data_label=p.get("dataLabel"),
                 image_url=img_url,
                 data_url=data_url,
-                image_path=str(img_path.relative_to(out_dir)).replace("\\", "/"),
+                image_path=("" if skip_images else str(img_path.relative_to(out_dir)).replace("\\", "/")),
                 data_path=str(data_path.relative_to(out_dir)).replace("\\", "/"),
             )
         )
@@ -866,6 +906,8 @@ def _worker_process(
     fetch_figure_page_captions: bool,
     keep_metadata_only_article_dirs: bool,
     queue: "mp.Queue",
+    skip_images: bool = False,
+    max_data_bytes: Optional[int] = None,
 ) -> None:
     _ensure_playwright_runtime_env()
 
@@ -954,6 +996,8 @@ def _worker_process(
                     download_timeout_s=download_timeout_s,
                     download_retries=download_retries,
                     retry_backoff_s=retry_backoff_s,
+                    skip_images=skip_images,
+                    max_data_bytes=max_data_bytes,
                 )
 
                 if not records:
@@ -1046,6 +1090,20 @@ def main(argv: Optional[Iterable[str]] = None) -> int:
     parser.add_argument("--download-retries", type=int, default=3)
     parser.add_argument("--retry-backoff-s", type=float, default=1.0)
     parser.add_argument(
+        "--skip-images",
+        action="store_true",
+        help="Do not download figure images (source-data tables only). "
+             "~40%% smaller; use when only the data-transform line is needed.",
+    )
+    parser.add_argument(
+        "--max-data-file-mb",
+        type=float,
+        default=0.0,
+        help="Skip any single source-data file larger than this many MB (0 = no cap). "
+             "A handful of huge raw archives dominate storage; e.g. 20 keeps all tabular "
+             "data while cutting ~60%% of data volume.",
+    )
+    parser.add_argument(
         "--fetch-figure-page-captions",
         action="store_true",
         help="Fetch long figure captions from /figures/N pages.",
@@ -1075,6 +1133,12 @@ def main(argv: Optional[Iterable[str]] = None) -> int:
 
     out_dir = Path(args.out_dir).resolve()
     out_dir.mkdir(parents=True, exist_ok=True)
+
+    if args.max_data_file_mb < 0:
+        raise SystemExit("--max-data-file-mb must be >= 0")
+    max_data_bytes: Optional[int] = (
+        int(args.max_data_file_mb * 1024 * 1024) if args.max_data_file_mb > 0 else None
+    )
 
     if not args.keep_metadata_only_article_dirs:
         articles_root = out_dir / "articles"
@@ -1332,6 +1396,8 @@ def main(argv: Optional[Iterable[str]] = None) -> int:
                         download_timeout_s=args.download_timeout_s,
                         download_retries=args.download_retries,
                         retry_backoff_s=args.retry_backoff_s,
+                        skip_images=args.skip_images,
+                        max_data_bytes=max_data_bytes,
                     )
 
                     if not records:
@@ -1430,6 +1496,8 @@ def main(argv: Optional[Iterable[str]] = None) -> int:
                     "fetch_figure_page_captions": args.fetch_figure_page_captions,
                     "keep_metadata_only_article_dirs": args.keep_metadata_only_article_dirs,
                     "queue": queue,
+                    "skip_images": args.skip_images,
+                    "max_data_bytes": max_data_bytes,
                 },
             )
             proc.start()
