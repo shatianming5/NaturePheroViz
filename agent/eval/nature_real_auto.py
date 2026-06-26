@@ -229,6 +229,19 @@ def main(argv: Optional[List[str]] = None) -> int:
         print("[error] needs LLM_API_BASE / LLM_API_KEY (or --offline)."); return 1
 
     from eval.ambiguity_calibration import _llm_code, _exec, _gold_correct, MODELS
+    import time as _time
+
+    def _llm_code_retry(task, prompt, model, retries=5, pace=0.3):
+        """Retry the LLM call on a None (transient proxy overload/rate-limit) with
+        backoff; pace successful calls slightly so a bulk run doesn't flood the proxy
+        (unpaced rapid-fire calls return None -> tasks crash -> deflated silent rate)."""
+        for attempt in range(retries):
+            code = _llm_code(task, prompt, model)
+            if code is not None:
+                _time.sleep(pace)
+                return code
+            _time.sleep(min(1.5 * (attempt + 1), 8.0))
+        return None
 
     tasks = _build(a.pairs_root, a.max_tasks, a.max_per_article, a.max_rows)
     arts = len(set(t["name"].split("::")[1].split(":")[0] for t in tasks))
@@ -236,19 +249,23 @@ def main(argv: Optional[List[str]] = None) -> int:
 
     silent = {c: 0 for c in ("ambiguous", "clarified")}
     total = {c: 0 for c in ("ambiguous", "clarified")}
+    execok = {c: 0 for c in ("ambiguous", "clarified")}
     fire_wrong = wrong = fire_right = right = 0
+    crashes = 0
     rows = []
     for t in tasks:
         rec = {"name": t["name"], "op": t["op"]}
         for cond in ("ambiguous", "clarified"):
             for m in MODELS:
-                code = _llm_code(t, t[cond], m)
+                code = _llm_code_retry(t, t[cond], m)
                 result = _exec(t, code) if code else None
                 exec_ok = result is not None
                 correct = exec_ok and _gold_correct(t, result)
                 oc = oracle_check(t["op"], {"df": t["df"]}, t["params"], result)
                 fired = bool(oc and oc.fired)
                 total[cond] += 1
+                if exec_ok:
+                    execok[cond] += 1
                 if exec_ok and not correct:
                     silent[cond] += 1
                 if exec_ok:
@@ -257,6 +274,8 @@ def main(argv: Optional[List[str]] = None) -> int:
                     else:
                         wrong += 1; fire_wrong += int(fired)
                 tag = "ok" if correct else ("SILENT" if exec_ok else "crash")
+                if not exec_ok:
+                    crashes += 1
                 print(f"[{t['name'][:34]:34}] {cond:10} {m:18} {tag:7} fired={fired}", flush=True)
                 rec.setdefault(cond, {})[m] = {"tag": tag, "oracle_fired": fired}
         rows.append(rec)
@@ -266,8 +285,8 @@ def main(argv: Optional[List[str]] = None) -> int:
         f"Across {arts} Nature articles, real scientific tables, same operator-semantic",
         "tasks + (ambiguous, clarified) prompts + goldless oracle. Rates with 95% Wilson CIs.\n",
         "## (1) Silent-error rate on REAL data (large slice)",
-        f"- ambiguous: {silent['ambiguous']}/{total['ambiguous']} ({_wilson(silent['ambiguous'], total['ambiguous'])})",
-        f"- clarified: {silent['clarified']}/{total['clarified']} ({_wilson(silent['clarified'], total['clarified'])})\n",
+        f"- ambiguous: {silent['ambiguous']}/{execok['ambiguous']} ({_wilson(silent['ambiguous'], execok['ambiguous'])})",
+        f"- clarified: {silent['clarified']}/{execok['clarified']} ({_wilson(silent['clarified'], execok['clarified'])})\n",
         "## (2) Oracle recall on real silent errors",
         f"- {fire_wrong}/{wrong} ({_wilson(fire_wrong, wrong)})" if wrong else "- (no wrong)",
         "\n## (3) Oracle false-positive on real correct results",
@@ -275,6 +294,8 @@ def main(argv: Optional[List[str]] = None) -> int:
         "\n## Reading",
         f"- {len(tasks)} real tasks (vs the 9-table curated slice) makes the external-validity",
         "  claim hard to dismiss as small-sample; CIs are now tight.",
+        f"- exec crashes (LLM/proxy or bad code): {crashes}/{sum(total.values())} "
+        f"(silent rate is over exec-ok tasks; crashes must stay ~0 for a valid measurement).",
     ]
     out = Path(a.out); out.mkdir(parents=True, exist_ok=True)
     (out / "real_auto_report.md").write_text("\n".join(report), encoding="utf-8")
