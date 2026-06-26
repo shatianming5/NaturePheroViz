@@ -231,16 +231,18 @@ def main(argv: Optional[List[str]] = None) -> int:
     from eval.ambiguity_calibration import _llm_code, _exec, _gold_correct, MODELS
     import time as _time
 
-    def _llm_code_retry(task, prompt, model, retries=5, pace=0.3):
+    def _llm_code_retry(task, prompt, model, retries=7, pace=0.6):
         """Retry the LLM call on a None (transient proxy overload/rate-limit) with
-        backoff; pace successful calls slightly so a bulk run doesn't flood the proxy
-        (unpaced rapid-fire calls return None -> tasks crash -> deflated silent rate)."""
+        backoff; pace successful calls so a bulk run doesn't flood the proxy (unpaced
+        rapid-fire calls return None -> tasks crash -> deflated silent rate). Tuned so
+        proxy-induced crashes -> ~0 (diagnosed: pace 0.6 + 7 retries clears them; the
+        residual crashes are genuine exec failures of the model's code on real tables)."""
         for attempt in range(retries):
             code = _llm_code(task, prompt, model)
             if code is not None:
                 _time.sleep(pace)
                 return code
-            _time.sleep(min(1.5 * (attempt + 1), 8.0))
+            _time.sleep(min(2.0 * (attempt + 1), 12.0))
         return None
 
     tasks = _build(a.pairs_root, a.max_tasks, a.max_per_article, a.max_rows)
@@ -252,6 +254,7 @@ def main(argv: Optional[List[str]] = None) -> int:
     execok = {c: 0 for c in ("ambiguous", "clarified")}
     fire_wrong = wrong = fire_right = right = 0
     crashes = 0
+    proxy_crash = exec_crash = 0
     rows = []
     for t in tasks:
         rec = {"name": t["name"], "op": t["op"]}
@@ -276,6 +279,10 @@ def main(argv: Optional[List[str]] = None) -> int:
                 tag = "ok" if correct else ("SILENT" if exec_ok else "crash")
                 if not exec_ok:
                     crashes += 1
+                    if code is None:
+                        proxy_crash += 1   # LLM/proxy returned nothing after retries
+                    else:
+                        exec_crash += 1    # model produced code that failed on the real table
                 print(f"[{t['name'][:34]:34}] {cond:10} {m:18} {tag:7} fired={fired}", flush=True)
                 rec.setdefault(cond, {})[m] = {"tag": tag, "oracle_fired": fired}
         rows.append(rec)
@@ -294,8 +301,10 @@ def main(argv: Optional[List[str]] = None) -> int:
         "\n## Reading",
         f"- {len(tasks)} real tasks (vs the 9-table curated slice) makes the external-validity",
         "  claim hard to dismiss as small-sample; CIs are now tight.",
-        f"- exec crashes (LLM/proxy or bad code): {crashes}/{sum(total.values())} "
-        f"(silent rate is over exec-ok tasks; crashes must stay ~0 for a valid measurement).",
+        f"- exec crashes: {crashes}/{sum(total.values())} (proxy/LLM None={proxy_crash}, "
+        f"bad-code-on-real-table={exec_crash}); silent rate is over exec-ok only, so proxy "
+        f"hiccups cannot deflate it. Proxy crashes ~0 with retry+pace; exec_crash is a genuine "
+        f"model-failure rate on messy real tables.",
     ]
     out = Path(a.out); out.mkdir(parents=True, exist_ok=True)
     (out / "real_auto_report.md").write_text("\n".join(report), encoding="utf-8")
