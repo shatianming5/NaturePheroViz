@@ -135,10 +135,12 @@ def _tasks_from_table(df: pd.DataFrame, cat: str, nums: List[str], art: str, she
     return out
 
 
-def _build(pairs_root: str, max_tasks: int, max_per_article: int = 15) -> List[Dict[str, Any]]:
+def _build(pairs_root: str, max_tasks: int, max_per_article: int = 15, max_rows: int = 0) -> List[Dict[str, Any]]:
     """Generate real tasks, capping how many come from any single article so the
     slice spans many independent papers (not just a few big-table articles).
-    max_per_article bounds per-article contribution -> task DIVERSITY across papers."""
+    max_per_article bounds per-article contribution -> task DIVERSITY across papers.
+    max_rows>0 caps each table to that many rows (bounds memory: every task holds its
+    own df; gold is computed on the SAME capped df so the semantics are unchanged)."""
     import glob
     from collections import Counter
     files = sorted(glob.glob(str(Path(pairs_root) / "*" / "data" / "*.xlsx")))
@@ -159,7 +161,7 @@ def _build(pairs_root: str, max_tasks: int, max_per_article: int = 15) -> List[D
             if len(tasks) >= max_tasks:
                 break
             try:
-                df, cats, nums = _clean(xl.parse(sh))
+                df, cats, nums = _clean(xl.parse(sh, nrows=max_rows or None))
             except Exception:
                 continue
             if not cats or not nums:
@@ -188,8 +190,8 @@ def _build(pairs_root: str, max_tasks: int, max_per_article: int = 15) -> List[D
     return tasks
 
 
-def _offline(pairs_root: str, max_tasks: int, max_per_article: int = 15) -> int:
-    tasks = _build(pairs_root, max_tasks, max_per_article)
+def _offline(pairs_root: str, max_tasks: int, max_per_article: int = 15, max_rows: int = 0) -> int:
+    tasks = _build(pairs_root, max_tasks, max_per_article, max_rows)
     from collections import Counter
     by_op = Counter(t["op"] for t in tasks)
     arts = len(set(t["name"].split("::")[1].split(":")[0] for t in tasks))
@@ -215,18 +217,20 @@ def main(argv: Optional[List[str]] = None) -> int:
     ap.add_argument("--max-tasks", type=int, default=60)
     ap.add_argument("--max-per-article", type=int, default=15,
                     help="cap tasks from any single article so the slice spans many papers")
+    ap.add_argument("--max-rows", type=int, default=0,
+                    help="cap each table to this many rows (bounds memory; 0 = no cap)")
     ap.add_argument("--offline", action="store_true")
     ap.add_argument("--out", default="eval/results_real_auto")
     a = ap.parse_args(argv)
 
     if a.offline:
-        return _offline(a.pairs_root, a.max_tasks, a.max_per_article)
+        return _offline(a.pairs_root, a.max_tasks, a.max_per_article, a.max_rows)
     if not os.getenv("LLM_API_BASE") or not os.getenv("LLM_API_KEY"):
         print("[error] needs LLM_API_BASE / LLM_API_KEY (or --offline)."); return 1
 
     from eval.ambiguity_calibration import _llm_code, _exec, _gold_correct, MODELS
 
-    tasks = _build(a.pairs_root, a.max_tasks, a.max_per_article)
+    tasks = _build(a.pairs_root, a.max_tasks, a.max_per_article, a.max_rows)
     arts = len(set(t["name"].split("::")[1].split(":")[0] for t in tasks))
     print(f"[real-auto] {len(tasks)} real tasks across {arts} articles x (ambiguous, clarified) x {len(MODELS)} models", flush=True)
 
