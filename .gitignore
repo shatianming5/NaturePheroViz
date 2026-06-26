@@ -89,3 +89,4 @@ agent/eval/results_multimodel/ambcal_records.json
 agent/eval/results_real206/real_auto_records.json
 agent/eval/results_real500/real_auto_records.json
 agent/eval/results_real841/real_auto_records.json
+agent/eval/results_real_scaled/real_auto_records.json
