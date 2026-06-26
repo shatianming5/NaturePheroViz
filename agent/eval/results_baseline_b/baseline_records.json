@@ -1,0 +1,886 @@
+[
+  {
+    "name": "weighted_mean#1",
+    "cond": "ambiguous",
+    "model": "gpt-5.4",
+    "tag": "ok",
+    "flags": {
+      "ours": false,
+      "exec_pass": false,
+      "validity": false,
+      "self_check": false,
+      "consistency": false
+    }
+  },
+  {
+    "name": "weighted_mean#1",
+    "cond": "ambiguous",
+    "model": "claude-sonnet-4.6",
+    "tag": "ok",
+    "flags": {
+      "ours": false,
+      "exec_pass": false,
+      "validity": false,
+      "self_check": true,
+      "consistency": false
+    }
+  },
+  {
+    "name": "weighted_mean#1",
+    "cond": "clarified",
+    "model": "gpt-5.4",
+    "tag": "SILENT",
+    "flags": {
+      "ours": true,
+      "exec_pass": false,
+      "validity": false,
+      "self_check": true,
+      "consistency": false
+    }
+  },
+  {
+    "name": "weighted_mean#1",
+    "cond": "clarified",
+    "model": "claude-sonnet-4.6",
+    "tag": "ok",
+    "flags": {
+      "ours": false,
+      "exec_pass": false,
+      "validity": false,
+      "self_check": true,
+      "consistency": false
+    }
+  },
+  {
+    "name": "within_group_share#1",
+    "cond": "ambiguous",
+    "model": "gpt-5.4",
+    "tag": "ok",
+    "flags": {
+      "ours": false,
+      "exec_pass": false,
+      "validity": false,
+      "self_check": false,
+      "consistency": false
+    }
+  },
+  {
+    "name": "within_group_share#1",
+    "cond": "ambiguous",
+    "model": "claude-sonnet-4.6",
+    "tag": "SILENT",
+    "flags": {
+      "ours": true,
+      "exec_pass": false,
+      "validity": false,
+      "self_check": true,
+      "consistency": false
+    }
+  },
+  {
+    "name": "within_group_share#1",
+    "cond": "clarified",
+    "model": "gpt-5.4",
+    "tag": "ok",
+    "flags": {
+      "ours": false,
+      "exec_pass": false,
+      "validity": false,
+      "self_check": false,
+      "consistency": false
+    }
+  },
+  {
+    "name": "within_group_share#1",
+    "cond": "clarified",
+    "model": "claude-sonnet-4.6",
+    "tag": "ok",
+    "flags": {
+      "ours": false,
+      "exec_pass": false,
+      "validity": false,
+      "self_check": false,
+      "consistency": false
+    }
+  },
+  {
+    "name": "pct_point#1",
+    "cond": "ambiguous",
+    "model": "gpt-5.4",
+    "tag": "SILENT",
+    "flags": {
+      "ours": true,
+      "exec_pass": false,
+      "validity": false,
+      "self_check": true,
+      "consistency": false
+    }
+  },
+  {
+    "name": "pct_point#1",
+    "cond": "ambiguous",
+    "model": "claude-sonnet-4.6",
+    "tag": "SILENT",
+    "flags": {
+      "ours": true,
+      "exec_pass": false,
+      "validity": false,
+      "self_check": true,
+      "consistency": false
+    }
+  },
+  {
+    "name": "pct_point#1",
+    "cond": "clarified",
+    "model": "gpt-5.4",
+    "tag": "ok",
+    "flags": {
+      "ours": false,
+      "exec_pass": false,
+      "validity": false,
+      "self_check": false,
+      "consistency": false
+    }
+  },
+  {
+    "name": "pct_point#1",
+    "cond": "clarified",
+    "model": "claude-sonnet-4.6",
+    "tag": "ok",
+    "flags": {
+      "ours": false,
+      "exec_pass": false,
+      "validity": false,
+      "self_check": false,
+      "consistency": false
+    }
+  },
+  {
+    "name": "dedup_then_agg#1",
+    "cond": "ambiguous",
+    "model": "gpt-5.4",
+    "tag": "SILENT",
+    "flags": {
+      "ours": true,
+      "exec_pass": false,
+      "validity": false,
+      "self_check": false,
+      "consistency": false
+    }
+  },
+  {
+    "name": "dedup_then_agg#1",
+    "cond": "ambiguous",
+    "model": "claude-sonnet-4.6",
+    "tag": "SILENT",
+    "flags": {
+      "ours": true,
+      "exec_pass": false,
+      "validity": false,
+      "self_check": true,
+      "consistency": false
+    }
+  },
+  {
+    "name": "dedup_then_agg#1",
+    "cond": "clarified",
+    "model": "gpt-5.4",
+    "tag": "ok",
+    "flags": {
+      "ours": false,
+      "exec_pass": false,
+      "validity": false,
+      "self_check": false,
+      "consistency": false
+    }
+  },
+  {
+    "name": "dedup_then_agg#1",
+    "cond": "clarified",
+    "model": "claude-sonnet-4.6",
+    "tag": "ok",
+    "flags": {
+      "ours": false,
+      "exec_pass": false,
+      "validity": false,
+      "self_check": true,
+      "consistency": false
+    }
+  },
+  {
+    "name": "left_join_keep_all#1",
+    "cond": "ambiguous",
+    "model": "gpt-5.4",
+    "tag": "ok",
+    "flags": {
+      "ours": false,
+      "exec_pass": false,
+      "validity": false,
+      "self_check": false,
+      "consistency": false
+    }
+  },
+  {
+    "name": "left_join_keep_all#1",
+    "cond": "ambiguous",
+    "model": "claude-sonnet-4.6",
+    "tag": "ok",
+    "flags": {
+      "ours": false,
+      "exec_pass": false,
+      "validity": false,
+      "self_check": false,
+      "consistency": false
+    }
+  },
+  {
+    "name": "left_join_keep_all#1",
+    "cond": "clarified",
+    "model": "gpt-5.4",
+    "tag": "ok",
+    "flags": {
+      "ours": false,
+      "exec_pass": false,
+      "validity": false,
+      "self_check": false,
+      "consistency": false
+    }
+  },
+  {
+    "name": "left_join_keep_all#1",
+    "cond": "clarified",
+    "model": "claude-sonnet-4.6",
+    "tag": "ok",
+    "flags": {
+      "ours": false,
+      "exec_pass": false,
+      "validity": false,
+      "self_check": false,
+      "consistency": false
+    }
+  },
+  {
+    "name": "pooled_rate#1",
+    "cond": "ambiguous",
+    "model": "gpt-5.4",
+    "tag": "ok",
+    "flags": {
+      "ours": false,
+      "exec_pass": false,
+      "validity": false,
+      "self_check": false,
+      "consistency": false
+    }
+  },
+  {
+    "name": "pooled_rate#1",
+    "cond": "ambiguous",
+    "model": "claude-sonnet-4.6",
+    "tag": "ok",
+    "flags": {
+      "ours": false,
+      "exec_pass": false,
+      "validity": false,
+      "self_check": false,
+      "consistency": false
+    }
+  },
+  {
+    "name": "pooled_rate#1",
+    "cond": "clarified",
+    "model": "gpt-5.4",
+    "tag": "ok",
+    "flags": {
+      "ours": false,
+      "exec_pass": false,
+      "validity": false,
+      "self_check": true,
+      "consistency": false
+    }
+  },
+  {
+    "name": "pooled_rate#1",
+    "cond": "clarified",
+    "model": "claude-sonnet-4.6",
+    "tag": "ok",
+    "flags": {
+      "ours": false,
+      "exec_pass": false,
+      "validity": false,
+      "self_check": false,
+      "consistency": false
+    }
+  },
+  {
+    "name": "median_not_mean#1",
+    "cond": "ambiguous",
+    "model": "gpt-5.4",
+    "tag": "ok",
+    "flags": {
+      "ours": false,
+      "exec_pass": false,
+      "validity": false,
+      "self_check": false,
+      "consistency": false
+    }
+  },
+  {
+    "name": "median_not_mean#1",
+    "cond": "ambiguous",
+    "model": "claude-sonnet-4.6",
+    "tag": "ok",
+    "flags": {
+      "ours": false,
+      "exec_pass": false,
+      "validity": false,
+      "self_check": false,
+      "consistency": false
+    }
+  },
+  {
+    "name": "median_not_mean#1",
+    "cond": "clarified",
+    "model": "gpt-5.4",
+    "tag": "ok",
+    "flags": {
+      "ours": false,
+      "exec_pass": false,
+      "validity": false,
+      "self_check": true,
+      "consistency": false
+    }
+  },
+  {
+    "name": "median_not_mean#1",
+    "cond": "clarified",
+    "model": "claude-sonnet-4.6",
+    "tag": "ok",
+    "flags": {
+      "ours": false,
+      "exec_pass": false,
+      "validity": false,
+      "self_check": false,
+      "consistency": false
+    }
+  },
+  {
+    "name": "cumulative_running#1",
+    "cond": "ambiguous",
+    "model": "gpt-5.4",
+    "tag": "ok",
+    "flags": {
+      "ours": false,
+      "exec_pass": false,
+      "validity": false,
+      "self_check": false,
+      "consistency": false
+    }
+  },
+  {
+    "name": "cumulative_running#1",
+    "cond": "ambiguous",
+    "model": "claude-sonnet-4.6",
+    "tag": "ok",
+    "flags": {
+      "ours": false,
+      "exec_pass": false,
+      "validity": false,
+      "self_check": true,
+      "consistency": false
+    }
+  },
+  {
+    "name": "cumulative_running#1",
+    "cond": "clarified",
+    "model": "gpt-5.4",
+    "tag": "ok",
+    "flags": {
+      "ours": false,
+      "exec_pass": false,
+      "validity": false,
+      "self_check": false,
+      "consistency": false
+    }
+  },
+  {
+    "name": "cumulative_running#1",
+    "cond": "clarified",
+    "model": "claude-sonnet-4.6",
+    "tag": "ok",
+    "flags": {
+      "ours": false,
+      "exec_pass": false,
+      "validity": false,
+      "self_check": true,
+      "consistency": false
+    }
+  },
+  {
+    "name": "topn_with_ties#1",
+    "cond": "ambiguous",
+    "model": "gpt-5.4",
+    "tag": "SILENT",
+    "flags": {
+      "ours": true,
+      "exec_pass": false,
+      "validity": false,
+      "self_check": false,
+      "consistency": false
+    }
+  },
+  {
+    "name": "topn_with_ties#1",
+    "cond": "ambiguous",
+    "model": "claude-sonnet-4.6",
+    "tag": "SILENT",
+    "flags": {
+      "ours": true,
+      "exec_pass": false,
+      "validity": false,
+      "self_check": false,
+      "consistency": false
+    }
+  },
+  {
+    "name": "topn_with_ties#1",
+    "cond": "clarified",
+    "model": "gpt-5.4",
+    "tag": "ok",
+    "flags": {
+      "ours": false,
+      "exec_pass": false,
+      "validity": false,
+      "self_check": false,
+      "consistency": false
+    }
+  },
+  {
+    "name": "topn_with_ties#1",
+    "cond": "clarified",
+    "model": "claude-sonnet-4.6",
+    "tag": "ok",
+    "flags": {
+      "ours": false,
+      "exec_pass": false,
+      "validity": false,
+      "self_check": false,
+      "consistency": false
+    }
+  },
+  {
+    "name": "nan_as_zero_sum#1",
+    "cond": "ambiguous",
+    "model": "gpt-5.4",
+    "tag": "ok",
+    "flags": {
+      "ours": false,
+      "exec_pass": false,
+      "validity": false,
+      "self_check": true,
+      "consistency": false
+    }
+  },
+  {
+    "name": "nan_as_zero_sum#1",
+    "cond": "ambiguous",
+    "model": "claude-sonnet-4.6",
+    "tag": "ok",
+    "flags": {
+      "ours": false,
+      "exec_pass": false,
+      "validity": false,
+      "self_check": false,
+      "consistency": false
+    }
+  },
+  {
+    "name": "nan_as_zero_sum#1",
+    "cond": "clarified",
+    "model": "gpt-5.4",
+    "tag": "ok",
+    "flags": {
+      "ours": false,
+      "exec_pass": false,
+      "validity": false,
+      "self_check": true,
+      "consistency": false
+    }
+  },
+  {
+    "name": "nan_as_zero_sum#1",
+    "cond": "clarified",
+    "model": "claude-sonnet-4.6",
+    "tag": "ok",
+    "flags": {
+      "ours": false,
+      "exec_pass": false,
+      "validity": false,
+      "self_check": false,
+      "consistency": false
+    }
+  },
+  {
+    "name": "count_includes_empty#1",
+    "cond": "ambiguous",
+    "model": "gpt-5.4",
+    "tag": "SILENT",
+    "flags": {
+      "ours": true,
+      "exec_pass": false,
+      "validity": false,
+      "self_check": true,
+      "consistency": false
+    }
+  },
+  {
+    "name": "count_includes_empty#1",
+    "cond": "ambiguous",
+    "model": "claude-sonnet-4.6",
+    "tag": "SILENT",
+    "flags": {
+      "ours": true,
+      "exec_pass": false,
+      "validity": false,
+      "self_check": true,
+      "consistency": false
+    }
+  },
+  {
+    "name": "count_includes_empty#1",
+    "cond": "clarified",
+    "model": "gpt-5.4",
+    "tag": "ok",
+    "flags": {
+      "ours": false,
+      "exec_pass": false,
+      "validity": false,
+      "self_check": false,
+      "consistency": false
+    }
+  },
+  {
+    "name": "count_includes_empty#1",
+    "cond": "clarified",
+    "model": "claude-sonnet-4.6",
+    "tag": "ok",
+    "flags": {
+      "ours": false,
+      "exec_pass": false,
+      "validity": false,
+      "self_check": false,
+      "consistency": false
+    }
+  },
+  {
+    "name": "proportion_true#1",
+    "cond": "ambiguous",
+    "model": "gpt-5.4",
+    "tag": "ok",
+    "flags": {
+      "ours": false,
+      "exec_pass": false,
+      "validity": false,
+      "self_check": false,
+      "consistency": false
+    }
+  },
+  {
+    "name": "proportion_true#1",
+    "cond": "ambiguous",
+    "model": "claude-sonnet-4.6",
+    "tag": "ok",
+    "flags": {
+      "ours": false,
+      "exec_pass": false,
+      "validity": false,
+      "self_check": false,
+      "consistency": false
+    }
+  },
+  {
+    "name": "proportion_true#1",
+    "cond": "clarified",
+    "model": "gpt-5.4",
+    "tag": "ok",
+    "flags": {
+      "ours": false,
+      "exec_pass": false,
+      "validity": false,
+      "self_check": false,
+      "consistency": false
+    }
+  },
+  {
+    "name": "proportion_true#1",
+    "cond": "clarified",
+    "model": "claude-sonnet-4.6",
+    "tag": "ok",
+    "flags": {
+      "ours": false,
+      "exec_pass": false,
+      "validity": false,
+      "self_check": false,
+      "consistency": false
+    }
+  },
+  {
+    "name": "zscore_within_group#1",
+    "cond": "ambiguous",
+    "model": "gpt-5.4",
+    "tag": "ok",
+    "flags": {
+      "ours": false,
+      "exec_pass": false,
+      "validity": false,
+      "self_check": false,
+      "consistency": true
+    }
+  },
+  {
+    "name": "zscore_within_group#1",
+    "cond": "ambiguous",
+    "model": "claude-sonnet-4.6",
+    "tag": "SILENT",
+    "flags": {
+      "ours": true,
+      "exec_pass": false,
+      "validity": false,
+      "self_check": true,
+      "consistency": false
+    }
+  },
+  {
+    "name": "zscore_within_group#1",
+    "cond": "clarified",
+    "model": "gpt-5.4",
+    "tag": "SILENT",
+    "flags": {
+      "ours": false,
+      "exec_pass": false,
+      "validity": false,
+      "self_check": false,
+      "consistency": false
+    }
+  },
+  {
+    "name": "zscore_within_group#1",
+    "cond": "clarified",
+    "model": "claude-sonnet-4.6",
+    "tag": "SILENT",
+    "flags": {
+      "ours": false,
+      "exec_pass": false,
+      "validity": false,
+      "self_check": false,
+      "consistency": false
+    }
+  },
+  {
+    "name": "dense_rank#1",
+    "cond": "ambiguous",
+    "model": "gpt-5.4",
+    "tag": "ok",
+    "flags": {
+      "ours": false,
+      "exec_pass": false,
+      "validity": false,
+      "self_check": false,
+      "consistency": false
+    }
+  },
+  {
+    "name": "dense_rank#1",
+    "cond": "ambiguous",
+    "model": "claude-sonnet-4.6",
+    "tag": "SILENT",
+    "flags": {
+      "ours": true,
+      "exec_pass": false,
+      "validity": false,
+      "self_check": true,
+      "consistency": false
+    }
+  },
+  {
+    "name": "dense_rank#1",
+    "cond": "clarified",
+    "model": "gpt-5.4",
+    "tag": "ok",
+    "flags": {
+      "ours": false,
+      "exec_pass": false,
+      "validity": false,
+      "self_check": false,
+      "consistency": false
+    }
+  },
+  {
+    "name": "dense_rank#1",
+    "cond": "clarified",
+    "model": "claude-sonnet-4.6",
+    "tag": "ok",
+    "flags": {
+      "ours": false,
+      "exec_pass": false,
+      "validity": false,
+      "self_check": false,
+      "consistency": false
+    }
+  },
+  {
+    "name": "cumcount_per_group#1",
+    "cond": "ambiguous",
+    "model": "gpt-5.4",
+    "tag": "ok",
+    "flags": {
+      "ours": false,
+      "exec_pass": false,
+      "validity": false,
+      "self_check": false,
+      "consistency": false
+    }
+  },
+  {
+    "name": "cumcount_per_group#1",
+    "cond": "ambiguous",
+    "model": "claude-sonnet-4.6",
+    "tag": "ok",
+    "flags": {
+      "ours": false,
+      "exec_pass": false,
+      "validity": false,
+      "self_check": false,
+      "consistency": false
+    }
+  },
+  {
+    "name": "cumcount_per_group#1",
+    "cond": "clarified",
+    "model": "gpt-5.4",
+    "tag": "ok",
+    "flags": {
+      "ours": false,
+      "exec_pass": false,
+      "validity": false,
+      "self_check": false,
+      "consistency": false
+    }
+  },
+  {
+    "name": "cumcount_per_group#1",
+    "cond": "clarified",
+    "model": "claude-sonnet-4.6",
+    "tag": "ok",
+    "flags": {
+      "ours": false,
+      "exec_pass": false,
+      "validity": false,
+      "self_check": false,
+      "consistency": false
+    }
+  },
+  {
+    "name": "rank_pct#1",
+    "cond": "ambiguous",
+    "model": "gpt-5.4",
+    "tag": "ok",
+    "flags": {
+      "ours": false,
+      "exec_pass": false,
+      "validity": false,
+      "self_check": false,
+      "consistency": false
+    }
+  },
+  {
+    "name": "rank_pct#1",
+    "cond": "ambiguous",
+    "model": "claude-sonnet-4.6",
+    "tag": "ok",
+    "flags": {
+      "ours": false,
+      "exec_pass": false,
+      "validity": false,
+      "self_check": false,
+      "consistency": false
+    }
+  },
+  {
+    "name": "rank_pct#1",
+    "cond": "clarified",
+    "model": "gpt-5.4",
+    "tag": "ok",
+    "flags": {
+      "ours": false,
+      "exec_pass": false,
+      "validity": false,
+      "self_check": false,
+      "consistency": false
+    }
+  },
+  {
+    "name": "rank_pct#1",
+    "cond": "clarified",
+    "model": "claude-sonnet-4.6",
+    "tag": "ok",
+    "flags": {
+      "ours": false,
+      "exec_pass": false,
+      "validity": false,
+      "self_check": false,
+      "consistency": false
+    }
+  },
+  {
+    "name": "clip_outlier#1",
+    "cond": "ambiguous",
+    "model": "gpt-5.4",
+    "tag": "ok",
+    "flags": {
+      "ours": false,
+      "exec_pass": false,
+      "validity": false,
+      "self_check": false,
+      "consistency": false
+    }
+  },
+  {
+    "name": "clip_outlier#1",
+    "cond": "ambiguous",
+    "model": "claude-sonnet-4.6",
+    "tag": "SILENT",
+    "flags": {
+      "ours": true,
+      "exec_pass": false,
+      "validity": false,
+      "self_check": true,
+      "consistency": false
+    }
+  },
+  {
+    "name": "clip_outlier#1",
+    "cond": "clarified",
+    "model": "gpt-5.4",
+    "tag": "ok",
+    "flags": {
+      "ours": false,
+      "exec_pass": false,
+      "validity": false,
+      "self_check": false,
+      "consistency": false
+    }
+  },
+  {
+    "name": "clip_outlier#1",
+    "cond": "clarified",
+    "model": "claude-sonnet-4.6",
+    "tag": "ok",
+    "flags": {
+      "ours": false,
+      "exec_pass": false,
+      "validity": false,
+      "self_check": false,
+      "consistency": false
+    }
+  }
+]
