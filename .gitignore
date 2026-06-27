@@ -90,3 +90,7 @@ agent/eval/results_real206/real_auto_records.json
 agent/eval/results_real500/real_auto_records.json
 agent/eval/results_real841/real_auto_records.json
 agent/eval/results_real_scaled/real_auto_records.json
+
+# DS-1000 external-corpus experiment (records large; smoke is throwaway)
+agent/eval/results_ds1000/records.json
+agent/eval/results_ds1000_smoke/

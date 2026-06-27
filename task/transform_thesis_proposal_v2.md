@@ -102,6 +102,43 @@
 >
 > **crash 记账(诊断+修复)**:首轮 9%(287/3200)crash 经诊断为**绝大多数是代理过载**(无间隔狂发→限流返回 None);加重 retry+配速(pace 0.6/retry 7)后**代理 crash≈0**,残留 ~4% 是**真实的 exec_fail**(模型在凌乱真实表上生成的代码跑挂:选错列/非数值列/重名列),已在报告里 proxy_crash 与 exec_crash **分项披露**。silent 率全程只在 exec-ok 任务上计,代理打嗝无法稀释它。
 
+#### 1.3.2 外部语料 DS-1000:打破 "our-tasks-our-gold" 循环(2026-06-27)
+
+§1.3/1.3.1 的真实切片虽跨数百篇独立 Nature 论文,但**任务仍是我们出的算子语义题、gold 仍由我们的模板 oracle 判**——reviewer 可质疑 77% 是"我们出题/判分方式"的人工产物。本节用一个**任务与 gold 都不属于我们**的外部语料消除该循环:
+
+- **任务 = 真实 StackOverflow 数据处理题**(DS-1000,`xlangai/DS-1000`,HuggingFace),自然语言意图由真实用户书写;
+- **gold = DS-1000 自带的执行测试用例**(数据集作者验证过的参考输出),**全程不碰我们的 `transform_oracle`**;
+- **信号 = 同一个量**:在**能执行**的解里,"悄悄做错"(跑通但结果错)相对"显式崩溃"的占比——DS-1000 判分器天然区分(exec 抛异常=crash;产出 result 但 assert 失败=silent)。
+
+聚焦本文针对的歧义易错算子族,取其 completion-format 题(统一"赋值给 `result`"契约;16 道 insertion-format 因协议不同排除),共 **152 题 × 2 模型**(gpt-4o + claude-sonnet-4.6),带 95% Wilson CI:
+
+| 指标(外部 DS-1000,真实 SO 任务 + 真实 gold) | 数值 |
+|---|---|
+| **silent 错率(over exec-ok)** | **70/273 = 26% [95% CI 21-31]** |
+| crash 率(over total) | 31/304(代理 None 仅 10,其余为真实 exec_fail) |
+| 整体正确率 | 203/304 |
+
+**按歧义易错算子族拆分(silent / exec-ok,降序)——本文点名的"高危算子"正是外部 silent 率最高者**:
+
+| 算子族 | silent / exec-ok | 95% CI |
+|---|---|---|
+| pivot(重塑 pivot/melt/stack) | 21/47 = **45%** | [31-59] |
+| fillna/nan | 12/34 = **35%** | [21-52] |
+| dedup(去重) | 6/17 = **35%** | [17-59] |
+| sort/topk | 6/17 = **35%** | [17-59] |
+| apply/map | 17/75 = 23% | [15-33] |
+| groupby/agg | 25/112 = 22% | [16-31] |
+| cumulative | 2/10 = 20% | [6-51] |
+| median/mean | 4/28 = 14% | [6-31] |
+| merge/join | 6/46 = 13% | [6-26] |
+| rank | 0/6 = 0% | [0-39] |
+
+> **驱动器自检(关键)**:把 DS-1000 **自带 reference_code** 灌进我们的判分驱动器,得 **152/152 全 pass、0 silent、0 crash**——证明 pass/silent/crash 三分类与 gold 接线正确,silent 不是判分过严的假象;人工核对 silent 样例确属语义错(apply 阈值算错值、条件 dedup 留错行),非 index/列序比较假象。
+>
+> **现象解读(诚实)**:在一个**我们既没设计任务、也没编写 gold** 的外部语料上,真实用户的 pandas 意图仍有 **26% [21-31]** 概率被"跑得通、结果错"的代码满足。这个数低于 Nature 切片的 77% 是预期的——DS-1000 多为单解的"标准"SO 题,而我们的 Nature 网格刻意构造算子歧义;但 **26% 全是 silent(非 crash),无 gold 时用户根本无从察觉**,且 crash 31/304 里仅 10 个是代理 None、其余为真实 exec_fail(检测正交于 silent)。最有说服力的是:**外部 silent 率最高的几族(pivot 45%、fillna/dedup/sort 各 35%)恰是本文契约重点覆盖的歧义算子**——这把"silent 现象 + 算子定位"从我们自出的题/gold,**锚定到完全外部的真实语料**,直接回应"循环论证"质疑。
+>
+> **脚本/报告**:`agent/eval/ds1000_real_intent.py`(`--offline` 跑 reference 自检,`--families` 选算子族);`agent/eval/results_ds1000/ds1000_report.md`。
+
 ### 1.4 对照:绘图任务 silent 错率 0%(问题特异性)
 
 - 同样的强 LLM 在"给定干净数据画标准图"上 silent error 率 **0%**(20 跨文章真实任务,GPT-4o/Claude 全对)——证明**问题特异于"语义有歧义的数据变换"**,不是 LLM 普遍不可靠,也不是我们的测量在无差别报警。
@@ -174,7 +211,7 @@ reviewer 必问:"换个算子怎么办?手写契约不可扩展。"三层回应:
    - **self-check 61% recall 但 40% FP**:LLM 自查既漏近 4 成真错、又把 4 成正确误判——不可用作判官。
    - **ours 100%/0%** 唯一可靠。这就是"显著优于现有手段"的硬证据(round-2 唯一 CRITICAL)。
 4. **必要性消融——无 gold 不退化(已得)**:correct/silent 的 ground-truth 标签用手工 gold 算,但 oracle **从不看 gold**、只凭算子不变量 fire。结果:goldless oracle 在校准 run 上 recall 56/56=100%、FP 0/135=0%,在真实切片上 19/19=100%、0/17=0%——**追平"有 gold 精确比对"的检出,却不需要任何 gold output**。证明方法不退化成 text2SQL(后者需 gold query),能在无 gold/参考处工作。
-5. **外部效度(已得)**:9 张真实 Nature 源数据表(6 篇、跨学科、真实科学列名)做 held-out 切片,**模糊 silent 72% [95% CI 49-88](比合成 46% 更高)、oracle recall 100% [83-100] / FP 0% [0-18]**——现象在真实数据上更严重、oracle 零退化(详见 §1.3)。
+5. **外部效度(已得,跨语料三层)**:(i) 自动大切片 **841 任务跨 71 篇 + 独立复制 800 任务跨 229 篇** 独立 Nature 论文,**模糊 silent 77% [75-80]、oracle recall 98-100% / FP 0%**;(ii) 全新外部语料 **DS-1000(真实 StackOverflow 任务 + 自带执行 gold,任务与 gold 均非我们所出)silent 26% [21-31]**,且外部 silent 率最高的算子族(pivot 45%、fillna/dedup/sort 35%)恰是本文契约重点——**打破 our-tasks-our-gold 循环**(详见 §1.3.1 / §1.3.2)。
 6. **typed 归因准确率(已得,契约硬化 + family 剪枝后)**:双口径——(a) **归因 recall 25/25 = 100%**:对每个 silent error,真实算子的契约都实质 fire,定位到正确算子语义(对真实算子,缺期望输出列=产出形状错=真 silent,算检出);(b) **cross-fire**:把不相关契约套到正确结果上的实质误 fire 率,经 schema 门(params 不匹配 abstain)+ 形状门(缺输出列 abstain)从 20% 降到 8%(88/1136),再经 **family-level 候选剪枝**(按结果形状排除结构不可能的算子族)进一步降到 **2%(25/1136)**。剪枝保守(只剔结构不可能族),归因 recall 不受影响。所有修正在测量/门层,不动 check()/契约内部,故 baseline 的 100% recall 不受影响。
 7. **可扩展性(已得,§2.4)**:**5 个未见算子族**(zscore_within_group / dense_rank / cumcount_per_group / rank_pct / clip_outlier),各加一条 ~13-21 行契约。加之前 abstain(BEFORE recall 0/9=0%,FP 0),加之后可检出族 recall 跳到 100%(dense_rank/clip_outlier),**FP 恒 0/11**。coverage-by-family:dense_rank/clip_outlier 一条契约即 100%;zscore 25%、rank_pct 0%——**单条契约覆盖不全这些算子的所有错法**,诚实暴露覆盖边界。但 FP 始终 0 + 边界外 abstain ⇒ 加新算子=写一条不变量,覆盖增长**绝不抬 FP**;"一条够 vs 需要参数敏感变体"由 coverage 表显式标注。
 
@@ -221,7 +258,7 @@ round-1 结论:novelty 真实但三条边界 razor-thin;round-2 联网复核**�
 
 **round-2 的 5 个 P0(全清)**:
 - ✅ **baseline 同表对照(原唯一 CRITICAL)**:5 检测器并排,ours 100%/0% vs exec-pass/validity/consistency 全 0 recall、self-check 61%/40%(§3.3)。
-- ✅ **外部效度**:9 张真实 Nature 表 held-out 切片,模糊 silent 72% [CI 49-88]、oracle 100%/0%(§1.3)。
+- ✅ **外部效度(跨语料)**:Nature 真实切片 800 任务 / 229 篇模糊 silent 77% [75-80]、oracle 100% / FP 0%;**外部 DS-1000(真实 SO 任务 + 自带 gold)silent 26% [21-31]**,高危算子族(pivot 45% / fillna·dedup·sort 35%)与本文契约重点一致——打破 our-tasks-our-gold 循环(§1.3.1 / §1.3.2)。
 - ✅ **契约可扩展性**:per-operator-class 非 per-task、半自动从 API 签名派生、缺契约 abstain(§2.4)。
 - ✅ **related work 边界 + Incoherence**:§4 加第五条边界,SemGuard 行级 vs 关系型语义讲死;"first"措辞收窄。
 - ✅ **歧义校准因果隔离**:6 高危类 × 3 独立澄清,92%→11%(std 3.9 pts);weighted_mean 反转已诚实讨论(§1.2)。
