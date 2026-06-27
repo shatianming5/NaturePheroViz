@@ -4,16 +4,16 @@ Across 229 Nature articles, real scientific tables, same operator-semantic
 tasks + (ambiguous, clarified) prompts + goldless oracle. Rates with 95% Wilson CIs.
 
 ## (1) Silent-error rate on REAL data (large slice)
-- ambiguous: 1079/1393 (77% [95% CI 75-80])
-- clarified: 312/1520 (21% [95% CI 19-23])
+- ambiguous: 1092/1408 (78% [95% CI 75-80])
+- clarified: 316/1539 (21% [95% CI 19-23])
 
 ## (2) Oracle recall on real silent errors
-- 1385/1391 (100% [95% CI 99-100])
+- 1398/1408 (99% [95% CI 99-100])
 
 ## (3) Oracle false-positive on real correct results
-- 2/1522 (0% [95% CI 0-0])
+- 2/1539 (0% [95% CI 0-0])
 
 ## Reading
 - 800 real tasks (vs the 9-table curated slice) makes the external-validity
   claim hard to dismiss as small-sample; CIs are now tight.
-- exec crashes (LLM/proxy or bad code): 287/3200 (silent rate is over exec-ok tasks; crashes must stay ~0 for a valid measurement).
+- exec crashes: 253/3200 (proxy/LLM None=73, bad-code-on-real-table=180); silent rate is over exec-ok only, so proxy hiccups cannot deflate it. Proxy crashes ~0 with retry+pace; exec_crash is a genuine model-failure rate on messy real tables.
