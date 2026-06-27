@@ -91,8 +91,11 @@ def _is_completion_format(record: Dict[str, Any]) -> bool:
     return True
 
 
-def _load_pandas(max_tasks: int, families: Optional[List[str]]) -> List[Dict[str, Any]]:
-    """Load DS-1000 pandas problems, optionally filtered to target families."""
+def _load_pandas(max_tasks: int, families: Optional[List[str]],
+                 all_pandas: bool = False) -> List[Dict[str, Any]]:
+    """Load DS-1000 pandas problems, optionally filtered to target families.
+    With `all_pandas=True`, include EVERY completion-format pandas problem
+    (not just the ambiguity-prone ones) — used to widen the external sample."""
     from datasets import load_dataset
 
     ds = load_dataset("xlangai/DS-1000", split="test")
@@ -106,7 +109,7 @@ def _load_pandas(max_tasks: int, families: Optional[List[str]]) -> List[Dict[str
         fams = _families_of(r["reference_code"])
         if families is not None and not (set(fams) & set(families)):
             continue
-        if families is None and not fams:
+        if families is None and not all_pandas and not fams:
             continue  # default: only ambiguity-prone problems (>=1 target family)
         out.append({
             "problem_id": meta.get("problem_id"),
@@ -239,13 +242,15 @@ def _sanitize(code: str, protected: Optional[List[str]] = None) -> str:
     return "\n".join(out)
 
 
-def _llm_solution(item: Dict[str, Any], model: str) -> Optional[str]:
+def _llm_solution(item: Dict[str, Any], model: str, feedback: Optional[str] = None) -> Optional[str]:
     import requests
 
     base = os.environ["LLM_API_BASE"].rstrip("/")
     key = os.environ["LLM_API_KEY"]
+    fb = ("\n\n[Repair feedback on your previous attempt]\n" + feedback) if feedback else ""
     prompt = (
         item["prompt"]
+        + fb
         + "\n\nReturn ONLY strict JSON: {\"code\": \"<the solution body that assigns"
         " the final answer to `result`>\"}. The dataframe(s) and inputs shown above"
         " ALREADY EXIST in scope; do NOT re-create them, do NOT import anything, do"
@@ -275,13 +280,15 @@ def _llm_solution(item: Dict[str, Any], model: str) -> Optional[str]:
         return None
 
 
-def _llm_solution_retry(item: Dict[str, Any], model: str, retries: int = 7, pace: float = 0.6) -> Optional[str]:
+def _llm_solution_retry(item: Dict[str, Any], model: str, retries: int = 7, pace: float = 0.6,
+                        feedback: Optional[str] = None) -> Optional[str]:
     """Retry on None (transient proxy overload) with backoff; pace successful
     calls so a bulk run does not flood the proxy. Same contract as
     nature_real_auto._llm_code_retry so proxy-induced crashes -> ~0 and the
-    residual crashes are genuine model failures."""
+    residual crashes are genuine model failures. `feedback` (optional) injects a
+    repair hint into the prompt (used by the external C2 repair experiment)."""
     for attempt in range(retries):
-        code = _llm_solution(item, model)
+        code = _llm_solution(item, model, feedback=feedback)
         if code is not None:
             time.sleep(pace)
             return code

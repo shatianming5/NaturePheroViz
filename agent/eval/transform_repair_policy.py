@@ -79,7 +79,19 @@ def diagnose(inputs: Dict[str, pd.DataFrame], params: Dict[str, Any],
     structured diagnosis. `op_hint` (optional) is the suspected operator family —
     if its contract fires it is chosen as primary, otherwise the first localized
     contract is. NEVER consults gold."""
-    fired_map = _run_all_contracts(inputs, params, result, prune=True)
+    if not isinstance(result, pd.DataFrame):
+        # A None / non-tabular result is a crash or an out-of-scope output, not a
+        # localizable operator-semantic SILENT error — the diagnoser abstains.
+        return Diagnosis(fired=False, operator=None, violated_invariant=None,
+                         localized_contracts=[], allowed_scope=None, confidence="abstain")
+    try:
+        fired_map = _run_all_contracts(inputs, params, result, prune=True)
+    except Exception:
+        # A malformed real-world result the contracts choke on (e.g. duplicate
+        # column names so `result[c]` is a DataFrame) is treated as un-diagnosable
+        # -> abstain. A deployable policy must never crash on a weird result.
+        return Diagnosis(fired=False, operator=None, violated_invariant=None,
+                         localized_contracts=[], allowed_scope=None, confidence="abstain")
     localized = [op for op, f in fired_map.items() if f]
     primary: Optional[str] = None
     if op_hint and fired_map.get(op_hint):
@@ -89,7 +101,10 @@ def diagnose(inputs: Dict[str, pd.DataFrame], params: Dict[str, Any],
     if primary is None:
         return Diagnosis(fired=False, operator=None, violated_invariant=None,
                          localized_contracts=[], allowed_scope=None, confidence="abstain")
-    cr = oracle_check(primary, inputs, params, result)
+    try:
+        cr = oracle_check(primary, inputs, params, result)
+    except Exception:
+        cr = None
     detail = cr.detail if cr is not None else "(operator-semantic invariant violated)"
     return Diagnosis(
         fired=True,
@@ -109,7 +124,10 @@ def _op_fires(inputs: Dict[str, pd.DataFrame], params: Dict[str, Any],
     the target operator's own contract — not 'any contract is silent' — avoids an
     unrelated contract's cross-fire keeping the loop alive on an already-correct
     result."""
-    cr = oracle_check(op, inputs, params, result)
+    try:
+        cr = oracle_check(op, inputs, params, result)
+    except Exception:
+        return None  # contract choked on a malformed result -> not a clean fire
     if cr is not None and cr.fired and "missing" not in cr.detail.lower():
         return cr.detail
     return None
