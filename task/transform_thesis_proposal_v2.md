@@ -430,3 +430,17 @@ exp1 证明了"typed attribution 反馈 → 受约束修复"有效,但那套逻�
 | 在线 smoke(`--online-smoke`,proxy 真实 LLM) | 策略在真实 silent case 上跑,**独立 gold**(策略全程不可见)判对 | **5/6 = 83%**,`contract_pass` 终止 |
 
 > **意义**:把"检测 + 算子定位"正式闭合成 **online targeted repair policy**——同一条 typed-attribution signal,既驱动 §1 的 goldless 检测,又驱动 §8 的受约束修复;在线 smoke 83% 与 exp1 的 80-83% 一致,证明这不是实验 harness 的产物,而是**可复用、可部署、goldless 自停**的修复策略。C1(检测)+ C2(targeted repair)双主线由此各有可运行落地件(`attribution_eval.py` / `transform_repair_policy.py`),dual-agent 解耦在策略里体现为"诊断器/修复器"分工但**不作 novelty**。
+
+##### 外部 C2 验证(DS-1000,诚实覆盖边界,2026-06-27)
+
+把该策略跑到**完全外部**的 DS-1000 silent 错上(`agent/eval/ds1000_repair.py`,gpt-4o,80 个真实 silent 错,**成功判据 = DS-1000 自带 gold**,与 §1.3.2 对检测做的事对称),诚实测得算子专属契约对"任意"真实 SO 任务的迁移边界:
+
+| 指标(外部 DS-1000,80 silent,95% Wilson CI) | 数值 |
+|---|---|
+| 契约 fire 覆盖率 | **6/80 = 8% [3-15]**(全部 `left_join_keep_all`) |
+| 整体恢复:generic 基线 | 14/80 = 18% [11-27] |
+| 整体恢复:**policy(targeted+abstain)** | **16/80 = 20% [13-30]** |
+| **covered 子集:generic** | 1/6 = 17% [3-56] |
+| **covered 子集:targeted** | **3/6 = 50% [19-81]** |
+
+> **诚实解读**:大多数算子契约需要 operator-semantic params(group/value/weight…),而 DS-1000 的任意 SO 题**不带**这些 params,故覆盖率被**结构性地压到 8%**——能迁移的几乎只有**免-params 的 `left_join_keep_all`(join/how 语义)**(6/6 covered 全是它)。这是算子专属契约对**无约束真实任务零样本迁移**的诚实边界,**不掩饰**。两个正面信号仍成立:① **policy 整体 ≥ generic**(20% vs 18%)——因为对未覆盖的 92% 策略**安全 abstain 回退 generic**(不盲改、不掉点),只在 covered 处加分;② **covered 子集 targeted 3/6 vs generic 1/6**——契约 fire 处 typed 反馈的提升方向与 exp1 一致(N 小,仅作方向性佐证)。**结论**:operator-matched 且**高覆盖**的外部-DATA C2 强证据是 **Nature §1.3.1 切片**(params 已知、契约 ~99% recall);DS-1000 提供的是**覆盖边界 + abstain 安全性**的诚实外部锚点。脚本/报告:`agent/eval/ds1000_repair.py` / `agent/eval/results_ds1000_repair/ds1000_repair_report.md`。
