@@ -444,3 +444,19 @@ exp1 证明了"typed attribution 反馈 → 受约束修复"有效,但那套逻�
 | **covered 子集:targeted** | **3/6 = 50% [19-81]** |
 
 > **诚实解读**:大多数算子契约需要 operator-semantic params(group/value/weight…),而 DS-1000 的任意 SO 题**不带**这些 params,故覆盖率被**结构性地压到 8%**——能迁移的几乎只有**免-params 的 `left_join_keep_all`(join/how 语义)**(6/6 covered 全是它)。这是算子专属契约对**无约束真实任务零样本迁移**的诚实边界,**不掩饰**。两个正面信号仍成立:① **policy 整体 ≥ generic**(20% vs 18%)——因为对未覆盖的 92% 策略**安全 abstain 回退 generic**(不盲改、不掉点),只在 covered 处加分;② **covered 子集 targeted 3/6 vs generic 1/6**——契约 fire 处 typed 反馈的提升方向与 exp1 一致(N 小,仅作方向性佐证)。**结论**:operator-matched 且**高覆盖**的外部-DATA C2 强证据是 **Nature §1.3.1 切片**(params 已知、契约 ~99% recall);DS-1000 提供的是**覆盖边界 + abstain 安全性**的诚实外部锚点。脚本/报告:`agent/eval/ds1000_repair.py` / `agent/eval/results_ds1000_repair/ds1000_repair_report.md`。
+
+##### 外部 C2(Nature 真实数据,operator-matched 高覆盖,2026-06-27)
+
+DS-1000 给的是 external-**TASK**(真实意图)但**低覆盖**的诚实边界。本节补上其**互补面**:把同一套 generic-vs-policy 修复跑到 external-**DATA**——**真实 Nature 源数据表**(§1.3.1 切片,跨 20 篇文章)上实例化我们的算子任务,params 已知,故契约**高覆盖**(`agent/eval/nature_repair.py`,gpt-4o,60 个真实 silent 错,成功判据 = 真实表上的模板 gold,策略全程不可见):
+
+| 指标(真实 Nature,60 silent,95% Wilson CI) | 数值 |
+|---|---|
+| 契约 fire 覆盖率(算子匹配 ⇒ 高) | **41/60 = 68% [56-79]** |
+| 整体恢复:generic 基线 | 2/60 = 3% [1-11] |
+| 整体恢复:**policy(targeted+abstain)** | **33/60 = 55% [42-67]** |
+| **covered 子集:generic** | 2/41 = 5% [1-16] |
+| **covered 子集:targeted** | **33/41 = 80% [66-90]** |
+
+分算子族(targeted vs generic / total):**within_group_share 21/23 vs 0/23**、weighted_mean 3/4 vs 0/4、pooled_rate 3/8 vs 2/8、median_not_mean 6/25 vs 0/25。
+
+> **解读**:在 params 已知的真实科学表上,**covered 子集 targeted 80% [66-90] vs generic 5% [1-16](CI 完全分离)**——typed 契约反馈把真实数据上的 silent 修复率拉高 ~16×,与 exp1(80% vs 18%)一致甚至更强,**坐实 C2 在真实数据上的外部效度**。诚实点名:**median_not_mean 即便给 targeted 反馈也仅 6/25 修成**——这正是 §1.2 反复点名的"无论怎么提示都顽固"的算子(模型反复重算成均值),targeted 不是万能;但 within_group_share/weighted_mean 近乎全修。**两个外部实验夹逼出 C2 的完整图景**:DS-1000(external-TASK,覆盖 8%,诚实边界 + abstain 安全)+ Nature(external-DATA,覆盖 68%,targeted 80% vs generic 5%)⇒ **算子语义被识别处 targeted 强势、识别不到处安全 abstain 回退**,正面回答"你的 targeted 在真实世界到底有没有用"。脚本/报告:`agent/eval/nature_repair.py` / `agent/eval/results_nature_repair/nature_repair_report.md`。

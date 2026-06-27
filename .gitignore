@@ -95,3 +95,5 @@ agent/eval/results_real_scaled/real_auto_records.json
 agent/eval/results_ds1000/records.json
 agent/eval/results_ds1000_smoke/
 agent/eval/results_ds1000_repair/records.json
+agent/eval/results_nature_repair/records.json
+agent/eval/results_nature_repair_smoke/
