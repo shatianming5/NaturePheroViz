@@ -330,8 +330,9 @@ round-1 结论:novelty 真实但三条边界 razor-thin;round-2 联网复核**�
 | operator contracts 库 | `agent/eval/transform_oracle.py` | ✅ 已有(核心 12 类成熟 + 5 族建设中) |
 | 在线 repair loop(**viz 线** render-bug) | `agent/app/services/single_chain_runner.py`、`agent/eval/repair_gain.py` | ⚠️ 存在但属绘图线(PlotTrace chart-vs-data),**未与 transform 线打通** |
 | transform 线 typed→targeted repair 闭环 | `agent/eval/transform_repair.py` | ✅ 已建+实验1 已出数(GO):targeted 83% vs generic 10% |
+| **在线定向修复策略(§8.3 缺口闭合件)** | `agent/eval/transform_repair_policy.py` | ✅ **已建**:exp1 闭环抽成可复用两段式策略(诊断器+受约束修复器+abstain 路由),10/10 离线单测 + 在线 smoke 5/6(83%) |
 
-> **核心缺口**:已能"检测 + 定位到 operator family",但还没把 typed diagnosis 变成 **online targeted repair policy**。这是下一阶段第一优先级。
+> **核心缺口(✅ 2026-06-27 已闭合)**:~~已能"检测 + 定位到 operator family",但还没把 typed diagnosis 变成 **online targeted repair policy**~~。**已闭合**:`transform_repair_policy.py` 把 exp1 证明的 targeted 闭环抽成可复用在线策略(结构化诊断 → 受约束修复 → goldless `contract_pass` 终止),10/10 确定性单测 + 真实 LLM smoke 5/6=83%(详见 §8.7)。
 
 ### 8.4 决定性实验(实验1 = go/no-go 门,P0)
 
@@ -411,3 +412,21 @@ round-1 结论:novelty 真实但三条边界 razor-thin;round-2 联网复核**�
 - Agent A(diagnoser):输出 `operator posterior + violated invariants + allowed patch scope`。
 - Agent B(repairer):只在受限空间里改指定 slot / API / transformation。
 - ❌ 不可写成"因为流行 multi-agent 所以也做";双智能体仅作实现策略或消融项,不作 headline novelty。
+
+### 8.7 在线定向修复策略(✅ 闭合 §8.3 缺口,2026-06-27)
+
+exp1 证明了"typed attribution 反馈 → 受约束修复"有效,但那套逻辑**缠在 3 臂实验 harness 里、绑定 transform_bench 的 case 结构**,不是可复用的在线策略。本节把它抽成 §8.6 两段式**可复用在线策略** `agent/eval/transform_repair_policy.py`(**不碰 viz 线 `single_chain_runner.py`,transform 线自洽**;复用 `transform_oracle`/`attribution_eval`/`ambiguity_calibration`,**不重复实现契约**):
+
+- **Agent A 诊断器** `diagnose(inputs, params, result) -> Diagnosis`:跑 goldless 契约(family 剪枝)输出**结构化诊断** = `{fired, operator, violated_invariant, localized_contracts, allowed_scope, confidence}`。**解耦**——不依赖 case 的 op/gold,任意 `(inputs, params, result)` 可用。
+- **Agent B 修复器**:消费 `Diagnosis` → 受约束指令("只改 `<op>` 这一步"),经**注入式** `code_fn/exec_fn` 产出新结果(注入使整条策略**离线确定性可测**、在线 LLM-agnostic)。
+- **策略环** `TargetedRepairPolicy.repair(...) -> RepairOutcome`:锁定目标算子 → 每轮以**该算子自身契约**为 goldless 停机信号(`contract_pass`),非"所有契约静默"(避免无关契约 cross-fire 把已正确结果误判为仍需修);预算上限封顶。
+- **abstain-aware routing**(诚实降级):未覆盖算子(无契约 fire)且调用方断言出错(`assume_wrong`)时,按 `abstain_policy` 路由 `generic` 回退或 `abstain` 停手。**按 §8.2 C3 不 claim repair-time 收益**,仅作 detection-confidence 驱动的安全 knob。
+
+**验证(两层)**:
+
+| 层 | 内容 | 结果 |
+|---|---|---|
+| 离线确定性单测(`_selftest`,无 LLM) | 诊断结构化输出 + 策略环 + abstain 路由 + 预算/malformed/no_error 边界 | **10/10 通过** |
+| 在线 smoke(`--online-smoke`,proxy 真实 LLM) | 策略在真实 silent case 上跑,**独立 gold**(策略全程不可见)判对 | **5/6 = 83%**,`contract_pass` 终止 |
+
+> **意义**:把"检测 + 算子定位"正式闭合成 **online targeted repair policy**——同一条 typed-attribution signal,既驱动 §1 的 goldless 检测,又驱动 §8 的受约束修复;在线 smoke 83% 与 exp1 的 80-83% 一致,证明这不是实验 harness 的产物,而是**可复用、可部署、goldless 自停**的修复策略。C1(检测)+ C2(targeted repair)双主线由此各有可运行落地件(`attribution_eval.py` / `transform_repair_policy.py`),dual-agent 解耦在策略里体现为"诊断器/修复器"分工但**不作 novelty**。
