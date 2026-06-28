@@ -30,6 +30,9 @@ nature_pairs/
 dist/
 build/
 .pytest_cache/
+# pytest tmp_path scratch dirs (regenerable; were accidentally committed)
+tmp_pytest*/
+agent/tmp_pytest*/
 .mypy_cache/
 .ruff_cache/
 .cache/
