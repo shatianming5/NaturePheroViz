@@ -13,6 +13,27 @@ The project is organized into clear top-level domains:
 - `docs/`: docs, proposals (`docs/proposals/`), and refinement logs.
 - `scripts/`: local automation (sync, crawl drivers, git hooks).
 
+## Project Layout
+
+```text
+NaturePheroViz/
+├── pipeline/              # Nature data-collection pipeline
+│   ├── collect/           #   download figure + Source Data pairs
+│   ├── process/           #   preflight / manifests / figure segmentation
+│   └── helpers/           #   sheet-alignment + header-repair utilities
+├── agent/                 # PheroViz chart-generation agent (L1–L4 slot pipeline)
+│   ├── app/services/      #   orchestrator, plot_trace, fidelity_verifier, judge, slots
+│   ├── configs/           #   judge rules + diagnostics map
+│   ├── eval/              #   research / evaluation suite (+ results_*/)
+│   └── data/              #   bundled sample datasets (tracked)
+├── data/                  # generated corpora + outputs (Git-ignored)
+│   ├── downloads/         #   Source-Data corpus
+│   ├── nature_pairs/      #   figure ↔ Source-Data pairs
+│   └── outputs/           #   search / postfetch outputs
+├── docs/                  # docs, proposals/, refinement logs, plan.md
+└── scripts/               # local automation (sync, crawl drivers, git hooks)
+```
+
 ## Install
 
 ```bash
