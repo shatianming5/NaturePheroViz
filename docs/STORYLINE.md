@@ -1,0 +1,135 @@
+# NaturePheroViz — 项目故事线 & 对外讲解手册
+
+> 用途:统一对外(审稿人 / PI / 组会 / 工业界 / talk)讲清楚"我们在做什么、为什么重要、每个部分是什么角色"。
+> 所有主张与数字锚定 `docs/proposals/`(oral_method / transform_thesis_v2 / measurement / aaai_*),并遵守其措辞纪律。
+
+---
+
+## A. 故事线(叙事弧)
+
+### A0. 母题(一切都挂在这上面)
+> **"代码能跑 + 输出看着合理 ≠ 输出是对的。"**
+> LLM 写的数据/绘图代码会产出 **silent error(静默错误)**:不报错、形状合理、人眼看不出,但**算出来 / 画出来的数 ≠ 该有的数**。execution-pass、单元测试、视觉检查、人 review 全都漏掉它。
+
+### A1. 起点:观察到的痛点
+LLM 大量替人写 pandas / matplotlib 代码做分析与画图。现有可视化评测(MatPlotBench / Plot2Code / ChartMimic)和判官只比**代码相似 / 视觉相似 / 能不能跑**,默认"图画出来了、看着对,数据就对"——这个默认是错的。没有评测在量"画出来的数是否真等于数据"。
+
+### A2. 第一刀:执行追踪保真
+核心洞察:**别从渲染结果反推,直接在代码执行现场读。** agent 自己写绘图代码、自己执行,所以可在 `matplotlib` 的 `ax.bar/plot/...` 被调用瞬间**插桩**,截获"变换后、渲染前"的真实数组——这是任何只看 PNG/SVG 的判官**结构性看不到**的。
+
+### A3. 诚实的转折(pivot)— 故事最值钱的地方
+go/no-go 实测(2026-06-13):**强 LLM 在"给定干净数据画标准图"上 silent error 率 ≈ 0%**(20 真实任务,GPT-4o/Claude 全对)。
+→ 原"绘图 silent error"measurement 论文前提被**自己证伪**。
+→ 同批实验暴露真问题在**上游**:LLM 写的**数据变换代码**(groupby/pivot/加权/占比/join/去重)silent 语义错率 **GPT-4o 38% / Claude 25%**。
+
+**画图那步很少错;喂给画图的"数据怎么算出来的"那步,系统性地错。** 这个敢推翻自己、追着证据走的转折,是讲故事的加分项。
+
+### A4. 成熟形态:两条战线,一个共同武器
+沿 `数据 → 变换代码 → 绘图代码 → 图` 流水线,silent error 有两个战场,共享同一套打法:
+
+| | **上游:Transform 线**(现主押,READY 9.0) | **下游:Viz 线**(READY 8.5) |
+|---|---|---|
+| 攻击对象 | NL→DataFrame 变换语义错(加权 vs 算术均值、组内 vs 全局占比、百分点 vs 百分比、join how、NaN、去重时机) | matplotlib 图里"画错的数"(错值/漏系列/错映射/双轴误绑) |
+| 判官(无需 gold) | **类型化算子语义契约** operator-level semantic contracts | **PlotTrace**:执行期插桩读回 chart-vs-data |
+| 一句话主张 | 首个用 typed 算子契约,**无 gold / 无测试 / 无参考实现**地检出 NL→DataFrame silent 语义错 | 在执行期验证 matplotlib 真正收到的数组,抓出 render-only 判官看不到的画错的数 |
+
+- **共同武器** = 执行追踪(读代码实际算出/画出的东西)+ 不需要 gold 的验证器。
+- **共同敌人** = silent error(exec-pass / 视觉 / 人眼都漏)。
+
+### A5. 为什么是我们 / 为什么以前没人做
+现有评测器**不生成代码、没有执行现场的访问权**,只能从已渲染产物反推(VisEval 式 SVG 反解析)。实测:SVG 反解析在真实科学图上**定位率 0%、clean 图误报 14/15**——它做不了这个测量,**必须用执行追踪**。这个"生成方 vs 评测方"的结构性不对称,就是 novelty 的根。
+
+---
+
+## B. 每个部分怎么解释(repo → 故事角色)
+
+整个 repo = 研究这个问题的**完整装置**。
+
+### B1. `pipeline/` — 造"真实基准语料"的装置
+**一句话**:爬 Nature 论文,把 **figure 图** 和它的 **Source Data 原始数据表**配对下来——这是验证"画出来的数==该画的数"唯一需要的:真实的图 + 它的真值表。
+- `collect/`:Playwright 爬 Nature,按 MOESM 锚点 + caption 文本两路把图↔数据配对(`download_nature_pairs.py` 是 crown jewel)。
+- `process/`:盘点完整性 + VLM 切子图,只留数据可视化 panel。
+- `helpers/`:修畸形表头、做图↔sheet 对齐探针——把"野生 xlsx"变成"可对账真值表"的关键。
+- 要点:**为什么非要真实 Nature 数据?** 合成数据上 SVG 还能蒙对,**只有真实多列科学图上旧判官才彻底失效、我们的优势才显现**。语料同时喂两条线。
+
+### B2. `agent/` — "被试" + 战场
+**一句话**:一个 code-first 可视化 agent——给数据和目标,它自己写 matplotlib 代码、沙箱渲染、被判官打分、迭代修复(Sense→Plan→Patch→Render→Judge→Route)。
+- 既是**研究对象**(会犯 silent error 的 LLM agent),也是**承载创新的地方**(judge / plot_trace 在此)。
+- L1–L4 分层 slot pipeline + Best-of-N + 信息素记忆是"舞台",讲故事时别喧宾夺主。
+- 可指着代码讲的钩子:judge 规则回退里 `data_fidelity = 0.5 + 0.25×(列名在不在表里)`——"只查列名存不存在、根本不看数值,这个 gap 就在我们自己代码里。"
+
+### B3. `agent/app/services/plot_trace.py` + `fidelity_verifier.py` — Viz 线武器
+**一句话**:monkeypatch matplotlib Axes 方法(一次覆盖所有轴含双轴),画图调用瞬间截获实参数组,还原成 `(series, x, value)`,跟真值表按 (series,x) 容差对账,产出 typed mismatch。
+- 反质疑("插桩 trivial?"):价值在**对齐层**——把 artist 调用还原回语义单元,处理堆叠基线、log/双轴、分组柱偏移、类目重排。已自测 7/7 图型 clean 保真 1.00。
+- 杀手锏:真实 WSe₂ 结合能图注入错误,PlotTrace 精确指出 `x=0.9: -4.1→-2.87`,SVG 直接读不出整张图。
+
+### B4. Transform 线(operator contracts)— 现主押检测线
+**一句话**:从自然语言意图推导**类型化算子语义契约**(如"组内占比"每组和=1、"加权均值"落在 min/max 间),在**无 gold 输出**下抓 NL→DataFrame silent 语义错并定位到算子。
+- 主要活在 `agent/eval/transform_*.py` + `transform_oracle.py` + `docs/proposals/transform_thesis_proposal_v2.md`。
+- 三个硬发现:
+  1. **双峰结构**:silent 错系统性集中在特定算子(pct_point/去重时机/并列保留 100% 错;left_join/加权均值/累计 0% 错)——silent error 有可预测的算子语义结构。
+  2. **能力相关**:Qwen 7B→14B→32B silent 率 65%→54%→44%,单调下降但最强闭源仍 46%,不随规模消失。
+  3. **跨语料**:自家 48 格 + 外部 **DS-1000(silent 26%)** + 真实 Nature——打破"自己出题自己打分"循环。
+
+### B5. `agent/eval/` — 实验仪器(所有 headline 数字产地)
+**一句话**:22 个评测脚本 + 32 个结果快照,把"silent error 多普遍 / 旧判官漏多少 / 我们检出+定位多少 / 定向修复涨多少"全部量化并在外部语料复现。
+- 镇店之宝 `silent_error_audit.py`:四判官对照(列名/SVG/VLM/执行追踪)。
+- 必背表(决定性实验,真实 Nature):列名 0% recall;SVG **clean 误报 14/15、定位 0%**;**执行追踪 clean 1.00、0 误报、定位 65%**。叙事:SVG 高 recall 是假象,**gap 不在 recall 在精度/定位**。
+- 注意:部分 `*_repair*` 报告是 plumbing stub(只验通路),引用数字要分清真实 vs 通路。
+
+### B6. `data/` · `docs/` · `scripts/` · 归档
+- `data/`(9.5G,gitignore):弹药库。
+- `docs/proposals/`:论文演进完整记录(含诚实转折 + GPT-5.4 三轮评审收敛)。
+- `scripts/`:同步、抗限流爬虫等自动化。
+- `NaturePheroViz_archive/`(仓库外):版本化归档(代码全历史 bundle + 9.5G 数据 + 结果),讲可复现性的底气。
+
+---
+
+## C. 针对不同听众的讲法
+
+**① 30 秒电梯版**
+"LLM 替我们写数据分析和画图代码,但有一类错误特别危险:代码能跑、图也出来了、看着合理,可算出来/画出来的数是错的,人和现有工具都发现不了。我们让代码在**执行那一刻**把真正算出/画出的数交出来跟应该的数对账,把这些静默错误抓出来。发现连最强模型在真实数据变换上都有近 40% 的静默错误率。"
+
+**② 给审稿人 / PI(2 分钟)**
+按 A4 两条战线+共同武器讲,强调:(1) 结构性不对称(生成方有执行现场、评测方没有)= novelty 根;(2) 无 gold 检测;(3) 决定性实验那张表 + 跨语料(DS-1000/Nature)。守纪律:exact 仅限 RESOLVED,repair 是 future work。
+
+**③ 给工业界 / 非专业**
+"你让 AI 写报表或图表,它给你一个看起来很专业的结果——但里面的数可能被悄悄算错,你不会知道。我们给 AI 写的分析代码装一个'测谎仪',在它运行时就发现这种看不见的错误。"
+
+---
+
+## D. Talk 投影片骨架(~8 页 / 5 分钟)
+
+1. **标题页** — 一句话母题:"代码能跑 ≠ 数是对的"。
+2. **翻车现场** — 一张真实图,数被悄悄画错,问观众"看得出哪错了吗?"。
+3. **旧方法为什么瞎** — 现有评测只比视觉/代码/exec;SVG 反解析真实图定位 0%、误报 14/15。
+4. **洞察** — 执行追踪:在代码执行现场读它真正算出/画出的数(结构性不对称图)。
+5. **诚实转折** — go/no-go:画图≈0% 错,但上游变换 38%/25% 错 → 真问题在上游。
+6. **两条战线一个武器** — A4 那张表(transform 契约 / viz PlotTrace)。
+7. **决定性证据** — 四判官对照表 + 双峰/能力相关/跨语料(DS-1000/Nature)三发现。
+8. **边界与未来** — RESOLVED 图型 exact;repair 是 in-loop future work;可复现归档。
+
+---
+
+## E. 会被问到的硬问题 + 标准应答
+
+| 质疑 | 应答 |
+|---|---|
+| "插桩/读回 trivial" | 价值在**对齐层**(IR + 按图型归一化 + 覆盖率表),不是 hook;7/7 图型 clean 1.00 |
+| "覆盖不全会被攻" | 只对 **RESOLVED** 图型声明 exact,其余诚实走 fallback,有覆盖率表兜底 |
+| "自己出题自己打分" | 已上 **DS-1000 + 真实 Nature**,跨模型族(Qwen 7/14/32B)+ 跨厂商前沿模型 |
+| "无 gold 检测不新(CodeT/Incoherence)" | 不主张"首个 oracle-free";load-bearing 是 **(typed 算子契约)×(NL→DataFrame)×(无 gold/测试/参考)** 交集 |
+| "又一个训练/DPO 论文?" | 默认**训练-free 推理时**;DPO 仅可选末节,需 held-out 增益 + 噪声信号对照才进正文 |
+| "repair 增益呢" | **明确写成 in-loop future work,未实证不声称端到端修复增益** |
+
+---
+
+## F. 措辞红线(守住才"安全对外说")
+
+1. **"exact" 只能用于 RESOLVED 的图型**;别说"覆盖所有图型"。
+2. **repair 是 motivated-but-not-yet-demonstrated**;别声称已证明端到端修复增益。
+3. **viz 线与 transform 线是不同对象、不同判官的不同论文**,headline 别共用同一个名字。
+
+---
+
+> 维护:本文件是对外叙事的"单一事实源"。数字或主张更新时,先改 `docs/proposals/` 再同步此处,保持一致。

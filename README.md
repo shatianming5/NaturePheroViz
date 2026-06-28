@@ -34,6 +34,9 @@ NaturePheroViz/
 └── scripts/               # local automation (sync, crawl drivers, git hooks)
 ```
 
+> New here? Read **[`docs/STORYLINE.md`](docs/STORYLINE.md)** for the project narrative
+> (what we do, why it matters, and how each part fits the story).
+
 ## Install
 
 ```bash
