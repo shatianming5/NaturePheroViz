@@ -58,7 +58,7 @@ for ((y=YEAR_END; y>=YEAR_START; y--)); do
   echo "[batched] ===== year $y (have $have/$TARGET) ====="
   retry=0
   while :; do
-    "$PY" download_nature_pairs.py \
+    "$PY" pipeline/collect/download_nature_pairs.py \
       --max-articles 0 --max-candidates "$CAND_PER_YEAR" \
       --skip-images --max-data-file-mb 20 \
       --split-by-year --year-start "$y" --year-end "$y" \

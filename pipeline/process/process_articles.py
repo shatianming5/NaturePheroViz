@@ -950,14 +950,14 @@ def build_parser() -> argparse.ArgumentParser:
     sub = p.add_subparsers(dest="cmd", required=True)
 
     p_pre = sub.add_parser("preflight", help="Scan downloads/articles and write manifests")
-    p_pre.add_argument("--input", default="downloads/articles", help="Input root (default: downloads/articles)")
-    p_pre.add_argument("--output", default="downloads/derived", help="Output root (default: downloads/derived)")
+    p_pre.add_argument("--input", default="data/downloads/articles", help="Input root (default: data/downloads/articles)")
+    p_pre.add_argument("--output", default="data/downloads/derived", help="Output root (default: data/downloads/derived)")
     p_pre.add_argument("--progress", action="store_true", help="Show a tqdm progress bar while scanning")
     p_pre.set_defaults(func=cmd_preflight)
 
     p_seg = sub.add_parser("segment", help="Run Gemini panel detection and crop data-viz panels")
-    p_seg.add_argument("--input", default="downloads/articles", help="Input root (default: downloads/articles)")
-    p_seg.add_argument("--output", default="downloads/derived", help="Output root (default: downloads/derived)")
+    p_seg.add_argument("--input", default="data/downloads/articles", help="Input root (default: data/downloads/articles)")
+    p_seg.add_argument("--output", default="data/downloads/derived", help="Output root (default: data/downloads/derived)")
     p_seg.add_argument(
         "--backend",
         choices=("auto", "google", "cliproxy"),

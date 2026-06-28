@@ -96,8 +96,8 @@
 
 ### H. CLI 入口（当前已实现）
 
-- Preflight（只扫描、不调 LLM）：`python -m tools.process_articles preflight --input downloads/articles --output downloads/derived --progress`
-- 子图分割：`python -m tools.process_articles segment --backend cliproxy --model models/gemini-3-flash-preview --input downloads/articles --output downloads/derived --progress`
+- Preflight（只扫描、不调 LLM）：`python -m pipeline.process.process_articles preflight --input data/downloads/articles --output data/downloads/derived --progress`
+- 子图分割：`python -m pipeline.process.process_articles segment --backend cliproxy --model models/gemini-3-flash-preview --input data/downloads/articles --output data/downloads/derived --progress`
 - 常用参数：`--limit`（默认 10，`0`=不限制）、`--resume`、`--save-overlay`、`--pad-px`、`--pad-frac`（防止切掉坐标轴/标签）、`--progress`、`--timeout-s`。
 
 ### I. 验收标准（DoD）

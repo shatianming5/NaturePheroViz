@@ -15,16 +15,10 @@ __pycache__/
 venv/
 env/
 
-# Data / downloads / generated outputs
-downloads/
-downloads*/
-outputs/
+# Generated data — crawled corpora (downloads, nature_pairs) + tool outputs, all under data/
+# NOTE: root-anchored so agent/data/ sample CSVs stay tracked.
 /data/
-nature_download/data/
 agent/runs/
-nature_download/outputs/
-# Crawled Nature figure+source-data pairs (large: images + xlsx, ~1.5GB). Local-only.
-nature_pairs/
 
 # Build and cache artifacts
 dist/

@@ -2,13 +2,16 @@
 
 NaturePheroViz is a research data pipeline for collecting Nature article figures, matching them with Source Data files, validating the downloaded corpus, and generating visualization outputs with the PheroViz agent.
 
-The project is organized as a single working codebase:
+The project is organized into clear top-level domains:
 
-- `download_nature_pairs.py`: collect Nature article pages and download matched figure + Source Data pairs.
-- `tools/process_articles.py`: preflight downloaded articles, build manifests, and prepare figure-level processing outputs.
-- `nature_download/`: alternate all-in-one Nature search/download utilities for metadata, figures, and Source Data.
-- `agent/`: PheroViz slot pipeline for data-driven Matplotlib chart generation.
-- `docs/` and `scripts/`: supporting docs and local automation.
+- `pipeline/`: Nature data-collection pipeline.
+  - `pipeline/collect/`: download matched figure + Source Data pairs (`download_nature_pairs.py`, `nature_crawler.py`, `nature_all_in_one.py`).
+  - `pipeline/process/`: preflight articles, build manifests, segment figures (`process_articles.py`).
+  - `pipeline/helpers/`: alignment/repair helpers (`probe_alignment.py`, `repair_headers.py`).
+- `agent/`: PheroViz slot pipeline for data-driven Matplotlib chart generation (+ `agent/eval/` research suite).
+- `data/`: generated corpora and outputs (`downloads/`, `nature_pairs/`, `outputs/`); Git-ignored.
+- `docs/`: docs, proposals (`docs/proposals/`), and refinement logs.
+- `scripts/`: local automation (sync, crawl drivers, git hooks).
 
 ## Install
 
@@ -34,10 +37,10 @@ VLM_API_KEY=...
 Run the main collector:
 
 ```bash
-python download_nature_pairs.py \
+python pipeline/collect/download_nature_pairs.py \
   --max-articles 10 \
   --max-candidates 1000 \
-  --out-dir downloads/nature_pairs
+  --out-dir data/downloads/nature_pairs
 ```
 
 `--max-articles` means successful articles: an article counts only when at least one figure + Source Data pair is downloaded. Articles without pairable Source Data are written to `skipped.jsonl` and do not consume the success target.
@@ -47,30 +50,30 @@ python download_nature_pairs.py \
 You can also provide explicit article URLs:
 
 ```bash
-python download_nature_pairs.py \
+python pipeline/collect/download_nature_pairs.py \
   --urls-file urls.txt \
   --max-articles 10 \
-  --out-dir downloads/nature_pairs
+  --out-dir data/downloads/nature_pairs
 ```
 
 Collector output:
 
-- `downloads/nature_pairs/pairs.jsonl`: one record per matched figure + Source Data pair.
-- `downloads/nature_pairs/articles/<article-id>/article.json`: article metadata and extracted pair metadata.
-- `downloads/nature_pairs/articles/<article-id>/images/`: downloaded figure images.
-- `downloads/nature_pairs/articles/<article-id>/data/`: downloaded Source Data files.
-- `downloads/nature_pairs/skipped.jsonl`: inspected articles without pairable Source Data.
-- `downloads/nature_pairs/errors.jsonl`: article-level failures.
-- `downloads/nature_pairs/state.json`: resumable processed-URL state.
+- `data/downloads/nature_pairs/pairs.jsonl`: one record per matched figure + Source Data pair.
+- `data/downloads/nature_pairs/articles/<article-id>/article.json`: article metadata and extracted pair metadata.
+- `data/downloads/nature_pairs/articles/<article-id>/images/`: downloaded figure images.
+- `data/downloads/nature_pairs/articles/<article-id>/data/`: downloaded Source Data files.
+- `data/downloads/nature_pairs/skipped.jsonl`: inspected articles without pairable Source Data.
+- `data/downloads/nature_pairs/errors.jsonl`: article-level failures.
+- `data/downloads/nature_pairs/state.json`: resumable processed-URL state.
 
 ## Validate Downloaded Articles
 
 Run preflight over the collected article folders:
 
 ```bash
-python -m tools.process_articles preflight \
-  --input downloads/nature_pairs/articles \
-  --output downloads/nature_pairs/derived \
+python -m pipeline.process.process_articles preflight \
+  --input data/downloads/nature_pairs/articles \
+  --output data/downloads/nature_pairs/derived \
   --progress
 ```
 
@@ -85,9 +88,9 @@ Preflight output:
 Figure segmentation uses a VLM backend and writes derived panel metadata and cropped data-viz panels.
 
 ```bash
-python -m tools.process_articles segment \
-  --input downloads/nature_pairs/articles \
-  --output downloads/nature_pairs/derived \
+python -m pipeline.process.process_articles segment \
+  --input data/downloads/nature_pairs/articles \
+  --output data/downloads/nature_pairs/derived \
   --backend cliproxy \
   --model models/gemini-3-flash-preview \
   --progress
@@ -95,14 +98,13 @@ python -m tools.process_articles segment \
 
 ## Nature Search and Source Data Utilities
 
-The `nature_download/` directory contains a secondary CLI for search-first workflows:
+The `pipeline/collect/nature_all_in_one.py` CLI provides search-first workflows:
 
 ```bash
-cd nature_download
-python nature_all_in_one.py search --query "cancer" --max 20 --out outputs/search_run
-python nature_all_in_one.py postfetch \
-  --jsonl outputs/search_run/articles.jsonl \
-  --out outputs/nature_content \
+python pipeline/collect/nature_all_in_one.py search --query "cancer" --max 20 --out data/outputs/search_run
+python pipeline/collect/nature_all_in_one.py postfetch \
+  --jsonl data/outputs/search_run/articles.jsonl \
+  --out data/outputs/nature_content \
   --max-figs 12
 ```
 
@@ -122,7 +124,7 @@ Generated run artifacts are written under `agent/runs/` and are ignored by Git.
 ## Tests
 
 ```bash
-python -m compileall -q download_nature_pairs.py tools agent nature_download
+python -m compileall -q pipeline agent
 python -m pytest -q agent/tests
 ```
 
@@ -130,9 +132,7 @@ python -m pytest -q agent/tests
 
 Generated data and downloads are intentionally ignored:
 
-- `downloads/`
-- `outputs/`
+- `data/` (downloads, nature_pairs, outputs)
 - `agent/runs/`
-- `nature_download/outputs/`
 
 Keep API keys in `.env`; do not commit real credentials.

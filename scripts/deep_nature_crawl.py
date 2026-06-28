@@ -34,7 +34,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
-import download_nature_pairs as dn  # for URL param building + the default search URL
+from pipeline.collect import download_nature_pairs as dn  # for URL param building + the default search URL
 
 
 def _env_int(name: str, default: int) -> int:
@@ -71,7 +71,7 @@ def run_burst(year: int, order: str, start_page: int) -> int:
     url = dn._replace_query_param(dn.DEFAULT_SEARCH_URL, "date_range", f"{year}-{year}")
     url = dn._replace_query_param(url, "order", order)
     cmd = [
-        sys.executable, str(ROOT / "download_nature_pairs.py"),
+        sys.executable, str(ROOT / "pipeline" / "collect" / "download_nature_pairs.py"),
         "--search-url", url,
         "--start-page", str(start_page), "--max-pages", str(BURST_PAGES),
         "--max-articles", "0", "--max-candidates", str(BURST_CANDIDATES),

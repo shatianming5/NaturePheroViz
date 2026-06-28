@@ -1341,7 +1341,7 @@ def main(argv: Optional[Iterable[str]] = None) -> int:
         default=0,
         help="End year (inclusive) for --split-by-year. 0 = current year.",
     )
-    parser.add_argument("--out-dir", default="downloads")
+    parser.add_argument("--out-dir", default="data/downloads")
     parser.add_argument("--overwrite", action="store_true")
     parser.add_argument("--headed", action="store_true")
     parser.add_argument(
