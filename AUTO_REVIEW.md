@@ -39,3 +39,14 @@ Bottom line: strong; ALMOST not Oral-READY. Fix stub artifact + external transfe
 
 ### R2 precision audit (honest)
 DS-1000 NL coverage 17% keyword but ref-code precision 10% → true 2% < hand-param 8%. W2 reframed: confirms 'contracts need operator params' boundary, not a lift. W3 grid 100% disclosed as templated/co-designed upper bound (deployability PoC). master rows 11-12 updated honest. Final: 8.0 ALMOST; strength = detection(C1)+repair(C2, N=87 real).
+
+## Round 3 — 2026-06-29 (residuals closed with REAL LLM, opencode free)
+- W3 real generalization: regex 28% on held-out off-lexicon paraphrases (honest, abstain-safe) vs LLM classifier 83% (intent_llm.py, opencode free) — NL→op deployable; grid 100% disclosed as templated UB. results_generalize/.
+- W2 real firing (not coverage): w2_firing.py generates DS-1000 solutions (opencode free), DS-1000 gold labels them; goldless oracle recall 3/6=50% on real external silent, FP 0/2=0%. results_w2_firing/. master rows 13-14.
+- precision audit kept (DS-1000 keyword precision 10% honest). Tests 4 in test_intent_infer (abstain-safe guard). 
+
+### R3 residual closure — FINAL (real opencode-free runs, per-case JSON)
+- W3 generalization: held-out 19 off-lexicon paraphrases — regex 26% (abstain-safe, 2 miswired) vs LLM-clf 84% (16/19). raw results_generalize/intent_llm.json.
+- W2 real firing: w2_firing.py with --out-json + Wilson CI + incremental write. pilot N=12 recall 3/6=50% FP0/2; scaled N=30 recall 2/5=40% [12-77], FP 1/6=17% [3-56], crash 19/30 (free-model limit). raw results_w2_firing/firing.json. Honest: small N, API model = cheapest scale-up.
+- master rows 13-14 updated with CIs. 35 tests pass. No API key used.
+- Net: qualitative residuals CLOSED with real LLM evidence + audit trail; quantitative N bounded by free-model crash rate (disclosed, not hidden).

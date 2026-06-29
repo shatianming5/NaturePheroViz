@@ -39,3 +39,12 @@ def test_no_false_fire_with_inferred_params():
         g = g if isinstance(g, pd.DataFrame) else pd.DataFrame({"wavg": [float(g)]})
         r = check(op, inp, P, g)
         assert not (r and r.fired), f"{op} false-fired on gold"
+
+
+def test_paraphrase_regex_is_abstain_safe():
+    # off-lexicon paraphrases: regex may abstain a lot (expected) but must rarely
+    # MIS-wire (conservative): wrong <= 3 of 18. Guards against loosening signals.
+    from eval.transform_paraphrase import CASES
+    wrong = sum(1 for op, p, df in CASES
+                if (g := infer_op(p)) is not None and g != op)
+    assert wrong <= 3

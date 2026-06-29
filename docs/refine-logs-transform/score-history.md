@@ -47,3 +47,5 @@ Trajectory: 6.9 -> 7.5 -> 8.1 -> 8.7 -> 9.0 across 5 rounds.
 R6 (aris-reviewer / dentist-loop, 2026-06-29): fresh adversarial 7.5 ALMOST (self 9.0 = co-design optimism). Blocking W1: canonical repair report was offline stub -> replaced w/ real online (80/18, N=87, 3 models, ==ceiling). W2 transfer evidence existed but unsurfaced -> added master rows 9-10 (ds1000 8% covered, abstain-safe). Decisive open: scale oracle transfer beyond 6 DS-1000 covered cases.
 
 R7 (dentist-loop, 2026-06-29): all R6 open items closed offline. W3 end2end NL→params→oracle (op/param 100%, recall 84%==upper bound, FP0, +tests); W2 transfer 8→17% on DS-1000; W5 PBT positioning. master rows 11-12. 34 tests green.
+
+R8 (dentist-loop, 2026-06-29, REAL LLM via opencode free): residuals closed. W3 generalization regex 28% vs LLM-clf 83% (held-out paraphrases); W2 real oracle firing on DS-1000 recall 50%/FP 0% (per-task, not coverage). master rows 13-14, proposal §3 honest. No API key used (opencode free models).

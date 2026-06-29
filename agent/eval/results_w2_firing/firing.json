@@ -1,0 +1,231 @@
+{
+  "model": "opencode/north-mini-code-free",
+  "n": 30,
+  "silent": 5,
+  "pass": 6,
+  "crash": 19,
+  "recall": "2/5",
+  "recall_ci": [
+    40,
+    12,
+    77
+  ],
+  "fp": "1/6",
+  "fp_ci": [
+    17,
+    3,
+    56
+  ],
+  "cases": [
+    {
+      "pid": 7,
+      "op": "dedup_then_agg",
+      "outcome": "silent",
+      "oracle_fired": false,
+      "code": "# Mark duplicate rows (True for all but first occurrence in each group)\nis_dup = df.duplicated(subset='url', keep='first')\n# Keep duplicates if any in-group row has 'Yes', otherwise keep only first\nresult = df.groupby('url').apply(\n    lambda g: g if g['keep_if_dup'].iloc[0] == 'Yes' or g['keep_if_dup'].str.contains('Yes').any() \n    else g.iloc[:1]\n).reset_index(drop=True)"
+    },
+    {
+      "pid": 8,
+      "op": "dedup_then_agg",
+      "outcome": "silent",
+      "oracle_fired": false,
+      "code": "import pandas as pd\n\ndf = pd.DataFrame({'id': [1, 2, 3, 4, 5], 'url': ['A.com', 'A.com', 'B.com', 'B.com', 'C.com'], 'drop_if_dup': ['Yes', 'Yes', 'No', 'No', 'No']})\n\ngroups = df.groupby('url')\nkeep_indices = []\nfor url, group in groups:\n    if group['drop_if_dup'].eq('No').all():\n        keep_indices.extend(group.index.tolist())\n    else:\n        keep_indices.append(group.index[0])\nresult = df.l"
+    },
+    {
+      "pid": 9,
+      "op": "dedup_then_agg",
+      "outcome": "crash",
+      "oracle_fired": false,
+      "code": "import pandas as pd\n\ndf = pd.DataFrame({'url': ['A.com', 'A.com', 'A.com', 'B.com', 'B.com', 'C.com', 'B.com'],\n                   'keep_if_dup': ['Yes', 'Yes', 'No', 'No', 'No', 'No', 'Yes']})\n\ndf['sort_key'] = df['keep_if_dup'].map({'Yes': 0, 'No': 1}) * df.groupby('url').cumcount()\nresult = df.sort_values(['url', 'sort_key']).drop_duplicates(subset='url', keep='last').drop(columns='sort_key')"
+    },
+    {
+      "pid": 42,
+      "op": "left_join_keep_all",
+      "outcome": "crash",
+      "oracle_fired": false,
+      "code": "import pandas as pd\nimport numpy as np\n\ndf = pd.DataFrame({'Nanonose': ['Sample type','Water','Water','Water','Water'],\n                   'Unnamed: 1': ['Concentration',9200,9200,9200,4600],\n                   'A': [np.nan,95.5,94.5,92.0,53.0,],\n                   'B': [np.nan,21.0,17.0,16.0,7.5],\n                   'C': [np.nan,6.0,5.0,3.0,2.5],\n                   'D': [np.nan,11.942308,5.484615"
+    },
+    {
+      "pid": 43,
+      "op": "left_join_keep_all",
+      "outcome": "crash",
+      "oracle_fired": false,
+      "code": "import pandas as pd\nimport numpy as np\n\ndf = pd.DataFrame({'Nanonose': ['Sample type','Water','Water','Water','Water'],\n                   'Unnamed: 1': ['Concentration',9200,9200,9200,4600],\n                   'A': [np.nan,95.5,94.5,92.0,53.0,],\n                   'B': [np.nan,21.0,17.0,16.0,7.5],\n                   'C': [np.nan,6.0,5.0,3.0,2.5],\n                   'D': [np.nan,11.942308,5.484615"
+    },
+    {
+      "pid": 50,
+      "op": "dedup_then_agg",
+      "outcome": "pass",
+      "oracle_fired": false,
+      "code": "import pandas as pd\n\ndf = pd.DataFrame({\"A\": [1, 2, 3], \"B\": [4, 5, 6]})\n\ninv_dict = {f\"inv_{col}\": 1/df[col] for col in df.columns}\nresult = df.assign(**inv_dict)"
+    },
+    {
+      "pid": 51,
+      "op": "dedup_then_agg",
+      "outcome": "crash",
+      "oracle_fired": false,
+      "code": "result = pd.DataFrame({f\"{k}\": v for k, v in {**df.to_dict('list'), **{f\"exp_{col}\": [round(math.exp(x), 6) for x in df[col]] for col in df.columns}}.items()})"
+    },
+    {
+      "pid": 52,
+      "op": "dedup_then_agg",
+      "outcome": "crash",
+      "oracle_fired": false,
+      "code": "import numpy as np\nfrom pandas.api.types import infer_dtype\n\nfor col in df.columns:\n    # Create inverse using vectorized operations\n    with np.errstate(divide='ignore', invalid='ignore'):\n        inv_series = pd.Series(1 / df[col], dtype=df[col].dtype)\n    # Replace inf/NaN with 0 (for original 0 values)\n    inv_series.replace([np.inf, -np.inf, np.nan], 0, inplace=True)\n    df[f'inv_{col}'] = in"
+    },
+    {
+      "pid": 53,
+      "op": "dedup_then_agg",
+      "outcome": "pass",
+      "oracle_fired": false,
+      "code": "import pandas as pd\nimport numpy as np\n\ndf = pd.DataFrame({\"A\": [1, 2, 3], \"B\": [4, 5, 6]})\nresult = pd.concat([df, df.apply(lambda x: 1 / (1 + np.exp(-x))).add_prefix('sigmoid_')], axis=1)"
+    },
+    {
+      "pid": 54,
+      "op": "cumcount_per_group",
+      "outcome": "crash",
+      "oracle_fired": false,
+      "code": ""
+    },
+    {
+      "pid": 55,
+      "op": "cumcount_per_group",
+      "outcome": "crash",
+      "oracle_fired": false,
+      "code": "import pandas as pd\nimport numpy as np\n\na = np.array([[ 1. ,  0.9,  1. ],\n              [ 0.9,  0.9,  1. ],\n              [ 0.8,  1. ,  0.5],\n              [ 1. ,  0.3,  0.2],\n              [ 1. ,  0.2,  0.1],\n              [ 0.9,  1. ,  1. ],\n              [ 1. ,  0.9,  1. ],\n              [ 0.6,  0.9,  0.7],\n              [ 1. ,  0.9,  0.8],\n              [ 1. ,  0.8,  0.9]])\n\n\nidx = pd.date_ran"
+    },
+    {
+      "pid": 56,
+      "op": "nan_as_zero_sum",
+      "outcome": "crash",
+      "oracle_fired": false,
+      "code": "import pandas as pd\n\ndf = pd.DataFrame({'user': ['a','a','b','b'], 'dt': ['2016-01-01','2016-01-02', '2016-01-05','2016-01-06'], 'val': [1,33,2,1]})\ndf['dt'] = pd.to_datetime(df['dt'])\n\nall_dates = df['dt'].dt.strftime('%Y-%m-%d').unique()\nall_dates = pd.to_datetime(pd.Series(all_dates).unique())\n\ndate_ranges = []\nfor user in df['user'].unique():\n    user_dates = df[df['user'] == user]['dt']\n    u"
+    },
+    {
+      "pid": 57,
+      "op": "nan_as_zero_sum",
+      "outcome": "crash",
+      "oracle_fired": false,
+      "code": "import pandas as pd\n\ndf = pd.DataFrame({\n    'user': ['abc', 'abc', 'efg', 'efg'],\n    'dt': ['2022-01-01', '2022-01-02', '2022-01-05', '2022-01-06'],\n    'val': [1, 14, 51, 4]\n})\ndf['dt'] = pd.to_datetime(df['dt'])\n\nresult = (\n    df\n    .assign(date_range=pd.to_timedelta(range((df['dt'].max() - df['dt'].min()).days + 1), unit='D'))\n    .groupby('user')\n    .apply(lambda grp: grp.assign(\n        "
+    },
+    {
+      "pid": 108,
+      "op": "left_join_keep_all",
+      "outcome": "silent",
+      "oracle_fired": true,
+      "code": "result = pd.merge_asof(df2, df1, on='Timestamp', direction='backward')"
+    },
+    {
+      "pid": 109,
+      "op": "left_join_keep_all",
+      "outcome": "crash",
+      "oracle_fired": false,
+      "code": "import pandas as pd\n\n\ndf1 = pd.DataFrame({'Timestamp': ['2019/04/02 11:00:01', '2019/04/02 11:00:15', '2019/04/02 11:00:29', '2019/04/02 11:00:30'],\n                    'data': [111, 222, 333, 444]})\n\n\ndf2 = pd.DataFrame({'Timestamp': ['2019/04/02 11:00:14', '2019/04/02 11:00:15', '2019/04/02 11:00:16', '2019/04/02 11:00:30', '2019/04/02 11:00:31'],\n                    'stuff': [101, 202, 303, 404"
+    },
+    {
+      "pid": 123,
+      "op": "left_join_keep_all",
+      "outcome": "pass",
+      "oracle_fired": false,
+      "code": "df[\"keywords_all\"] = df[[\"keywords_0\", \"keywords_1\", \"keywords_2\", \"keywords_3\"]].apply(\n    lambda row: \",\".join(filter(lambda x: not pd.isna(x), row)), axis=1\n)\n\nresult = df"
+    },
+    {
+      "pid": 124,
+      "op": "left_join_keep_all",
+      "outcome": "pass",
+      "oracle_fired": false,
+      "code": "df[\"keywords_all\"] = df[[\"keywords_0\", \"keywords_1\", \"keywords_2\", \"keywords_3\"]].apply(\n    lambda row: \"-\".join(str(val) for val in row if pd.notna(val)), axis=1\n)"
+    },
+    {
+      "pid": 125,
+      "op": "left_join_keep_all",
+      "outcome": "pass",
+      "oracle_fired": false,
+      "code": "df[\"keywords_all\"] = df[[\"keywords_0\", \"keywords_1\", \"keywords_2\", \"keywords_3\"]].apply(\n    lambda x: \"-\".join(x.dropna()), axis=1\n)"
+    },
+    {
+      "pid": 126,
+      "op": "left_join_keep_all",
+      "outcome": "silent",
+      "oracle_fired": false,
+      "code": "keyword_cols = ['keywords_3', 'keywords_2', 'keywords_1', 'keywords_0']\nresult = df.apply(lambda row: \"-\".join([str(val) for col in keyword_cols for val in [row[col]] if pd.notna(row[col])]), axis=1)"
+    },
+    {
+      "pid": 130,
+      "op": "dedup_then_agg",
+      "outcome": "crash",
+      "oracle_fired": true,
+      "code": "import pandas as pd\n\n\ndf=pd.DataFrame(data=[[1,2],[3,4],[1,2],[1,4],[1,2]],columns=['col1','col2'])\n\n\nduplicate_bool = df.duplicated(subset=['col1', 'col2'], keep='first')\n\n\nfirst_indices = (\n    df[duplicate_bool]\n    .groupby(['col1', 'col2'])\n    .apply(lambda x: df.index.get_loc(x.index[0]))\n    .rename('index_original')\n)\n\n\nresult = pd.concat([df[duplicate_bool].reset_index(drop=True), first_"
+    },
+    {
+      "pid": 131,
+      "op": "dedup_then_agg",
+      "outcome": "crash",
+      "oracle_fired": true,
+      "code": "import pandas as pd\n\n\ndf=pd.DataFrame(data=[[1,2],[3,4],[1,2],[1,4],[1,2]],columns=['col1','col2'])\n\n\nduplicate_bool = df.duplicated(subset=['col1','col2'], keep='last')\nduplicate = df.loc[duplicate_bool == True]\n\n\nlast_occurrence_index = {tuple(row): idx for idx, row in df.iterrows() if duplicate_bool[idx]}\n\n\nresult = duplicate.copy()\nresult['index_original'] = result.apply(lambda row: last_occur"
+    },
+    {
+      "pid": 133,
+      "op": "dedup_then_agg",
+      "outcome": "silent",
+      "oracle_fired": true,
+      "code": "import pandas as pd\n\ndf=pd.DataFrame(data=[[1,1,2,5],[1,3,4,1],[4,1,2,5],[5,1,4,9],[1,1,2,5]],columns=['val', 'col1','col2','3col'])\n\nresult = df.copy()\nresult['index_original'] = result.index\n\nfor cols, group in result.groupby(['col1', 'col2', '3col'], sort=False):\n    if len(group) > 1:\n        first_idx = group.index[0]\n        for dup_idx in group.index[1:]:\n            result.loc[dup_idx, 'in"
+    },
+    {
+      "pid": 134,
+      "op": "dedup_then_agg",
+      "outcome": "crash",
+      "oracle_fired": false,
+      "code": "result = df.assign(\n    index_original=df.groupby(['col1', 'col2'])['val']\n    .idxmax()\n    .reindex(df.index)\n    .where(df.duplicated(['col1', 'col2'], keep='last'))\n)"
+    },
+    {
+      "pid": 147,
+      "op": "cumulative_running",
+      "outcome": "pass",
+      "oracle_fired": true,
+      "code": "df['cumsum'] = df.groupby('id')['val'].cumsum().clip(lower=0)"
+    },
+    {
+      "pid": 155,
+      "op": "dedup_then_agg",
+      "outcome": "crash",
+      "oracle_fired": false,
+      "code": "import pandas as pd\nimport numpy as np\n\ndf_norm = df.copy()\ndf_norm['firstname_norm'] = df_norm['firstname'].str.lower().str.replace(' ', '')\ndf_norm['lastname_norm'] = df_norm['lastname'].str.lower().str.replace(' ', '')\ndf_norm['email_norm'] = df_norm['email'].str.lower().str.replace(' ', '')\n\nkey_cols = ['firstname_norm', 'lastname_norm', 'email_norm']\ndf_norm['is_dup'] = df_norm.duplicated(sub"
+    },
+    {
+      "pid": 162,
+      "op": "left_join_keep_all",
+      "outcome": "crash",
+      "oracle_fired": false,
+      "code": "df.columns = pd.MultiIndex.from_tuples(l, names=['Caps', 'Lower'])"
+    },
+    {
+      "pid": 163,
+      "op": "left_join_keep_all",
+      "outcome": "crash",
+      "oracle_fired": false,
+      "code": "df = df.set_axis(pd.MultiIndex.from_tuples(\n    [('Caps', 'A', '1'), ('Caps', 'A', '2'), ('Caps', 'A', '1'), ('Caps', 'A', '2'), ('Caps', 'B', '1'), ('Caps', 'B', '1')]\n    + [('Middle', '1', '1'), ('Middle', '2', '1'), ('Middle', '1', '2'), ('Middle', '2', '1'), ('Middle', '1', '2'), ('Middle', '2', '1')]\n    + [('Lower', 'a', 'a'), ('Lower', 'b', 'b'), ('Lower', 'a', 'b'), ('Lower', 'a', 'a'), ("
+    },
+    {
+      "pid": 164,
+      "op": "left_join_keep_all",
+      "outcome": "crash",
+      "oracle_fired": false,
+      "code": "import pandas as pd\nimport numpy as np\n\nl = [('A', 'a', '1'), ('A', 'b', '2'), ('B','a', '1'), ('A', 'b', '1'),  ('B','b', '1'),  ('A', 'a', '2')]\nnp.random.seed(1)\ndf = pd.DataFrame(np.random.randn(5, 6), columns=l)\n\n# Transpose to convert values in first row to tuples, then create MultiIndex\nresult = df.T.groupby(level=0).first().T\nresult.columns = pd.MultiIndex.from_tuples([tuple(col.strip('()'"
+    },
+    {
+      "pid": 202,
+      "op": "cumulative_running",
+      "outcome": "crash",
+      "oracle_fired": false,
+      "code": "df = df.apply(lambda row: row.cumsum() / row.ne(0).cumsum(), axis=1)"
+    },
+    {
+      "pid": 203,
+      "op": "cumulative_running",
+      "outcome": "crash",
+      "oracle_fired": false,
+      "code": "import pandas as pd\n\ndf = pd.DataFrame({'Name': ['Name1', 'Name2', 'Name3'],\n                   '2001': [2, 1, 0],\n                   '2002': [5, 4, 5],\n                   '2003': [0, 2, 0],\n                   '2004': [0, 0, 0],\n                   '2005': [4, 4, 0],\n                   '2006': [6, 0, 2]})\n\nyear_columns = df.columns[1:]\n\nresult = pd.DataFrame(index=df.index, columns=df.columns)\nresu"
+    }
+  ]
+}
