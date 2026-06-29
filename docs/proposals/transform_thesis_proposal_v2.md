@@ -214,6 +214,8 @@ reviewer 必问:"换个算子怎么办?手写契约不可扩展。"三层回应:
 5. **外部效度(已得,跨语料三层)**:(i) 自动大切片 **841 任务跨 71 篇 + 独立复制 800 任务跨 229 篇** 独立 Nature 论文,**模糊 silent 77% [75-80]、oracle recall 98-100% / FP 0%**;(ii) 全新外部语料 **DS-1000(真实 StackOverflow 任务 + 自带执行 gold,任务与 gold 均非我们所出)silent 26% [21-31]**,且外部 silent 率最高的算子族(pivot 45%、fillna/dedup/sort 35%)恰是本文契约重点——**打破 our-tasks-our-gold 循环**(详见 §1.3.1 / §1.3.2)。
 6. **typed 归因准确率(已得,契约硬化 + family 剪枝后)**:双口径——(a) **归因 recall 25/25 = 100%**:对每个 silent error,真实算子的契约都实质 fire,定位到正确算子语义(对真实算子,缺期望输出列=产出形状错=真 silent,算检出);(b) **cross-fire**:把不相关契约套到正确结果上的实质误 fire 率,经 schema 门(params 不匹配 abstain)+ 形状门(缺输出列 abstain)从 20% 降到 8%(88/1136),再经 **family-level 候选剪枝**(按结果形状排除结构不可能的算子族)进一步降到 **2%(25/1136)**。剪枝保守(只剔结构不可能族),归因 recall 不受影响。所有修正在测量/门层,不动 check()/契约内部,故 baseline 的 100% recall 不受影响。
 7. **可扩展性(已得,§2.4)**:**5 个未见算子族**(zscore_within_group / dense_rank / cumcount_per_group / rank_pct / clip_outlier),各加一条 ~13-21 行契约。加之前 abstain(BEFORE recall 0/9=0%,FP 0),加之后可检出族 recall 跳到 100%(dense_rank/clip_outlier),**FP 恒 0/11**。coverage-by-family:dense_rank/clip_outlier 一条契约即 100%;zscore 25%、rank_pct 0%——**单条契约覆盖不全这些算子的所有错法**,诚实暴露覆盖边界。但 FP 始终 0 + 边界外 abstain ⇒ 加新算子=写一条不变量,覆盖增长**绝不抬 FP**;"一条够 vs 需要参数敏感变体"由 coverage 表显式标注。
+8. **端到端 NL→params→oracle(已得,闭合"params 哪来"质疑)**:契约不再假定 params 由人给。`eval/transform_intent_infer.py` 从**纯 NL prompt + df schema**(关键词 + dtype 角色 + schema 消歧,无 gold/无 LLM)推断 (op, params)。68 网格上 **op 准确率 100%、param-key 100%、端到端 recall 84% = params-given 上界、FP 0%**(`eval/end2end_infer.py`):自动构造 params **零损失**于人工给定。**诚实披露**:网格 prompt 为模板,100% 是共设计上界(关键词照网格词表写),证明流水线可无 oracle 参数运行=可部署性 PoC,非泛化主张。
+9. **外部边界确认(已得,W2,诚实)**:把推断器套到 **DS-1000 全 275 题**,keyword 覆盖 17% 但 ref-code 精度仅 10% → 真覆盖 2%(`eval/oracle_transfer.py`)。结论诚实:自由文本 SO 题需 ML 分类器才能可靠取 params,**确认"契约需算子 params"这一结构边界**,非外部扩量;高覆盖外部证据仍是 Nature §1.3.1 切片(params 已知、recall ~99%)。
 
 > 所有实验数字汇总于一张 master 表(`results_master/master_table.md`),并标明两次独立生成 run(校准 192 / baseline 189)的数源,避免跨表混淆。
 
@@ -230,8 +232,9 @@ round-1 结论:novelty 真实但三条边界 razor-thin;round-2 联网复核**�
 | **Zhong-2020(goldless SQL 检查)** | "已做 goldless SQL" | Zhong 仍需 **gold query** 既建测试库又评分;SQL 有干净集/包语义,pandas 是有状态、数据依赖的。无类似"pandas 等价类"理论——我们用 invariants 替代。 |
 | **mlinspect(算子级检查)** | "已做算子级" | mlinspect 检测既有(假定正确)管线的**数据分布**异常(偏差/泄漏),**不判代码是否实现 NL 意图**——它说不出 `merge(on=customer_id)` 本该是 `order_id`。我们做的是 intent-faithfulness。 |
 | **Incoherence(AAAI 2026,arXiv 2507.00057,round-2 新增)** | "已有 oracle-less 错误检测" | Incoherence 在**通用算法代码**(HumanEval/MBPP)上给 oracle-free 错误下界,**检出约 2/3、漏 1/3**;无 DataFrame/关系语义、不针对 common-mode。我们:域=DataFrame、机制=typed 算子契约(非行为分歧下界)、检出=48 网格 + 真实切片均 100%。 |
+| **Property-based testing(Hypothesis/QuickCheck)** | "你的契约就是 property test,PBT 早有" | PBT 的 property 由开发者**从代码规格**手写,且需**多次随机执行**;我们的不变量**从 NL 意图派生**(NL-derived,非 code-derived)、对**单次执行追踪**判定、且映射到**算子语义类**驱动 typed 归因。PBT 测"代码是否自洽",我们测"代码是否=用户要的语义"——pct_point/pooled_rate 的 silent 错 PBT 的随机输入测不出(它不知道意图)。 |
 
-**最强主张(每词 load-bearing,措辞已据 round-2 收窄)**:我们是**首个**用**类型化算子级关系语义契约**检测 **NL→DataFrame 变换**的 silent 语义错、**无需 gold 输出 / 预写测试 / 可信参考实现**的方法——**不是**"首个 oracle-free 代码检测"(CodeT/Incoherence 在先),而是首个把 typed operator-contract 用于此特定设定。差异点 = (无 gold)×(无预写测试)×(pandas DataFrame)×(silent 语义)×(typed 算子归因),每一维都有 48 类网格 + 真实切片的数字背书。
+**最强主张(每词 load-bearing,措辞已据 round-2 收窄)**:我们是**首个**用**类型化算子级关系语义契约**检测 **NL→DataFrame 变换**的 silent 语义错、**无需 gold 输出 / 预写测试 / 可信参考实现**的方法——**不是**"首个 oracle-free 代码检测"(CodeT/Incoherence 在先),而是首个把 typed operator-contract 用于此特定设定。差异点 = (无 gold)×(无预写测试)×(pandas DataFrame)×(silent 语义)×(typed 算子归因)×(意图派生而非代码派生的 NL-derived 不变量),每一维都有 48 类网格 + 真实切片的数字背书。
 
 ---
 

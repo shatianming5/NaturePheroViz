@@ -29,6 +29,14 @@ they are NOT the same 189/192 numbers and must not be cross-added.
 | 6 | scalability (one contract per new op) | scalability_demo | scal | 5 unseen ops | BEFORE abstain 0/9 recall + 0 FP; AFTER 1 contract each → recall up, FP 0/11 |
 | 7 | typed attribution localizes the operator | attribution_eval | attr | 25 silent / 1136 cross-evals | attribution recall 25/25 = 100%; cross-fire 8% (88/1136) → 2% (25/1136) with family pruning |
 | 8 | phenomenon generalizes across models + scale | qwen_local_eval | qwen (gpudev2) | 48-grid x 3 sizes | ambiguous silent 7B 65% / 14B 54% / 32B 44% (vs closed 46%); oracle recall ≥96%, FP 0% all sizes |
+| 9 | typed feedback drives targeted repair | transform_repair (ONLINE) | results_repair_expanded | 87 silent / 3 models | targeted 70/87=80% [71-87] vs generic 16/87=18% [12-28] (CIs disjoint); == gold-diff ceiling 80%; over-repair 3%; 1 family (zscore) within-noise |
+| 10 | oracle transfer to external silents (honest bound) | ds1000_repair | results_ds1000_repair | 80 ext silents | contract-fire coverage 6/80=8% (param-free join only); policy 20% ≥ generic 18% via safe abstain; covered subset targeted 3/6 vs generic 1/6 |
+| 11 | end-to-end NL→params→oracle (no params handed in) | end2end_infer | results_e2e_infer | 68 grid | op-acc 100%, param-key 100%; recall 84% = params-given UB; FP 0%. NOTE: grid prompts are templated → 100% is a co-designed upper bound, not generalization |
+| 12 | NL inferer on external (honest boundary) | oracle_transfer | results_transfer | 275 DS-1000 | keyword coverage 17% but precision 10% (ref-code audit) → true coverage 2% < hand-param 8%: free-text SO intents need ML classifier, confirms params-needed boundary, not a lift |
+
+> Repair (claim 9) numbers are the real online run; the 24-case `results_repair_targeted` file
+> was an offline stub and is superseded. Claim 10 is the honest external-transfer boundary that
+> rebuts oracle-benchmark circularity: contracts abstain (no blind edits) where params are absent.
 
 \* attribution recall uses the true-op contract's raw verdict (a missing expected
 output column on the RIGHT operator is a real silent error). cross-fire counts only

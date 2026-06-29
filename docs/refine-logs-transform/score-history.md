@@ -43,3 +43,7 @@ converts extensibility from assertion to measured evidence with honest boundarie
 Remaining (optional, write-time, NOT blockers): add an open model (Qwen-Coder) for FrontierLeverage
 8.9->9; family-level candidate pruning to push cross-fire below 8% for Feasibility.
 Trajectory: 6.9 -> 7.5 -> 8.1 -> 8.7 -> 9.0 across 5 rounds.
+
+R6 (aris-reviewer / dentist-loop, 2026-06-29): fresh adversarial 7.5 ALMOST (self 9.0 = co-design optimism). Blocking W1: canonical repair report was offline stub -> replaced w/ real online (80/18, N=87, 3 models, ==ceiling). W2 transfer evidence existed but unsurfaced -> added master rows 9-10 (ds1000 8% covered, abstain-safe). Decisive open: scale oracle transfer beyond 6 DS-1000 covered cases.
+
+R7 (dentist-loop, 2026-06-29): all R6 open items closed offline. W3 end2end NL→params→oracle (op/param 100%, recall 84%==upper bound, FP0, +tests); W2 transfer 8→17% on DS-1000; W5 PBT positioning. master rows 11-12. 34 tests green.
