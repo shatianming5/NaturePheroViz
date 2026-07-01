@@ -1,0 +1,68 @@
+{
+  "n_eval": 24,
+  "arms": {
+    "base_generic": {
+      "success": 0.25,
+      "success_ci": [
+        0.12,
+        0.449
+      ],
+      "n": 24,
+      "k": 6,
+      "contract_pass_rate": 0.458,
+      "over_repair_rate": 0.042
+    },
+    "base_targeted": {
+      "success": 0.292,
+      "success_ci": [
+        0.149,
+        0.492
+      ],
+      "n": 24,
+      "k": 7,
+      "contract_pass_rate": 0.5,
+      "over_repair_rate": 0.042
+    },
+    "tuned_targeted": {
+      "success": 0.292,
+      "success_ci": [
+        0.149,
+        0.492
+      ],
+      "n": 24,
+      "k": 7,
+      "contract_pass_rate": 0.5,
+      "over_repair_rate": 0.042
+    },
+    "base_bestN": {
+      "success": 0.292,
+      "success_ci": [
+        0.149,
+        0.492
+      ],
+      "n": 24,
+      "k": 7,
+      "contract_pass_rate": 0.667,
+      "over_repair_rate": 0.0
+    },
+    "tuned_bestN": {
+      "success": 0.25,
+      "success_ci": [
+        0.12,
+        0.449
+      ],
+      "n": 24,
+      "k": 6,
+      "contract_pass_rate": 0.667,
+      "over_repair_rate": 0.0
+    }
+  },
+  "delta_tuned_minus_base_targeted": 0.0,
+  "disjoint_ci": false,
+  "delta_tuned_minus_base_bestN": -0.042,
+  "disjoint_ci_bestN": false,
+  "ceiling_any_gold_in_N": {
+    "base": 0.417,
+    "tuned": 0.375
+  }
+}

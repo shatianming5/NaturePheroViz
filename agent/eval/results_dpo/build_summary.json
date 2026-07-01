@@ -1,0 +1,6 @@
+{
+  "n_train_cases": 61,
+  "n_pairs": 380,
+  "cases_with_pairs": 48,
+  "base_targeted_pass_mean": 0.459
+}
