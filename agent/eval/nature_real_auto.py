@@ -66,8 +66,14 @@ def _clean(df: pd.DataFrame):
     return df, cats, nums
 
 
-def _tasks_from_table(df: pd.DataFrame, cat: str, nums: List[str], art: str, sheet: str) -> List[Dict[str, Any]]:
-    """Instantiate the clean group-aggregation operators on one real table."""
+def _tasks_from_table(df: pd.DataFrame, cat: str, nums: List[str], art: str, sheet: str,
+                      expansion: bool = False) -> List[Dict[str, Any]]:
+    """Instantiate the clean group-aggregation operators on one real table.
+
+    expansion=True ALSO emits the framework-mechanics ops whose silent trigger —
+    MISSING data — genuinely occurs in real scientific tables: null_in_agg_count
+    (a measurement column has NaNs -> COUNT(col) undercounts) and groupby_dropna_key
+    (a category label is missing -> groupby silently drops those rows)."""
     out = []
     v = nums[0]
     base = df[[cat, v]].dropna().copy()
@@ -132,10 +138,40 @@ def _tasks_from_table(df: pd.DataFrame, cat: str, nums: List[str], art: str, she
             "ambiguous": f"Total {v} per {cat}. Columns {cat}, {v}.",
             "clarified": f"Total {v} per {cat}, treating MISSING values as 0. Columns {cat}, {v}.",
         })
+
+    if expansion:
+        # null_in_agg_count: a real measurement column has NaNs -> COUNT(col) silently
+        # undercounts groups that contain missing values (should be the group SIZE).
+        nv = df[[cat, v]].copy()
+        nv[cat] = nv[cat].astype(str)
+        if nv[v].isna().any() and nv[cat].nunique() >= 2 and len(nv) >= 6:
+            out.append({
+                "name": f"nullcount::{tag}", "op": "null_in_agg_count", "df": nv.copy(),
+                "params": {"group": cat, "out": "n"}, "result_kind": "frame",
+                "gold": (lambda d, _c=cat: d.groupby(_c).size().reset_index(name="n")),
+                "ambiguous": f"The number of records for each {cat}. Columns {cat}, n.",
+                "clarified": (f"The number of records for each {cat}, counting EVERY row including "
+                              f"those whose {v} is missing (group size, not a non-null count). Columns {cat}, n."),
+            })
+        # groupby_dropna_key: a real category label is MISSING (NaN) -> groupby's default
+        # dropna=True silently drops those rows, so their {v} vanishes from the totals.
+        gk = df[[cat, v]].copy()
+        if gk[cat].isna().any():
+            gk = gk[gk[v].notna()].copy()  # rows that carry a value; the key may be NaN
+            if gk[cat].isna().any() and gk[cat].dropna().nunique() >= 2 and len(gk) >= 6:
+                out.append({
+                    "name": f"dropnakey::{tag}", "op": "groupby_dropna_key", "df": gk.copy(),
+                    "params": {"group": cat, "value": v}, "result_kind": "frame",
+                    "gold": (lambda d, _c=cat, _v=v: d.groupby(_c, dropna=False, as_index=False)[_v].sum()),
+                    "ambiguous": f"Total {v} for each {cat}. Columns {cat}, {v}.",
+                    "clarified": (f"Total {v} for each {cat}, INCLUDING rows whose {cat} is missing (NaN) as "
+                                  f"their own group — do not drop them. Columns {cat}, {v}."),
+                })
     return out
 
 
-def _build(pairs_root: str, max_tasks: int, max_per_article: int = 15, max_rows: int = 0) -> List[Dict[str, Any]]:
+def _build(pairs_root: str, max_tasks: int, max_per_article: int = 15, max_rows: int = 0,
+           expansion: bool = False) -> List[Dict[str, Any]]:
     """Generate real tasks, capping how many come from any single article so the
     slice spans many independent papers (not just a few big-table articles).
     max_per_article bounds per-article contribution -> task DIVERSITY across papers.
@@ -170,7 +206,7 @@ def _build(pairs_root: str, max_tasks: int, max_per_article: int = 15, max_rows:
             # yields two independent groupings) — up to 3 cat columns per sheet.
             new = []
             for cat in cats[:3]:
-                new += _tasks_from_table(df, cat, nums, art, str(sh))
+                new += _tasks_from_table(df, cat, nums, art, str(sh), expansion=expansion)
             # validate each task's gold + oracle-pass before accepting
             for t in new:
                 if len(tasks) >= max_tasks or per_art[art] >= max_per_article:

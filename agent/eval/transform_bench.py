@@ -259,14 +259,154 @@ def _cases() -> List[Dict[str, Any]]:
     return cases
 
 
+def expansion_cases() -> List[Dict[str, Any]]:
+    """The 10 NEW operator classes (D1 framework-mechanics + D2 cross-domain), x2 each.
+
+    Kept SEPARATE from _cases() so the established 17-op / 68-case grid and its NL->op
+    inferer stay unchanged; these are validated offline (below) and measured by
+    eval/expansion_prevalence.py. latlon_swap and numpy_broadcast have viable goldless
+    contracts but no natural NL->pandas-on-DataFrame transform, so they live in the
+    oracle/probe only, not this generation grid."""
+    cases: List[Dict[str, Any]] = []
+    # ===================== expansion grid (D1 framework + D2 cross-domain) =====================
+
+    # --- class 18: index_align (2) — combine two frames BY KEY, not by position ---
+    ia_sets = [
+        ([1, 2, 3, 4], [10.0, 20.0, 30.0, 40.0], [4, 1, 2], [4.0, 1.0, 2.0]),
+        ([10, 11, 12], [5.0, 6.0, 7.0], [12, 10], [70.0, 50.0]),
+    ]
+    for bid, bv, aid, aw in ia_sets:
+        base = pd.DataFrame({"id": bid, "v": bv}); other = pd.DataFrame({"id": aid, "w": aw})
+        cases.append(_C("index_align", base, {"key": "id", "value": "v", "addend": "w", "out": "total"},
+                        lambda d, d2: d.merge(d2, on="id", how="left").assign(
+                            total=lambda x: x["v"] + x["w"].fillna(0.0))[["id", "v", "total"]],
+                        "Add 'total' = each row's v plus its matching w from df2. Keep id, v, total.",
+                        "Add 'total' = v + the w for the SAME id in df2 (match BY id, NOT by row order); "
+                        "if an id has no w, use 0. Keep id, v, total.",
+                        df2=other))
+
+    # --- class 19: dtype_coerce (2) — keep identifier as string (leading zeros) ---
+    dc_sets = [(["01001", "02134", "00501", "12345"], [10, 20, 30, 40]),
+               (["007", "042", "100"], [1, 2, 3])]
+    for zips, pop in dc_sets:
+        df = pd.DataFrame({"zip": zips, "pop": pop})
+        cases.append(_C("dtype_coerce", df, {"id_col": "zip", "out": "zkey"},
+                        lambda d: d.assign(zkey=d["zip"].astype(str)),
+                        "Add a key column 'zkey' from the zip code for joining. Keep zip, pop, zkey.",
+                        "Add 'zkey' = the zip as a STRING identifier, preserving leading zeros exactly "
+                        "(do NOT cast to int). Keep zip, pop, zkey."))
+
+    # --- class 20: groupby_dropna_key (2) — NaN keys are their own group, not dropped ---
+    gd_sets = [(["A", "A", None, "B", None], [10, 20, 30, 40, 50]),
+               (["x", None, "y", "y", None, "x"], [1, 2, 3, 4, 5, 6])]
+    for g, v in gd_sets:
+        df = pd.DataFrame({"g": g, "v": v})
+        cases.append(_C("groupby_dropna_key", df, {"group": "g", "value": "v"},
+                        lambda d: d.groupby("g", dropna=False, as_index=False)["v"].sum(),
+                        "Sum v for each group g. Return one row per group with columns g, v.",
+                        "Sum v for each group g, INCLUDING rows whose g is missing (NaN) as their own "
+                        "group — do not drop them. Columns g, v."))
+
+    # --- class 21: order_dependent_dedup (2) — keep the MAX-order row, data unsorted ---
+    od_sets = [([1, 1, 2, 2, 2], [1, 2, 1, 2, 3], [10, 99, 5, 7, 3]),
+               ([5, 5, 6], [3, 1, 2], [50, 11, 22])]
+    for i, t, v in od_sets:
+        df = pd.DataFrame({"id": i, "ts": t, "v": v})
+        cases.append(_C("order_dependent_dedup", df, {"key": "id", "order": "ts"},
+                        lambda d: d.sort_values("ts").drop_duplicates("id", keep="last").reset_index(drop=True),
+                        "Keep one row per id: the most recent record (highest ts). Keep id, ts, v.",
+                        "For each id keep the row with the MAXIMUM ts (the data is NOT pre-sorted, so sort "
+                        "by ts first or use idxmax — do not just take the first occurrence). Keep id, ts, v."))
+
+    # --- class 22: resample_boundary (2) — right-closed/right-labelled hourly bins ---
+    rs_sets = [["2026-01-01 00:00", "2026-01-01 00:30", "2026-01-01 01:00", "2026-01-01 01:30"],
+               ["2026-03-01 09:00", "2026-03-01 09:45", "2026-03-01 10:00", "2026-03-01 11:00"]]
+    for ts in rs_sets:
+        df = pd.DataFrame({"t": pd.to_datetime(ts), "v": [1.0, 2.0, 3.0, 4.0]})
+        cases.append(_C("resample_boundary", df,
+                        {"time": "t", "value": "v", "closed": "right", "label": "right", "freq": "1h"},
+                        lambda d: d.resample("1h", on="t", closed="right", label="right")
+                                   .sum(numeric_only=True).reset_index(),
+                        "Resample v into hourly sums. Columns t, v.",
+                        "Resample v into hourly sums with RIGHT-closed, RIGHT-labelled bins "
+                        "(closed='right', label='right'), so a point exactly on the hour falls in the "
+                        "earlier bin. Columns t, v."))
+
+    # --- class 23: string_normalize_join (2) — case/space-insensitive key match ---
+    sn_sets = [(["Apple ", "banana", "CHERRY"], [1, 2, 3], ["apple", "banana", "cherry"], [10, 20, 30]),
+               ([" Foo", "BAR ", "baz"], [4, 5, 6], ["foo", "bar", "baz"], [7, 8, 9])]
+    for ln, q, rn, pr in sn_sets:
+        L = pd.DataFrame({"name": ln, "qty": q}); R = pd.DataFrame({"name": rn, "price": pr})
+        cases.append(_C("string_normalize_join", L, {"key": "name", "lookup_value": "price"},
+                        lambda d, d2: (d.assign(_k=d["name"].str.strip().str.lower())
+                                       .merge(d2.assign(_k=d2["name"].str.strip().str.lower())[["_k", "price"]],
+                                              on="_k", how="left").drop(columns="_k")),
+                        "Attach each row's price from df2 by matching name. Keep name, qty, price.",
+                        "Attach price from df2 by matching name CASE- and WHITESPACE-insensitively "
+                        "(strip and lowercase both sides before matching). Keep name, qty, price.",
+                        df2=R))
+
+    # --- class 24: join_fanout (2) — don't let a label-table join double-count a measure ---
+    jf_sets = [([1, 2, 3], ["x", "y", "x"], [100.0, 200.0, 300.0], ["x", "x", "y"], ["t1", "t2", "t3"]),
+               ([1, 2], ["a", "b"], [40.0, 60.0], ["a", "a", "a", "b"], ["p", "q", "r", "s"])]
+    for oid, ocat, amt, tcat, tag in jf_sets:
+        orders = pd.DataFrame({"oid": oid, "cat": ocat, "amt": amt})
+        tags = pd.DataFrame({"cat": tcat, "tag": tag})
+        cases.append(_C("join_fanout", orders, {"measure": "amt", "group": "cat"},
+                        lambda d, d2: d.groupby("cat", as_index=False)["amt"].sum(),
+                        "Total amt per cat. df is orders, df2 is the cat tags. Columns cat, amt.",
+                        "Total amt per cat from df (orders) ONLY. df2 (tags) has SEVERAL rows per cat, so "
+                        "joining it in would duplicate orders and inflate amt — aggregate orders without "
+                        "fanning out on tags. Columns cat, amt.",
+                        df2=tags))
+
+    # --- class 25: null_in_agg_count (2) — count records (COUNT(*)), not non-null (COUNT(col)) ---
+    nc_sets = [(["A", "A", "A", "B", "B"], [1.0, np.nan, 3.0, np.nan, 5.0]),
+               (["g1", "g1", "g2"], [np.nan, np.nan, 7.0])]
+    for g, resp in nc_sets:
+        df = pd.DataFrame({"g": g, "resp": resp})
+        cases.append(_C("null_in_agg_count", df, {"group": "g", "out": "n"},
+                        lambda d: d.groupby("g").size().reset_index(name="n"),
+                        "Count the number of records in each group g. Columns g, n.",
+                        "Count ALL records per group g (every row, including those whose resp is missing "
+                        "— use the group size, not a non-null count). Columns g, n."))
+
+    # --- class 26: scale_before_split_leakage (2) — fit scaler on TRAIN only ---
+    lk_sets = [(np.array([0, 1, 2, 3, 4, 50, 51, 52, 53, 54], float), ["train"] * 5 + ["test"] * 5),
+               (np.array([10, 12, 11, 13, 40, 42, 41], float), ["train"] * 4 + ["test"] * 3)]
+    for x, sp in lk_sets:
+        df = pd.DataFrame({"x": x, "split": sp})
+        cases.append(_C("scale_before_split_leakage", df,
+                        {"feature": "x", "split": "split", "train_label": "train", "scaled": "xs"},
+                        lambda d: d.assign(xs=(d["x"] - d.loc[d["split"] == "train", "x"].mean())
+                                           / d.loc[d["split"] == "train", "x"].std(ddof=0)),
+                        "Standardize x (z-score) into column 'xs'. Keep x, split, xs.",
+                        "Standardize x into 'xs' using ONLY the train rows' mean and std "
+                        "(fit on split=='train', then apply to every row) — do NOT include test rows in "
+                        "the statistics. Keep x, split, xs."))
+
+    # --- class 27: lookahead_return (2) — return uses PAST price only ---
+    la_sets = [[100.0, 110.0, 115.0, 100.0, 130.0], [50.0, 55.0, 50.0, 60.0]]
+    for prices in la_sets:
+        df = pd.DataFrame({"day": list(range(1, len(prices) + 1)), "price": prices})
+        cases.append(_C("lookahead_return", df, {"price": "price", "out": "ret"},
+                        lambda d: d.assign(ret=(d["price"] - d["price"].shift(1)) / d["price"].shift(1)),
+                        "Add 'ret' = the period-over-period return of price. Keep day, price, ret.",
+                        "Add 'ret' = (price[t]-price[t-1])/price[t-1], using only PAST prices "
+                        "(the first row's ret is NaN; never use a future price). Keep day, price, ret."))
+
+    return cases
+
+
 def gold_of(case: Dict[str, Any]):
     return case["gold"](case["df"], case["df2"]) if "df2" in case else case["gold"](case["df"])
 
 
 def _validate_offline() -> int:
     """No LLM: confirm every gold is well-formed AND the oracle PASSES on the gold
-    (oracle must not false-fire on the known-correct transform)."""
-    cases = _cases()
+    (oracle must not false-fire on the known-correct transform). Covers the established
+    grid (_cases) AND the expansion grid (expansion_cases)."""
+    cases = _cases() + expansion_cases()
     from collections import Counter
     by_op = Counter(c["op"] for c in cases)
     print(f"{len(cases)} cases across {len(by_op)} operator-semantic classes:")

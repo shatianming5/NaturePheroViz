@@ -70,7 +70,7 @@ import pandas as pd  # noqa: E402
 
 import eval.transform_oracle as ORACLE  # noqa: E402
 from eval.transform_oracle import check as oracle_check  # noqa: E402
-from eval.transform_bench import _cases  # noqa: E402
+from eval.transform_bench import _cases, expansion_cases  # noqa: E402
 from eval.attribution_eval import _run_all_contracts  # noqa: E402
 
 ARMS = ("generic", "targeted", "ceiling")
@@ -111,8 +111,16 @@ def _true_op_fires(item: Dict[str, Any], result: Optional[pd.DataFrame]) -> bool
 
 def _other_fires(item: Dict[str, Any], result: Optional[pd.DataFrame]) -> int:
     """Substantive fires of contracts OTHER than the true op (for over-repair (a))."""
+    return len(_other_fire_set(item, result))
+
+
+def _other_fire_set(item: Dict[str, Any], result: Optional[pd.DataFrame]) -> set:
+    """The SET of other-op contracts that substantively fire on this result. Set-valued
+    so over-repair can take a true set difference (commit minus buggy): a contract that
+    ALREADY fired on the buggy start is not a NEW error the repair introduced — counting
+    it would charge the repair for the measurement-layer cross-fire of the buggy input."""
     fired = _run_all_contracts(_inp(item), item["params"], result, prune=True)
-    return sum(1 for op, f in fired.items() if f and op != item["op"])
+    return {op for op, f in fired.items() if f and op != item["op"]}
 
 
 def _gold_col_status(item: Dict[str, Any], result: Optional[pd.DataFrame]) -> Dict[str, bool]:
@@ -139,7 +147,9 @@ def _gold_col_status(item: Dict[str, Any], result: Optional[pd.DataFrame]) -> Di
         gv = pd.to_numeric(gold[gc], errors="coerce").to_numpy(dtype=float)
         rv = pd.to_numeric(result[rcols[gcs]], errors="coerce").to_numpy(dtype=float)
         if np.isnan(gv).all():  # non-numeric gold column: compare as strings (set-wise)
-            out[gcs] = sorted(gold[gc].astype(str)) == sorted(result[rcols[gcs]].astype(str))
+            gset = sorted(str(x) for x in gold[gc].tolist())
+            rset = sorted(str(x) for x in result[rcols[gcs]].tolist())
+            out[gcs] = gset == rset
         else:
             out[gcs] = bool(np.allclose(np.sort(gv), np.sort(rv), atol=1e-4, equal_nan=True))
     return out
@@ -269,10 +279,11 @@ def run_arm(item: Dict[str, Any], arm: str, buggy: pd.DataFrame, rounds: int,
                 stop_reason = "gold_match"
                 break
     success = bool(score(cur))
-    # over-repair (a): a NEW spurious error the repair introduced. Only meaningful on a
-    # result that is NOT correct — a fire on a fully gold-correct result is an oracle
-    # cross-fire FP (measured in §3.6), not damage done by the repair.
-    over_a = 0 if success else max(0, _other_fires(item, cur) - _other_fires(item, buggy))
+    # over-repair (a): a NEW spurious error the repair INTRODUCED. Take a true SET
+    # difference (commit's other-fires MINUS the buggy start's): a contract that already
+    # cross-fired on the buggy input is not damage done by the repair. Only meaningful on
+    # a non-correct commit (a fire on a gold-correct result is the §3.6 cross-fire FP).
+    over_a = 0 if success else len(_other_fire_set(item, cur) - _other_fire_set(item, buggy))
     commit_status = _gold_col_status(item, cur)
     over_b = any(start_status.get(k, False) and not commit_status.get(k, False) for k in start_status)
     return {"success": success, "rounds": rnd, "calls": calls,
@@ -289,10 +300,12 @@ def _gold_col_all_ok(item: Dict[str, Any], result: Optional[pd.DataFrame]) -> bo
 # --------------------------------------------------------------------------- #
 # driver
 # --------------------------------------------------------------------------- #
-def run(rounds: int, models: List[str], offline: bool, per_op: int, out_dir: str) -> Dict[str, Any]:
+def run(rounds: int, models: List[str], offline: bool, per_op: int, out_dir: str,
+        grid: str = "core") -> Dict[str, Any]:
     seen: Counter = Counter()
     items: List[Dict[str, Any]] = []
-    for c in _cases():
+    source = expansion_cases() if grid == "expansion" else _cases()
+    for c in source:
         seen[c["op"]] += 1
         if seen[c["op"]] > per_op:
             continue
@@ -465,6 +478,8 @@ def main(argv: Optional[List[str]] = None) -> int:
     ap.add_argument("--rounds", type=int, default=3, help="repair round budget N")
     ap.add_argument("--models", default=None, help="comma-separated model list (online only)")
     ap.add_argument("--per-op", type=int, default=2, help="instances per operator class to use")
+    ap.add_argument("--grid", choices=("core", "expansion"), default="core",
+                    help="core: established 17-op grid; expansion: the 10 new framework/cross-domain ops")
     ap.add_argument("--out", default="eval/results_repair_targeted")
     ap.add_argument("--resummarize", default=None,
                     help="recompute the report/verdict from a saved repair_targeted.json (no LLM)")
@@ -479,7 +494,7 @@ def main(argv: Optional[List[str]] = None) -> int:
 
     from eval.ambiguity_calibration import MODELS
     models = [m.strip() for m in a.models.split(",")] if a.models else MODELS
-    run(a.rounds, models, a.offline, a.per_op, a.out)
+    run(a.rounds, models, a.offline, a.per_op, a.out, a.grid)
     return 0
 
 

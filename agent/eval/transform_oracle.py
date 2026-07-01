@@ -343,6 +343,202 @@ def c_clip_outlier(inp, params, result) -> ContractResult:
     return ContractResult("clip_outlier", True, f"values outside [{lo}, {hi}] after clip (min {v.min():.2f}, max {v.max():.2f})")
 
 
+# ---- expansion families: framework-mechanics (D1) + cross-domain (D2) silent errors ----
+# These broaden the taxonomy beyond "pick-the-wrong-statistic" gotchas into errors where
+# the code looks right and the concept is simple, but a FRAMEWORK DEFAULT (index alignment,
+# dtype coercion, dropna-on-keys, keep= order, resample boundary, key normalization) or a
+# CROSS-DOMAIN convention (SQL join fan-out, NULL-in-aggregate, ML train/test leakage,
+# look-ahead, lat/lon order) silently changes the numbers. Each stays goldless.
+
+
+def c_index_align(inp, params, result) -> ContractResult:
+    # invariant: combining a base column with an addend keyed by `key` must pair BY KEY.
+    # silent slip: `base[v] + other[w]` aligns by index/position, mis-pairing (and NaN-ing).
+    base = inp["df"]; adj = inp.get("df2")
+    key, vcol, wcol = params["key"], params["value"], params["addend"]
+    out = params.get("out", "total")
+    if result is None or out not in result.columns or key not in result.columns or adj is None:
+        return ContractResult("index_align", True, f"missing {out}/{key} column or df2")
+    wmap = dict(zip(adj[key].tolist(), _num(adj[wcol])))
+    exp = {r[key]: float(r[vcol]) + float(wmap.get(r[key], 0.0)) for _, r in base.iterrows()}
+    got = dict(zip(result[key].tolist(), _num(result[out])))
+    bad = [k for k, ev in exp.items() if not _close(got.get(k), ev)]
+    if not bad:
+        return ContractResult("index_align", False, "every key's combined value matches by-key recomputation")
+    return ContractResult("index_align", True, f"by-key combine wrong at {bad[:3]} (positional mis-alignment / spurious NaN)")
+
+
+def c_dtype_coerce(inp, params, result) -> ContractResult:
+    # invariant: an identifier transform is LOSSLESS per row (leading zeros / precision kept).
+    # silent slip: astype(int) on '01001' -> 1001, silently dropping the leading zero.
+    df = inp["df"]; src = params["id_col"]; out = params.get("out", "key")
+    if result is None or out not in result.columns:
+        return ContractResult("dtype_coerce", True, f"missing {out}")
+    if len(result) != len(df):
+        return ContractResult("dtype_coerce", True, f"row count {len(result)} != {len(df)}")
+    orig = [str(x) for x in df[src].tolist()]
+    got = [str(x) for x in result[out].tolist()]
+    lost = [(o, g) for o, g in zip(orig, got) if o != g]
+    if not lost:
+        return ContractResult("dtype_coerce", False, "identifier preserved exactly as string")
+    return ContractResult("dtype_coerce", True, f"identifier altered (leading-zero/precision loss), e.g. {lost[:2]}")
+
+
+def c_groupby_dropna_key(inp, params, result) -> ContractResult:
+    # invariant: per-group aggregation CONSERVES the additive total (every row counted).
+    # silent slip: groupby default dropna=True silently drops rows whose KEY is NaN.
+    df = inp["df"]; vcol = params["value"]
+    if result is None or vcol not in result.columns:
+        return ContractResult("groupby_dropna_key", True, f"missing {vcol}")
+    total_in = float(np.nansum(_num(df[vcol])))
+    total_out = float(np.nansum(_num(result[vcol])))
+    if _close(total_out, total_in):
+        return ContractResult("groupby_dropna_key", False, f"group totals conserve all {total_in:g}")
+    return ContractResult("groupby_dropna_key", True, f"total {total_out:g} < input {total_in:g}: NaN-key rows silently dropped")
+
+
+def c_order_dependent_dedup(inp, params, result) -> ContractResult:
+    # invariant: one row per key = the row with the MAX `order` value (latest/largest).
+    # silent slip: drop_duplicates(keep='first') on UNSORTED data keeps an arbitrary row.
+    df = inp["df"]; key, order = params["key"], params["order"]
+    if result is None or key not in result.columns or order not in result.columns:
+        return ContractResult("order_dependent_dedup", True, "missing key/order column")
+    want = df.loc[df.groupby(key)[order].idxmax()].set_index(key)[order].to_dict()
+    got = dict(zip(result[key].tolist(), _num(result[order])))
+    bad = [k for k, ts in want.items() if not _close(got.get(k), ts)]
+    if not bad:
+        return ContractResult("order_dependent_dedup", False, "kept the max-order row per key")
+    return ContractResult("order_dependent_dedup", True, f"kept non-max row for {bad[:3]} (drop_duplicates keep=first on unsorted)")
+
+
+def c_resample_boundary(inp, params, result) -> ContractResult:
+    # invariant: hourly bins follow the intended closed/label boundary convention.
+    # silent slip: default closed='left'/label='left' moves boundary points to the wrong bin.
+    df = inp["df"]; tcol, vcol = params["time"], params["value"]
+    closed, label = params.get("closed", "right"), params.get("label", "right")
+    freq = params.get("freq", "1h")
+    if result is None or vcol not in result.columns:
+        return ContractResult("resample_boundary", True, f"missing {vcol}")
+    intended = (df.resample(freq, on=tcol, closed=closed, label=label)
+                  .sum(numeric_only=True).reset_index())
+    iv = np.sort(_num(intended[vcol])); gv = np.sort(_num(result[vcol]))
+    if len(iv) == len(gv) and np.allclose(iv, gv, equal_nan=True):
+        return ContractResult("resample_boundary", False, "bin sums match intended closed/label convention")
+    return ContractResult("resample_boundary", True, f"bin sums {gv.tolist()} != intended {iv.tolist()} (wrong closed/label boundary)")
+
+
+def c_string_normalize_join(inp, params, result) -> ContractResult:
+    # invariant: every left key that has a NORMALIZED match in the lookup must be present
+    # in the result with a non-NaN value. silent slips: (a) inner join on raw case/whitespace
+    # variants silently DROPS unmatched rows; (b) left join leaves them NaN.
+    L = inp["df"]; R = inp.get("df2"); key, val = params["key"], params["lookup_value"]
+    if result is None or val not in result.columns or R is None:
+        return ContractResult("string_normalize_join", True, f"missing {val} or df2")
+
+    def _nrm(x):
+        return str(x).strip().lower()
+
+    norm_lookup = {_nrm(k) for k in R[key]}
+    should = {_nrm(lk) for lk in L[key].tolist() if _nrm(lk) in norm_lookup}
+    if key in result.columns:
+        present = {}
+        for k, pv in zip(result[key].tolist(), _num(result[val])):
+            present[_nrm(k)] = pv
+        miss = [k for k in should if k not in present or (isinstance(present[k], float) and np.isnan(present[k]))]
+    else:  # no key column to align on -> fall back to row-count + positional NaN
+        miss = []
+        if len(result) < len(should):
+            return ContractResult("string_normalize_join", True,
+                                  f"result {len(result)} rows < {len(should)} matchable keys: inner join dropped rows")
+        for lk, pv in zip(L[key].tolist(), _num(result[val])):
+            if _nrm(lk) in norm_lookup and (pv is None or (isinstance(pv, float) and np.isnan(pv))):
+                miss.append(lk)
+    if not miss:
+        return ContractResult("string_normalize_join", False, "all normalizable keys matched")
+    return ContractResult("string_normalize_join", True,
+                          f"{len(miss)} normalizable key(s) dropped/NaN, e.g. {list(miss)[:3]} (raw-key join, no normalization)")
+
+
+def c_join_fanout(inp, params, result) -> ContractResult:
+    # invariant: joining a label table must NOT inflate an additive left-side measure.
+    # silent slip: many-to-many join duplicates left rows -> the measure sums too high.
+    orders = inp["df"]; amt, grp = params["measure"], params["group"]
+    if result is None or amt not in result.columns:
+        return ContractResult("join_fanout", True, f"missing {amt}")
+    total_in = float(np.nansum(_num(orders[amt])))
+    total_out = float(np.nansum(_num(result[amt])))
+    if _close(total_out, total_in):
+        return ContractResult("join_fanout", False, f"additive measure conserved ({total_in:g})")
+    return ContractResult("join_fanout", True, f"measure total {total_out:g} != pre-join {total_in:g}: join fan-out duplicated rows")
+
+
+def c_null_in_agg_count(inp, params, result) -> ContractResult:
+    # invariant: a per-group RECORD count equals the group SIZE (all rows).
+    # silent slip: .count()/COUNT(col) skips NULLs, undercounting groups with missing values.
+    df = inp["df"]; grp, out = params["group"], params.get("out", "n")
+    if result is None or out not in result.columns or grp not in result.columns:
+        return ContractResult("null_in_agg_count", True, "missing group/count column")
+    size = df.groupby(grp).size().to_dict()
+    got = dict(zip(result[grp].astype(str), _num(result[out])))
+    bad = [g for g, sz in size.items() if not _close(got.get(str(g)), sz)]
+    if not bad:
+        return ContractResult("null_in_agg_count", False, "per-group count equals group size")
+    return ContractResult("null_in_agg_count", True, f"count != group size for {bad[:3]}: COUNT(col) dropped NULL rows")
+
+
+def c_scale_before_split_leakage(inp, params, result) -> ContractResult:
+    # invariant: a TRAIN-fitted standardizer centers the TRAIN slice at mean~0 (key signal,
+    # robust to ddof=0/1 std). silent slip: fitting the scaler on ALL data leaks test
+    # statistics into the transform, so the train slice is no longer centered.
+    splitc, lab, out = params["split"], params.get("train_label", "train"), params.get("scaled", "xs")
+    if result is None or out not in result.columns or splitc not in result.columns:
+        return ContractResult("scale_before_split_leakage", True, "missing scaled/split column")
+    tr = _num(result[result[splitc].astype(str) == str(lab)][out])
+    tr = tr[~np.isnan(tr)]
+    if len(tr) == 0:
+        return ContractResult("scale_before_split_leakage", True, "no train rows in result")
+    m = float(tr.mean()); s = float(tr.std())
+    if abs(m) <= 5e-2:
+        return ContractResult("scale_before_split_leakage", False, f"train slice mean={m:.3f} (~0), std={s:.3f}: fit on train, no leakage")
+    return ContractResult("scale_before_split_leakage", True, f"train slice mean={m:.3f} != 0 (std={s:.3f}): scaled with GLOBAL stats (test leaked into fit)")
+
+
+def c_lookahead_return(inp, params, result) -> ContractResult:
+    # invariant: a return at t uses PAST prices only: ret[t] == (p[t]-p[t-1])/p[t-1].
+    # silent slip: using the FUTURE price (shift(-1)) injects look-ahead bias.
+    df = inp["df"]; pcol, out = params["price"], params.get("out", "ret")
+    if result is None or out not in result.columns:
+        return ContractResult("lookahead_return", True, f"missing {out}")
+    p = _num(df[pcol]); got = _num(result[out])
+    if len(got) != len(p):
+        return ContractResult("lookahead_return", True, f"length {len(got)} != {len(p)}")
+    past = np.full(len(p), np.nan); past[1:] = (p[1:] - p[:-1]) / p[:-1]
+    fwd = np.full(len(p), np.nan); fwd[:-1] = (p[1:] - p[:-1]) / p[:-1]
+
+    def _match(ref):
+        mask = ~np.isnan(ref) & ~np.isnan(got)
+        return mask.sum() >= max(2, int((~np.isnan(ref)).sum()) - 1) and np.allclose(got[mask], ref[mask], atol=1e-6)
+
+    if _match(past):
+        return ContractResult("lookahead_return", False, "return uses PAST price (no look-ahead)")
+    if _match(fwd):
+        return ContractResult("lookahead_return", True, "return uses FUTURE price (look-ahead leakage)")
+    return ContractResult("lookahead_return", True, "return series does not match past-only definition")
+
+
+def c_latlon_swap(inp, params, result) -> ContractResult:
+    # invariant: latitude lies in [-90, 90]. silent slip: lat/lon column order swapped, so
+    # longitudes (|.|>90) land in the latitude column. (Range-checkable -> lower novelty.)
+    latc = params["lat"]
+    if result is None or latc not in result.columns:
+        return ContractResult("latlon_swap", True, f"missing {latc}")
+    lat = _num(result[latc]); lat = lat[~np.isnan(lat)]
+    bad = lat[np.abs(lat) > 90.0]
+    if bad.size == 0:
+        return ContractResult("latlon_swap", False, "latitude within [-90,90]")
+    return ContractResult("latlon_swap", True, f"latitude out of [-90,90]: {bad[:3].tolist()} (lat/lon swapped)")
+
+
 # registry: operator-semantic-type -> contract fn
 CONTRACTS: Dict[str, Callable] = {
     "weighted_mean": c_weighted_mean,
@@ -363,6 +559,18 @@ CONTRACTS: Dict[str, Callable] = {
     "cumcount_per_group": c_cumcount_per_group,
     "rank_pct": c_rank_pct,
     "clip_outlier": c_clip_outlier,
+    # expansion families (D1 framework-mechanics + D2 cross-domain)
+    "index_align": c_index_align,
+    "dtype_coerce": c_dtype_coerce,
+    "groupby_dropna_key": c_groupby_dropna_key,
+    "order_dependent_dedup": c_order_dependent_dedup,
+    "resample_boundary": c_resample_boundary,
+    "string_normalize_join": c_string_normalize_join,
+    "join_fanout": c_join_fanout,
+    "null_in_agg_count": c_null_in_agg_count,
+    "scale_before_split_leakage": c_scale_before_split_leakage,
+    "lookahead_return": c_lookahead_return,
+    "latlon_swap": c_latlon_swap,
 }
 
 
@@ -390,6 +598,19 @@ _REQUIRED_PARAMS: Dict[str, Tuple[str, ...]] = {
     "cumcount_per_group": ("group",),
     "rank_pct": ("value",),
     "clip_outlier": ("value", "lo", "hi"),
+    # expansion families: required keys name INPUT columns that must exist in inp["df"]
+    # (df2-only columns like addend/lookup_value are validated inside the contract, not gated)
+    "index_align": ("key", "value"),
+    "dtype_coerce": ("id_col",),
+    "groupby_dropna_key": ("group", "value"),
+    "order_dependent_dedup": ("key", "order"),
+    "resample_boundary": ("time", "value"),
+    "string_normalize_join": ("key",),
+    "join_fanout": ("measure", "group"),
+    "null_in_agg_count": ("group",),
+    "scale_before_split_leakage": ("feature", "split"),
+    "lookahead_return": ("price",),
+    "latlon_swap": ("lat",),
 }
 
 
@@ -533,12 +754,111 @@ def _selftest() -> int:
     if check("proportion_true", {"df": d}, pp, cok).fired: fails.append("proportion fired on CORRECT")
     if not check("proportion_true", {"df": d}, pp, cw).fired: fails.append("proportion did NOT fire on count slip")
 
+    # ---- expansion families (D1 framework-mechanics + D2 cross-domain) ----
+    # index_align
+    base = pd.DataFrame({"id": [1, 2, 3, 4], "v": [10.0, 20.0, 30.0, 40.0]})
+    adj = pd.DataFrame({"id": [4, 1, 2], "w": [4.0, 1.0, 2.0]})
+    pp = {"key": "id", "value": "v", "addend": "w", "out": "total"}
+    cok = base.merge(adj, on="id", how="left"); cok["total"] = cok["v"] + cok["w"].fillna(0.0); cok = cok[["id", "v", "total"]]
+    cw = base.assign(total=base["v"] + adj["w"])  # positional alignment slip
+    if check("index_align", {"df": base, "df2": adj}, pp, cok).fired: fails.append("index_align fired on CORRECT")
+    if not check("index_align", {"df": base, "df2": adj}, pp, cw).fired: fails.append("index_align did NOT fire on positional-align slip")
+
+    # dtype_coerce
+    d = pd.DataFrame({"zip": ["01001", "02134", "00501"], "pop": [10, 20, 30]})
+    pp = {"id_col": "zip", "out": "zkey"}
+    cok = d.assign(zkey=d["zip"].astype(str))
+    cw = d.assign(zkey=d["zip"].astype(int))  # leading-zero loss
+    if check("dtype_coerce", {"df": d}, pp, cok).fired: fails.append("dtype_coerce fired on CORRECT")
+    if not check("dtype_coerce", {"df": d}, pp, cw).fired: fails.append("dtype_coerce did NOT fire on astype(int) slip")
+
+    # groupby_dropna_key
+    d = pd.DataFrame({"g": ["A", "A", None, "B", None], "v": [10, 20, 30, 40, 50]})
+    pp = {"group": "g", "value": "v"}
+    cok = d.groupby("g", dropna=False, as_index=False)["v"].sum()
+    cw = d.groupby("g", as_index=False)["v"].sum()  # drops NaN-key rows
+    if check("groupby_dropna_key", {"df": d}, pp, cok).fired: fails.append("groupby_dropna_key fired on CORRECT")
+    if not check("groupby_dropna_key", {"df": d}, pp, cw).fired: fails.append("groupby_dropna_key did NOT fire on dropna slip")
+
+    # order_dependent_dedup
+    d = pd.DataFrame({"id": [1, 1, 2, 2, 2], "ts": [1, 2, 1, 2, 3], "v": [10, 99, 5, 7, 3]})
+    pp = {"key": "id", "order": "ts"}
+    cok = d.sort_values("ts").drop_duplicates("id", keep="last")
+    cw = d.drop_duplicates("id")  # keeps first on unsorted
+    if check("order_dependent_dedup", {"df": d}, pp, cok).fired: fails.append("order_dependent_dedup fired on CORRECT")
+    if not check("order_dependent_dedup", {"df": d}, pp, cw).fired: fails.append("order_dependent_dedup did NOT fire on keep-first slip")
+
+    # resample_boundary
+    idx = pd.to_datetime(["2026-01-01 00:00", "2026-01-01 00:30", "2026-01-01 01:00", "2026-01-01 01:30"])
+    d = pd.DataFrame({"t": idx, "v": [1.0, 2.0, 3.0, 4.0]})
+    pp = {"time": "t", "value": "v", "closed": "right", "label": "right"}
+    cok = d.resample("1h", on="t", closed="right", label="right").sum(numeric_only=True).reset_index()
+    cw = d.resample("1h", on="t").sum(numeric_only=True).reset_index()  # default closed/label='left'
+    if check("resample_boundary", {"df": d}, pp, cok).fired: fails.append("resample_boundary fired on CORRECT")
+    if not check("resample_boundary", {"df": d}, pp, cw).fired: fails.append("resample_boundary did NOT fire on default-boundary slip")
+
+    # string_normalize_join
+    L = pd.DataFrame({"name": ["Apple ", "banana", "CHERRY"], "qty": [1, 2, 3]})
+    R = pd.DataFrame({"name": ["apple", "banana", "cherry"], "price": [10, 20, 30]})
+    pp = {"key": "name", "lookup_value": "price"}
+    Ln = L.assign(_k=L["name"].str.strip().str.lower()); Rn = R.assign(_k=R["name"].str.strip().str.lower())
+    cok = Ln.merge(Rn[["_k", "price"]], on="_k", how="left").drop(columns="_k")
+    cw = L.merge(R, on="name", how="left")  # raw -> only 'banana' matches (left: NaN)
+    cw_inner = L.merge(R, on="name", how="inner")  # raw inner -> drops Apple/CHERRY rows
+    if check("string_normalize_join", {"df": L, "df2": R}, pp, cok).fired: fails.append("string_normalize_join fired on CORRECT")
+    if not check("string_normalize_join", {"df": L, "df2": R}, pp, cw).fired: fails.append("string_normalize_join did NOT fire on case/space (left-NaN) slip")
+    if not check("string_normalize_join", {"df": L, "df2": R}, pp, cw_inner).fired: fails.append("string_normalize_join did NOT fire on inner-join (row-drop) slip")
+
+    # join_fanout
+    orders = pd.DataFrame({"oid": [1, 2, 3], "cat": ["x", "y", "x"], "amt": [100.0, 200.0, 300.0]})
+    tags = pd.DataFrame({"cat": ["x", "x", "y"], "tag": ["t1", "t2", "t3"]})
+    pp = {"measure": "amt", "group": "cat"}
+    cok = orders.groupby("cat", as_index=False)["amt"].sum()
+    cw = orders.merge(tags, on="cat").groupby("cat", as_index=False)["amt"].sum()  # fan-out inflation
+    if check("join_fanout", {"df": orders, "df2": tags}, pp, cok).fired: fails.append("join_fanout fired on CORRECT")
+    if not check("join_fanout", {"df": orders, "df2": tags}, pp, cw).fired: fails.append("join_fanout did NOT fire on fan-out slip")
+
+    # null_in_agg_count
+    d = pd.DataFrame({"g": ["A", "A", "A", "B", "B"], "resp": [1.0, np.nan, 3.0, np.nan, 5.0]})
+    pp = {"group": "g", "out": "n"}
+    cok = d.groupby("g").size().reset_index(name="n")
+    cw = d.groupby("g")["resp"].count().reset_index(name="n")  # skips NULL
+    if check("null_in_agg_count", {"df": d}, pp, cok).fired: fails.append("null_in_agg_count fired on CORRECT")
+    if not check("null_in_agg_count", {"df": d}, pp, cw).fired: fails.append("null_in_agg_count did NOT fire on COUNT(col) slip")
+
+    # scale_before_split_leakage
+    xx = np.array([0, 1, 2, 3, 4, 50, 51, 52, 53, 54], float)
+    d = pd.DataFrame({"x": xx, "split": ["train"] * 5 + ["test"] * 5})
+    tr = d["split"] == "train"
+    pp = {"feature": "x", "split": "split", "train_label": "train", "scaled": "xs"}
+    cok = d.assign(xs=(d["x"] - d.loc[tr, "x"].mean()) / d.loc[tr, "x"].std(ddof=0))
+    cw = d.assign(xs=(d["x"] - d["x"].mean()) / d["x"].std(ddof=0))  # global stats = leakage
+    if check("scale_before_split_leakage", {"df": d}, pp, cok).fired: fails.append("leakage fired on CORRECT")
+    if not check("scale_before_split_leakage", {"df": d}, pp, cw).fired: fails.append("leakage did NOT fire on global-scaling slip")
+
+    # lookahead_return
+    d = pd.DataFrame({"day": [1, 2, 3, 4, 5], "price": [100.0, 110.0, 115.0, 100.0, 130.0]})
+    pp = {"price": "price", "out": "ret"}
+    pser = d["price"]
+    cok = d.assign(ret=(pser - pser.shift(1)) / pser.shift(1))
+    cw = d.assign(ret=(pser.shift(-1) - pser) / pser)  # future price = look-ahead
+    if check("lookahead_return", {"df": d}, pp, cok).fired: fails.append("lookahead fired on CORRECT")
+    if not check("lookahead_return", {"df": d}, pp, cw).fired: fails.append("lookahead did NOT fire on future-price slip")
+
+    # latlon_swap
+    d = pd.DataFrame({"lat": [35.7, 40.7, -33.9], "lon": [139.7, -74.0, 151.2]})
+    pp = {"lat": "lat", "lon": "lon"}
+    cok = d.copy()
+    cw = pd.DataFrame({"lat": d["lon"].to_numpy(), "lon": d["lat"].to_numpy()})  # swapped
+    if check("latlon_swap", {"df": d}, pp, cok).fired: fails.append("latlon_swap fired on CORRECT")
+    if not check("latlon_swap", {"df": d}, pp, cw).fired: fails.append("latlon_swap did NOT fire on swap slip")
+
     if fails:
         print("ORACLE SELFTEST FAILED:")
         for f in fails:
             print("  -", f)
         return 1
-    print("ORACLE SELFTEST PASSED: 12 contracts each FIRE on the silent slip and PASS on the correct result (goldless).")
+    print("ORACLE SELFTEST PASSED: 23 contracts (12 core + 11 expansion) each FIRE on the silent slip and PASS on the correct result (goldless).")
     return 0
 
 

@@ -1,0 +1,1002 @@
+[
+  {
+    "item": "index_align#1",
+    "op": "index_align",
+    "ambiguous": {
+      "opencode/north-mini-code-free": {
+        "tag": "SILENT",
+        "oracle_fired": true,
+        "exec_ok": true,
+        "correct": false,
+        "code": "result = df.merge(df2, on='id').assign(total=lambda x: x['v'] + x['w'])[['id', 'v', 'total']]"
+      },
+      "opencode/deepseek-v4-flash-free": {
+        "tag": "SILENT",
+        "oracle_fired": true,
+        "exec_ok": true,
+        "correct": false,
+        "code": "result = df.merge(df2, on='id', how='left').assign(total=lambda x: x['v'] + x['w'])[['id', 'v', 'total']]"
+      },
+      "opencode/mimo-v2.5-free": {
+        "tag": "SILENT",
+        "oracle_fired": true,
+        "exec_ok": true,
+        "correct": false,
+        "code": "result = df.merge(df2, on='id').assign(total=lambda x: x['v'] + x['w'])[['id', 'v', 'total']]"
+      }
+    },
+    "clarified": {
+      "opencode/north-mini-code-free": {
+        "tag": "ok",
+        "oracle_fired": false,
+        "exec_ok": true,
+        "correct": true,
+        "code": "df_merged = df.merge(df2, on='id', how='left').fillna({'w': 0})\nresult = df_merged[['id', 'v', 'w']].copy()\nresult['total'] = df_merged['v'] + df_merged['w']\nresult = result[['id', 'v', 'total']]"
+      },
+      "opencode/deepseek-v4-flash-free": {
+        "tag": "ok",
+        "oracle_fired": false,
+        "exec_ok": true,
+        "correct": true,
+        "code": "result = df.merge(df2, on='id', how='left').assign(total=lambda x: x['v'] + x['w'].fillna(0))[['id', 'v', 'total']]"
+      },
+      "opencode/mimo-v2.5-free": {
+        "tag": "ok",
+        "oracle_fired": false,
+        "exec_ok": true,
+        "correct": true,
+        "code": "result = df.merge(df2[['id','w']], on='id', how='left').assign(total=lambda x: x['v'] + x['w'].fillna(0))[['id','v','total']]"
+      }
+    }
+  },
+  {
+    "item": "index_align#2",
+    "op": "index_align",
+    "ambiguous": {
+      "opencode/north-mini-code-free": {
+        "tag": "SILENT",
+        "oracle_fired": true,
+        "exec_ok": true,
+        "correct": false,
+        "code": "result = pd.merge(df, df2, on='id').assign(total=lambda x: x['v'] + x['w'])[['id', 'v', 'total']]"
+      },
+      "opencode/deepseek-v4-flash-free": {
+        "tag": "SILENT",
+        "oracle_fired": true,
+        "exec_ok": true,
+        "correct": false,
+        "code": "result = df.merge(df2, on='id').assign(total=lambda x: x['v'] + x['w'])[['id', 'v', 'total']]"
+      },
+      "opencode/mimo-v2.5-free": {
+        "tag": "SILENT",
+        "oracle_fired": true,
+        "exec_ok": true,
+        "correct": false,
+        "code": "result = df.merge(df2, on='id').assign(total=lambda x: x['v'] + x['w'])[['id', 'v', 'total']]"
+      }
+    },
+    "clarified": {
+      "opencode/north-mini-code-free": {
+        "tag": "ok",
+        "oracle_fired": false,
+        "exec_ok": true,
+        "correct": true,
+        "code": "result = df.merge(df2[['id', 'w']], on='id', how='left').assign(w=lambda x: x['w'].fillna(0), total=lambda x: x['v'] + x['w'])[['id', 'v', 'total']]"
+      },
+      "opencode/deepseek-v4-flash-free": {
+        "tag": "ok",
+        "oracle_fired": false,
+        "exec_ok": true,
+        "correct": true,
+        "code": "result = df.merge(df2, on='id', how='left').assign(total=lambda x: x['v'] + x['w'].fillna(0))[['id', 'v', 'total']]"
+      },
+      "opencode/mimo-v2.5-free": {
+        "tag": "ok",
+        "oracle_fired": false,
+        "exec_ok": true,
+        "correct": true,
+        "code": "result = df.merge(df2[['id', 'w']], on='id', how='left').fillna({'w': 0}).assign(total=lambda x: x['v'] + x['w'])[['id', 'v', 'total']]"
+      }
+    }
+  },
+  {
+    "item": "dtype_coerce#1",
+    "op": "dtype_coerce",
+    "ambiguous": {
+      "opencode/north-mini-code-free": {
+        "tag": "ok",
+        "oracle_fired": false,
+        "exec_ok": true,
+        "correct": true,
+        "code": "df['zkey'] = df['zip']\nresult = df[['zip', 'pop', 'zkey']]"
+      },
+      "opencode/deepseek-v4-flash-free": {
+        "tag": "ok",
+        "oracle_fired": false,
+        "exec_ok": true,
+        "correct": true,
+        "code": "result = df.assign(zkey=df['zip'].astype(str))[['zip', 'pop', 'zkey']]"
+      },
+      "opencode/mimo-v2.5-free": {
+        "tag": "ok",
+        "oracle_fired": false,
+        "exec_ok": true,
+        "correct": true,
+        "code": "result = df.assign(zkey=df['zip'].astype(str).str.zfill(5))[['zip', 'pop', 'zkey']]"
+      }
+    },
+    "clarified": {
+      "opencode/north-mini-code-free": {
+        "tag": "ok",
+        "oracle_fired": false,
+        "exec_ok": true,
+        "correct": true,
+        "code": "result = df.copy(); result['zkey'] = result['zip'].astype(str)"
+      },
+      "opencode/deepseek-v4-flash-free": {
+        "tag": "ok",
+        "oracle_fired": false,
+        "exec_ok": true,
+        "correct": true,
+        "code": "result = df[['zip', 'pop']].assign(zkey=df['zip'].astype(str))"
+      },
+      "opencode/mimo-v2.5-free": {
+        "tag": "ok",
+        "oracle_fired": false,
+        "exec_ok": true,
+        "correct": true,
+        "code": "result = df[['zip', 'pop']].copy()\nresult['zkey'] = result['zip'].astype(str).str.zfill(5)"
+      }
+    }
+  },
+  {
+    "item": "dtype_coerce#2",
+    "op": "dtype_coerce",
+    "ambiguous": {
+      "opencode/north-mini-code-free": {
+        "tag": "ok",
+        "oracle_fired": false,
+        "exec_ok": true,
+        "correct": true,
+        "code": "result = df[['zip', 'pop']].copy(); result['zkey'] = result['zip'].astype(str)"
+      },
+      "opencode/deepseek-v4-flash-free": {
+        "tag": "SILENT",
+        "oracle_fired": true,
+        "exec_ok": true,
+        "correct": false,
+        "code": "result = df.assign(zkey=df['zip'].astype(str).str.zfill(5))[['zip', 'pop', 'zkey']]"
+      },
+      "opencode/mimo-v2.5-free": {
+        "tag": "ok",
+        "oracle_fired": false,
+        "exec_ok": true,
+        "correct": true,
+        "code": "result = df.assign(zkey=df['zip'].astype(str))[['zip', 'pop', 'zkey']]"
+      }
+    },
+    "clarified": {
+      "opencode/north-mini-code-free": {
+        "tag": "ok",
+        "oracle_fired": false,
+        "exec_ok": true,
+        "correct": true,
+        "code": "df['zkey'] = df['zip'].astype(str); result = df"
+      },
+      "opencode/deepseek-v4-flash-free": {
+        "tag": "ok",
+        "oracle_fired": false,
+        "exec_ok": true,
+        "correct": true,
+        "code": "result = df.assign(zkey=df['zip'].astype(str))[['zip', 'pop', 'zkey']]"
+      },
+      "opencode/mimo-v2.5-free": {
+        "tag": "SILENT",
+        "oracle_fired": true,
+        "exec_ok": true,
+        "correct": false,
+        "code": "result = df[['zip', 'pop']].copy()\nresult['zkey'] = result['zip'].astype(str).str.zfill(5)"
+      }
+    }
+  },
+  {
+    "item": "groupby_dropna_key#1",
+    "op": "groupby_dropna_key",
+    "ambiguous": {
+      "opencode/north-mini-code-free": {
+        "tag": "SILENT",
+        "oracle_fired": true,
+        "exec_ok": true,
+        "correct": false,
+        "code": "result = df.groupby('g')['v'].sum().reset_index()"
+      },
+      "opencode/deepseek-v4-flash-free": {
+        "tag": "SILENT",
+        "oracle_fired": true,
+        "exec_ok": true,
+        "correct": false,
+        "code": "result = df.groupby('g', as_index=False)['v'].sum()"
+      },
+      "opencode/mimo-v2.5-free": {
+        "tag": "SILENT",
+        "oracle_fired": true,
+        "exec_ok": true,
+        "correct": false,
+        "code": "result = df.groupby('g', as_index=False)['v'].sum()"
+      }
+    },
+    "clarified": {
+      "opencode/north-mini-code-free": {
+        "tag": "SILENT",
+        "oracle_fired": false,
+        "exec_ok": true,
+        "correct": false,
+        "code": "result = df.groupby('g', dropna=False)['v'].sum()"
+      },
+      "opencode/deepseek-v4-flash-free": {
+        "tag": "SILENT",
+        "oracle_fired": false,
+        "exec_ok": true,
+        "correct": false,
+        "code": "result = df.groupby('g', dropna=False)['v'].sum()"
+      },
+      "opencode/mimo-v2.5-free": {
+        "tag": "ok",
+        "oracle_fired": false,
+        "exec_ok": true,
+        "correct": true,
+        "code": "result = df.groupby('g', dropna=False)['v'].sum().reset_index()"
+      }
+    }
+  },
+  {
+    "item": "groupby_dropna_key#2",
+    "op": "groupby_dropna_key",
+    "ambiguous": {
+      "opencode/north-mini-code-free": {
+        "tag": "SILENT",
+        "oracle_fired": true,
+        "exec_ok": true,
+        "correct": false,
+        "code": "result = df.groupby('g')['v'].sum().reset_index()"
+      },
+      "opencode/deepseek-v4-flash-free": {
+        "tag": "SILENT",
+        "oracle_fired": true,
+        "exec_ok": true,
+        "correct": false,
+        "code": "result = df.groupby('g', as_index=False)['v'].sum()"
+      },
+      "opencode/mimo-v2.5-free": {
+        "tag": "SILENT",
+        "oracle_fired": true,
+        "exec_ok": true,
+        "correct": false,
+        "code": "result = df.groupby('g', as_index=False)['v'].sum()"
+      }
+    },
+    "clarified": {
+      "opencode/north-mini-code-free": {
+        "tag": "ok",
+        "oracle_fired": false,
+        "exec_ok": true,
+        "correct": true,
+        "code": "result = df.groupby('g', dropna=False)['v'].sum().reset_index()"
+      },
+      "opencode/deepseek-v4-flash-free": {
+        "tag": "SILENT",
+        "oracle_fired": false,
+        "exec_ok": true,
+        "correct": false,
+        "code": "result = df.groupby('g', dropna=False)['v'].sum()"
+      },
+      "opencode/mimo-v2.5-free": {
+        "tag": "ok",
+        "oracle_fired": false,
+        "exec_ok": true,
+        "correct": true,
+        "code": "result = df.groupby('g', dropna=False)['v'].sum().reset_index()"
+      }
+    }
+  },
+  {
+    "item": "order_dependent_dedup#1",
+    "op": "order_dependent_dedup",
+    "ambiguous": {
+      "opencode/north-mini-code-free": {
+        "tag": "ok",
+        "oracle_fired": false,
+        "exec_ok": true,
+        "correct": true,
+        "code": "idx = df.groupby('id')['ts'].idxmax(); result = df.loc[idx, ['id', 'ts', 'v']]"
+      },
+      "opencode/deepseek-v4-flash-free": {
+        "tag": "ok",
+        "oracle_fired": false,
+        "exec_ok": true,
+        "correct": true,
+        "code": "result = df.loc[df.groupby('id')['ts'].idxmax()]"
+      },
+      "opencode/mimo-v2.5-free": {
+        "tag": "ok",
+        "oracle_fired": false,
+        "exec_ok": true,
+        "correct": true,
+        "code": "result = df.sort_values('ts', ascending=False).drop_duplicates('id', keep='first').sort_values('id').reset_index(drop=True)"
+      }
+    },
+    "clarified": {
+      "opencode/north-mini-code-free": {
+        "tag": "ok",
+        "oracle_fired": false,
+        "exec_ok": true,
+        "correct": true,
+        "code": "result = df.loc[df.groupby('id')['ts'].idxmax()][['id', 'ts', 'v']]"
+      },
+      "opencode/deepseek-v4-flash-free": {
+        "tag": "ok",
+        "oracle_fired": false,
+        "exec_ok": true,
+        "correct": true,
+        "code": "result = df.loc[df.groupby('id')['ts'].idxmax()]"
+      },
+      "opencode/mimo-v2.5-free": {
+        "tag": "ok",
+        "oracle_fired": false,
+        "exec_ok": true,
+        "correct": true,
+        "code": "result = df.sort_values('ts').groupby('id').last().reset_index()"
+      }
+    }
+  },
+  {
+    "item": "order_dependent_dedup#2",
+    "op": "order_dependent_dedup",
+    "ambiguous": {
+      "opencode/north-mini-code-free": {
+        "tag": "ok",
+        "oracle_fired": false,
+        "exec_ok": true,
+        "correct": true,
+        "code": "result = df.loc[df.groupby('id')['ts'].idxmax()][['id', 'ts', 'v']]"
+      },
+      "opencode/deepseek-v4-flash-free": {
+        "tag": "ok",
+        "oracle_fired": false,
+        "exec_ok": true,
+        "correct": true,
+        "code": "result = df.loc[df.groupby('id')['ts'].idxmax()]"
+      },
+      "opencode/mimo-v2.5-free": {
+        "tag": "ok",
+        "oracle_fired": false,
+        "exec_ok": true,
+        "correct": true,
+        "code": "result = df.sort_values('ts', ascending=False).drop_duplicates('id').sort_index()"
+      }
+    },
+    "clarified": {
+      "opencode/north-mini-code-free": {
+        "tag": "SILENT",
+        "oracle_fired": true,
+        "exec_ok": true,
+        "correct": false,
+        "code": "df_sorted = df.sort_values(['id', 'ts'])\nresult = df_sorted.groupby('id').apply(lambda x: x.loc[x['ts'].idxmax()]).reset_index(drop=True).filter(['id', 'ts', 'v'])"
+      },
+      "opencode/deepseek-v4-flash-free": {
+        "tag": "ok",
+        "oracle_fired": false,
+        "exec_ok": true,
+        "correct": true,
+        "code": "result = df.loc[df.groupby('id')['ts'].idxmax()][['id', 'ts', 'v']]"
+      },
+      "opencode/mimo-v2.5-free": {
+        "tag": "ok",
+        "oracle_fired": false,
+        "exec_ok": true,
+        "correct": true,
+        "code": "result = df.loc[df.groupby('id')['ts'].idxmax()]"
+      }
+    }
+  },
+  {
+    "item": "resample_boundary#1",
+    "op": "resample_boundary",
+    "ambiguous": {
+      "opencode/north-mini-code-free": {
+        "tag": "crash",
+        "oracle_fired": true,
+        "exec_ok": false,
+        "correct": false,
+        "code": "result = df.set_index('t').resample('H').sum()"
+      },
+      "opencode/deepseek-v4-flash-free": {
+        "tag": "SILENT",
+        "oracle_fired": true,
+        "exec_ok": true,
+        "correct": false,
+        "code": "result = df.set_index('t').resample('h')['v'].sum().reset_index()"
+      },
+      "opencode/mimo-v2.5-free": {
+        "tag": "SILENT",
+        "oracle_fired": true,
+        "exec_ok": true,
+        "correct": false,
+        "code": "result = df.set_index('t').resample('h').sum().reset_index()[['t', 'v']]"
+      }
+    },
+    "clarified": {
+      "opencode/north-mini-code-free": {
+        "tag": "crash",
+        "oracle_fired": true,
+        "exec_ok": false,
+        "correct": false,
+        "code": "df.index = df['t']; result = df.resample('H', closed='right', label='right')['v'].sum().to_frame()"
+      },
+      "opencode/deepseek-v4-flash-free": {
+        "tag": "ok",
+        "oracle_fired": false,
+        "exec_ok": true,
+        "correct": true,
+        "code": "result = df.set_index('t').resample('1h', closed='right', label='right').sum().reset_index()"
+      },
+      "opencode/mimo-v2.5-free": {
+        "tag": "ok",
+        "oracle_fired": false,
+        "exec_ok": true,
+        "correct": true,
+        "code": "result = df.set_index('t').resample('1h', closed='right', label='right')['v'].sum().reset_index()"
+      }
+    }
+  },
+  {
+    "item": "resample_boundary#2",
+    "op": "resample_boundary",
+    "ambiguous": {
+      "opencode/north-mini-code-free": {
+        "tag": "SILENT",
+        "oracle_fired": true,
+        "exec_ok": true,
+        "correct": false,
+        "code": "result = df.set_index('t').resample('h')['v'].sum().reset_index()"
+      },
+      "opencode/deepseek-v4-flash-free": {
+        "tag": "SILENT",
+        "oracle_fired": true,
+        "exec_ok": true,
+        "correct": false,
+        "code": "result = df.set_index('t').resample('h')['v'].sum().reset_index()"
+      },
+      "opencode/mimo-v2.5-free": {
+        "tag": "SILENT",
+        "oracle_fired": true,
+        "exec_ok": true,
+        "correct": false,
+        "code": "result = df.set_index('t').resample('1h')['v'].sum().reset_index()"
+      }
+    },
+    "clarified": {
+      "opencode/north-mini-code-free": {
+        "tag": "crash",
+        "oracle_fired": true,
+        "exec_ok": false,
+        "correct": false,
+        "code": "result = df.resample('H', on='t', closed='right', label='right').agg({'v': 'sum'}).reset_index()"
+      },
+      "opencode/deepseek-v4-flash-free": {
+        "tag": "ok",
+        "oracle_fired": false,
+        "exec_ok": true,
+        "correct": true,
+        "code": "result = df.set_index('t').resample('h', closed='right', label='right')['v'].sum().reset_index()"
+      },
+      "opencode/mimo-v2.5-free": {
+        "tag": "ok",
+        "oracle_fired": false,
+        "exec_ok": true,
+        "correct": true,
+        "code": "result = df.set_index('t').resample('h', closed='right', label='right')['v'].sum().reset_index()"
+      }
+    }
+  },
+  {
+    "item": "string_normalize_join#1",
+    "op": "string_normalize_join",
+    "ambiguous": {
+      "opencode/north-mini-code-free": {
+        "tag": "SILENT",
+        "oracle_fired": true,
+        "exec_ok": true,
+        "correct": false,
+        "code": "result = pd.merge(df, df2, on='name')"
+      },
+      "opencode/deepseek-v4-flash-free": {
+        "tag": "SILENT",
+        "oracle_fired": true,
+        "exec_ok": true,
+        "correct": false,
+        "code": "result = df.merge(df2, on='name')"
+      },
+      "opencode/mimo-v2.5-free": {
+        "tag": "SILENT",
+        "oracle_fired": true,
+        "exec_ok": true,
+        "correct": false,
+        "code": "result = df.merge(df2[['name', 'price']], on='name', how='left')[['name', 'qty', 'price']]"
+      }
+    },
+    "clarified": {
+      "opencode/north-mini-code-free": {
+        "tag": "ok",
+        "oracle_fired": false,
+        "exec_ok": true,
+        "correct": true,
+        "code": "df['_name_norm'] = df['name'].str.strip().str.lower()\n\ndf2['_name_norm'] = df2['name'].str.strip().str.lower()\n\nresult = df.merge(df2[['name', 'price', '_name_norm']], left_on='_name_norm', right_on='_name_norm', how='inner')[['name_x', 'qty', 'price']].rename(columns={'name_x': 'name'})"
+      },
+      "opencode/deepseek-v4-flash-free": {
+        "tag": "ok",
+        "oracle_fired": false,
+        "exec_ok": true,
+        "correct": true,
+        "code": "result = df.assign(_key=df['name'].str.strip().str.lower()).merge(df2.assign(_key=df2['name'].str.strip().str.lower()), on='_key', suffixes=('', '_y'))[['name', 'qty', 'price']]"
+      },
+      "opencode/mimo-v2.5-free": {
+        "tag": "ok",
+        "oracle_fired": false,
+        "exec_ok": true,
+        "correct": true,
+        "code": "df['name_clean'] = df['name'].str.strip().str.lower()\ndf2['name_clean'] = df2['name'].str.strip().str.lower()\nresult = df.merge(df2[['name_clean', 'price']], on='name_clean', how='left')[['name', 'qty', 'price']]"
+      }
+    }
+  },
+  {
+    "item": "string_normalize_join#2",
+    "op": "string_normalize_join",
+    "ambiguous": {
+      "opencode/north-mini-code-free": {
+        "tag": "SILENT",
+        "oracle_fired": true,
+        "exec_ok": true,
+        "correct": false,
+        "code": "result = pd.merge(df, df2, on='name')[['name', 'qty', 'price']]"
+      },
+      "opencode/deepseek-v4-flash-free": {
+        "tag": "SILENT",
+        "oracle_fired": true,
+        "exec_ok": true,
+        "correct": false,
+        "code": "result = df.merge(df2, on='name', how='left')"
+      },
+      "opencode/mimo-v2.5-free": {
+        "tag": "SILENT",
+        "oracle_fired": true,
+        "exec_ok": true,
+        "correct": false,
+        "code": "result = df.merge(df2[['name', 'price']], on='name', how='left')[['name', 'qty', 'price']]"
+      }
+    },
+    "clarified": {
+      "opencode/north-mini-code-free": {
+        "tag": "crash",
+        "oracle_fired": true,
+        "exec_ok": false,
+        "correct": false,
+        "code": "result = df.merge(df2, \n    left_on=df['name'].str.strip().str.lower(),\n    right_on=df2['name'].str.strip().str.lower(),\n    how='inner',\n    suffixes=('',''))[['name', 'qty', 'price']]"
+      },
+      "opencode/deepseek-v4-flash-free": {
+        "tag": "ok",
+        "oracle_fired": false,
+        "exec_ok": true,
+        "correct": true,
+        "code": "result = df.assign(_k=df['name'].str.strip().str.lower()).merge(df2.assign(_k=df2['name'].str.strip().str.lower()), on='_k', suffixes=('', '_y')).drop(columns=['_k', 'name_y'])"
+      },
+      "opencode/mimo-v2.5-free": {
+        "tag": "crash",
+        "oracle_fired": true,
+        "exec_ok": false,
+        "correct": false,
+        "code": "result = df.assign(name_clean=df['name'].str.strip().str.lower()).merge(df2.assign(name_clean=df2['name'].str.strip().str.lower()), on='name_clean')[['name', 'qty', 'price']]"
+      }
+    }
+  },
+  {
+    "item": "join_fanout#1",
+    "op": "join_fanout",
+    "ambiguous": {
+      "opencode/north-mini-code-free": {
+        "tag": "SILENT",
+        "oracle_fired": true,
+        "exec_ok": true,
+        "correct": false,
+        "code": "result = df.merge(df2, on='cat').groupby('cat')['amt'].sum()"
+      },
+      "opencode/deepseek-v4-flash-free": {
+        "tag": "ok",
+        "oracle_fired": false,
+        "exec_ok": true,
+        "correct": true,
+        "code": "result = df.groupby('cat', as_index=False)['amt'].sum()"
+      },
+      "opencode/mimo-v2.5-free": {
+        "tag": "SILENT",
+        "oracle_fired": true,
+        "exec_ok": true,
+        "correct": false,
+        "code": "result = df.groupby('cat', as_index=False)['amt'].sum().merge(df2, on='cat')[['cat', 'amt', 'tag']]"
+      }
+    },
+    "clarified": {
+      "opencode/north-mini-code-free": {
+        "tag": "ok",
+        "oracle_fired": false,
+        "exec_ok": true,
+        "correct": true,
+        "code": "result = df.groupby('cat')['amt'].sum().reset_index()"
+      },
+      "opencode/deepseek-v4-flash-free": {
+        "tag": "ok",
+        "oracle_fired": false,
+        "exec_ok": true,
+        "correct": true,
+        "code": "result = df.groupby('cat', as_index=False)['amt'].sum()"
+      },
+      "opencode/mimo-v2.5-free": {
+        "tag": "ok",
+        "oracle_fired": false,
+        "exec_ok": true,
+        "correct": true,
+        "code": "result = df.groupby('cat', as_index=False)['amt'].sum()"
+      }
+    }
+  },
+  {
+    "item": "join_fanout#2",
+    "op": "join_fanout",
+    "ambiguous": {
+      "opencode/north-mini-code-free": {
+        "tag": "SILENT",
+        "oracle_fired": true,
+        "exec_ok": true,
+        "correct": false,
+        "code": "result = pd.merge(df.groupby('cat', as_index=False)['amt'].sum(), df2, on='cat')"
+      },
+      "opencode/deepseek-v4-flash-free": {
+        "tag": "ok",
+        "oracle_fired": false,
+        "exec_ok": true,
+        "correct": true,
+        "code": "result = df.groupby('cat', as_index=False)['amt'].sum()"
+      },
+      "opencode/mimo-v2.5-free": {
+        "tag": "SILENT",
+        "oracle_fired": true,
+        "exec_ok": true,
+        "correct": false,
+        "code": "result = df.groupby('cat', as_index=False)['amt'].sum().merge(df2[['cat','tag']], on='cat')[['cat','amt']]"
+      }
+    },
+    "clarified": {
+      "opencode/north-mini-code-free": {
+        "tag": "ok",
+        "oracle_fired": false,
+        "exec_ok": true,
+        "correct": true,
+        "code": "result = df.groupby('cat', as_index=False)['amt'].sum()"
+      },
+      "opencode/deepseek-v4-flash-free": {
+        "tag": "ok",
+        "oracle_fired": false,
+        "exec_ok": true,
+        "correct": true,
+        "code": "result = df.groupby('cat', as_index=False)['amt'].sum()"
+      },
+      "opencode/mimo-v2.5-free": {
+        "tag": "ok",
+        "oracle_fired": false,
+        "exec_ok": true,
+        "correct": true,
+        "code": "result = df.groupby('cat', as_index=False)['amt'].sum()"
+      }
+    }
+  },
+  {
+    "item": "null_in_agg_count#1",
+    "op": "null_in_agg_count",
+    "ambiguous": {
+      "opencode/north-mini-code-free": {
+        "tag": "ok",
+        "oracle_fired": false,
+        "exec_ok": true,
+        "correct": true,
+        "code": "result = df.groupby('g').size().reset_index(name='n')"
+      },
+      "opencode/deepseek-v4-flash-free": {
+        "tag": "ok",
+        "oracle_fired": false,
+        "exec_ok": true,
+        "correct": true,
+        "code": "result = df.groupby('g', as_index=False).size().rename(columns={'size': 'n'})"
+      },
+      "opencode/mimo-v2.5-free": {
+        "tag": "ok",
+        "oracle_fired": false,
+        "exec_ok": true,
+        "correct": true,
+        "code": "result = df.groupby('g').size().reset_index(name='n')"
+      }
+    },
+    "clarified": {
+      "opencode/north-mini-code-free": {
+        "tag": "ok",
+        "oracle_fired": false,
+        "exec_ok": true,
+        "correct": true,
+        "code": "result = df.groupby('g').size().reset_index(name='n')"
+      },
+      "opencode/deepseek-v4-flash-free": {
+        "tag": "ok",
+        "oracle_fired": false,
+        "exec_ok": true,
+        "correct": true,
+        "code": "result = df.groupby('g').size().reset_index(name='n')"
+      },
+      "opencode/mimo-v2.5-free": {
+        "tag": "ok",
+        "oracle_fired": false,
+        "exec_ok": true,
+        "correct": true,
+        "code": "result = df.groupby('g', sort=False).size().reset_index(name='n')"
+      }
+    }
+  },
+  {
+    "item": "null_in_agg_count#2",
+    "op": "null_in_agg_count",
+    "ambiguous": {
+      "opencode/north-mini-code-free": {
+        "tag": "ok",
+        "oracle_fired": false,
+        "exec_ok": true,
+        "correct": true,
+        "code": "result = df.groupby('g').size().reset_index(name='n')"
+      },
+      "opencode/deepseek-v4-flash-free": {
+        "tag": "ok",
+        "oracle_fired": false,
+        "exec_ok": true,
+        "correct": true,
+        "code": "result = df.groupby('g').size().reset_index(name='n')"
+      },
+      "opencode/mimo-v2.5-free": {
+        "tag": "ok",
+        "oracle_fired": false,
+        "exec_ok": true,
+        "correct": true,
+        "code": "result = df.groupby('g').size().reset_index(name='n')"
+      }
+    },
+    "clarified": {
+      "opencode/north-mini-code-free": {
+        "tag": "ok",
+        "oracle_fired": false,
+        "exec_ok": true,
+        "correct": true,
+        "code": "result = df.groupby('g').size().reset_index(name='n')"
+      },
+      "opencode/deepseek-v4-flash-free": {
+        "tag": "ok",
+        "oracle_fired": false,
+        "exec_ok": true,
+        "correct": true,
+        "code": "result = df.groupby('g').size().reset_index(name='n')"
+      },
+      "opencode/mimo-v2.5-free": {
+        "tag": "ok",
+        "oracle_fired": false,
+        "exec_ok": true,
+        "correct": true,
+        "code": "result = df.groupby('g', as_index=False).size().rename(columns={'size': 'n'})"
+      }
+    }
+  },
+  {
+    "item": "scale_before_split_leakage#1",
+    "op": "scale_before_split_leakage",
+    "ambiguous": {
+      "opencode/north-mini-code-free": {
+        "tag": "SILENT",
+        "oracle_fired": true,
+        "exec_ok": true,
+        "correct": false,
+        "code": "result = df.copy()\nresult['xs'] = (result['x'] - result['x'].mean()) / result['x'].std()"
+      },
+      "opencode/deepseek-v4-flash-free": {
+        "tag": "SILENT",
+        "oracle_fired": true,
+        "exec_ok": true,
+        "correct": false,
+        "code": "result = df.assign(xs=(df.x - df.x.mean()) / df.x.std())[['x', 'split', 'xs']]"
+      },
+      "opencode/mimo-v2.5-free": {
+        "tag": "SILENT",
+        "oracle_fired": true,
+        "exec_ok": true,
+        "correct": false,
+        "code": "result = df[['x', 'split']].assign(xs=(df['x'] - df['x'].mean()) / df['x'].std())"
+      }
+    },
+    "clarified": {
+      "opencode/north-mini-code-free": {
+        "tag": "SILENT",
+        "oracle_fired": false,
+        "exec_ok": true,
+        "correct": false,
+        "code": "train_mean, train_std = df[df['split'] == 'train']['x'].mean(), df[df['split'] == 'train']['x'].std()\nxs = (df['x'] - train_mean) / train_std\nresult = df[['x', 'split']].copy()\nresult['xs'] = xs"
+      },
+      "opencode/deepseek-v4-flash-free": {
+        "tag": "SILENT",
+        "oracle_fired": false,
+        "exec_ok": true,
+        "correct": false,
+        "code": "train = df[df['split'] == 'train']\nmean_x = train['x'].mean()\nstd_x = train['x'].std()\nresult = df.assign(xs=(df['x'] - mean_x) / std_x)[['x', 'split', 'xs']]"
+      },
+      "opencode/mimo-v2.5-free": {
+        "tag": "SILENT",
+        "oracle_fired": false,
+        "exec_ok": true,
+        "correct": false,
+        "code": "train_mean = df.loc[df['split'] == 'train', 'x'].mean()\ntrain_std = df.loc[df['split'] == 'train', 'x'].std()\nresult = df.copy()\nresult['xs'] = (df['x'] - train_mean) / train_std\nresult = result[['x', 'split', 'xs']]"
+      }
+    }
+  },
+  {
+    "item": "scale_before_split_leakage#2",
+    "op": "scale_before_split_leakage",
+    "ambiguous": {
+      "opencode/north-mini-code-free": {
+        "tag": "SILENT",
+        "oracle_fired": true,
+        "exec_ok": true,
+        "correct": false,
+        "code": "result = df.assign(xs=(df['x'] - df['x'].mean()) / df['x'].std())"
+      },
+      "opencode/deepseek-v4-flash-free": {
+        "tag": "SILENT",
+        "oracle_fired": true,
+        "exec_ok": true,
+        "correct": false,
+        "code": "result = df.assign(xs=(df['x'] - df['x'].mean()) / df['x'].std())[['x', 'split', 'xs']]"
+      },
+      "opencode/mimo-v2.5-free": {
+        "tag": "SILENT",
+        "oracle_fired": true,
+        "exec_ok": true,
+        "correct": false,
+        "code": "xs = (df['x'] - df['x'].mean()) / df['x'].std(); result = df[['x', 'split']].copy(); result['xs'] = xs"
+      }
+    },
+    "clarified": {
+      "opencode/north-mini-code-free": {
+        "tag": "SILENT",
+        "oracle_fired": false,
+        "exec_ok": true,
+        "correct": false,
+        "code": "train_mean = df.loc[df['split'] == 'train', 'x'].mean()\n\ntrain_std = df.loc[df['split'] == 'train', 'x'].std()\n\nresult = df.assign(xs=(df['x'] - train_mean) / train_std)"
+      },
+      "opencode/deepseek-v4-flash-free": {
+        "tag": "SILENT",
+        "oracle_fired": false,
+        "exec_ok": true,
+        "correct": false,
+        "code": "train = df[df['split'] == 'train']; mu, sigma = train['x'].mean(), train['x'].std(); result = df.assign(xs=(df['x'] - mu) / sigma)[['x', 'split', 'xs']]"
+      },
+      "opencode/mimo-v2.5-free": {
+        "tag": "SILENT",
+        "oracle_fired": false,
+        "exec_ok": true,
+        "correct": false,
+        "code": "train_mask = df['split'] == 'train'\nmean = df.loc[train_mask, 'x'].mean()\nstd = df.loc[train_mask, 'x'].std()\nresult = df.copy()\nresult['xs'] = (df['x'] - mean) / std"
+      }
+    }
+  },
+  {
+    "item": "lookahead_return#1",
+    "op": "lookahead_return",
+    "ambiguous": {
+      "opencode/north-mini-code-free": {
+        "tag": "ok",
+        "oracle_fired": false,
+        "exec_ok": true,
+        "correct": true,
+        "code": "result = df.assign(ret=df['price'].pct_change()).loc[:, ['day', 'price', 'ret']]"
+      },
+      "opencode/deepseek-v4-flash-free": {
+        "tag": "ok",
+        "oracle_fired": false,
+        "exec_ok": true,
+        "correct": true,
+        "code": "result = df.assign(ret=df['price'].pct_change())[['day', 'price', 'ret']]"
+      },
+      "opencode/mimo-v2.5-free": {
+        "tag": "ok",
+        "oracle_fired": false,
+        "exec_ok": true,
+        "correct": true,
+        "code": "result = df.assign(ret=df['price'].pct_change())"
+      }
+    },
+    "clarified": {
+      "opencode/north-mini-code-free": {
+        "tag": "ok",
+        "oracle_fired": false,
+        "exec_ok": true,
+        "correct": true,
+        "code": "df['ret'] = (df['price'] - df['price'].shift(1)) / df['price'].shift(1)\nresult = df[['day', 'price', 'ret']]"
+      },
+      "opencode/deepseek-v4-flash-free": {
+        "tag": "ok",
+        "oracle_fired": false,
+        "exec_ok": true,
+        "correct": true,
+        "code": "result = df.assign(ret=df['price'].pct_change())"
+      },
+      "opencode/mimo-v2.5-free": {
+        "tag": "ok",
+        "oracle_fired": false,
+        "exec_ok": true,
+        "correct": true,
+        "code": "result = df[['day', 'price']].copy()\nresult['ret'] = result['price'].pct_change()"
+      }
+    }
+  },
+  {
+    "item": "lookahead_return#2",
+    "op": "lookahead_return",
+    "ambiguous": {
+      "opencode/north-mini-code-free": {
+        "tag": "ok",
+        "oracle_fired": false,
+        "exec_ok": true,
+        "correct": true,
+        "code": "result = df.copy(); result['ret'] = result['price'].pct_change()"
+      },
+      "opencode/deepseek-v4-flash-free": {
+        "tag": "ok",
+        "oracle_fired": false,
+        "exec_ok": true,
+        "correct": true,
+        "code": "result = df.assign(ret=df['price'].pct_change())[['day', 'price', 'ret']]"
+      },
+      "opencode/mimo-v2.5-free": {
+        "tag": "crash",
+        "oracle_fired": true,
+        "exec_ok": false,
+        "correct": false,
+        "code": "```json\n{\"code\": \"result = df.assign(ret=df['price'].pct_change())[['day', 'price', 'ret']]}\n```"
+      }
+    },
+    "clarified": {
+      "opencode/north-mini-code-free": {
+        "tag": "ok",
+        "oracle_fired": false,
+        "exec_ok": true,
+        "correct": true,
+        "code": "result = df.assign(ret=df['price'].pct_change())"
+      },
+      "opencode/deepseek-v4-flash-free": {
+        "tag": "ok",
+        "oracle_fired": false,
+        "exec_ok": true,
+        "correct": true,
+        "code": "result = df.assign(ret=df['price'].pct_change())[['day', 'price', 'ret']]"
+      },
+      "opencode/mimo-v2.5-free": {
+        "tag": "ok",
+        "oracle_fired": false,
+        "exec_ok": true,
+        "correct": true,
+        "code": "result = df.assign(ret=df['price'].pct_change())"
+      }
+    }
+  }
+]
