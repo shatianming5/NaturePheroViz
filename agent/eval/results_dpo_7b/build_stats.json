@@ -1,0 +1,769 @@
+[
+  {
+    "uid": "clip_outlier#64",
+    "op": "clip_outlier",
+    "n_pairs": 6,
+    "n_chosen": 6,
+    "n_rejected": 3,
+    "passes": [
+      0.25,
+      0.25,
+      0.25
+    ],
+    "note": ""
+  },
+  {
+    "uid": "clip_outlier#65",
+    "op": "clip_outlier",
+    "n_pairs": 5,
+    "n_chosen": 5,
+    "n_rejected": 3,
+    "passes": [
+      0.167,
+      0.25,
+      0.25
+    ],
+    "note": ""
+  },
+  {
+    "uid": "clip_outlier#66",
+    "op": "clip_outlier",
+    "n_pairs": 6,
+    "n_chosen": 6,
+    "n_rejected": 3,
+    "passes": [
+      0.25,
+      0.25,
+      0.25
+    ],
+    "note": ""
+  },
+  {
+    "uid": "count_includes_empty#40",
+    "op": "count_includes_empty",
+    "n_pairs": 0,
+    "n_chosen": 0,
+    "n_rejected": 0,
+    "passes": [],
+    "note": "no_firing_buggy_start"
+  },
+  {
+    "uid": "count_includes_empty#41",
+    "op": "count_includes_empty",
+    "n_pairs": 0,
+    "n_chosen": 0,
+    "n_rejected": 0,
+    "passes": [],
+    "note": "no_firing_buggy_start"
+  },
+  {
+    "uid": "count_includes_empty#42",
+    "op": "count_includes_empty",
+    "n_pairs": 0,
+    "n_chosen": 0,
+    "n_rejected": 0,
+    "passes": [],
+    "note": "no_firing_buggy_start"
+  },
+  {
+    "uid": "cumcount_per_group#56",
+    "op": "cumcount_per_group",
+    "n_pairs": 0,
+    "n_chosen": 15,
+    "n_rejected": 0,
+    "passes": [
+      0.833,
+      0.833,
+      0.833
+    ],
+    "note": ""
+  },
+  {
+    "uid": "cumcount_per_group#57",
+    "op": "cumcount_per_group",
+    "n_pairs": 0,
+    "n_chosen": 18,
+    "n_rejected": 0,
+    "passes": [
+      0.917,
+      0.917,
+      0.917
+    ],
+    "note": ""
+  },
+  {
+    "uid": "cumcount_per_group#58",
+    "op": "cumcount_per_group",
+    "n_pairs": 0,
+    "n_chosen": 15,
+    "n_rejected": 0,
+    "passes": [
+      0.917,
+      0.917,
+      0.917
+    ],
+    "note": ""
+  },
+  {
+    "uid": "cumulative_running#28",
+    "op": "cumulative_running",
+    "n_pairs": 8,
+    "n_chosen": 18,
+    "n_rejected": 6,
+    "passes": [
+      0.667,
+      0.667,
+      0.667
+    ],
+    "note": ""
+  },
+  {
+    "uid": "cumulative_running#29",
+    "op": "cumulative_running",
+    "n_pairs": 8,
+    "n_chosen": 21,
+    "n_rejected": 3,
+    "passes": [
+      0.833,
+      0.75,
+      0.75
+    ],
+    "note": ""
+  },
+  {
+    "uid": "cumulative_running#30",
+    "op": "cumulative_running",
+    "n_pairs": 8,
+    "n_chosen": 15,
+    "n_rejected": 6,
+    "passes": [
+      0.667,
+      0.667,
+      0.667
+    ],
+    "note": ""
+  },
+  {
+    "uid": "dedup_then_agg#12",
+    "op": "dedup_then_agg",
+    "n_pairs": 8,
+    "n_chosen": 21,
+    "n_rejected": 6,
+    "passes": [
+      0.833,
+      0.833,
+      0.833
+    ],
+    "note": ""
+  },
+  {
+    "uid": "dedup_then_agg#13",
+    "op": "dedup_then_agg",
+    "n_pairs": 8,
+    "n_chosen": 15,
+    "n_rejected": 15,
+    "passes": [
+      0.583,
+      0.583,
+      0.583
+    ],
+    "note": ""
+  },
+  {
+    "uid": "dedup_then_agg#14",
+    "op": "dedup_then_agg",
+    "n_pairs": 8,
+    "n_chosen": 21,
+    "n_rejected": 6,
+    "passes": [
+      0.833,
+      0.833,
+      0.833
+    ],
+    "note": ""
+  },
+  {
+    "uid": "dense_rank#52",
+    "op": "dense_rank",
+    "n_pairs": 8,
+    "n_chosen": 9,
+    "n_rejected": 3,
+    "passes": [
+      0.833,
+      0.833,
+      0.833
+    ],
+    "note": ""
+  },
+  {
+    "uid": "dense_rank#53",
+    "op": "dense_rank",
+    "n_pairs": 8,
+    "n_chosen": 9,
+    "n_rejected": 3,
+    "passes": [
+      0.833,
+      0.833,
+      0.833
+    ],
+    "note": ""
+  },
+  {
+    "uid": "dense_rank#54",
+    "op": "dense_rank",
+    "n_pairs": 6,
+    "n_chosen": 6,
+    "n_rejected": 1,
+    "passes": [
+      0.833
+    ],
+    "note": ""
+  },
+  {
+    "uid": "dtype_coerce#70",
+    "op": "dtype_coerce",
+    "n_pairs": 0,
+    "n_chosen": 0,
+    "n_rejected": 0,
+    "passes": [],
+    "note": "error:TypeError:arg must be a list, tuple, 1-d array, or Series"
+  },
+  {
+    "uid": "groupby_dropna_key#72",
+    "op": "groupby_dropna_key",
+    "n_pairs": 0,
+    "n_chosen": 0,
+    "n_rejected": 15,
+    "passes": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "note": ""
+  },
+  {
+    "uid": "index_align#68",
+    "op": "index_align",
+    "n_pairs": 8,
+    "n_chosen": 8,
+    "n_rejected": 19,
+    "passes": [
+      0.25,
+      0.25,
+      0.167
+    ],
+    "note": ""
+  },
+  {
+    "uid": "join_fanout#80",
+    "op": "join_fanout",
+    "n_pairs": 8,
+    "n_chosen": 6,
+    "n_rejected": 27,
+    "passes": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "note": ""
+  },
+  {
+    "uid": "left_join_keep_all#16",
+    "op": "left_join_keep_all",
+    "n_pairs": 8,
+    "n_chosen": 21,
+    "n_rejected": 3,
+    "passes": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "note": ""
+  },
+  {
+    "uid": "left_join_keep_all#17",
+    "op": "left_join_keep_all",
+    "n_pairs": 8,
+    "n_chosen": 24,
+    "n_rejected": 3,
+    "passes": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "note": ""
+  },
+  {
+    "uid": "left_join_keep_all#18",
+    "op": "left_join_keep_all",
+    "n_pairs": 0,
+    "n_chosen": 0,
+    "n_rejected": 0,
+    "passes": [],
+    "note": "no_firing_buggy_start"
+  },
+  {
+    "uid": "lookahead_return#86",
+    "op": "lookahead_return",
+    "n_pairs": 8,
+    "n_chosen": 15,
+    "n_rejected": 14,
+    "passes": [
+      0.25,
+      0.5,
+      0.667
+    ],
+    "note": ""
+  },
+  {
+    "uid": "median_not_mean#24",
+    "op": "median_not_mean",
+    "n_pairs": 8,
+    "n_chosen": 28,
+    "n_rejected": 3,
+    "passes": [
+      0.917,
+      1.0,
+      0.917
+    ],
+    "note": ""
+  },
+  {
+    "uid": "median_not_mean#25",
+    "op": "median_not_mean",
+    "n_pairs": 0,
+    "n_chosen": 30,
+    "n_rejected": 0,
+    "passes": [
+      0.917,
+      0.917,
+      0.917
+    ],
+    "note": ""
+  },
+  {
+    "uid": "median_not_mean#26",
+    "op": "median_not_mean",
+    "n_pairs": 8,
+    "n_chosen": 28,
+    "n_rejected": 3,
+    "passes": [
+      0.917,
+      0.917,
+      0.917
+    ],
+    "note": ""
+  },
+  {
+    "uid": "nan_as_zero_sum#36",
+    "op": "nan_as_zero_sum",
+    "n_pairs": 8,
+    "n_chosen": 27,
+    "n_rejected": 3,
+    "passes": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "note": ""
+  },
+  {
+    "uid": "nan_as_zero_sum#37",
+    "op": "nan_as_zero_sum",
+    "n_pairs": 8,
+    "n_chosen": 21,
+    "n_rejected": 3,
+    "passes": [
+      0.833,
+      0.833,
+      0.917
+    ],
+    "note": ""
+  },
+  {
+    "uid": "nan_as_zero_sum#38",
+    "op": "nan_as_zero_sum",
+    "n_pairs": 8,
+    "n_chosen": 22,
+    "n_rejected": 6,
+    "passes": [
+      0.833,
+      0.75,
+      0.75
+    ],
+    "note": ""
+  },
+  {
+    "uid": "null_in_agg_count#82",
+    "op": "null_in_agg_count",
+    "n_pairs": 8,
+    "n_chosen": 7,
+    "n_rejected": 8,
+    "passes": [
+      0.25,
+      0.25,
+      0.25
+    ],
+    "note": ""
+  },
+  {
+    "uid": "order_dependent_dedup#74",
+    "op": "order_dependent_dedup",
+    "n_pairs": 0,
+    "n_chosen": 0,
+    "n_rejected": 0,
+    "passes": [],
+    "note": "no_firing_buggy_start"
+  },
+  {
+    "uid": "pct_point#8",
+    "op": "pct_point",
+    "n_pairs": 0,
+    "n_chosen": 0,
+    "n_rejected": 32,
+    "passes": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "note": ""
+  },
+  {
+    "uid": "pct_point#9",
+    "op": "pct_point",
+    "n_pairs": 8,
+    "n_chosen": 5,
+    "n_rejected": 22,
+    "passes": [
+      0.0,
+      0.0,
+      0.417
+    ],
+    "note": ""
+  },
+  {
+    "uid": "pct_point#10",
+    "op": "pct_point",
+    "n_pairs": 8,
+    "n_chosen": 5,
+    "n_rejected": 23,
+    "passes": [
+      0.25,
+      0.0,
+      0.25
+    ],
+    "note": ""
+  },
+  {
+    "uid": "pooled_rate#20",
+    "op": "pooled_rate",
+    "n_pairs": 8,
+    "n_chosen": 9,
+    "n_rejected": 12,
+    "passes": [
+      0.083,
+      0.25,
+      0.5
+    ],
+    "note": ""
+  },
+  {
+    "uid": "pooled_rate#21",
+    "op": "pooled_rate",
+    "n_pairs": 8,
+    "n_chosen": 12,
+    "n_rejected": 10,
+    "passes": [
+      0.333,
+      0.333,
+      0.333
+    ],
+    "note": ""
+  },
+  {
+    "uid": "pooled_rate#22",
+    "op": "pooled_rate",
+    "n_pairs": 8,
+    "n_chosen": 9,
+    "n_rejected": 9,
+    "passes": [
+      0.25,
+      0.25,
+      0.25
+    ],
+    "note": ""
+  },
+  {
+    "uid": "proportion_true#44",
+    "op": "proportion_true",
+    "n_pairs": 0,
+    "n_chosen": 12,
+    "n_rejected": 0,
+    "passes": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "note": ""
+  },
+  {
+    "uid": "proportion_true#45",
+    "op": "proportion_true",
+    "n_pairs": 0,
+    "n_chosen": 12,
+    "n_rejected": 0,
+    "passes": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "note": ""
+  },
+  {
+    "uid": "proportion_true#46",
+    "op": "proportion_true",
+    "n_pairs": 0,
+    "n_chosen": 12,
+    "n_rejected": 0,
+    "passes": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "note": ""
+  },
+  {
+    "uid": "rank_pct#60",
+    "op": "rank_pct",
+    "n_pairs": 8,
+    "n_chosen": 27,
+    "n_rejected": 3,
+    "passes": [
+      0.917,
+      0.917,
+      0.917
+    ],
+    "note": ""
+  },
+  {
+    "uid": "rank_pct#61",
+    "op": "rank_pct",
+    "n_pairs": 8,
+    "n_chosen": 27,
+    "n_rejected": 3,
+    "passes": [
+      0.833,
+      0.833,
+      0.833
+    ],
+    "note": ""
+  },
+  {
+    "uid": "rank_pct#62",
+    "op": "rank_pct",
+    "n_pairs": 8,
+    "n_chosen": 29,
+    "n_rejected": 3,
+    "passes": [
+      0.917,
+      0.917,
+      0.917
+    ],
+    "note": ""
+  },
+  {
+    "uid": "resample_boundary#76",
+    "op": "resample_boundary",
+    "n_pairs": 0,
+    "n_chosen": 0,
+    "n_rejected": 15,
+    "passes": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "note": ""
+  },
+  {
+    "uid": "scale_before_split_leakage#84",
+    "op": "scale_before_split_leakage",
+    "n_pairs": 8,
+    "n_chosen": 15,
+    "n_rejected": 3,
+    "passes": [
+      0.417,
+      0.417,
+      0.417
+    ],
+    "note": ""
+  },
+  {
+    "uid": "string_normalize_join#78",
+    "op": "string_normalize_join",
+    "n_pairs": 8,
+    "n_chosen": 3,
+    "n_rejected": 15,
+    "passes": [
+      0.083,
+      0.083,
+      0.083
+    ],
+    "note": ""
+  },
+  {
+    "uid": "topn_with_ties#32",
+    "op": "topn_with_ties",
+    "n_pairs": 8,
+    "n_chosen": 15,
+    "n_rejected": 15,
+    "passes": [
+      0.5,
+      0.5,
+      0.5
+    ],
+    "note": ""
+  },
+  {
+    "uid": "topn_with_ties#33",
+    "op": "topn_with_ties",
+    "n_pairs": 8,
+    "n_chosen": 7,
+    "n_rejected": 17,
+    "passes": [
+      0.167,
+      0.25,
+      0.167
+    ],
+    "note": ""
+  },
+  {
+    "uid": "topn_with_ties#34",
+    "op": "topn_with_ties",
+    "n_pairs": 8,
+    "n_chosen": 9,
+    "n_rejected": 18,
+    "passes": [
+      0.417,
+      0.417,
+      0.417
+    ],
+    "note": ""
+  },
+  {
+    "uid": "weighted_mean#0",
+    "op": "weighted_mean",
+    "n_pairs": 8,
+    "n_chosen": 18,
+    "n_rejected": 6,
+    "passes": [
+      0.5,
+      0.5,
+      0.5
+    ],
+    "note": ""
+  },
+  {
+    "uid": "weighted_mean#1",
+    "op": "weighted_mean",
+    "n_pairs": 8,
+    "n_chosen": 18,
+    "n_rejected": 6,
+    "passes": [
+      0.5,
+      0.5,
+      0.5
+    ],
+    "note": ""
+  },
+  {
+    "uid": "weighted_mean#2",
+    "op": "weighted_mean",
+    "n_pairs": 8,
+    "n_chosen": 18,
+    "n_rejected": 6,
+    "passes": [
+      0.5,
+      0.5,
+      0.5
+    ],
+    "note": ""
+  },
+  {
+    "uid": "within_group_share#4",
+    "op": "within_group_share",
+    "n_pairs": 8,
+    "n_chosen": 18,
+    "n_rejected": 3,
+    "passes": [
+      0.833,
+      0.833,
+      0.833
+    ],
+    "note": ""
+  },
+  {
+    "uid": "within_group_share#5",
+    "op": "within_group_share",
+    "n_pairs": 6,
+    "n_chosen": 6,
+    "n_rejected": 3,
+    "passes": [
+      0.917,
+      0.917,
+      0.917
+    ],
+    "note": ""
+  },
+  {
+    "uid": "within_group_share#6",
+    "op": "within_group_share",
+    "n_pairs": 8,
+    "n_chosen": 18,
+    "n_rejected": 3,
+    "passes": [
+      0.917,
+      0.917,
+      0.917
+    ],
+    "note": ""
+  },
+  {
+    "uid": "zscore_within_group#48",
+    "op": "zscore_within_group",
+    "n_pairs": 8,
+    "n_chosen": 23,
+    "n_rejected": 3,
+    "passes": [
+      0.833,
+      0.917,
+      0.917
+    ],
+    "note": ""
+  },
+  {
+    "uid": "zscore_within_group#49",
+    "op": "zscore_within_group",
+    "n_pairs": 8,
+    "n_chosen": 19,
+    "n_rejected": 3,
+    "passes": [
+      0.75,
+      0.667,
+      0.667
+    ],
+    "note": ""
+  },
+  {
+    "uid": "zscore_within_group#50",
+    "op": "zscore_within_group",
+    "n_pairs": 8,
+    "n_chosen": 21,
+    "n_rejected": 3,
+    "passes": [
+      0.833,
+      0.833,
+      0.833
+    ],
+    "note": ""
+  }
+]

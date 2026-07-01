@@ -54,6 +54,12 @@ overlap. Ceiling (any gold-correct repair among the 6): base 0.417 vs tuned **0.
 (A gentler run, lr 2e-6, gave tuned contract_pass 0.542 > 0.500 but the same 29.2% gold —
 identical conclusion.)
 
+**Replicated on a stronger base (Qwen2.5-Coder-7B-Instruct, apache-2.0)** — see
+`../results_dpo_7b/DPO_7B_SUMMARY.md`. Same conclusion, sharper: 7B no-train best-of-6
+jumps to **48.0%** (contract_pass 0.72, over-repair 0), while DPO again does NOT help
+(greedy −4.0, best-of-6 −8.0). The gain is (stronger base) × (goldless best-of-N
+selection); DPO erodes the sampling diversity it relies on (7B any-gold-in-6 ceiling 0.640).
+
 ## Honest conclusions
 1. **The goldless contract is a strong TRAINING-FREE repair signal.** Targeted typed
    feedback beats generic self-repair with no training (+4.2 pts gold, +4.2 pts
