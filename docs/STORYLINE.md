@@ -320,7 +320,17 @@ LLM 大量替人写 pandas / matplotlib 代码做分析与画图。现有可视�
 
 ---
 
-## B. 每个部分怎么解释(repo → 故事角色)
+## A7. "契约是不是手写死的、能不能自动扩展"——从 NL 自动合成无 gold 契约
+
+审稿最深的两个攻点:**novelty**("这不就是 40 年前的 design-by-contract / property-based testing,手写 28 个 assertion 而已?")和**可扩展性**("手写契约扩不到未见算子")。正面回应:让**前沿 LLM 仅凭 NL 意图 + 参数名 + 结果 schema 自动合成契约函数**(它看不到手写契约、也看不到正确/错误实现),再用与手写契约完全相同的判据测——必须在 silent slip 上 fire、在正确实现上 pass、在**其他有效实现**上也 pass(FP 鲁棒)。评估已排除"永远 fire/永不 fire"的退化契约。
+
+| 判据(11 个 pandas 算子,gpt-5.4,best-of-3) | 自动合成正确率 | 95% CI |
+|---|---|---|
+| exec-ok(合成的代码能跑) | **11/11 = 100%** | — |
+| **CORE(fire-on-slip 且 pass-on-correct)** | **8/11 = 73%** | [43–90] |
+| **FULL(再加 alt 有效实现鲁棒)** | **7/11 = 64%** | [35–85] |
+
+**7 个算子的无 gold 契约完全由 LLM 从 NL 自动写出、零人工写不变量**(order_dedup / resample / string_join / join_fanout / null_count / scale_leakage / latlon_swap)。诚实失败 3 个:dtype_coerce、lookahead_return(不变量漏了 slip)、index_align(在有效替代实现上误 fire)——位置对齐/前视这类微妙不变量仍需人。**含义**:(1) novelty 从"手写 assertion"升级为"**从 NL 自动合成无 gold 算子不变量**"(PBT 需人写 property,这里 property 由 NL 生成);(2) 可扩展性从 aspiration 变**有实测自动化率的 human-in-the-loop**——新算子 64–73% 零样本自动生成,人只需复核/修补 ~1/3 微妙情形。(`results_autocontract/AUTOCONTRACT_SUMMARY.md`)
 
 整个 repo = 研究这个问题的**完整装置**。
 
