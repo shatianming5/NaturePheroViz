@@ -82,6 +82,56 @@ def cases():
         note="INNER JOIN silently drops the left row with no match (id=2)",
         df_for_contract="l"))
 
+    # pooled_rate: correct = SUM(num)/SUM(den) per group; slip = AVG(num/den) (mean of ratios)
+    pr = pd.DataFrame({"g": ["a", "a", "b", "b"], "num": [1.0, 3.0, 5.0, 5.0], "den": [10.0, 30.0, 5.0, 15.0]})
+    out.append(dict(
+        op="pooled_rate", tables={"t": pr}, params={"group": "g", "num": "num", "den": "den", "out": "rate"},
+        correct_sql="SELECT g, SUM(num)*1.0/SUM(den) AS rate FROM t GROUP BY g",
+        slip_sql="SELECT g, AVG(num*1.0/den) AS rate FROM t GROUP BY g",
+        note="AVG(num/den) averages per-row ratios instead of the pooled sum/sum rate"))
+
+    # dedup_then_agg: correct dedups by key first; slip sums duplicated line-items
+    da = pd.DataFrame({"key": ["k1", "k1", "k2", "k3"], "grp": ["a", "a", "a", "b"], "val": [10.0, 10.0, 20.0, 30.0]})
+    out.append(dict(
+        op="dedup_then_agg", tables={"t": da}, params={"key": "key", "value": "val", "group": "grp"},
+        correct_sql=("SELECT grp, SUM(val) AS val FROM "
+                     "(SELECT key, grp, val, ROW_NUMBER() OVER (PARTITION BY key ORDER BY grp) rn FROM t) "
+                     "WHERE rn=1 GROUP BY grp"),
+        slip_sql="SELECT grp, SUM(val) AS val FROM t GROUP BY grp",
+        note="SUM without de-duplicating the repeated key double-counts the line-item"))
+
+    # null_in_agg_count: correct = COUNT(*); slip = COUNT(col) which skips NULLs
+    nc = pd.DataFrame({"g": ["a", "a", "b", "b"], "v": [1.0, None, 3.0, 4.0]})
+    out.append(dict(
+        op="null_in_agg_count", tables={"t": nc}, params={"group": "g", "out": "n"},
+        correct_sql="SELECT g, COUNT(*) AS n FROM t GROUP BY g",
+        slip_sql="SELECT g, COUNT(v) AS n FROM t GROUP BY g",
+        note="COUNT(v) silently undercounts group 'a' because one v is NULL"))
+
+    # within_group_share: correct = share within PARTITION BY g; slip = share of GLOBAL total
+    ws = pd.DataFrame({"g": ["a", "a", "b"], "v": [1.0, 3.0, 6.0]})
+    out.append(dict(
+        op="within_group_share", tables={"t": ws}, params={"group": "g", "share_col": "share"},
+        correct_sql="SELECT g, v, v*1.0/SUM(v) OVER (PARTITION BY g) AS share FROM t",
+        slip_sql="SELECT g, v, v*1.0/SUM(v) OVER () AS share FROM t",
+        note="OVER () uses the grand total, so shares sum to 1 globally, not within group"))
+
+    # cumulative_running: correct = running SUM OVER (ORDER BY); slip = raw per-row value
+    cr = pd.DataFrame({"id": [1, 2, 3, 4], "v": [5.0, 3.0, 2.0, 4.0]})
+    out.append(dict(
+        op="cumulative_running", tables={"t": cr}, params={"value": "v", "out": "balance"},
+        correct_sql="SELECT v, SUM(v) OVER (ORDER BY id ROWS UNBOUNDED PRECEDING) AS balance FROM t",
+        slip_sql="SELECT v, v AS balance FROM t",
+        note="returning the raw per-row value instead of the running cumulative total"))
+
+    # proportion_true: correct = AVG(flag) in [0,1]; slip = SUM(flag) count of trues
+    ptf = pd.DataFrame({"g": ["a", "a", "a", "b", "b"], "flag": [1, 0, 1, 1, 1]})
+    out.append(dict(
+        op="proportion_true", tables={"t": ptf}, params={"group": "g", "flag": "flag", "out": "pass_rate"},
+        correct_sql="SELECT g, AVG(flag*1.0) AS pass_rate FROM t GROUP BY g",
+        slip_sql="SELECT g, SUM(flag) AS pass_rate FROM t GROUP BY g",
+        note="SUM(flag) returns the COUNT of trues, not the proportion in [0,1]"))
+
     return out
 
 

@@ -10,7 +10,7 @@
 > 这一节是"怎么把这堆证据组织成一篇能中的论文"的顶层框架。经两轮 brutal review 迭代后,**最高命中率的框架是 measurement-first + 条件方法 + 自动可扩展**,而不是 method-first("我们发明了一个检测算法")。三个贡献按此排序陈述:
 
 1. **【一等贡献 · 测量】** 首次系统测量"LLM 生成数据转换代码的静默语义错误有多普遍":真实 Nature **77%**、跨 10 模型/4 厂商 32–78%、外部 DS-1000 26%。**简单确定性检查(exec-pass / 形状 / 值域 / 多次一致)检出 0%,LLM 自查漏 39% + 误报 40%(不可用)**——这是独立于我们方法、没人做过的经验发现。
-2. **【二等贡献 · 无训练配方】** 一套**无 gold、无训练**的 检测→定位→修复→挑选 配方:真实数据检测 recall 99%/FP 0%;typed 修复 79–81%(vs 强 self-debug 3–5%,vs 只定位 45%,增益归因清晰);best-of-N 无 gold 挑选把修复抬到 48% gold/0.67 契约pass 且零误修。**且契约可从高层 NL 意图自动合成(去泄露 78%、给定公式时 83%,N=23,1-shot)、与执行基底无关(pandas→SQL 4/4)**——回应 novelty 与可扩展性。
+2. **【二等贡献 · 无训练配方】** 一套**无 gold、无训练**的 检测→定位→修复→挑选 配方:真实数据检测 recall 99%/FP 0%;typed 修复 79–81%(vs 强 self-debug 3–5%,vs 只定位 45%,增益归因清晰);best-of-N 无 gold 挑选把修复抬到 48% gold/0.67 契约pass 且零误修。**契约可从高层 NL 意图自动合成(去泄露 78%、给定公式时 83%,N=23,1-shot);整套系统从真·凌乱查询白手起家、零模板端到端 61% 抓错;与执行基底无关(pandas→SQL 10/10)**——正面回应条件有效性、novelty 与可扩展性三大攻点。
 3. **【诚实边界】** 方法活在"算子级意图已知/可结构化给定"前提下;迁移到任意 free-text 代码受**算子推断**瓶颈(DS-1000 覆盖率低、端到端未达 70/20),但 LLM scope-gate 把范围外 FP 55%→5% 使其**部署安全**。边界量化披露,不藏。
 
 > **一句话定位**:"我们**测量出**一个被忽视但普遍(77%)的失败模式,并给出一套**无训练、可自动扩展、跨基底**的无 gold 检测+修复配方,在算子意图可得时近乎完美,在意图不可得时**安全弃权**——把'代码能跑≠算对'这件事第一次量化并给了实用解。" 目标 venue:AAAI main(按此框架)/ NeurIPS D&B / ICSE·FSE。
@@ -376,8 +376,48 @@ LLM 大量替人写 pandas / matplotlib 代码做分析与画图。现有可视�
 | groupby_dropna_key | `WHERE g IS NOT NULL` 静默丢 NaN 键行 | ✅ | ✅ |
 | join_fanout | `JOIN tags` 后 `SUM(amt)` 被 1-对-多 fan-out 放大 | ✅ | ✅ |
 | left_join_keep_all | `INNER JOIN` 丢掉无匹配的左行 | ✅ | ✅ |
+| pooled_rate | `AVG(num/den)` 平均每行比率,非池化 `SUM/SUM` | ✅ | ✅ |
+| dedup_then_agg | 不去重直接 `SUM`,重复 line-item 双算 | ✅ | ✅ |
+| null_in_agg_count | `COUNT(v)` 跳过 NULL,漏计该组 | ✅ | ✅ |
+| within_group_share | `SUM(v) OVER ()` 用全局总额,非 `PARTITION BY g` | ✅ | ✅ |
+| cumulative_running | 返回每行原值,漏掉 `SUM() OVER (ORDER BY)` 累计 | ✅ | ✅ |
+| proportion_true | `SUM(flag)` 返回计数,非 `AVG(flag)` 比例 | ✅ | ✅ |
 
-**4/4 全过,契约一字未改**。这些正是最典型的真实 SQL 错误(无权重 AVG、NULL 过滤、join fan-out、inner-join 丢行)。**一个诚实的细节反而更有力**:groupby_dropna_key 的"正确 SQL"用 `COALESCE(g,'__NA__')` 处理 SQLite 与 pandas **不同的 NULL/NaN 语义**——说明**不变量(总量守恒)跨基底不变,而正确实现本身要按基底适配**;契约检查的是前者,所以迁移。→ 检测机制**不是 pandas 专属**,而是"**基底无关的算子语义验证**",pandas 只是其中一个实例。已加进测试(`tests/test_crossdomain_sql.py`,离线)。**诚实边界**:这 4 个算子的不变量是守恒/范围/行数类,天然跨基底;我们不声称所有不变量都平凡迁移(如依赖 pandas 特有 NaN 传播的算子需重新表述)。(`results_crossdomain/CROSSDOMAIN_SUMMARY.md`)
+**10/10 全过,契约一字未改**(从 R3 的 4/4 扩到 10/10,覆盖 window 函数 `OVER()`/`PARTITION BY`、`COUNT(col)` vs `COUNT(*)`、缺 `DISTINCT`、`AVG`-of-ratios 等**最典型真实 SQL 错误**)。**一个诚实的细节反而更有力**:groupby_dropna_key 的"正确 SQL"用 `COALESCE(g,'__NA__')` 处理 SQLite 与 pandas **不同的 NULL/NaN 语义**——说明**不变量(总量守恒)跨基底不变,而正确实现本身要按基底适配**;契约检查的是前者,所以迁移。→ 检测机制**不是 pandas 专属**,而是"**基底无关的算子语义验证**",pandas 只是其中一个实例。已加进测试(`tests/test_crossdomain_sql.py`,离线,断言 ≥10 算子全过)。**诚实边界**:这些算子的不变量是守恒/范围/行数/占比类,天然跨基底;我们不声称所有不变量都平凡迁移(如依赖 pandas 特有 NaN 传播的算子需重新表述)。(`results_crossdomain/crossdomain_sql.json`)
+
+### A8. "99%/0% 是不是靠人给定算子"——全端到端、零模板、从凌乱查询白手起家
+
+**三个独立评审(claude/gpt-5.5/gemini)一致点名的最深天花板**:Nature 99%/0% 是在"算子+参数**模板给定**"下测的,所以"可部署的无 gold 检测器"从未被端到端验证过。A8 正面闭环这个缺口——给系统的**只有一句凌乱、欠定的自然语言请求 + 真实表**,**零模板**,跑完整链路测能否抓到静默错误:
+
+> 凌乱 NL --①LLM 推断算子--> op̂ --②LLM 从凌乱 NL 合成 goldless 契约(无公式)--> C --> C 检测 wrong/correct
+
+**反循环设计**:凌乱查询由 LLM 把**高层目标改写**成"赶时间分析师的口吻",生成时**从不给算子名/公式/要避开的错误**,且**全部缓存到 `messy_queries.json` 供审稿人逐条审计**。样例(真实生成,非我手写):
+
+| 算子 | 喂给系统的凌乱查询(零术语) |
+|---|---|
+| weighted_mean | "给我一个总体平均价,把数量考虑进去" |
+| within_group_share | "加一列,显示每行 sales 占它所在 region 总额的比例" |
+| dedup_then_agg | "按 region 汇总,重复的 order_id 只算一次再求和" |
+
+| 端到端环节(gpt-5.4,N=23,零模板) | 成功率 | 95% CI |
+|---|---|---|
+| ① 算子推断(凌乱 NL→算子) | **19/23 = 83%** | [63–93] |
+| ② 契约合成 CORE(从凌乱 NL) | **17/23 = 74%** | [54–87] |
+| ② 契约合成 FULL(+alt 鲁棒) | 16/23 = 70% | [49–84] |
+| **全系统(①②都对才算)** | **14/23 = 61%** | [41–78] |
+
+**含义**:从**真·凌乱查询白手起家**(什么都不给),整套系统 **61% 端到端抓到静默错误**——不是模板给定的 99%,但**远非零**,且**直接反驳"算子必须硬编码"**。损失可归因分解:算子推断 4 个 miss 全是**语义相邻混淆**(index_align↔join_fanout、dtype_coerce↔string_normalize 都属同族;null_count→保守弃权 None),契约合成的 6 个 fail 集中在位置对齐/前视/dtype 前导零——**与自动合成、修复失败的是同一批本质微妙算子**(难度属算子本身)。**部署图景现在有了真实数字**:清晰 NL 意图(数据助手天然场景)→ 61% 白手起家端到端 → 模板/结构化 op 已知时升到 99%/0%。(`results_e2e/e2e_report.json` + `messy_queries.json`)
+
+### A9. "自动合成不就是 prompt 一下 LLM"——goldless 反例引导合成算法(诚实的中性结果)
+
+审稿说合成"只是 prompt 一次,不是算法"。`cegis_synth.py` 用一个**带 goldless 验证 oracle 的合成循环**回应:①1-shot 合成 C0;②让 LLM 生成 K=4 个**多样实现**,跑在 fixture 上按输出聚类,最大一致簇=goldless"大概率正确"集(独立实现彼此印证,不用 gold);③**变形探针**(把共识结果做缩放/置换/删行/尖峰扰动)——真不变量必 fire、退化恒放过者 fire 不了,goldless 地识别退化;④若 C 在共识成员上 fire=goldless 假阳反例,喂回重合成,**只在 goldless 分(共识 pass+探针 fire)严格上升且不退化时才接受**→单调安全;⑤共识弱(<3 一致)则不信、保留 C0。
+
+| gpt-5.4,去泄露,core N=12(CEGIS 复用 1-shot 种子,苹果对苹果) | CORE | FULL(alt 鲁棒) |
+|---|---|---|
+| 1-shot | 10/12 = 83% | 10/12 = 83% |
+| **CEGIS** | 10/12 = **83%** | 10/12 = **83%** |
+
+**诚实解读——这是中性聚合,我们如实报告,不粉饰**:(1) **设计上不回退**:单调分守护+复用种子+≥3 信任门,可证 CEGIS≥1-shot(无守护的早期版在弱/偏共识上确实回退过 weighted_mean/median,守护正是修这个);(2) **共识强时确能修 FP/alt 失败**——多次运行中 1-shot 误伤 `dedup_then_agg` 有效替代实现时,共识反例驱动的精修把它修对;(3) **但不胜过已很强的去泄露 1-shot**,因为残留失败(pct_point、median)是 **recall 型**(契约太宽、fire 不了微妙 slip),FP 导向的共识精修**够不着**——这是诚实边界。**它贡献的是机制不是数字**:证明合成可被一个真正的 goldless 验证算法(共识+变形 oracle+反例引导+单调安全)驱动——用机制而非口号回应"只是 prompt";可扩展性的**证据**仍锚在诚实的去泄露 1-shot(78% CORE)+端到端(61%),不靠 CEGIS 抬分。**暴露的假设**:goldless 共识仅在独立实现多数正确时有效,LLM 系统性偏置(如默认算平均)时共识可能错——≥3 信任门缓解但不根除,如实写出而非藏起。(`results_cegis/CEGIS_SUMMARY.md`)
 
 整个 repo = 研究这个问题的**完整装置**。
 
