@@ -36,6 +36,49 @@ from eval.autocontract_synth import DELEAKED_INTENT, SYNTH_PROMPT, _result_schem
 from eval.e2e_pipeline import MESSY_PROMPT, gen_messy
 
 
+# input column-ROLES each operator needs grounded (output-name roles like "out" are not inferred)
+PARAM_ROLES = {
+    "median_not_mean": ["group", "value"],
+    "within_group_share": ["group", "value"],
+    "weighted_mean": ["value", "weight"],
+    "pooled_rate": ["group", "num", "den"],
+    "nan_as_zero_sum": ["group", "value"],
+    "null_in_agg_count": ["group"],
+    "groupby_dropna_key": ["group", "value"],
+}
+_ROLE_GLOSS = {
+    "group": "the categorical column to group/aggregate BY",
+    "value": "the numeric column being summarized/aggregated",
+    "weight": "the numeric column that weights the value (larger = more influence)",
+    "num": "the numerator numeric column of the rate",
+    "den": "the denominator numeric column of the rate",
+}
+
+
+def infer_params_llm(nl, cols, op, model):
+    """Ground the operator's column ROLES from the messy NL + raw column names ALONE — the last
+    piece that was previously schema-given. Returns {role: column} or None."""
+    import re
+    roles = PARAM_ROLES.get(op, [])
+    if not roles:
+        return {}
+    gloss = "\n".join(f'- "{r}": {_ROLE_GLOSS.get(r, r)}' for r in roles)
+    q = (f"A user asked (in plain words): \"{nl}\"\n"
+         f"The table has these columns: {list(cols)}.\n"
+         f"For this task, map each ROLE below to the SINGLE most appropriate column name "
+         f"(choose only from the columns listed; use the exact column string):\n{gloss}\n"
+         f"Reply with ONLY strict JSON: {{{', '.join(f'\"{r}\": \"<column>\"' for r in roles)}}}.")
+    out = _chat_api([{"role": "user", "content": q}], model, max_tok=800)
+    m = re.search(r"\{.*\}", out or "", re.S)
+    if not m:
+        return None
+    try:
+        d = json.loads(m.group(0))
+    except Exception:
+        return None
+    return {r: d.get(r) for r in roles if d.get(r) in list(cols)} or None
+
+
 # deterministic SILENT SLIP per operator on a real table (the mistake an analyst makes)
 def slip_result(op, df, params):
     p = params
@@ -65,9 +108,15 @@ def slip_result(op, df, params):
     return None
 
 
-def synth_from_text(op, df, params, intent_text, model):
-    correct = _gold_result(op, df, params)
-    kind, rcols = _result_schema(correct)
+def synth_from_text(op, df, params, intent_text, model, schema_params=None):
+    # schema (result kind/cols) is computed from the TRUE params so a wrong INFERRED param
+    # doesn't crash schema-building; the contract PROMPT still uses the (possibly inferred)
+    # `params` so a wrong role genuinely propagates to a detection failure (honest).
+    try:
+        correct = _gold_result(op, df, schema_params or params)
+        kind, rcols = _result_schema(correct)
+    except Exception:
+        kind, rcols = "DataFrame", list(df.columns)
     cols = list(df.columns)
     extra = ""
     prompt = SYNTH_PROMPT.format(intent=intent_text, cols=cols, extra=extra,
@@ -120,6 +169,9 @@ def main():
     ap.add_argument("--max-tasks", type=int, default=400)
     ap.add_argument("--cache", default="eval/results_e2e/messy_queries_real.json")
     ap.add_argument("--out", default="eval/results_e2e/e2e_real_report.json")
+    ap.add_argument("--infer-params", action="store_true",
+                    help="ALSO ground column-role params (group/value/weight/num/den) from the NL "
+                         "-> truly nothing structured given except the raw table + messy request")
     a = ap.parse_args()
 
     tasks = _build(a.pairs_root, a.max_tasks, max_per_article=6, max_rows=200, expansion=True)
@@ -149,7 +201,7 @@ def main():
     cache = json.load(open(cache_p)) if cache_p.exists() else {}
     changed = False
 
-    n = op_ok = c_core = sys_core = 0
+    n = op_ok = c_core = sys_core = param_ok = sys_full = 0
     recs = []
     import re
     for t in clean:
@@ -160,32 +212,70 @@ def main():
             cache[key] = gen_messy(goal, list(df.columns), a.model); changed = True
         msg = cache[key]
         op_hat = classify_op_llm(msg, list(df.columns), a.model, conservative=False)
-        code = synth_from_text(op, df, params, msg, a.model)
-        gold = _as_frame(_gold_result(op, df, params)); slip = _as_frame(slip_result(op, df, params))
-        fire_slip = _run_auto(code, {"df": df}, params, slip)
-        pass_gold = _run_auto(code, {"df": df}, params, gold)
-        core = (fire_slip is True) and (pass_gold is False)
         op_correct = (op_hat == op)
-        system_ok = op_correct and core
+
+        # G1: ground column-ROLE params from the NL too (nothing structured given)
+        params_inf = None; params_correct = None
+        if a.infer_params:
+            roles = PARAM_ROLES.get(op, [])
+            gold_roles = {r: params.get(r) for r in roles}
+            # infer using the INFERRED operator (deployment-faithful); fall back to true op only
+            # for role-set (an op the classifier missed still needs *some* role schema to ask)
+            params_inf = infer_params_llm(msg, list(df.columns), op_hat or op, a.model)
+            if params_inf:
+                params_correct = all(params_inf.get(r) == gold_roles.get(r) for r in roles)
+            else:
+                params_correct = False
+            param_ok += int(bool(params_correct))
+            # build the params dict the contract/synth will actually use (inferred roles +
+            # pass-through of any output-name params like "out")
+            use_params = dict(params)
+            if params_inf:
+                use_params.update(params_inf)
+        else:
+            use_params = params
+
+        code = synth_from_text(op, df, use_params, msg, a.model, schema_params=params)
+        gold = _as_frame(_gold_result(op, df, params)); slip = _as_frame(slip_result(op, df, params))
+        fire_slip = _run_auto(code, {"df": df}, use_params, slip)
+        pass_gold = _run_auto(code, {"df": df}, use_params, gold)
+        core = (fire_slip is True) and (pass_gold is False)
+        system_ok = op_correct and core                      # op + contract (params given)
+        full_ok = op_correct and core and bool(params_correct) if a.infer_params else system_ok
         n += 1; op_ok += int(op_correct); c_core += int(core); sys_core += int(system_ok)
-        recs.append({"op": op, "name": key, "messy_nl": msg, "op_hat": op_hat,
-                     "op_correct": op_correct, "contract_core": bool(core), "system_ok": system_ok})
+        sys_full += int(full_ok)
+        rec = {"op": op, "name": key, "messy_nl": msg, "op_hat": op_hat,
+               "op_correct": op_correct, "contract_core": bool(core), "system_ok": system_ok}
+        if a.infer_params:
+            rec.update({"params_inferred": params_inf, "params_correct": bool(params_correct),
+                        "full_system_ok": bool(full_ok)})
+        recs.append(rec)
+        extra = ""
+        if a.infer_params:
+            extra = f" params:{'OK' if params_correct else 'x':2} => {'FULL-SYS-OK' if full_ok else '-'}"
         print(f"  {op:20} op_hat={str(op_hat):20} {'OKop' if op_correct else 'xop':4} "
-              f"contract:{'CORE' if core else 'fail':4} => {'SYSTEM-OK' if system_ok else '-'}", flush=True)
+              f"contract:{'CORE' if core else 'fail':4}{extra}", flush=True)
     if changed:
         cache_p.parent.mkdir(parents=True, exist_ok=True); json.dump(cache, open(cache_p, "w"), indent=2)
 
     summary = {"model": a.model, "substrate": "REAL Nature tables (data/nature_pairs)", "n": n,
+               "infer_params": a.infer_params,
                "operator_inference": {"k": op_ok, "n": n, "pct_ci": wilson(op_ok, n)},
                "contract_synth_core": {"k": c_core, "n": n, "pct_ci": wilson(c_core, n)},
                "FULL_SYSTEM_core": {"k": sys_core, "n": n, "pct_ci": wilson(sys_core, n)},
                "cases": recs}
+    if a.infer_params:
+        summary["param_inference"] = {"k": param_ok, "n": n, "pct_ci": wilson(param_ok, n)}
+        summary["FULL_SYSTEM_with_inferred_params"] = {"k": sys_full, "n": n, "pct_ci": wilson(sys_full, n)}
     outp = Path(a.out); outp.parent.mkdir(parents=True, exist_ok=True)
     json.dump(summary, open(outp, "w"), indent=2)
     print(f"\n=== END-TO-END on REAL NATURE TABLES (nothing template-given, model {a.model}) ===")
     print(f"(1) operator inference:        {op_ok}/{n} = {wilson(op_ok,n)[0]}% CI{wilson(op_ok,n)[1:]}")
     print(f"(2) contract synth CORE:       {c_core}/{n} = {wilson(c_core,n)[0]}% CI{wilson(c_core,n)[1:]}")
     print(f"FULL SYSTEM (op AND contract): {sys_core}/{n} = {wilson(sys_core,n)[0]}% CI{wilson(sys_core,n)[1:]}")
+    if a.infer_params:
+        print(f"(3) column-role PARAM inference: {param_ok}/{n} = {wilson(param_ok,n)[0]}% CI{wilson(param_ok,n)[1:]}")
+        print(f"FULL SYSTEM + inferred params:  {sys_full}/{n} = {wilson(sys_full,n)[0]}% CI{wilson(sys_full,n)[1:]}  (ONLY messy NL + raw table)")
     print(f"-> {outp}")
     return 0
 

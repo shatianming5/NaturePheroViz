@@ -11,9 +11,11 @@
 
 1. **【一等贡献 · 测量】** 首次系统测量"LLM 生成数据转换代码的静默语义错误有多普遍":真实 Nature **77%**、跨 10 模型/4 厂商 32–78%、外部 DS-1000 26%。**简单确定性检查(exec-pass / 形状 / 值域 / 多次一致)检出 0%,LLM 自查漏 39% + 误报 40%(不可用)**——这是独立于我们方法、没人做过的经验发现。
 2. **【二等贡献 · 无训练配方】** 一套**无 gold、无训练**的 检测→定位→修复→挑选 配方:真实数据检测 recall 99%/FP 0%;typed 修复 79–81%(vs 强 self-debug 3–5%,vs 只定位 45%,增益归因清晰);best-of-N 无 gold 挑选把修复抬到 48% gold/0.67 契约pass 且零误修。**契约可从高层 NL 意图自动合成(去泄露 78%、给定公式时 83%,N=23,1-shot);整套系统从真·凌乱查询白手起家、零模板端到端 61%(**真实 Nature 表 58%**,数字一致)抓错;与执行基底无关(pandas→SQL 10/10)**——正面回应条件有效性、novelty 与可扩展性三大攻点。
-3. **【诚实边界】** 方法活在"算子级意图已知/可结构化给定"前提下;迁移到任意 free-text 代码受**算子推断**瓶颈(DS-1000 覆盖率低、端到端未达 70/20),但 LLM scope-gate 把范围外 FP 55%→5% 使其**部署安全**。**另一处如实划界**:端到端 pipeline 从凌乱 NL 推断的是**算子**并合成**契约**,但**列角色参数(哪列是 group / value / weight)仍由 schema 结构化提供**——不声称从纯 NL 恢复列角色映射(future work:把列角色 grounding 也纳入推断)。边界量化披露,不藏。
+3. **【诚实边界】** 方法活在"算子级意图已知/可结构化给定"前提下;迁移到任意 free-text 代码受**算子推断**瓶颈(DS-1000 覆盖率低、端到端未达 70/20),但 LLM scope-gate 把范围外 FP 55%→5% 使其**部署安全**。**曾经的"列角色 params 需给定"边界现已闭合**:params 也从纯 NL grounding(真实表 74%),完全端到端("只给凌乱 NL+裸表")仍 51% 抓错、仅比 params 给定低 3pt。残留 param miss 是真实语义歧义(weighted 的 value/weight、pooled 的 num/den),如实披露。边界量化,不藏。
 
 > **一句话定位**:"我们**测量出**一个被忽视但普遍(77%)的失败模式,并给出一套**无训练、可自动扩展、跨基底**的无 gold 检测+修复配方,在算子意图可得时近乎完美,在意图不可得时**安全弃权**——把'代码能跑≠算对'这件事第一次量化并给了实用解。" 目标 venue:AAAI main(按此框架)/ NeurIPS D&B / ICSE·FSE。
+
+> **为什么是 AAAI main 而不是 FSE/ICSE(正面回应 venue 攻点)**:审稿可能说"运行时契约是软件工程"。但本工作的**核心贡献是 AI 层面的**,不是写断言:(1) **把非形式化的自然语言意图 grounding 成可执行的验证约束**——从凌乱用户请求推断算子(真实表 76%)、grounding 列角色、并**合成** goldless 不变量(去泄露 78%),这是 NL→形式语义的落地,是 AI 推理问题不是编码问题;(2) **无 gold 的正确性判定**:在没有参考答案时用共识+变形 oracle 判 LLM 输出对错(CEGIS),是"如何在无监督下验证生成内容"这一 LLM 核心难题的具体实例;(3) **测量 + 可预测性**:静默错误的双峰结构、跨 10 模型稳定复现,是关于 LLM 代码生成失败模式的经验科学。FSE 关心"软件缺陷检测工具",AAAI 关心"AI 系统如何把模糊意图变成可验证约束并在无 gold 下自证"——本工作正是后者。软件工程读者会欣赏契约机制,但**新颖性活在 NL-意图-grounding + 无 gold 合成/验证**,属 AI。
 
 ### A00.1 "方法是不是非要人给定算子"——真实 Nature 上从 NL 恢复算子 100%
 
@@ -355,7 +357,7 @@ LLM 大量替人写 pandas / matplotlib 代码做分析与画图。现有可视�
 | **CORE(fire-on-slip 且 pass-on-correct)** | **19/23 = 83%** | [63–93] |
 | **FULL(再加 alt 有效实现鲁棒)** | **18/23 = 78%** | [58–90] |
 
-**1-shot(非 best-of-3,无 retry 虚高),清过审稿点名的决定性门槛(1-shot CORE≥70% @ N≥17),83%@N=23 超额达标。** 分组:**12 个核心算子 CORE 11/12=92%**(weighted_mean/within_group_share/dedup/left_join/pooled/median/cumulative/topn/nan_sum/count_empty/proportion——它们的不变量"加权均值落在 min/max 间""每组占比和=1""总量守恒""并列保留"从 NL 干净可写),11 个新算子 CORE 8/11=73%。诚实失败集中在位置对齐/前视/dtype 前导零这类**本质微妙**的不变量——恰是手写契约与修复也最弱的同一批算子(难度属于算子本身,非合成)。**含义**:(1) novelty 从"手写 assertion"升级为"**从 NL 自动合成无 gold 不变量**",且**功效充分**(N=23、CI 收紧、1-shot);(2) 可扩展性=新算子 83% 零样本自动生成,人只需复核 ~1/6 微妙情形。**跨模型稳健**:换 gpt-5.5、**换厂商 gemini-3.1-pro** 重跑,CORE 全部**同为 83%**、FULL 78–83%——合成率是算子+方法的属性,非单一模型特有,破"cherry-pick 模型"。(`results_autocontract/AUTOCONTRACT_SUMMARY.md`)
+**1-shot(非 best-of-3,无 retry 虚高),清过审稿点名的决定性门槛(1-shot CORE≥70% @ N≥17),83%@N=23 超额达标。** 分组:**12 个核心算子 CORE 11/12=92%**(weighted_mean/within_group_share/dedup/left_join/pooled/median/cumulative/topn/nan_sum/count_empty/proportion——它们的不变量"加权均值落在 min/max 间""每组占比和=1""总量守恒""并列保留"从 NL 干净可写),11 个新算子 CORE 8/11=73%。诚实失败集中在位置对齐/前视/dtype 前导零这类**本质微妙**的不变量——恰是手写契约与修复也最弱的同一批算子(难度属于算子本身,非合成)。**含义**:(1) novelty 从"手写 assertion"升级为"**从 NL 自动合成无 gold 不变量**",且**功效充分**(N=23、CI 收紧、1-shot);(2) 可扩展性=新算子 83% 零样本自动生成,人只需复核 ~1/6 微妙情形。**跨模型稳健**:换 gpt-5.5、**换厂商 gemini-3.1-pro** 重跑,CORE 全部**同为 83%**、FULL 78–83%——合成率是算子+方法的属性,非单一模型特有,破"cherry-pick 模型"。**再回应"算子分类法是不是拍脑袋手设"**:这些算子家族**不是任意发明的**,而是从测量研究里**实证观察到的真实静默错误模式**归纳出来的(一等贡献的 77% 正是在这些家族上测的),且**新家族可零样本自动合成加入(83%)**——分类法既有经验根基、又可自动外扩,不是封闭手写集。(`results_autocontract/AUTOCONTRACT_SUMMARY.md`)
 
 > ⚠️ **去泄露对照(回应独立评审的"同义反复"攻点)**:两个独立评审(gpt-5.5、跨厂商 gemini-3.1-pro)核验代码后指出,上表的 `INTENT` 直接**写死了公式**(如 `sum(value*weight)/sum(weight)`)和**要避开的错误**("not the mean")——"LLM 只是把陈述好的公式翻译成代码,而非从高层意图**发现**不变量"。这是公允的批评。于是重跑 **去泄露版**(`--intent deleaked`):`INTENT` 只用**普通用户口吻的高层目标**描述——**无公式、无 "not the X" 对比、无待查不变量**(如 weighted_mean 改为"权重大的行对平均影响更大"、median 改为"抗少数极端值的代表性中心值")。结果:
 >
@@ -416,7 +418,17 @@ LLM 大量替人写 pandas / matplotlib 代码做分析与画图。现有可视�
 | ② 契约合成 CORE(从凌乱 NL) | **23/33 = 70%** | [53–83] |
 | **全系统(①②都对才算)** | **19/33 = 58%** | [41–73] |
 
-真实凌乱查询样例(缓存于 `messy_queries_real.json`,用**真实 Nature 列名**、零术语):median→"给我每个 Chr 组一个典型 age,用抗少数极端值的方式";weighted_mean→"给我 End 的总体平均,用 Start 让大的条目更重要";nan_as_zero→"按 Time(h) 汇总 AdC3KO,有空行也照样给个数"。**关键**:真实表上端到端 **58%**,与合成 fixture 的 61% **高度一致**——部署数字**在真实数据上成立、不是 fixture 侥幸**。算子推断略降(76% vs 83%)因 null_in_agg_count 在真实表上常与 count_includes_empty 混淆或保守弃权 None(同族"计数"算子),如实披露。这**彻底闭上"99%/0% 靠模板给定算子"的攻点**:真实表、真实列、凌乱 NL、零模板,系统仍端到端抓错。**诚实划界(内联)**:pipeline 从凌乱 NL 推断的是**算子**并合成**契约**,而**列角色参数(哪列 group/value/weight)仍由 schema 结构化提供**——不声称从纯 NL 恢复列角色映射(列角色 grounding 留作 future work)。(`results_e2e/e2e_real_report.json` + `messy_queries_real.json`)
+真实凌乱查询样例(缓存于 `messy_queries_real.json`,用**真实 Nature 列名**、零术语):median→"给我每个 Chr 组一个典型 age,用抗少数极端值的方式";weighted_mean→"给我 End 的总体平均,用 Start 让大的条目更重要";nan_as_zero→"按 Time(h) 汇总 AdC3KO,有空行也照样给个数"。**关键**:真实表上端到端 **58%**,与合成 fixture 的 61% **高度一致**——部署数字**在真实数据上成立、不是 fixture 侥幸**。算子推断略降(76% vs 83%)因 null_in_agg_count 在真实表上常与 count_includes_empty 混淆或保守弃权 None(同族"计数"算子),如实披露。这**彻底闭上"99%/0% 靠模板给定算子"的攻点**:真实表、真实列、凌乱 NL、零模板,系统仍端到端抓错。
+
+**A8.2 连列角色参数也从 NL 推断——真正"只给凌乱 NL + 裸表"(闭 gpt-5.5 校准点)**:上面 pipeline 推断算子+合成契约,但列角色(哪列 group/value/weight)还是 schema 给定。这一步把**它也从 NL grounding**:给定凌乱请求+裸列名,让 LLM 把每个角色映射到列(`e2e_real.py --infer-params`,`infer_params_llm`)。真实 Nature 表 N=35:
+
+| 环节(全部只从凌乱 NL + 裸表) | 成功率 | 95% CI |
+|---|---|---|
+| 列角色参数推断(group/value/weight/num/den) | **26/35 = 74%** | [58–86] |
+| 全系统(params **给定**:算子+契约) | 19/35 = 54% | [38–70] |
+| **全系统(params 也**推断**:算子+参数+契约全从 NL)** | **18/35 = 51%** | [36–67] |
+
+**关键:params 从 schema 给定→从 NL 推断,全系统只从 54% 掉到 51%(−3pt)**——列角色 grounding 代价极小,**"只给凌乱 NL + 裸表、零结构"的完全端到端仍 51% 抓错**。参数推断的 miss 是**真实歧义**(weighted_mean 的"哪个数值列是 value vs weight"、pooled_rate 的"num/den 顺序"从 NL 本就难分),如实披露非造假。这**把最后一块"结构化给定"也拿掉了**:输入 = 一句凌乱人话 + 一张裸表,输出 = 是否算错。(`results_e2e/e2e_real_fullparams.json`)
 
 ### A9. "自动合成不就是 prompt 一下 LLM"——goldless 反例引导合成算法(诚实的中性结果)
 

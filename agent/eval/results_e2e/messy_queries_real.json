@@ -31,5 +31,7 @@
   "wmean::s41586-026-10637-x:Fig. 3d:DOP (%, RMBA)": "Can you give me one overall average DOP0 that reflects the Pump Fluence values more heavily when they\u2019re larger?",
   "pooled::s41586-026-10637-x:Fig. 3d:DOP (%, RMBA)": "Can you give me one overall DOP figure per group by rolling up all the members together, using the RMBA DOP column?",
   "nanzero::s41586-026-10637-x:Fig. 3d:DOP (%, RMBA)": "Can you total up **Pump Fluence (\u00b5J cm^-2)** for each **DOP (%, RMBA)** bucket, and make sure groups still get a number even if a few entries are blank?",
-  "nullcount::s41586-026-10637-x:Fig. 3d:DOP (%, RMBA)": "Can you break this out into a simple count by DOP (%, RMBA) and Pump Fluence (\u00b5J cm^-2)?"
+  "nullcount::s41586-026-10637-x:Fig. 3d:DOP (%, RMBA)": "Can you break this out into a simple count by DOP (%, RMBA) and Pump Fluence (\u00b5J cm^-2)?",
+  "median::s41586-024-08525-3:Extended Fig.8e:0.2": "Can you give me a typical value for each -- group using 0.2, something that won\u2019t get skewed by a few weirdly high or low rows?",
+  "median::s41586-026-10490-y:ExD Fig. 11a:Coculture conditions": "Can you give me a typical Similarity score for each Coculture conditions group, using something robust to a few weird outliers?"
 }
