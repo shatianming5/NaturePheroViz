@@ -57,6 +57,65 @@ def gen_api(prompt: str, model: str) -> str:
         return ""
 
 
+# operator classes the contract library covers (the LLM inferer picks one of these or NONE)
+_OPS_COVERED = ["weighted_mean", "within_group_share", "pct_point", "dedup_then_agg",
+                "left_join_keep_all", "pooled_rate", "median_not_mean", "cumulative_running",
+                "topn_with_ties", "nan_as_zero_sum", "count_includes_empty", "proportion_true",
+                "zscore_within_group", "dense_rank", "cumcount_per_group", "rank_pct",
+                "clip_outlier", "index_align", "dtype_coerce", "groupby_dropna_key",
+                "order_dependent_dedup", "resample_boundary", "string_normalize_join",
+                "join_fanout", "null_in_agg_count", "scale_before_split_leakage",
+                "lookahead_return", "latlon_swap"]
+
+
+def classify_op_llm(prompt: str, cols, model: str, conservative: bool = True):
+    """LLM NL->operator classifier WITH an explicit NONE escape hatch. The naive regex
+    inferer over-fires (always assigns an op -> high FP on DS-1000). A calibrated LLM
+    classifier can ABSTAIN ('none') on tasks that are not one of our operator-semantic
+    classes — exactly what should suppress the spurious fires. Returns an op id in
+    _OPS_COVERED, or None (abstain).
+
+    conservative=True biases toward abstention (high precision / low recall); False is a
+    balanced operating point. Sweeping this traces the precision-recall tradeoff of the
+    NL->operator step, which is the real transfer bottleneck."""
+    import os, requests
+    base = os.environ["LLM_API_BASE"].rstrip("/"); key = os.environ["LLM_API_KEY"]
+    bias = ("Only answer a specific operator if the task intent CLEARLY matches that "
+            "operator's semantics; otherwise answer 'none'. Most DS-1000 tasks are 'none'.\n"
+            if conservative else
+            "Answer the single best-matching operator id if the task's core intent is one "
+            "of these operator semantics; answer 'none' only if none plausibly applies.\n")
+    q = (f"You are classifying the SEMANTIC INTENT of a pandas task into exactly one "
+         f"operator id, or 'none' if it is not clearly one of them.\n"
+         f"Operator ids: {', '.join(_OPS_COVERED)}.\n"
+         f"{bias}"
+         f'Task: "{prompt}"\nColumns: {list(cols)}\n'
+         f"Reply with ONLY the operator id or 'none'.")
+    ml = model.lower()
+    reasoning = ml.startswith(("gpt-5", "o1", "o3", "o4")) or "codex" in ml
+    payload = {"model": model, "messages": [{"role": "user", "content": q}]}
+    if reasoning:
+        payload["max_completion_tokens"] = 8000
+    else:
+        payload["temperature"] = 0.0; payload["max_tokens"] = 2000
+    try:
+        r = requests.post(base + "/chat/completions",
+                          headers={"Authorization": "Bearer " + key, "Content-Type": "application/json"},
+                          json=payload, timeout=(10, 180))
+        r.raise_for_status()
+        out = (r.json().get("choices") or [{}])[0].get("message", {}).get("content", "")
+    except Exception:
+        return None
+    toks = out.replace("`", " ").replace("\n", " ").replace(".", " ").split()
+    for t in reversed(toks):
+        s = t.strip(".,:'\"").lower()
+        if s in _OPS_COVERED:
+            return s
+        if s == "none":
+            return None
+    return None
+
+
 def main():
     ap = argparse.ArgumentParser(); ap.add_argument("--n", type=int, default=14)
     ap.add_argument("--out-json", default="eval/results_w2_firing/firing.json")
@@ -64,6 +123,9 @@ def main():
                     help="opencode: local free model. api: frontier via LLM_API_BASE/KEY (more valid cases).")
     ap.add_argument("--models", default="gpt-5.4",
                     help="api backend: comma-separated frontier models to pool over (more cases).")
+    ap.add_argument("--infer", choices=("regex", "llm"), default="regex",
+                    help="regex: naive keyword inferer (over-fires). llm: calibrated LLM op-classifier with a NONE escape hatch (the decisive transfer experiment).")
+    ap.add_argument("--infer-model", default="gpt-5.4", help="model used by --infer llm")
     a = ap.parse_args()
     import json, math
     def wilson(k, m):
