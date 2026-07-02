@@ -73,7 +73,7 @@ from eval.transform_oracle import check as oracle_check  # noqa: E402
 from eval.transform_bench import _cases, expansion_cases  # noqa: E402
 from eval.attribution_eval import _run_all_contracts  # noqa: E402
 
-ARMS = ("generic", "selfdebug", "targeted", "ceiling")
+ARMS = ("generic", "selfdebug", "localize", "targeted", "ceiling")
 
 
 # --------------------------------------------------------------------------- #
@@ -191,6 +191,21 @@ def fb_selfdebug(item: Dict[str, Any], result: Optional[pd.DataFrame]) -> str:
             f"Previous result:\n{_preview(result)}")
 
 
+def fb_localize(item: Dict[str, Any], result: Optional[pd.DataFrame]) -> str:
+    """ABLATION (reviewer R2, gap #1): certainty + LOCALIZATION but NO invariant detail.
+    Tells the model the result IS wrong and WHICH operator step is at fault, but withholds
+    the specific violated invariant that fb_targeted provides. This isolates the value of
+    the TYPED CONTRACT SIGNAL (the invariant content) from the value of merely knowing
+    which step is wrong. If localize ≈ targeted, localization suffices; if localize <<
+    targeted, the typed invariant is the key contribution."""
+    op = item["op"]
+    return ("Your result IS semantically incorrect (a checkable invariant is violated).\n"
+            f"The at-fault step is the `{op}` computation.\n"
+            f"Fix ONLY the `{op}` computation. Do NOT alter parts of the pipeline that are "
+            "already correct. Produce a corrected `result`.\n"
+            f"Previous result:\n{_preview(result)}")
+
+
 def fb_targeted(item: Dict[str, Any], result: Optional[pd.DataFrame]) -> str:
     op = item["op"]
     cr = oracle_check(op, _inp(item), item["params"], result)
@@ -218,6 +233,7 @@ def fb_ceiling(item: Dict[str, Any], result: Optional[pd.DataFrame]) -> str:
 FEEDBACK: Dict[str, Callable[[Dict[str, Any], Optional[pd.DataFrame]], str]] = {
     "generic": fb_generic,
     "selfdebug": fb_selfdebug,
+    "localize": fb_localize,
     "targeted": fb_targeted,
     "ceiling": fb_ceiling,
 }
@@ -297,9 +313,9 @@ def run_arm(item: Dict[str, Any], arm: str, buggy: pd.DataFrame, rounds: int,
             if cur.equals(prev):
                 stop_reason = "fixpoint"  # model re-derived the SAME result (silent: no gold/contract signal to know it's wrong)
                 break
-        elif arm == "targeted":
+        elif arm in ("localize", "targeted"):
             if not _true_op_fires(item, cur):
-                stop_reason = "contract_pass"  # goldless contract now satisfied
+                stop_reason = "contract_pass"  # goldless contract now satisfied (both use the same fire signal to stop; they differ only in feedback detail)
                 break
         elif arm == "ceiling":
             if score(cur):
@@ -366,9 +382,10 @@ def run(rounds: int, models: List[str], offline: bool, per_op: int, out_dir: str
                 fam[arm][item["op"]][0] += int(r["success"])
                 fam[arm][item["op"]][1] += 1
             rows.append(row)
-            print(f"[{n_usable:3d}] {row['case']:24s} {row['model']:18s} "
+            print(f"[{n_usable:3d}] {row['case']:22s} {row['model']:16s} "
                   f"gen={int(row['generic']['success'])} "
                   f"self={int(row['selfdebug']['success'])} "
+                  f"loc={int(row['localize']['success'])} "
                   f"tgt={int(row['targeted']['success'])} "
                   f"ceil={int(row['ceiling']['success'])}", file=sys.stderr, flush=True)
 
@@ -468,22 +485,29 @@ def _summarize(agg, fam, n_usable, rounds, offline, model_list) -> Dict[str, Any
     # the near-no-op generic retry. We require targeted > selfdebug (the hard test).
     passes = (succ_B > succ_S) and over_ok and rounds_ok and not regress
 
-    lines.append("## per-family success (targeted vs selfdebug vs generic vs ceiling)")
-    lines.append("| operator | generic | selfdebug | targeted | ceiling |")
-    lines.append("|---|---|---|---|---|")
+    lines.append("## per-family success (generic vs selfdebug vs localize vs targeted vs ceiling)")
+    lines.append("| operator | generic | selfdebug | localize | targeted | ceiling |")
+    lines.append("|---|---|---|---|---|---|")
     for op in sorted(fam["targeted"]):
         def fr(a):
             s, t = fam[a][op]
             return f"{s}/{t}"
-        lines.append(f"| {op} | {fr('generic')} | {fr('selfdebug')} | {fr('targeted')} | {fr('ceiling')} |")
+        lines.append(f"| {op} | {fr('generic')} | {fr('selfdebug')} | {fr('localize')} | {fr('targeted')} | {fr('ceiling')} |")
     lines.append("")
     lines.append("## go/no-go gate")
     bl, bh = _wilson(agg["targeted"]["success"], nB)
     al, ah = _wilson(agg["generic"]["success"], nA)
     sl, sh = _wilson(agg["selfdebug"]["success"], nS)
+    nL = agg["localize"]["n"] or 1
+    succ_L = agg["localize"]["success"] / nL
+    ll, lh = _wilson(agg["localize"]["success"], nL)
     sep = "(CIs disjoint)" if bl > sh else "(CIs overlap)"
     lines.append(f"- **[PRIMARY] targeted {succ_B:.0%} [{100*bl:.0f}-{100*bh:.0f}] vs STRONG self-debug "
                  f"{succ_S:.0%} [{100*sl:.0f}-{100*sh:.0f}] {sep}** -> {'PASS' if succ_B>succ_S else 'FAIL'}")
+    ablsep = "(CIs disjoint)" if bl > lh else "(CIs overlap)"
+    lines.append(f"- **[ABLATION] targeted {succ_B:.0%} vs localization-only {succ_L:.0%} "
+                 f"[{100*ll:.0f}-{100*lh:.0f}] {ablsep}** -> invariant adds {100*(succ_B-succ_L):+.0f} pts "
+                 f"(if disjoint, the TYPED INVARIANT — not just localization — is necessary)")
     lines.append(f"- [floor] targeted vs generic {succ_A:.0%} [{100*al:.0f}-{100*ah:.0f}] "
                  f"-> {'PASS' if succ_B>succ_A else 'FAIL'}")
     lines.append(f"- targeted over-repair rate {over_rate_B:.0%} <= {OVER_REPAIR_MAX:.0%} (abs threshold): {'PASS' if over_ok else 'FAIL'}")
