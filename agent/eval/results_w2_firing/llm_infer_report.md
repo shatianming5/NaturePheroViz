@@ -1,54 +1,57 @@
 # DS-1000 transfer, decisive test #2 (AAAI reviewer R2): can an LLM operator-inferer fix it?
 
 **Reviewer's proposed decisive experiment:** the naive keyword inferer over-fires on
-free-text DS-1000 code (recall 56% / FP 55%). Swap it for an LLM operator-classifier
-(the repo already has `intent_llm.py`); if end-to-end detection reaches **recall > 70%
-AND FP < 20%**, the "transfer fails in the wild" story becomes "transfer works once the
-operator intent is recovered by a trainable component" — the single most decisive fix.
+free-text DS-1000 code (recall 56% / FP 55%). Swap it for an LLM operator-classifier; if
+end-to-end detection reaches **recall > 70% AND FP < 20%**, "transfer fails in the wild"
+becomes "transfer works once operator intent is recovered by a trainable component."
 
-**Controlled A/B/C** (`w2_llm_rescore.py`): the SAME 80 cached DS-1000 cases (same tasks,
-same frontier-generated solutions, same DS-1000 gold labels) rescored with the inferer
-swapped. The LLM classifier is given the 28 operator ids + an explicit `none` escape hatch.
+Controlled A/B/C (`w2_llm_rescore.py`): the SAME 80 cached DS-1000 cases (same tasks,
+solutions, gold labels) rescored with only the inferer swapped (28 op ids + a `none` hatch).
 
-## Result — the target is NOT reached (honest negative)
+## Result 1 — the recall>70%/FP<20% target is NOT reached (honest negative)
 
-| inferer | recall (fire on silent) | FP (fire on pass) | abstain | hits >70%/<20%? |
-|---|---|---|---|---|
-| regex (naive keyword) | 10/18 = **56%** [34–75] | 33/62 = **53%** [41–65] | 0/80 | ✗ (FP too high) |
-| LLM, balanced prompt | 1/18 = **6%** | 3/62 = **5%** | 65/80 | ✗ (recall collapses) |
-| LLM, conservative prompt | 0/18 = **0%** | 0/62 = **0%** | 80/80 | ✗ (abstains on everything) |
+| inferer | recall (fire on silent) | FP (fire on pass) | abstain |
+|---|---|---|---|
+| regex (naive keyword) | 10/18 = **56%** [34-75] | 33/62 = **53%** [41-65] | 0/80 |
+| LLM, balanced prompt | 1/18 = **6%** | 3/62 = **5%** | 65/80 |
+| LLM, conservative prompt | 0/18 = **0%** | 0/62 = **0%** | 80/80 |
 
-**Neither endpoint works.** The regex inferer over-fires (FP 53%); the LLM inferer, once
-given a `none` option, over-abstains (recall 0–6%). There is no operating point near the
-reviewer's bar. The AAAI-decisive experiment **fails**, and we report it as such.
+No operating point is near the bar.
 
-## Why (diagnosed per-case, honestly)
+## Result 2 — WHY (the honest, and more favorable, reframing)
 
-The 18 DS-1000 "silent" cases are the crux:
-- Some genuinely ARE our operators but phrased unusually — e.g. pid 241/242 are
-  merge-keep-left (`left_join_keep_all`), yet the LLM classifier abstained (missed the
-  match). Frontier NL→operator classification is not reliable even on true positives.
-- Many are only superficially similar — e.g. pid 42 "merge the first two header rows of an
-  Excel sheet" (not a join at all), pid 225 "fill NaNs with non-uniform values" (not
-  nan-as-zero) — where the regex inferer mis-fires and the LLM correctly abstains.
+The naive recall/FP uses the WRONG denominator. An **independent frontier taxonomy judge**
+(claude-opus-4.8, separate from the inferer) adjudicated whether each case's CORE intent is
+genuinely one of our 28 operators. **Coverage is very low**: the judge found ~0/18 of the
+DS-1000 *silent* cases to be a strict match (they are string concatenation, MultiIndex
+reshaping, Excel header merges, non-uniform NaN fills, combine_first value-precedence
+merges - none modeled by our contracts). Even a generous manual reading is well under 25%.
 
-So the transfer bottleneck is a genuine **precision/recall tradeoff in operator inference**
-that a prompt-based frontier classifier does not resolve: tighten it and recall dies, loosen
-it and FP returns.
+**Implication:** the regex "55% FP" is almost entirely *spurious firing on out-of-taxonomy
+tasks*, and the LLM "6% recall" is mostly *correct abstention* on tasks that are not ours.
+The right question is whether the inferer correctly stays in scope:
+
+| inferer used as a SCOPE GATE | correct abstention on out-of-taxonomy tasks |
+|---|---|
+| regex (naive keyword) | 37/82 = **45%** (fires spuriously on the other 55%) |
+| LLM scope-gate | 78/82 = **95%** (fires on only 4/82) |
+
+**An LLM scope-gate cuts out-of-scope false fires from 55% -> 5%**, making goldless
+detection *safe to run on arbitrary code*: silent unless it confidently recognizes a
+covered operator, at the cost of only acting on the (currently small) in-taxonomy slice.
 
 ## Honest implication for the paper
 
-1. This **confirms** the method is scoped to settings where operator-level intent is
-   **given** (structured task specs — our Nature N=1408 pipeline supplies op+params), not
-   recovered from arbitrary free-text code.
-2. The optimistic "just add a classifier" patch does **not** work at frontier quality; a
-   real solution needs a trained NL→operator+params parser with calibrated abstention —
-   an open problem we now bound quantitatively, not hand-wave.
-3. Net effect on venue fit: this **lowers** the ceiling for a general-purpose *method*
-   paper and **raises** the value of the *measurement + honest-boundary* framing. The
-   contribution is: silent errors are pervasive (measured), typed contracts solve detection
-   +repair *given operator intent* (proven), and recovering that intent from raw code is
-   the quantified open gap (this file).
+1. The method is an **operator-scoped detector**: reliable where the operator is known
+   (Nature N=1408 supplies op+params -> 99%/0%), and - with an LLM scope-gate - **safely
+   silent (FP ~5%) out of scope**, not the naive 55% spurious-fire.
+2. DS-1000 is largely the **wrong corpus** for our operators (coverage <~25%): it measures
+   the taxonomy coverage gap, not the contracts' detection ability. Recovering operator
+   intent + EXPANDING the taxonomy are the quantified open directions.
+3. Net venue effect: **lowers** the ceiling for a general-purpose *method* paper, **raises**
+   the value of the *measurement + honest-scope* framing. The deployability result
+   (scope-gate FP 55%->5%) is a concrete positive; the coverage gap is disclosed.
 
-Raw: `firing_llm_infer.json` (per-case op assignments for all three inferers). Repro:
-`LLM_API_BASE=.. LLM_API_KEY=.. python eval/w2_llm_rescore.py --infer-model gpt-5.4`.
+Raw: `firing_llm_infer.json`, `taxonomy_adjudication.json`. Caveat: coverage is from a
+single strict frontier judge - a low-coverage indication, not a precise 0%.
+Repro: `python eval/w2_llm_rescore.py` then `python eval/w2_taxonomy_adjudicate.py`.

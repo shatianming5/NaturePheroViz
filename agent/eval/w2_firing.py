@@ -68,6 +68,27 @@ _OPS_COVERED = ["weighted_mean", "within_group_share", "pct_point", "dedup_then_
                 "lookahead_return", "latlon_swap"]
 
 
+def _chat_api(messages, model, max_tok=2000):
+    """Single OpenAI-compatible chat call (creds from env only). Returns content str or ''."""
+    import os, requests
+    base = os.environ["LLM_API_BASE"].rstrip("/"); key = os.environ["LLM_API_KEY"]
+    ml = model.lower()
+    reasoning = ml.startswith(("gpt-5", "o1", "o3", "o4")) or "codex" in ml
+    payload = {"model": model, "messages": messages}
+    if reasoning:
+        payload["max_completion_tokens"] = max(max_tok, 8000)
+    else:
+        payload["temperature"] = 0.0; payload["max_tokens"] = max_tok
+    try:
+        r = requests.post(base + "/chat/completions",
+                          headers={"Authorization": "Bearer " + key, "Content-Type": "application/json"},
+                          json=payload, timeout=(10, 180))
+        r.raise_for_status()
+        return (r.json().get("choices") or [{}])[0].get("message", {}).get("content", "")
+    except Exception:
+        return ""
+
+
 def classify_op_llm(prompt: str, cols, model: str, conservative: bool = True):
     """LLM NL->operator classifier WITH an explicit NONE escape hatch. The naive regex
     inferer over-fires (always assigns an op -> high FP on DS-1000). A calibrated LLM

@@ -1,0 +1,862 @@
+{
+  "judge": "claude-opus-4.8",
+  "n_silent": 18,
+  "n_pass": 64,
+  "taxonomy_coverage_of_silent": {
+    "k": 0,
+    "n": 18,
+    "pct_ci": [
+      0,
+      0,
+      18
+    ]
+  },
+  "in_taxonomy_recall": {
+    "regex": [
+      0,
+      0,
+      0
+    ],
+    "llm": [
+      0,
+      0,
+      0
+    ],
+    "n_in_taxonomy_silent": 0
+  },
+  "out_of_taxonomy_abstention": {
+    "regex": [
+      45,
+      35,
+      56
+    ],
+    "llm": [
+      95,
+      88,
+      98
+    ],
+    "n_out_of_taxonomy": 82
+  },
+  "cases": [
+    {
+      "pid": 7,
+      "model": "gpt-5.4",
+      "outcome": "pass",
+      "taxonomy_op": null,
+      "in_taxonomy": false,
+      "regex_fired": false,
+      "llm_inferred_op": "order_dependent_dedup",
+      "llm_fired": false
+    },
+    {
+      "pid": 7,
+      "model": "claude-opus-4.8",
+      "outcome": "pass",
+      "taxonomy_op": null,
+      "in_taxonomy": false,
+      "regex_fired": false,
+      "llm_inferred_op": "order_dependent_dedup",
+      "llm_fired": false
+    },
+    {
+      "pid": 8,
+      "model": "gpt-5.4",
+      "outcome": "pass",
+      "taxonomy_op": null,
+      "in_taxonomy": false,
+      "regex_fired": false,
+      "llm_inferred_op": "order_dependent_dedup",
+      "llm_fired": false
+    },
+    {
+      "pid": 8,
+      "model": "claude-opus-4.8",
+      "outcome": "pass",
+      "taxonomy_op": null,
+      "in_taxonomy": false,
+      "regex_fired": false,
+      "llm_inferred_op": "order_dependent_dedup",
+      "llm_fired": false
+    },
+    {
+      "pid": 9,
+      "model": "gpt-5.4",
+      "outcome": "pass",
+      "taxonomy_op": null,
+      "in_taxonomy": false,
+      "regex_fired": false,
+      "llm_inferred_op": "order_dependent_dedup",
+      "llm_fired": false
+    },
+    {
+      "pid": 9,
+      "model": "claude-opus-4.8",
+      "outcome": "pass",
+      "taxonomy_op": null,
+      "in_taxonomy": false,
+      "regex_fired": false,
+      "llm_inferred_op": "order_dependent_dedup",
+      "llm_fired": false
+    },
+    {
+      "pid": 42,
+      "model": "gpt-5.4",
+      "outcome": "silent",
+      "taxonomy_op": null,
+      "in_taxonomy": false,
+      "regex_fired": true,
+      "llm_inferred_op": null,
+      "llm_fired": false
+    },
+    {
+      "pid": 42,
+      "model": "claude-opus-4.8",
+      "outcome": "pass",
+      "taxonomy_op": null,
+      "in_taxonomy": false,
+      "regex_fired": true,
+      "llm_inferred_op": null,
+      "llm_fired": false
+    },
+    {
+      "pid": 43,
+      "model": "gpt-5.4",
+      "outcome": "silent",
+      "taxonomy_op": null,
+      "in_taxonomy": false,
+      "regex_fired": true,
+      "llm_inferred_op": null,
+      "llm_fired": false
+    },
+    {
+      "pid": 43,
+      "model": "claude-opus-4.8",
+      "outcome": "pass",
+      "taxonomy_op": null,
+      "in_taxonomy": false,
+      "regex_fired": true,
+      "llm_inferred_op": null,
+      "llm_fired": false
+    },
+    {
+      "pid": 50,
+      "model": "gpt-5.4",
+      "outcome": "pass",
+      "taxonomy_op": null,
+      "in_taxonomy": false,
+      "regex_fired": false,
+      "llm_inferred_op": null,
+      "llm_fired": false
+    },
+    {
+      "pid": 50,
+      "model": "claude-opus-4.8",
+      "outcome": "pass",
+      "taxonomy_op": null,
+      "in_taxonomy": false,
+      "regex_fired": false,
+      "llm_inferred_op": null,
+      "llm_fired": false
+    },
+    {
+      "pid": 51,
+      "model": "gpt-5.4",
+      "outcome": "pass",
+      "taxonomy_op": null,
+      "in_taxonomy": false,
+      "regex_fired": false,
+      "llm_inferred_op": null,
+      "llm_fired": false
+    },
+    {
+      "pid": 51,
+      "model": "claude-opus-4.8",
+      "outcome": "pass",
+      "taxonomy_op": null,
+      "in_taxonomy": false,
+      "regex_fired": false,
+      "llm_inferred_op": null,
+      "llm_fired": false
+    },
+    {
+      "pid": 52,
+      "model": "gpt-5.4",
+      "outcome": "pass",
+      "taxonomy_op": null,
+      "in_taxonomy": false,
+      "regex_fired": false,
+      "llm_inferred_op": null,
+      "llm_fired": false
+    },
+    {
+      "pid": 52,
+      "model": "claude-opus-4.8",
+      "outcome": "pass",
+      "taxonomy_op": null,
+      "in_taxonomy": false,
+      "regex_fired": false,
+      "llm_inferred_op": null,
+      "llm_fired": false
+    },
+    {
+      "pid": 53,
+      "model": "gpt-5.4",
+      "outcome": "pass",
+      "taxonomy_op": null,
+      "in_taxonomy": false,
+      "regex_fired": false,
+      "llm_inferred_op": null,
+      "llm_fired": false
+    },
+    {
+      "pid": 53,
+      "model": "claude-opus-4.8",
+      "outcome": "pass",
+      "taxonomy_op": null,
+      "in_taxonomy": false,
+      "regex_fired": false,
+      "llm_inferred_op": null,
+      "llm_fired": false
+    },
+    {
+      "pid": 55,
+      "model": "gpt-5.4",
+      "outcome": "pass",
+      "taxonomy_op": null,
+      "in_taxonomy": false,
+      "regex_fired": true,
+      "llm_inferred_op": null,
+      "llm_fired": false
+    },
+    {
+      "pid": 55,
+      "model": "claude-opus-4.8",
+      "outcome": "pass",
+      "taxonomy_op": null,
+      "in_taxonomy": false,
+      "regex_fired": true,
+      "llm_inferred_op": null,
+      "llm_fired": false
+    },
+    {
+      "pid": 56,
+      "model": "gpt-5.4",
+      "outcome": "pass",
+      "taxonomy_op": null,
+      "in_taxonomy": false,
+      "regex_fired": true,
+      "llm_inferred_op": null,
+      "llm_fired": false
+    },
+    {
+      "pid": 56,
+      "model": "claude-opus-4.8",
+      "outcome": "pass",
+      "taxonomy_op": null,
+      "in_taxonomy": false,
+      "regex_fired": true,
+      "llm_inferred_op": "left_join_keep_all",
+      "llm_fired": true
+    },
+    {
+      "pid": 57,
+      "model": "gpt-5.4",
+      "outcome": "pass",
+      "taxonomy_op": null,
+      "in_taxonomy": false,
+      "regex_fired": true,
+      "llm_inferred_op": null,
+      "llm_fired": false
+    },
+    {
+      "pid": 57,
+      "model": "claude-opus-4.8",
+      "outcome": "pass",
+      "taxonomy_op": null,
+      "in_taxonomy": false,
+      "regex_fired": true,
+      "llm_inferred_op": "nan_as_zero_sum",
+      "llm_fired": true
+    },
+    {
+      "pid": 108,
+      "model": "gpt-5.4",
+      "outcome": "pass",
+      "taxonomy_op": null,
+      "in_taxonomy": false,
+      "regex_fired": true,
+      "llm_inferred_op": null,
+      "llm_fired": false
+    },
+    {
+      "pid": 108,
+      "model": "claude-opus-4.8",
+      "outcome": "pass",
+      "taxonomy_op": null,
+      "in_taxonomy": false,
+      "regex_fired": true,
+      "llm_inferred_op": null,
+      "llm_fired": false
+    },
+    {
+      "pid": 109,
+      "model": "gpt-5.4",
+      "outcome": "pass",
+      "taxonomy_op": null,
+      "in_taxonomy": false,
+      "regex_fired": false,
+      "llm_inferred_op": null,
+      "llm_fired": false
+    },
+    {
+      "pid": 109,
+      "model": "claude-opus-4.8",
+      "outcome": "pass",
+      "taxonomy_op": null,
+      "in_taxonomy": false,
+      "regex_fired": false,
+      "llm_inferred_op": null,
+      "llm_fired": false
+    },
+    {
+      "pid": 123,
+      "model": "gpt-5.4",
+      "outcome": "silent",
+      "taxonomy_op": null,
+      "in_taxonomy": false,
+      "regex_fired": false,
+      "llm_inferred_op": null,
+      "llm_fired": false
+    },
+    {
+      "pid": 123,
+      "model": "claude-opus-4.8",
+      "outcome": "pass",
+      "taxonomy_op": null,
+      "in_taxonomy": false,
+      "regex_fired": false,
+      "llm_inferred_op": null,
+      "llm_fired": false
+    },
+    {
+      "pid": 124,
+      "model": "gpt-5.4",
+      "outcome": "pass",
+      "taxonomy_op": null,
+      "in_taxonomy": false,
+      "regex_fired": false,
+      "llm_inferred_op": null,
+      "llm_fired": false
+    },
+    {
+      "pid": 124,
+      "model": "claude-opus-4.8",
+      "outcome": "pass",
+      "taxonomy_op": null,
+      "in_taxonomy": false,
+      "regex_fired": false,
+      "llm_inferred_op": null,
+      "llm_fired": false
+    },
+    {
+      "pid": 125,
+      "model": "gpt-5.4",
+      "outcome": "silent",
+      "taxonomy_op": null,
+      "in_taxonomy": false,
+      "regex_fired": false,
+      "llm_inferred_op": null,
+      "llm_fired": false
+    },
+    {
+      "pid": 125,
+      "model": "claude-opus-4.8",
+      "outcome": "pass",
+      "taxonomy_op": null,
+      "in_taxonomy": false,
+      "regex_fired": false,
+      "llm_inferred_op": null,
+      "llm_fired": false
+    },
+    {
+      "pid": 126,
+      "model": "gpt-5.4",
+      "outcome": "silent",
+      "taxonomy_op": null,
+      "in_taxonomy": false,
+      "regex_fired": false,
+      "llm_inferred_op": null,
+      "llm_fired": false
+    },
+    {
+      "pid": 126,
+      "model": "claude-opus-4.8",
+      "outcome": "pass",
+      "taxonomy_op": null,
+      "in_taxonomy": false,
+      "regex_fired": false,
+      "llm_inferred_op": null,
+      "llm_fired": false
+    },
+    {
+      "pid": 130,
+      "model": "gpt-5.4",
+      "outcome": "pass",
+      "taxonomy_op": null,
+      "in_taxonomy": false,
+      "regex_fired": true,
+      "llm_inferred_op": "order_dependent_dedup",
+      "llm_fired": false
+    },
+    {
+      "pid": 130,
+      "model": "claude-opus-4.8",
+      "outcome": "pass",
+      "taxonomy_op": null,
+      "in_taxonomy": false,
+      "regex_fired": true,
+      "llm_inferred_op": "order_dependent_dedup",
+      "llm_fired": false
+    },
+    {
+      "pid": 131,
+      "model": "gpt-5.4",
+      "outcome": "pass",
+      "taxonomy_op": null,
+      "in_taxonomy": false,
+      "regex_fired": true,
+      "llm_inferred_op": "order_dependent_dedup",
+      "llm_fired": false
+    },
+    {
+      "pid": 131,
+      "model": "claude-opus-4.8",
+      "outcome": "pass",
+      "taxonomy_op": null,
+      "in_taxonomy": false,
+      "regex_fired": true,
+      "llm_inferred_op": null,
+      "llm_fired": false
+    },
+    {
+      "pid": 133,
+      "model": "gpt-5.4",
+      "outcome": "pass",
+      "taxonomy_op": null,
+      "in_taxonomy": false,
+      "regex_fired": true,
+      "llm_inferred_op": "order_dependent_dedup",
+      "llm_fired": false
+    },
+    {
+      "pid": 134,
+      "model": "gpt-5.4",
+      "outcome": "pass",
+      "taxonomy_op": null,
+      "in_taxonomy": false,
+      "regex_fired": true,
+      "llm_inferred_op": "order_dependent_dedup",
+      "llm_fired": false
+    },
+    {
+      "pid": 134,
+      "model": "claude-opus-4.8",
+      "outcome": "pass",
+      "taxonomy_op": null,
+      "in_taxonomy": false,
+      "regex_fired": true,
+      "llm_inferred_op": null,
+      "llm_fired": false
+    },
+    {
+      "pid": 147,
+      "model": "gpt-5.4",
+      "outcome": "silent",
+      "taxonomy_op": null,
+      "in_taxonomy": false,
+      "regex_fired": true,
+      "llm_inferred_op": "cumulative_running",
+      "llm_fired": true
+    },
+    {
+      "pid": 147,
+      "model": "claude-opus-4.8",
+      "outcome": "pass",
+      "taxonomy_op": null,
+      "in_taxonomy": false,
+      "regex_fired": true,
+      "llm_inferred_op": "cumulative_running",
+      "llm_fired": true
+    },
+    {
+      "pid": 162,
+      "model": "gpt-5.4",
+      "outcome": "silent",
+      "taxonomy_op": null,
+      "in_taxonomy": false,
+      "regex_fired": false,
+      "llm_inferred_op": null,
+      "llm_fired": false
+    },
+    {
+      "pid": 162,
+      "model": "claude-opus-4.8",
+      "outcome": "pass",
+      "taxonomy_op": null,
+      "in_taxonomy": false,
+      "regex_fired": false,
+      "llm_inferred_op": null,
+      "llm_fired": false
+    },
+    {
+      "pid": 163,
+      "model": "gpt-5.4",
+      "outcome": "silent",
+      "taxonomy_op": null,
+      "in_taxonomy": false,
+      "regex_fired": false,
+      "llm_inferred_op": null,
+      "llm_fired": false
+    },
+    {
+      "pid": 163,
+      "model": "claude-opus-4.8",
+      "outcome": "pass",
+      "taxonomy_op": null,
+      "in_taxonomy": false,
+      "regex_fired": false,
+      "llm_inferred_op": null,
+      "llm_fired": false
+    },
+    {
+      "pid": 164,
+      "model": "gpt-5.4",
+      "outcome": "silent",
+      "taxonomy_op": null,
+      "in_taxonomy": false,
+      "regex_fired": false,
+      "llm_inferred_op": null,
+      "llm_fired": false
+    },
+    {
+      "pid": 164,
+      "model": "claude-opus-4.8",
+      "outcome": "silent",
+      "taxonomy_op": null,
+      "in_taxonomy": false,
+      "regex_fired": false,
+      "llm_inferred_op": null,
+      "llm_fired": false
+    },
+    {
+      "pid": 223,
+      "model": "gpt-5.4",
+      "outcome": "pass",
+      "taxonomy_op": null,
+      "in_taxonomy": false,
+      "regex_fired": true,
+      "llm_inferred_op": null,
+      "llm_fired": false
+    },
+    {
+      "pid": 223,
+      "model": "claude-opus-4.8",
+      "outcome": "pass",
+      "taxonomy_op": null,
+      "in_taxonomy": false,
+      "regex_fired": true,
+      "llm_inferred_op": null,
+      "llm_fired": false
+    },
+    {
+      "pid": 224,
+      "model": "gpt-5.4",
+      "outcome": "pass",
+      "taxonomy_op": null,
+      "in_taxonomy": false,
+      "regex_fired": true,
+      "llm_inferred_op": null,
+      "llm_fired": false
+    },
+    {
+      "pid": 224,
+      "model": "claude-opus-4.8",
+      "outcome": "pass",
+      "taxonomy_op": null,
+      "in_taxonomy": false,
+      "regex_fired": true,
+      "llm_inferred_op": null,
+      "llm_fired": false
+    },
+    {
+      "pid": 225,
+      "model": "gpt-5.4",
+      "outcome": "silent",
+      "taxonomy_op": null,
+      "in_taxonomy": false,
+      "regex_fired": true,
+      "llm_inferred_op": null,
+      "llm_fired": false
+    },
+    {
+      "pid": 225,
+      "model": "claude-opus-4.8",
+      "outcome": "silent",
+      "taxonomy_op": null,
+      "in_taxonomy": false,
+      "regex_fired": true,
+      "llm_inferred_op": null,
+      "llm_fired": false
+    },
+    {
+      "pid": 232,
+      "model": "gpt-5.4",
+      "outcome": "pass",
+      "taxonomy_op": null,
+      "in_taxonomy": false,
+      "regex_fired": true,
+      "llm_inferred_op": null,
+      "llm_fired": false
+    },
+    {
+      "pid": 232,
+      "model": "claude-opus-4.8",
+      "outcome": "pass",
+      "taxonomy_op": null,
+      "in_taxonomy": false,
+      "regex_fired": true,
+      "llm_inferred_op": null,
+      "llm_fired": false
+    },
+    {
+      "pid": 233,
+      "model": "gpt-5.4",
+      "outcome": "pass",
+      "taxonomy_op": null,
+      "in_taxonomy": false,
+      "regex_fired": true,
+      "llm_inferred_op": null,
+      "llm_fired": false
+    },
+    {
+      "pid": 233,
+      "model": "claude-opus-4.8",
+      "outcome": "pass",
+      "taxonomy_op": null,
+      "in_taxonomy": false,
+      "regex_fired": true,
+      "llm_inferred_op": null,
+      "llm_fired": false
+    },
+    {
+      "pid": 234,
+      "model": "gpt-5.4",
+      "outcome": "pass",
+      "taxonomy_op": null,
+      "in_taxonomy": false,
+      "regex_fired": true,
+      "llm_inferred_op": null,
+      "llm_fired": false
+    },
+    {
+      "pid": 234,
+      "model": "claude-opus-4.8",
+      "outcome": "pass",
+      "taxonomy_op": null,
+      "in_taxonomy": false,
+      "regex_fired": true,
+      "llm_inferred_op": null,
+      "llm_fired": false
+    },
+    {
+      "pid": 235,
+      "model": "gpt-5.4",
+      "outcome": "silent",
+      "taxonomy_op": null,
+      "in_taxonomy": false,
+      "regex_fired": false,
+      "llm_inferred_op": null,
+      "llm_fired": false
+    },
+    {
+      "pid": 235,
+      "model": "claude-opus-4.8",
+      "outcome": "pass",
+      "taxonomy_op": null,
+      "in_taxonomy": false,
+      "regex_fired": true,
+      "llm_inferred_op": null,
+      "llm_fired": false
+    },
+    {
+      "pid": 236,
+      "model": "gpt-5.4",
+      "outcome": "silent",
+      "taxonomy_op": null,
+      "in_taxonomy": false,
+      "regex_fired": true,
+      "llm_inferred_op": null,
+      "llm_fired": false
+    },
+    {
+      "pid": 236,
+      "model": "claude-opus-4.8",
+      "outcome": "pass",
+      "taxonomy_op": null,
+      "in_taxonomy": false,
+      "regex_fired": true,
+      "llm_inferred_op": null,
+      "llm_fired": false
+    },
+    {
+      "pid": 238,
+      "model": "gpt-5.4",
+      "outcome": "silent",
+      "taxonomy_op": null,
+      "in_taxonomy": false,
+      "regex_fired": true,
+      "llm_inferred_op": null,
+      "llm_fired": false
+    },
+    {
+      "pid": 240,
+      "model": "gpt-5.4",
+      "outcome": "pass",
+      "taxonomy_op": null,
+      "in_taxonomy": false,
+      "regex_fired": true,
+      "llm_inferred_op": null,
+      "llm_fired": false
+    },
+    {
+      "pid": 241,
+      "model": "gpt-5.4",
+      "outcome": "silent",
+      "taxonomy_op": null,
+      "in_taxonomy": false,
+      "regex_fired": true,
+      "llm_inferred_op": null,
+      "llm_fired": false
+    },
+    {
+      "pid": 241,
+      "model": "claude-opus-4.8",
+      "outcome": "silent",
+      "taxonomy_op": null,
+      "in_taxonomy": false,
+      "regex_fired": true,
+      "llm_inferred_op": null,
+      "llm_fired": false
+    },
+    {
+      "pid": 242,
+      "model": "gpt-5.4",
+      "outcome": "silent",
+      "taxonomy_op": null,
+      "in_taxonomy": false,
+      "regex_fired": true,
+      "llm_inferred_op": null,
+      "llm_fired": false
+    },
+    {
+      "pid": 275,
+      "model": "gpt-5.4",
+      "outcome": "pass",
+      "taxonomy_op": null,
+      "in_taxonomy": false,
+      "regex_fired": false,
+      "llm_inferred_op": null,
+      "llm_fired": false
+    },
+    {
+      "pid": 275,
+      "model": "claude-opus-4.8",
+      "outcome": "pass",
+      "taxonomy_op": null,
+      "in_taxonomy": false,
+      "regex_fired": false,
+      "llm_inferred_op": null,
+      "llm_fired": false
+    },
+    {
+      "pid": 287,
+      "model": "gpt-5.4",
+      "outcome": "pass",
+      "taxonomy_op": null,
+      "in_taxonomy": false,
+      "regex_fired": true,
+      "llm_inferred_op": null,
+      "llm_fired": false
+    },
+    {
+      "pid": 287,
+      "model": "claude-opus-4.8",
+      "outcome": "pass",
+      "taxonomy_op": null,
+      "in_taxonomy": false,
+      "regex_fired": true,
+      "llm_inferred_op": null,
+      "llm_fired": false
+    },
+    {
+      "pid": 288,
+      "model": "gpt-5.4",
+      "outcome": "pass",
+      "taxonomy_op": null,
+      "in_taxonomy": false,
+      "regex_fired": true,
+      "llm_inferred_op": null,
+      "llm_fired": false
+    },
+    {
+      "pid": 288,
+      "model": "claude-opus-4.8",
+      "outcome": "pass",
+      "taxonomy_op": null,
+      "in_taxonomy": false,
+      "regex_fired": true,
+      "llm_inferred_op": null,
+      "llm_fired": false
+    },
+    {
+      "pid": 289,
+      "model": "gpt-5.4",
+      "outcome": "pass",
+      "taxonomy_op": null,
+      "in_taxonomy": false,
+      "regex_fired": false,
+      "llm_inferred_op": null,
+      "llm_fired": false
+    },
+    {
+      "pid": 289,
+      "model": "claude-opus-4.8",
+      "outcome": "pass",
+      "taxonomy_op": null,
+      "in_taxonomy": false,
+      "regex_fired": false,
+      "llm_inferred_op": null,
+      "llm_fired": false
+    },
+    {
+      "pid": 290,
+      "model": "gpt-5.4",
+      "outcome": "pass",
+      "taxonomy_op": null,
+      "in_taxonomy": false,
+      "regex_fired": false,
+      "llm_inferred_op": null,
+      "llm_fired": false
+    },
+    {
+      "pid": 290,
+      "model": "claude-opus-4.8",
+      "outcome": "pass",
+      "taxonomy_op": null,
+      "in_taxonomy": false,
+      "regex_fired": false,
+      "llm_inferred_op": null,
+      "llm_fired": false
+    }
+  ]
+}
