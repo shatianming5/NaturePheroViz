@@ -567,5 +567,18 @@
       36,
       67
     ]
+  },
+  "param_inference_split": {
+    "type_disambiguated_roles": {
+      "k": 25,
+      "n": 30,
+      "pct": 83,
+      "ops": "median/nan_as_zero/null_count/dropna (group+value)"
+    },
+    "symmetric_roles": {
+      "k": 1,
+      "n": 5,
+      "note": "weighted value<->weight, pooled num<->den: NL may not uniquely fix roles; misses are ambiguity not method failure"
+    }
   }
 }
