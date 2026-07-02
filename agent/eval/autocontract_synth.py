@@ -59,6 +59,41 @@ INTENT = {
     "proportion_true": "Compute the PROPORTION of true flags per group (mean of the boolean = rate in [0,1]), not the raw count of trues.",
 }
 
+# DE-LEAKED intents (AAAI independent-review fix). Two independent reviewers (gpt-5.5,
+# gemini-3.1-pro) verified that the INTENT strings above leak the answer: they spell out the
+# exact formula (e.g. "sum(value*weight)/sum(weight)") and the exact slip to avoid ("not the
+# mean"), so the LLM is merely TRANSLATING a stated formula, not DISCOVERING an invariant from
+# high-level intent. These DELEAKED intents describe only the user's GOAL in plain domain
+# language — NO formula, NO "not the X" contrast, NO checkable invariant stated. The LLM must
+# now derive the goldless invariant itself. We report BOTH numbers so the reader sees exactly
+# how much the synthesis result depends on the leaked formula hint.
+DELEAKED_INTENT = {
+    "index_align": "For each key, the output total should combine that key's own value with the corresponding addend for the same key taken from the second table.",
+    "dtype_coerce": "Group by the id so that entries referring to the same identifier are treated as one, regardless of how the id happens to be formatted.",
+    "groupby_dropna_key": "Total the value within each group, and don't discard rows just because their group label is missing — those rows still belong to the population.",
+    "order_dependent_dedup": "Reduce to one row per key, choosing the intended representative (for example the most recent according to the order column).",
+    "resample_boundary": "Aggregate the time series into calendar periods so each observation is counted in the period it actually belongs to.",
+    "string_normalize_join": "Attach each row's price from the lookup by matching on name, allowing for superficial formatting differences so genuinely equal names still match.",
+    "join_fanout": "Summarize each entity's measure by group; joining against a table that has several rows per entity should not distort an entity's contribution.",
+    "null_in_agg_count": "Report how many rows fall into each group.",
+    "scale_before_split_leakage": "Standardize the feature for modeling so that the scaling is derived from the training portion of the data.",
+    "latlon_swap": "Compute the geographic result from the latitude and longitude columns, each used in its proper geographic role.",
+    "lookahead_return": "For each row, compute a forward-looking return based only on information that would have been available at that row's point in time.",
+    "numpy_broadcast": "Combine the two arrays so that each element is paired with its intended counterpart.",
+    "weighted_mean": "Report a single representative average of the value where entries carrying more weight have proportionally more influence on the result.",
+    "within_group_share": "For each row, report its value as a share of the total for its own group.",
+    "pct_point": "Report how much the percentage figure moved from the old value to the new value, expressed on the same 0-100 scale.",
+    "dedup_then_agg": "Total the value per group after collapsing repeated line-items that refer to the same key, so the same item isn't counted twice.",
+    "left_join_keep_all": "Attach the lookup columns to the table while retaining every original row, including rows that have no match in the lookup.",
+    "pooled_rate": "Report each group's overall rate by combining all of that group's members together.",
+    "median_not_mean": "Report a representative central value for each group that isn't thrown off by a few unusually large or small entries.",
+    "cumulative_running": "Show a running total of the value in order, so each row reflects the amount accumulated up to and including it.",
+    "topn_with_ties": "Return the highest-ranked N rows by value, and if several rows are tied at the cutoff, include all of them.",
+    "nan_as_zero_sum": "Total the value for each group so that a group with some missing entries still gets a numeric total rather than becoming undefined.",
+    "count_includes_empty": "Report a count for every category, giving zero for categories that have no rows rather than omitting them.",
+    "proportion_true": "For each group, report the fraction of its rows whose flag is true.",
+}
+
 SYNTH_PROMPT = """You write GOLDLESS runtime contracts that detect silent semantic errors in \
 pandas transforms. You are given the INTENT (what the transform should do), the input \
 schema, the parameter names, and the result schema. You do NOT get the correct answer.
@@ -102,13 +137,13 @@ def _result_schema(res):
     return "scalar", ["value"]
 
 
-def synth_contract(cand, model):
+def synth_contract(cand, model, intent_map=INTENT):
     inp = cand.fixture()
     cols, extra = _schema(inp)
     # show the result schema from the CORRECT impl (schema only — values not revealed as gold)
     correct = cand.correct_fn(inp)
     kind, rcols = _result_schema(correct)
-    intent = INTENT.get(cand.operator, f"Correctly compute the `{cand.operator}` transform.")
+    intent = intent_map.get(cand.operator, f"Correctly compute the `{cand.operator}` transform.")
     prompt = SYNTH_PROMPT.format(intent=intent, cols=cols, extra=extra,
                                  params=cand.params, kind=kind, rcols=rcols)
     out = _chat_api([{"role": "user", "content": prompt}], model, max_tok=4000)
@@ -184,7 +219,11 @@ def main():
     ap.add_argument("--retries", type=int, default=2, help="synthesis attempts per op (best-of)")
     ap.add_argument("--source", choices=("expansion", "core", "all"), default="expansion",
                     help="which operator set to synthesize contracts for")
+    ap.add_argument("--intent", choices=("leaky", "deleaked"), default="leaky",
+                    help="leaky = original formula-stating intent; deleaked = high-level goal "
+                         "only (no formula/no 'not-X'/no invariant), the AAAI independent-review fix")
     a = ap.parse_args()
+    intent_map = DELEAKED_INTENT if a.intent == "deleaked" else INTENT
     recs = []
     n_ok = n_exec = 0
     pool = list(CANDIDATES)
@@ -198,7 +237,7 @@ def main():
         best = None
         for attempt in range(a.retries):
             try:
-                code = synth_contract(cand, a.model)
+                code = synth_contract(cand, a.model, intent_map)
                 ev = evaluate(cand, code)
             except Exception as e:  # noqa: BLE001
                 ev = {"fired_on_wrong": None, "fired_on_correct": None, "alt_robust": False,
@@ -218,16 +257,19 @@ def main():
               f"=> {'OK' if best['correct'] else ('core' if core else 'FAIL')}", flush=True)
     n = len(cands)
     n_core = sum(r["core_correct"] for r in recs)
-    summary = {"model": a.model, "n_operators": n,
+    summary = {"model": a.model, "intent_mode": a.intent, "n_operators": n,
                "auto_full_correct": n_ok, "auto_full_ci": wilson(n_ok, n),
                "auto_core_correct": n_core, "auto_core_ci": wilson(n_core, n),
                "exec_ok": n_exec, "cases": recs}
-    Path(a.out).parent.mkdir(parents=True, exist_ok=True)
-    json.dump(summary, open(a.out, "w"), indent=2)
-    print(f"\n=== AUTO-SYNTHESIZED goldless contracts from NL (model {a.model}, n={n} ops) ===")
+    out = a.out
+    if a.intent == "deleaked" and out == ap.get_default("out"):
+        out = out.replace(".json", "_deleaked.json")
+    Path(out).parent.mkdir(parents=True, exist_ok=True)
+    json.dump(summary, open(out, "w"), indent=2)
+    print(f"\n=== AUTO-SYNTHESIZED goldless contracts from NL (model {a.model}, intent={a.intent}, n={n} ops) ===")
     print(f"CORE (fire-on-slip AND pass-on-correct): {n_core}/{n} = {wilson(n_core,n)[0]}% CI{wilson(n_core,n)[1:]}")
     print(f"FULL (+ robust to alternative valid impls): {n_ok}/{n} = {wilson(n_ok,n)[0]}% CI{wilson(n_ok,n)[1:]}")
-    print(f"exec-ok: {n_exec}/{n}   -> {a.out}")
+    print(f"exec-ok: {n_exec}/{n}   -> {out}")
     return 0
 
 
