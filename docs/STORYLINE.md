@@ -299,7 +299,7 @@ LLM 大量替人写 pandas / matplotlib 代码做分析与画图。现有可视�
 
 **go/no-go 全 PASS → GO**:targeted 67% vs generic 12%(CI 不相交);误修 9% ≤ 10% 且**低于** generic 的 18%(typed 反馈反而更少误改);轮数未增、无显著回归。与核心算子的 **80% vs 18%** 同向,现在在**新算子、推理时、零训练**上复现。逐算子:groupby_dropna_key 6/6 vs 0/6、string_normalize_join 6/6 vs 3/6、scale_leakage 4/6 vs 0/6。诚实盲点:**index_align targeted 0/6**(模型能检测但 3 轮内修不对位置对齐;ceiling 6/6 说明给答案能修)——如实披露。
 
-> 注:**强 self-debug baseline 的决定性对照在核心 17 算子上做(A6.1,N=43,targeted 79% vs self-debug 5%,CI 不相交)**。新算子上补跑同一 4-arm 时,前沿模型在多数新算子上"一次就写对"(没有 silent 起点可修),可用样本仅 N=7 且被 index_align 主导(其已知交叉-fire 使 over-repair 偏高),故新算子的强-baseline 对照**样本有限、仅作补充**,不单独用于结论;主结论锚定核心 N=43。原始:`results_repair_strongbaseline_exp/`。
+> 注:**强 self-debug baseline 的决定性对照在核心 17 算子上做(A6.1,N=43,targeted 79% vs self-debug 5%,CI 不相交)**。新算子上补跑同一 4-arm 时,前沿模型在多数新算子上"一次就写对"(没有 silent 起点可修),可用样本仅 N=7 且被 index_align 主导,**该子集上 targeted 修复 verdict 是 NO-GO**(targeted 仅 14% [3–51],over-repair 86%,`results_repair_strongbaseline_exp/`)。**如实划界:修复增益锚定在契约判别信息充分的算子子集(核心 N=43 的 9/17 家族);在 index_align 这类"能检测但 3 轮内修不对"的算子上,typed 修复失败(0/6),ceiling 6/6 说明是修复难度而非检测缺陷。** 这与自动合成、检测的盲点是同一批算子(位置对齐/前视),难度属于算子本身。
 
 > 一句话:**"无训练即可解决——检测 recall 99%/误报 0%(真实 Nature 大样本);修复用同一套 typed 契约信号达 79%(核心)/67%(新算子),不仅碾压通用重试(14%),更碾压**强自检 baseline(5%)**,证明起作用的是 typed 信号本身;且误修 0%。"**(训练能否再加成见 A6.2。)
 
@@ -336,13 +336,13 @@ LLM 大量替人写 pandas / matplotlib 代码做分析与画图。现有可视�
 
 审稿最深的两个攻点:**novelty**("这不就是 40 年前的 design-by-contract / property-based testing,手写 28 个 assertion 而已?")和**可扩展性**("手写契约扩不到未见算子")。正面回应:让**前沿 LLM 仅凭 NL 意图 + 参数名 + 结果 schema 自动合成契约函数**(它看不到手写契约、也看不到正确/错误实现),再用与手写契约完全相同的判据测——必须在 silent slip 上 fire、在正确实现上 pass、在**其他有效实现**上也 pass(FP 鲁棒)。评估已排除"永远 fire/永不 fire"的退化契约。
 
-| 判据(11 个 pandas 算子,gpt-5.4,best-of-3) | 自动合成正确率 | 95% CI |
+| 判据(**23 个 pandas 算子**,gpt-5.4,**1-shot**) | 自动合成正确率 | 95% CI |
 |---|---|---|
-| exec-ok(合成的代码能跑) | **11/11 = 100%** | — |
-| **CORE(fire-on-slip 且 pass-on-correct)** | **8/11 = 73%** | [43–90] |
-| **FULL(再加 alt 有效实现鲁棒)** | **7/11 = 64%** | [35–85] |
+| exec-ok(合成的代码能跑) | **22/23 = 96%** | — |
+| **CORE(fire-on-slip 且 pass-on-correct)** | **19/23 = 83%** | [63–93] |
+| **FULL(再加 alt 有效实现鲁棒)** | **18/23 = 78%** | [58–90] |
 
-**7 个算子的无 gold 契约完全由 LLM 从 NL 自动写出、零人工写不变量**(order_dedup / resample / string_join / join_fanout / null_count / scale_leakage / latlon_swap)。诚实失败 3 个:dtype_coerce、lookahead_return(不变量漏了 slip)、index_align(在有效替代实现上误 fire)——位置对齐/前视这类微妙不变量仍需人。**含义**:(1) novelty 从"手写 assertion"升级为"**从 NL 自动合成无 gold 算子不变量**"(PBT 需人写 property,这里 property 由 NL 生成);(2) 可扩展性从 aspiration 变**有实测自动化率的 human-in-the-loop**——新算子 64–73% 零样本自动生成,人只需复核/修补 ~1/3 微妙情形。(`results_autocontract/AUTOCONTRACT_SUMMARY.md`)
+**1-shot(非 best-of-3,无 retry 虚高),清过审稿点名的决定性门槛(1-shot CORE≥70% @ N≥17),83%@N=23 超额达标。** 分组:**12 个核心算子 CORE 11/12=92%**(weighted_mean/within_group_share/dedup/left_join/pooled/median/cumulative/topn/nan_sum/count_empty/proportion——它们的不变量"加权均值落在 min/max 间""每组占比和=1""总量守恒""并列保留"从 NL 干净可写),11 个新算子 CORE 8/11=73%。诚实失败集中在位置对齐/前视/dtype 前导零这类**本质微妙**的不变量——恰是手写契约与修复也最弱的同一批算子(难度属于算子本身,非合成)。**含义**:(1) novelty 从"手写 assertion"升级为"**从 NL 自动合成无 gold 不变量**",且**功效充分**(N=23、CI 收紧、1-shot);(2) 可扩展性=新算子 83% 零样本自动生成,人只需复核 ~1/6 微妙情形。(`results_autocontract/AUTOCONTRACT_SUMMARY.md`)
 
 ### A7.1 "只在 pandas 上有效?"——契约与执行基底无关(pandas → SQL)
 
@@ -355,7 +355,7 @@ LLM 大量替人写 pandas / matplotlib 代码做分析与画图。现有可视�
 | join_fanout | `JOIN tags` 后 `SUM(amt)` 被 1-对-多 fan-out 放大 | ✅ | ✅ |
 | left_join_keep_all | `INNER JOIN` 丢掉无匹配的左行 | ✅ | ✅ |
 
-**4/4 全过,契约一字未改**。这些正是最典型的真实 SQL 错误(无权重 AVG、NULL 过滤、join fan-out、inner-join 丢行)。→ 检测机制**不是 pandas 专属**,而是"**基底无关的算子语义验证**",pandas 只是其中一个实例。已加进测试(`tests/test_crossdomain_sql.py`,离线)。(`results_crossdomain/CROSSDOMAIN_SUMMARY.md`)
+**4/4 全过,契约一字未改**。这些正是最典型的真实 SQL 错误(无权重 AVG、NULL 过滤、join fan-out、inner-join 丢行)。**一个诚实的细节反而更有力**:groupby_dropna_key 的"正确 SQL"用 `COALESCE(g,'__NA__')` 处理 SQLite 与 pandas **不同的 NULL/NaN 语义**——说明**不变量(总量守恒)跨基底不变,而正确实现本身要按基底适配**;契约检查的是前者,所以迁移。→ 检测机制**不是 pandas 专属**,而是"**基底无关的算子语义验证**",pandas 只是其中一个实例。已加进测试(`tests/test_crossdomain_sql.py`,离线)。**诚实边界**:这 4 个算子的不变量是守恒/范围/行数类,天然跨基底;我们不声称所有不变量都平凡迁移(如依赖 pandas 特有 NaN 传播的算子需重新表述)。(`results_crossdomain/CROSSDOMAIN_SUMMARY.md`)
 
 整个 repo = 研究这个问题的**完整装置**。
 

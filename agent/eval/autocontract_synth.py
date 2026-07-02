@@ -44,6 +44,19 @@ INTENT = {
     "latlon_swap": "Compute using latitude and longitude in the correct roles; latitude stays in [-90,90] and longitude in [-180,180] (no lat/lon swap).",
     "lookahead_return": "Compute the forward return per row using only information available at that row's time (no look-ahead); the last rows without a future price must be NaN, not fabricated.",
     "numpy_broadcast": "Combine the arrays with the intended alignment so shapes broadcast correctly and each element pairs with its intended counterpart (no silent broadcast mismatch).",
+    # core operators
+    "weighted_mean": "Compute the average of the value column WEIGHTED by the weight column (sum(value*weight)/sum(weight)), not the plain arithmetic mean.",
+    "within_group_share": "Add a share column = each row's value divided by ITS OWN GROUP's total, so shares sum to 1 WITHIN each group (not across the whole table).",
+    "pct_point": "Compute the change in percentage POINTS (new - old, on a 0-100 point scale), not the relative percent change (new-old)/old.",
+    "dedup_then_agg": "Deduplicate by the key first (one row per key), THEN aggregate the value per group, so duplicate line-items are not double-counted.",
+    "left_join_keep_all": "Attach the lookup columns onto the left table with a LEFT/outer join that KEEPS every left row (unmatched rows get nulls), not an inner join that drops them.",
+    "pooled_rate": "Compute each group's rate as SUM(numerator)/SUM(denominator) over the group (a pooled rate), not the mean of per-row ratios.",
+    "median_not_mean": "Compute the MEDIAN of the value within each group (robust to outliers), not the mean.",
+    "cumulative_running": "Compute the running cumulative sum of the value in order, so each row shows the balance up to that point, not the raw per-row value.",
+    "topn_with_ties": "Return the top-N by value but KEEP ALL rows tied at the cutoff (do not arbitrarily drop a tie to force exactly N rows).",
+    "nan_as_zero_sum": "Sum the value per group treating missing values as zero, so a group is not reported as NaN just because one member is missing.",
+    "count_includes_empty": "Count rows per category INCLUDING categories with zero rows (report them as 0), not only the categories that happen to appear.",
+    "proportion_true": "Compute the PROPORTION of true flags per group (mean of the boolean = rate in [0,1]), not the raw count of trues.",
 }
 
 SYNTH_PROMPT = """You write GOLDLESS runtime contracts that detect silent semantic errors in \
@@ -169,12 +182,18 @@ def main():
     ap.add_argument("--model", default="gpt-5.4")
     ap.add_argument("--out", default="eval/results_autocontract/autocontract.json")
     ap.add_argument("--retries", type=int, default=2, help="synthesis attempts per op (best-of)")
+    ap.add_argument("--source", choices=("expansion", "core", "all"), default="expansion",
+                    help="which operator set to synthesize contracts for")
     a = ap.parse_args()
     recs = []
     n_ok = n_exec = 0
+    pool = list(CANDIDATES)
+    if a.source in ("core", "all"):
+        from eval.core_candidates import CORE_CANDIDATES
+        pool = (list(CORE_CANDIDATES) + pool) if a.source == "all" else list(CORE_CANDIDATES)
     # only pandas-DataFrame operators (numpy_broadcast's fixture is dict-of-arrays, outside
     # the DataFrame-result contract framework -> skip)
-    cands = [c for c in CANDIDATES if isinstance(c.fixture().get("df"), pd.DataFrame)]
+    cands = [c for c in pool if isinstance(c.fixture().get("df"), pd.DataFrame)]
     for cand in cands:
         best = None
         for attempt in range(a.retries):
