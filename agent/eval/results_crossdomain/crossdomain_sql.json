@@ -1,0 +1,36 @@
+{
+  "substrate": "sqlite3",
+  "n_operators": 4,
+  "correct": 4,
+  "cases": [
+    {
+      "op": "weighted_mean",
+      "fired_on_slip": true,
+      "fired_on_correct": false,
+      "ok": true,
+      "note": "SQL analyst writes AVG(price) instead of the quantity-weighted average"
+    },
+    {
+      "op": "groupby_dropna_key",
+      "fired_on_slip": true,
+      "fired_on_correct": false,
+      "ok": true,
+      "note": "SQL analyst adds WHERE g IS NOT NULL, silently dropping the NaN-key rows"
+    },
+    {
+      "op": "join_fanout",
+      "fired_on_slip": true,
+      "fired_on_correct": false,
+      "ok": true,
+      "note": "joining a 1-to-many tags table before SUM inflates amt via fan-out"
+    },
+    {
+      "op": "left_join_keep_all",
+      "fired_on_slip": true,
+      "fired_on_correct": false,
+      "ok": true,
+      "note": "INNER JOIN silently drops the left row with no match (id=2)"
+    }
+  ],
+  "claim": "goldless contracts are execution-substrate-agnostic (pandas -> SQL)"
+}

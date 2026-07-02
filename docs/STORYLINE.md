@@ -5,6 +5,18 @@
 
 ---
 
+## A00. 论文投稿定位(measurement-first,贡献排序对审稿最有利)
+
+> 这一节是"怎么把这堆证据组织成一篇能中的论文"的顶层框架。经两轮 brutal review 迭代后,**最高命中率的框架是 measurement-first + 条件方法 + 自动可扩展**,而不是 method-first("我们发明了一个检测算法")。三个贡献按此排序陈述:
+
+1. **【一等贡献 · 测量】** 首次系统测量"LLM 生成数据转换代码的静默语义错误有多普遍":真实 Nature **77%**、跨 10 模型/4 厂商 32–78%、外部 DS-1000 26%,旧检查检出 **0%**——这是独立于我们方法、没人做过的经验发现。
+2. **【二等贡献 · 无训练配方】** 一套**无 gold、无训练**的 检测→定位→修复→挑选 配方:真实数据检测 recall 99%/FP 0%;typed 修复 79–81%(vs 强 self-debug 3–5%,vs 只定位 45%,增益归因清晰);best-of-N 无 gold 挑选把修复抬到 48% gold/0.67 契约pass 且零误修。**且契约可从 NL 自动合成(64–73%)、与执行基底无关(pandas→SQL 4/4)**——回应 novelty 与可扩展性。
+3. **【诚实边界】** 方法活在"算子级意图已知/可结构化给定"前提下;迁移到任意 free-text 代码受**算子推断**瓶颈(DS-1000 覆盖率低、端到端未达 70/20),但 LLM scope-gate 把范围外 FP 55%→5% 使其**部署安全**。边界量化披露,不藏。
+
+> **一句话定位**:"我们**测量出**一个被忽视但普遍(77%)的失败模式,并给出一套**无训练、可自动扩展、跨基底**的无 gold 检测+修复配方,在算子意图可得时近乎完美,在意图不可得时**安全弃权**——把'代码能跑≠算对'这件事第一次量化并给了实用解。" 目标 venue:AAAI main(按此框架)/ NeurIPS D&B / ICSE·FSE。
+
+---
+
 ## A. 最大的发现(开门见山,先砸数字)
 
 > **最强的 LLM,在真实数据上,有 77% 的概率把数据处理代码悄悄做错——而且代码照样跑通、结果看着完全正常、现有任何检查都抓不到。**
@@ -331,6 +343,19 @@ LLM 大量替人写 pandas / matplotlib 代码做分析与画图。现有可视�
 | **FULL(再加 alt 有效实现鲁棒)** | **7/11 = 64%** | [35–85] |
 
 **7 个算子的无 gold 契约完全由 LLM 从 NL 自动写出、零人工写不变量**(order_dedup / resample / string_join / join_fanout / null_count / scale_leakage / latlon_swap)。诚实失败 3 个:dtype_coerce、lookahead_return(不变量漏了 slip)、index_align(在有效替代实现上误 fire)——位置对齐/前视这类微妙不变量仍需人。**含义**:(1) novelty 从"手写 assertion"升级为"**从 NL 自动合成无 gold 算子不变量**"(PBT 需人写 property,这里 property 由 NL 生成);(2) 可扩展性从 aspiration 变**有实测自动化率的 human-in-the-loop**——新算子 64–73% 零样本自动生成,人只需复核/修补 ~1/3 微妙情形。(`results_autocontract/AUTOCONTRACT_SUMMARY.md`)
+
+### A7.1 "只在 pandas 上有效?"——契约与执行基底无关(pandas → SQL)
+
+审稿会攻单一域(W6):"结果全是 pandas,'算子级语义契约'的通用性没证。" 但契约检查的是 `(输入, 参数, result)` 的不变量,**从不看产生 result 的代码**——所以同一个契约必然也能抓到**同样语义错误的 SQL 版本**。端到端验证(`crossdomain_sql.py`,sqlite3 stdlib,**完全离线确定性、零依赖零 API**):把 fixture 灌进内存 SQLite,跑正确 SQL 与 silent-slip SQL,结果读回喂给**现有 pandas 契约**,零 SQL 专用代码。
+
+| 算子 | SQL 的 silent slip | 契约在 slip 上 fire | 正确 SQL 上 pass |
+|---|---|---|---|
+| weighted_mean | `AVG(price)` 代替 `SUM(price*qty)/SUM(qty)` | ✅ | ✅ |
+| groupby_dropna_key | `WHERE g IS NOT NULL` 静默丢 NaN 键行 | ✅ | ✅ |
+| join_fanout | `JOIN tags` 后 `SUM(amt)` 被 1-对-多 fan-out 放大 | ✅ | ✅ |
+| left_join_keep_all | `INNER JOIN` 丢掉无匹配的左行 | ✅ | ✅ |
+
+**4/4 全过,契约一字未改**。这些正是最典型的真实 SQL 错误(无权重 AVG、NULL 过滤、join fan-out、inner-join 丢行)。→ 检测机制**不是 pandas 专属**,而是"**基底无关的算子语义验证**",pandas 只是其中一个实例。已加进测试(`tests/test_crossdomain_sql.py`,离线)。(`results_crossdomain/CROSSDOMAIN_SUMMARY.md`)
 
 整个 repo = 研究这个问题的**完整装置**。
 
