@@ -68,3 +68,17 @@ little. 1-shot is the honest headline.
 Raw: `autocontract_core_1shot.json` (12 core, 1-shot), `autocontract_1shot.json` (11
 expansion, 1-shot), `autocontract.json` (11 expansion, best-of-3). Repro:
 `python eval/autocontract_synth.py --source all --retries 1` (N=23, 1-shot).
+
+## Cross-model robustness (kills the "cherry-picked model" attack)
+
+Re-ran the N=23 1-shot synthesis with two more models, including a DIFFERENT vendor:
+
+| synthesizer model | vendor | CORE (1-shot) | FULL (1-shot) |
+|---|---|---|---|
+| gpt-5.4 | OpenAI | 19/23 = **83%** | 18/23 = 78% |
+| gpt-5.5 | OpenAI | 19/23 = **83%** | 18/23 = 78% |
+| gemini-3.1-pro | Google | 19/23 = **83%** | 19/23 = 83% |
+
+**CORE is identical (83%) across all three models and two vendors; FULL is 78-83%.** The
+auto-synthesis success rate is a property of the operators + method, not of any single
+model. This removes the cherry-picked-model concern.
