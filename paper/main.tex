@@ -461,8 +461,9 @@ recall ($99\%$) and $2/1539$ false-positive. We report the more conservative
 We stress a distinction the framing depends on: this measures detection under
 \emph{known} operator and parameters; the self-authored correctness grid used in
 development is a contract \emph{unit test}, not evidence of generalization, and
-we exclude it from headline claims. ``0\%'' false-positive is literally $4/1855$;
-we report the exact fraction and interval throughout.
+we exclude it from headline claims. We report the false-positive rate as the
+exact fraction $4/1855$ ($0.2\%$) with its interval throughout, rather than
+rounding to ``0\%''.
 
 \paragraph{Failure analysis.} The $\sim$2\% of silent errors the contracts miss
 are not contract bugs but an inherent \emph{detectability} limit: they
