@@ -12,8 +12,10 @@ drawn from `../docs/STORYLINE.md` and the result artifacts under
 pdflatex main.tex && pdflatex main.tex      # -> main.pdf (4 pp.)
 ```
 
-The skeleton compiles with a **minimal pdflatex** (manual `thebibliography`).
-`references.bib` is provided for the real build.
+The skeleton compiles with a **minimal pdflatex** (manual `thebibliography`,
+TikZ figures, no bibtex). `references.bib` is provided for the real build.
+Current draft: **5 pages, 2 figures** (prevalence/detection bar chart; end-to-end
+pipeline diagram).
 
 ## Switch to the official AAAI style for submission
 
@@ -33,12 +35,31 @@ All section content is written to survive that swap unchanged.
 
 ## Remaining author work (markers in `main.tex`)
 
-- `\todo{...}` — prose/citation gaps (verify/extend `references.bib`).
-- `\fig{...}` — two figures to render: (a) prevalence across models, (b) the
-  reach/expressivity or detection schematic. Put PDFs in `figures/`.
-- Expand from 4 pp. toward the AAAI 7-pp. limit: add the per-operator detection
-  breakdown, the repair ablation table (generic/self-debug/localize/targeted/
-  ceiling), and a method/pipeline figure.
+- Two TikZ figures are already drawn (Fig.~1 prevalence/detection, Fig.~2
+  pipeline). Consider adding a third: per-operator detection breakdown, or a
+  reach/expressivity curve, from the STORYLINE data.
+- `\todo{...}` — any remaining prose/citation gaps; verify DOIs/venues in
+  `references.bib` before camera-ready.
+- Expand from 5 pp. toward the AAAI limit: add the per-operator detection
+  table, the measurement protocol details (how ambiguity was constructed and
+  adjudicated), and a CEGIS/pipeline algorithm box.
+
+## Review-driven revisions already applied
+
+This draft incorporates two independent AAAI-style reviews of the prior version:
+- **"Goldless" reframed** to *specification-derived* with an explicit
+  ``What `no gold' means (and does not)'' paragraph (contracts use no per-task
+  label but may recompute a reference from known op+params).
+- **Conservative detection number** (98\%, 1438/1471 recall, 4/1855 FP, 71-article
+  independent sample) is the headline; the 99\% table-dense slice is noted, not
+  cherry-picked.
+- **Ambiguity foregrounded** (77\% ambiguous vs 10\% clarified).
+- **Small-$N$ honesty**: Wilson CIs in every table; synthesis framed as
+  *feasibility*, not significance (intervals overlap at $N{=}23$).
+- **Deeper related work**: Great Expectations, pandera, PBT, metamorphic
+  testing, LEVER.
+- **CEGIS demoted** from a contribution to an honest neutral mechanism;
+  self-debug$<$generic surfaced as a finding.
 
 ## Claim → artifact map (for the auditable numbers)
 

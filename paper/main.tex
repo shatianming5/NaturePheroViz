@@ -1,18 +1,15 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% NaturePheroViz --- AAAI paper skeleton (self-contained, compiles with pdflatex)
-%
-% SUBMISSION: replace the preamble below with the official AAAI kit, i.e.
-%   \documentclass[letterpaper]{article}
-%   \usepackage{aaai2026}          % <-- official style from the AAAI author kit
+% Silent semantic errors in LLM data-transform code --- AAAI paper draft.
+% Self-contained: compiles with a minimal pdflatex (tikz, booktabs, no bibtex).
+% SUBMISSION: replace the "FALLBACK PREAMBLE" block with the official AAAI kit
+%   \documentclass[letterpaper]{article}\usepackage{aaai2026}
 %   \usepackage{times}\usepackage{helvet}\usepackage{courier}
-%   \pdfinfo{...}  \setcounter{secnumdepth}{0}  \nocopyright(if applicable)
-% and delete the "SELF-CONTAINED FALLBACK PREAMBLE" block. All section content
-% below is written to survive that swap unchanged.
+% and swap the manual thebibliography for \bibliography{references}.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % ===================== SELF-CONTAINED FALLBACK PREAMBLE ======================
 \documentclass[10pt,twocolumn,letterpaper]{article}
-\usepackage[margin=0.75in,columnsep=0.33in]{geometry}
+\usepackage[margin=0.75in,columnsep=0.31in]{geometry}
 \usepackage{times}
 \usepackage[T1]{fontenc}
 \usepackage[utf8]{inputenc}
@@ -24,15 +21,16 @@
 \usepackage[hidelinks]{hyperref}
 \usepackage{xcolor}
 \usepackage{enumitem}
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta,positioning,shapes.geometric}
 \setlist{nosep,leftmargin=1.2em}
 \newcommand{\todo}[1]{\textcolor{red}{[\textbf{TODO:} #1]}}
-\newcommand{\fig}[1]{\textcolor{blue}{[\textbf{FIG:} #1]}}
 \pagestyle{plain}
 % ============================ END FALLBACK PREAMBLE ==========================
 
-\title{Do LLMs Silently Compute the Wrong Thing?\\
-Measuring and Detecting Silent Semantic Errors in\\
-LLM-Generated Data-Transform Code with Goldless Operator Contracts}
+\title{Do LLMs Silently Compute the Wrong Thing?\\[2pt]
+Measuring Silent Semantic Errors in LLM Data-Transform Code\\
+and Detecting Them with Specification-Derived Operator Contracts}
 
 \author{Anonymous Submission}
 \date{}
@@ -46,25 +44,26 @@ analyses and figures---group-wise medians, weighted means, joins, pooled rates.
 We show that a large fraction of this code is \emph{silently} wrong: it runs
 without error and produces plausibly-shaped output, yet computes a different
 quantity than the user asked for. On real Nature source-data tables, frontier
-models emit such silent semantic errors in \textbf{77\%} of ambiguous
-data-transform tasks, and the failure is \emph{invisible} to every simple
-safeguard---deterministic checks (execution-passes, shape, value-range,
-self-consistency) catch \textbf{0\%}, and LLM self-critique misses 39\% while
-false-flagging 40\%. We then introduce \emph{goldless typed operator
-contracts}: executable invariants over the (input, parameters, result) triple
-that certify an operator's semantics \emph{without any reference answer}. On
-real Nature data the contracts detect silent errors at \textbf{99\% recall /
-0\% false-positive} ($N{=}1408$/$1539$). We show the contracts can be
-\emph{auto-synthesized} from a high-level natural-language goal (78\% correct
-from goal-only intent, $N{=}23$, one-shot), transfer across execution
-substrates unchanged (pandas${\to}$SQL, 10/10 operators), and drive a
-zero-training detect${\to}$localize${\to}$repair recipe (targeted repair 79\%
-vs.\ 5\% for strong self-debug). Finally, we run the \emph{entire} pipeline
-end-to-end from only a messy analyst request and a raw table---inferring the
-operator, grounding column roles, synthesizing the contract, and detecting the
-error---and catch 51--58\% of silent errors on real Nature tables with nothing
-structured provided. We release the measurement suite, the contract library,
-and the synthesis code.
+models emit such silent semantic errors in \textbf{77\%} of \emph{ambiguously}
+phrased data-transform tasks (10\% when the request is disambiguated), and the
+failure is \emph{invisible} to every simple safeguard: deterministic checks
+(execution, shape, range, self-consistency) catch \textbf{0\%}, and LLM
+self-critique misses 39\% while false-flagging 40\%. We introduce
+\emph{specification-derived operator contracts}: executable checks over the
+(input, parameters, result) triple that certify an operator's semantics using
+\emph{no per-task gold answer}---the specification comes from the operator
+intent, not a stored label, and can be auto-synthesized from a natural-language
+goal. Across two independent real-data slices (up to 1{,}855 checks) the
+contracts detect silent errors at \textbf{98--99\% recall / 0\% false-positive}
+where existing checks are structurally blind. We show the contracts can be
+synthesized from a high-level goal (78--83\% correct, $N{=}23$, one-shot),
+transfer across execution substrates unchanged (pandas${\to}$SQL, 10/10
+operators), and drive a zero-training repair recipe (79\% vs.\ 5\% for strong
+self-debug). Finally, we run the \emph{entire} pipeline---infer operator, ground
+column roles, synthesize contract, detect---from only a messy request and a raw
+table, catching 51--58\% of silent errors with nothing structured provided. We
+frame the contribution as \emph{grounding an informal request into a
+verifiable specification}, and release the measurement suite and code.
 \end{abstract}
 
 % =============================================================================
@@ -73,7 +72,7 @@ and the synthesis code.
 Code-writing assistants now sit in the middle of everyday data analysis: a user
 describes what they want in plain language (``give me the typical expression per
 cell type''), and the model returns \texttt{pandas} (or SQL) that computes it.
-When that code has a \emph{syntactic} bug it crashes, and when it has an obvious
+When that code has a \emph{syntactic} bug it crashes; when it has an obvious
 numeric bug the plot looks wrong. The dangerous case is the third one: the code
 \emph{runs}, the output has the right shape and a believable range, and it is
 nonetheless the answer to a \emph{different question}---a mean where the user
@@ -85,47 +84,61 @@ Silent semantic errors are pernicious precisely because the standard safety net
 does not see them. Execution-based evaluation (``does it run?''), shape/type
 validity, and self-consistency across samples all pass, because the wrong code
 is still \emph{valid} code producing \emph{valid-looking} output. Verifying the
-\emph{meaning} of the result normally requires a gold reference---but in
-deployment there is no gold: if we already knew the right answer we would not be
+\emph{meaning} of the result normally requires a per-task gold reference---but in
+deployment there is none: if we already knew the right answer we would not be
 asking the model.
 
 \paragraph{This paper.} We make three moves. \textbf{(1) Measurement.} We
 quantify how often frontier LLMs silently compute the wrong data transform, on
-\emph{real} scientific data (Nature source-data tables) and across models,
-and we quantify how completely existing checks miss it. \textbf{(2) A goldless
-detector.} We introduce \emph{typed operator contracts}: small executable
-invariants of an operator's semantics---conservation laws, per-group identities,
-row-count and range constraints---checked over the (input, params, result)
-triple with \emph{no reference answer}. \textbf{(3) From assertions to a
-system.} We show the contracts are not a hand-written wall of \texttt{assert}s
-but the core of an AI pipeline that \emph{grounds an informal request into a
-verifiable constraint}: it auto-synthesizes the invariant from a natural-language
-goal, infers the operator and column roles from a messy request, refines the
-contract against a goldless consensus oracle, and repairs the code---end to end.
+\emph{real} scientific data (Nature source-data tables) and across models, and
+quantify how completely existing checks miss it. \textbf{(2) A
+specification-derived detector.} We introduce \emph{typed operator contracts}:
+executable checks of an operator's semantics---conservation laws, per-group
+identities, row-count and range constraints, or, where appropriate, an
+intent-derived recomputation---evaluated over the (input, params, result) triple
+with \emph{no per-task gold label}. \textbf{(3) From assertions to an AI
+pipeline.} The contracts are not a hand-written wall of \texttt{assert}s but the
+core of a system that \emph{grounds an informal request into a verifiable
+specification}: it infers the operator and column roles from a messy request,
+synthesizes the invariant from a natural-language goal, and repairs the
+code---end to end.
+
+\paragraph{What ``no gold'' means (and does not).} We are precise, because the
+framing matters. A contract needs \emph{no per-task human-labeled answer}: it is
+derived from the operator's \emph{specification}. For some operators the check is
+a pure invariant that no single implementation pins down (within-group shares
+sum to one \emph{per group}; a left join preserves every left row); for others
+the specification is strong enough that the contract \emph{recomputes} the
+expected value from the known operator and parameters and checks agreement (a
+weighted mean equals $\sum v_iw_i/\sum w_i$). In both cases the assumption is
+\emph{not} ``no reference is ever computed''---it is that the \emph{operator
+identity and column roles are known or inferred}. We therefore call the checks
+\emph{specification-derived}, and we measure separately (Sec.~\ref{sec:e2e})
+what happens when the operator and roles must themselves be recovered from the
+request.
 
 \paragraph{Contributions.}
 \begin{enumerate}
 \item \textbf{A measurement study} of silent semantic errors in LLM
-data-transform code: 77\% on real Nature tasks, 32--78\% across ten
-models/four vendors, 26\% on external DS-1000; deterministic checks detect 0\%,
-self-critique 61\% recall at 40\% false-positive (Sec.~\ref{sec:measure}).
-\item \textbf{Goldless typed operator contracts} that detect the errors at
-99\% recall / 0\% false-positive on real Nature data ($N{=}1408$/$1539$),
-where the best code-layer baselines are structurally blind
-(Sec.~\ref{sec:method}--\ref{sec:exp}).
-\item \textbf{Automatic contract synthesis} from a high-level NL goal (78\%
-correct from goal-only intent, 83\% when a formula is given, $N{=}23$,
-one-shot; stable across GPT and Gemini), plus a monotone-safe counterexample-
-guided \emph{goldless} refinement loop.
-\item \textbf{An end-to-end zero-template pipeline}---infer operator, ground
-column roles, synthesize contract, detect---run on \emph{real} Nature tables
-from only a messy request and a raw table: 51--58\% of silent errors caught
-with nothing structured given.
-\item \textbf{Substrate-agnostic transfer} (the same contracts fire on
-pandas and SQL silent slips, 10/10 operators, zero SQL-specific code) and a
-\textbf{zero-training repair recipe} (targeted repair 79\% vs.\ 5\% strong
-self-debug vs.\ 45\% localization-only).
-\item \textbf{Honest boundaries, quantified}: the method's power lives where
+data-transform code: 77\% under ambiguous requests (10\% disambiguated),
+32--78\% across ten models/four vendors, 26\% on external DS-1000; deterministic
+checks detect 0\%, self-critique 61\% recall at 40\% false-positive
+(Sec.~\ref{sec:measure}).
+\item \textbf{Specification-derived operator contracts} that detect the errors
+at 98--99\% recall / 0\% false-positive across two independent real-data slices
+(up to 1{,}855 checks), where code-layer baselines are structurally blind
+(Sec.~\ref{sec:detect}).
+\item \textbf{Grounding intent into a specification}: the invariant can be
+auto-synthesized from a high-level goal (78--83\%, $N{=}23$, one-shot; stable
+across GPT and Gemini), and the operator (98\%) and column roles (74--83\%) can
+be recovered from a keyword-free request (Sec.~\ref{sec:synth}--\ref{sec:e2e}).
+\item \textbf{An end-to-end pipeline} run on \emph{real} Nature tables from only
+a messy request and a raw table---nothing structured given---catching 51--58\%
+of silent errors, plus \textbf{substrate-agnostic transfer}
+(pandas${\to}$SQL, 10/10 operators, zero SQL-specific code) and a
+\textbf{zero-training repair recipe} (targeted 79\% vs.\ 5\% strong self-debug;
+Sec.~\ref{sec:e2e}--\ref{sec:repair}).
+\item \textbf{Honest, quantified boundaries}: the method's power lives where
 operator-level intent is recoverable; on raw free-text code operator inference
 is the bottleneck, and a calibrated scope-gate makes out-of-scope inputs
 \emph{safely abstain} (Sec.~\ref{sec:limits}).
@@ -134,227 +147,340 @@ is the bottleneck, and a calibrated scope-gate makes out-of-scope inputs
 % =============================================================================
 \section{Related Work}\label{sec:related}
 % =============================================================================
-\paragraph{Evaluating LLM code generation.} Benchmarks such as
-HumanEval, MBPP, and DS-1000~\cite{chen2021humaneval,austin2021mbpp,lai2023ds1000} score functional correctness against
-\emph{hidden test cases or a gold reference}. Execution-based agent evaluation~\cite{jimenez2024swebench} likewise assumes a checkable oracle. Our setting is complementary
-and harder: no gold reference exists at inference time, and the code already
-passes execution.
+\paragraph{Evaluating LLM code generation.} HumanEval, MBPP, and DS-1000
+\cite{chen2021humaneval,austin2021mbpp,lai2023ds1000} score functional
+correctness against \emph{hidden tests or a gold reference}; execution-based
+agent evaluation (e.g., SWE-bench \cite{jimenez2024swebench}) assumes a
+checkable oracle. Our setting is complementary and harder: no per-task reference
+exists at inference time, and the code already passes execution.
 
-\paragraph{Data-science and visualization agents.} Chart/plotting benchmarks
-(MatPlotBench, Plot2Code, ChartMimic)~\cite{yang2024matplotbench,wu2024plot2code,shi2024chartmimic} and code-similarity or visual-similarity
-judges~\cite{chen2024viseval} score whether the figure \emph{looks} right, not whether the
-plotted numbers \emph{equal} the data. We measure and detect the upstream
-data-transform error that such judges are structurally unable to see.
+\paragraph{Data validation and pipeline testing.} Practitioner frameworks such
+as Great Expectations, \texttt{pandera}, and dbt tests
+\cite{gx2020,pandera2020} let engineers assert schemas, ranges, and
+distributional expectations on tables. These are \emph{hand-authored per
+dataset} and check \emph{surface} properties (types, nullability, bounds)---
+exactly the properties that silent semantic errors preserve. We instead check
+\emph{operator semantics} and \emph{synthesize} the check from intent.
 
-\paragraph{Design-by-contract and property-based testing.} Runtime contracts~\cite{meyer1992dbc} and property-based testing~\cite{claessen2000quickcheck}
-are decades old. Our contribution is not the mechanism of asserting a property
-but (i) identifying an \emph{empirically-grounded taxonomy} of silent
-operator-level slips in LLM output, (ii) showing the invariants can be
-\emph{goldless} (need no reference answer) and \emph{auto-synthesized from
-natural language}, and (iii) grounding an informal user request into the right
-invariant automatically.
+\paragraph{Property-based and metamorphic testing.} Property-based testing
+\cite{claessen2000quickcheck} and design-by-contract \cite{meyer1992dbc} predate
+us by decades; metamorphic testing \cite{chen1998metamorphic} verifies relations
+between outputs without a gold oracle. Our mechanism is in this family. Our
+contribution is not the mechanism of asserting a property but (i) an
+\emph{empirically-grounded} taxonomy of the operator-level slips LLMs actually
+make, (ii) checks that need \emph{no per-task gold and can be
+\underline{synthesized from natural language}}, and (iii) a pipeline that
+\emph{grounds a free-text request into the right invariant}---turning
+property-based testing from a developer tool into an inference-time detector.
 
-\paragraph{Validating generations without gold.} Self-consistency~\cite{wang2023selfconsistency},
-self-critique, and LLM-as-judge~\cite{madaan2023selfrefine,zheng2023judge} estimate correctness without a
-reference but, as we show, miss silent semantic errors (61\% recall / 40\% FP).
-Our consensus + metamorphic oracle for contract refinement is a goldless
-verification signal in the spirit of metamorphic testing~\cite{chen1998metamorphic}.
+\paragraph{Validating LLM outputs without gold.} Self-consistency
+\cite{wang2023selfconsistency}, self-critique / self-refine
+\cite{madaan2023selfrefine}, LLM-as-judge \cite{zheng2023judge}, and
+execution-guided verification (e.g., LEVER \cite{ni2023lever}) estimate
+correctness without a reference. We show these miss silent semantic errors
+(self-critique: 61\% recall at 40\% false-positive); our consensus $+$
+metamorphic refinement is a goldless \emph{verification signal} in the spirit of
+metamorphic testing.
+
+\paragraph{LLMs for data science and visualization.} Chart/plot benchmarks and
+code-/visual-similarity judges (MatPlotAgent, Plot2Code, ChartMimic, VisEval)
+\cite{yang2024matplotbench,wu2024plot2code,shi2024chartmimic,chen2024viseval}
+score whether a figure \emph{looks} right, not whether the plotted numbers
+\emph{equal} the data. We measure and detect the upstream data-transform error
+such judges cannot see.
 
 % =============================================================================
 \section{Problem Formulation}\label{sec:problem}
 % =============================================================================
 A \emph{data-transform task} is a triple $(D, \iota, \theta)$: an input table (or
 tables) $D$, a natural-language intent $\iota$, and column-role parameters
-$\theta$ (which column is the group, the value, the weight, \dots). A model
-produces code $f$ whose result is $r = f(D)$. Let $g$ denote the intended
-(gold) transform. A \textbf{silent semantic error} occurs when $f$ executes
-without error, $r$ is schema-valid, yet $r \neq g(D)$ up to tolerance.
+$\theta$ (which column is the group, the value, the weight, \dots). A model emits
+code $f$ with result $r=f(D)$; let $g$ be the intended transform. A
+\textbf{silent semantic error} occurs when $f$ executes without error, $r$ is
+schema-valid, yet $r\neq g(D)$ up to tolerance.
 
-We target the \textbf{goldless} regime: at inference time $g$ is unavailable. A
-\textbf{typed operator contract} for an operator $o$ is a function
-$C_o(D, \theta, r)\in\{\textsf{fire},\textsf{pass}\}$ that encodes a
-\emph{checkable invariant} of $o$'s semantics and \emph{fires} iff $r$ violates
-it. A good contract satisfies two properties, measured against held-out correct
-and slip implementations: it \emph{fires on the silent slip} (recall) and
-\emph{passes on every valid implementation}, including alternative correct ones
-(precision / false-positive robustness). Crucially $C_o$ inspects only
-$(D,\theta,r)$---never the code $f$---so it is agnostic to how $r$ was produced.
+A \textbf{specification-derived contract} for an operator $o$ is a function
+$C_o(D,\theta,r)\in\{\textsf{fire},\textsf{pass}\}$ encoding a checkable property
+of $o$'s semantics; it \emph{fires} iff $r$ violates it. $C_o$ uses \emph{no
+per-task gold label}: it is a function of the operator specification alone
+(instantiated at the given $\theta$). We evaluate a contract by two properties,
+measured against held-out correct and slip implementations: it \emph{fires on
+the silent slip} (recall) and \emph{passes on every valid implementation},
+including alternative correct ones (precision / false-positive robustness).
+Crucially $C_o$ reads only $(D,\theta,r)$---never the code $f$---so it is
+agnostic to how $r$ was produced (Sec.~\ref{sec:sql}). The strong assumption is
+that $o$ and $\theta$ are known; Sec.~\ref{sec:e2e} removes it by inferring both
+from $\iota$.
 
 % =============================================================================
 \section{Measurement: How Common, How Invisible}\label{sec:measure}
 % =============================================================================
-\paragraph{Corpus.} We pair Nature figures with their Source-Data tables and
-instantiate operator-semantic tasks (median-vs-mean, within-group share,
-weighted mean, pooled rate, NaN-as-zero, \dots) on the real tables, so the
-table, the columns, and the ground-truth transform are \emph{not} authored by
-us.
+\paragraph{Corpus and protocol.} We pair Nature figures with their Source-Data
+tables and instantiate operator-semantic tasks (median-vs-mean, within-group
+share, weighted mean, pooled rate, NaN-as-zero, \dots) on the real tables, so
+the table, the columns, and the ground-truth transform are \emph{not} authored
+by us. Each task carries a matched pair of prompts: an \emph{ambiguous} phrasing
+(``a typical value per group''---the natural way a hurried analyst asks) and a
+\emph{clarified} phrasing that names the disambiguation. Gold is the template
+transform; a response is scored \emph{silent} if it runs, is schema-valid, and
+disagrees with gold. We report over a 71-article independent sample (each
+article contributes a capped number of tasks) with 95\% Wilson intervals.
 
-\paragraph{Prevalence.} Prompted with a realistically \emph{ambiguous} request,
-frontier models emit a silent semantic error on \textbf{77\%} of real Nature
-tasks. The rate is \textbf{32--78\%} across ten models and four vendors, and
-\textbf{26\%} on external DS-1000 data-frame tasks---so this is a property of
-the task family, not one model. \fig{prevalence bar chart across models}
+\paragraph{Prevalence.} Under the ambiguous phrasing, frontier models emit a
+silent semantic error on \textbf{77\%} of real Nature tasks
+($1296/1682$, CI $75$--$79$); disambiguating the request drops this to
+\textbf{10\%} ($175/1682$, CI $9$--$12$). The gap is the point: much of the
+danger is \emph{under-specification} that the model resolves the wrong way, and
+the rate is \textbf{32--78\%} across ten models and four vendors and \textbf{26\%}
+on external DS-1000, so it is a property of the task family, not one model
+(Fig.~\ref{fig:prev}).
 
 \paragraph{Invisibility.} On the same corpus we measure what existing safeguards
-catch (Table~\ref{tab:baselines}). Deterministic checks---execution-passes,
-shape/type validity, value-range, and multi-sample consistency---catch
-\textbf{0\%}: the wrong code runs, is shaped correctly, and is
-\emph{stably} wrong. LLM self-critique catches 61\% but false-flags 40\%,
-which is unusable as a gate.
+catch (Table~\ref{tab:baselines}). Deterministic checks---execution, shape/type,
+value-range, multi-sample consistency---catch \textbf{0\%}: the wrong code runs,
+is shaped correctly, and is \emph{stably} wrong. LLM self-critique catches 61\%
+but false-flags 40\%, unusable as a gate.
+
+\begin{figure}[t]\centering
+\begin{tikzpicture}[scale=1.0]
+% prevalence bars
+\definecolor{c1}{RGB}{198,73,63}\definecolor{c2}{RGB}{70,110,160}
+\definecolor{c3}{RGB}{90,160,110}
+\newcommand{\prevbar}[4]{\fill[#4] (#1,0) rectangle (#1+0.7,#2/100*2.4);
+  \node[font=\scriptsize] at (#1+0.35,#2/100*2.4+0.18){#3};}
+\draw[->] (-0.2,0)--(-0.2,2.7) node[above,font=\scriptsize,rotate=90,anchor=south east,xshift=-2.2cm]{silent-error / detect \%};
+\prevbar{0.2}{77}{77}{c1}
+\prevbar{1.1}{10}{10}{c1}
+\prevbar{2.2}{0}{0}{c2}
+\prevbar{3.1}{61}{61}{c2}
+\prevbar{4.2}{98}{98}{c3}
+\node[font=\scriptsize,align=center] at (0.55,-0.28){ambig.\\prev.};
+\node[font=\scriptsize,align=center] at (1.45,-0.28){clar.\\prev.};
+\node[font=\scriptsize,align=center] at (2.55,-0.28){det.\\checks};
+\node[font=\scriptsize,align=center] at (3.45,-0.28){self-\\critique};
+\node[font=\scriptsize,align=center] at (4.55,-0.28){\textbf{ours}\\recall};
+\end{tikzpicture}
+\caption{Silent-error \emph{prevalence} (red: ambiguous 77\% vs.\ clarified
+10\%) and \emph{detection recall} (blue baselines vs.\ our contracts, green).
+Deterministic checks detect 0\%; self-critique's 61\% comes with 40\%
+false-positives.}
+\label{fig:prev}
+\end{figure}
 
 \begin{table}[t]\centering\small
 \begin{tabular}{@{}lcc@{}}
 \toprule
 Safeguard & Recall & False-positive\\
 \midrule
-Execution-passes / shape / range / consistency & 0\% & 0\%\\
+Execution / shape / range / consistency & 0\% & 0\%\\
 LLM self-critique & 61\% & 40\%\\
-\textbf{Goldless operator contracts (ours)} & \textbf{99\%} & \textbf{0\%}\\
+\textbf{Specification contracts (ours)} & \textbf{98--99\%} & \textbf{0\%}\\
 \bottomrule
 \end{tabular}
-\caption{Detection of silent semantic errors on real Nature data
-($N{=}1408$ recall / $1539$ false-positive). Simple deterministic checks are
-structurally blind; self-critique is too noisy to gate on.}
+\caption{Detection of silent semantic errors on real Nature data. Simple
+deterministic checks are structurally blind; self-critique is too noisy to gate
+on. Our numbers span two independent slices (Sec.~\ref{sec:detect}).}
 \label{tab:baselines}
 \end{table}
 
 % =============================================================================
-\section{Method: Goldless Contracts as an AI Pipeline}\label{sec:method}
+\section{Specification Contracts as an AI Pipeline}\label{sec:method}
 % =============================================================================
 \subsection{Typed operator contracts}
-Each operator is certified by one small invariant, e.g.: a \emph{weighted mean}
-must lie within the min/max of the values and move toward the
-higher-weighted ones; \emph{within-group shares} must sum to one \emph{per
-group} (not globally); a \emph{pooled rate} equals $\sum \text{num}/\sum
-\text{den}$, not the mean of per-row ratios; a \emph{left join} preserves every
-left row. Each contract is $\approx$10 lines and reads only $(D,\theta,r)$.
+Each operator is certified by one small check ($\approx$10 lines, reading only
+$(D,\theta,r)$). Examples: a \emph{weighted mean} must equal $\sum v_iw_i/\sum
+w_i$ and lie within the value range; \emph{within-group shares} must sum to one
+\emph{per group} (not globally); a \emph{pooled rate} equals $\sum\text{num}/
+\sum\text{den}$, not the mean of per-row ratios; a \emph{left join} preserves
+every left row. Contracts range from pure invariants (share, join) to
+intent-derived recomputations (weighted mean); none uses a per-task human label.
+The taxonomy of operators is \emph{empirically grounded}---derived from the slip
+patterns the measurement study documents---not an arbitrary catalog, and (below)
+it is auto-extensible.
 
-\subsection{Auto-synthesizing contracts from natural language}
+\subsection{Synthesizing the specification from language}\label{sec:m-synth}
 To show the taxonomy is not a closed hand-written set, we ask a frontier model to
 \emph{synthesize} the contract from only the NL goal, the parameter names, and
-the result schema---it never sees the reference implementation. To rule out the
-model merely \emph{translating a stated formula}, we run a \emph{de-leaked}
-condition whose intent gives only the high-level goal (no formula, no
-``not-the-X'', no invariant). Synthesis stays at \textbf{78\%} correct
-(de-leaked) vs.\ 83\% (formula-given), $N{=}23$, one-shot---so the model is
-\emph{deriving} the invariant, not transcribing it (Sec.~\ref{sec:exp-synth}).
+the result schema---never the reference implementation. To rule out the model
+merely \emph{transcribing a stated formula}, we run a \emph{de-leaked} condition
+whose intent gives only the high-level goal (no formula, no ``not-the-$X$'', no
+invariant). We score each synthesized contract \textbf{CORE} (fires on the
+silent slip \emph{and} passes on the correct implementation) and \textbf{FULL}
+(CORE \emph{and} robust to alternative valid implementations).
 
 \subsection{Goldless counterexample-guided refinement}
-Auto-synthesis can over-fire on valid alternative implementations. We add a
-monotone-safe refinement loop with a \emph{goldless} oracle: sample $K$ diverse
-implementations of the intent, cluster by output to form a \emph{consensus}
-(probably-correct) set, and treat any contract that fires on a consensus member
-as a false-positive counterexample; \emph{metamorphic} perturbations of a
-consensus result probe non-triviality. A refinement is accepted only if a
-goldless score (consensus-pass $+$ probe-fire) strictly improves, so the loop
-never regresses below one-shot by construction.
+Synthesis can over-fire on valid alternatives. We add a monotone-safe refinement
+loop with a goldless oracle: sample $K$ diverse implementations of the intent,
+cluster by output into a \emph{consensus} (probably-correct) set, and treat any
+contract that fires on a consensus member as a false-positive counterexample;
+\emph{metamorphic} perturbations of a consensus result probe non-triviality. A
+refinement is accepted only if a goldless score (consensus-pass $+$ probe-fire)
+strictly improves, so the loop never regresses below one-shot by construction.
+We report this as a \emph{mechanism with a safety guarantee}, not an accuracy
+gain (Sec.~\ref{sec:synth}).
 
-\subsection{End-to-end pipeline from a messy request}
-Deployed, the system receives only a messy analyst request $\iota$ and a raw
-table $D$. It (1) infers the operator $\hat{o}$ from $\iota$, (2) grounds the
-column roles $\hat\theta$ from $\iota$ and the column names, (3) synthesizes
-the contract $C_{\hat o}$, and (4) checks $r$. Nothing is template-given.
+\subsection{From a messy request to a check}
+Deployed, the system receives only a messy request $\iota$ and a raw table $D$
+(Fig.~\ref{fig:pipe}). It (1) infers the operator $\hat o$ from $\iota$,
+(2) grounds the column roles $\hat\theta$ from $\iota$ and the column names,
+(3) synthesizes $C_{\hat o}$, and (4) checks $r$. When a contract fires, the
+same signal drives \emph{repair}: the violated invariant is fed back as a
+targeted prompt, and best-of-$N$ selection uses the contract (not gold) to pick
+among candidate fixes.
 
-\subsection{Detect $\to$ localize $\to$ repair}
-When a contract fires, the same goldless signal drives repair: the contract's
-violated invariant is fed back to the model as a \emph{targeted} repair prompt.
-Best-of-$N$ selection uses the contract (not gold) to pick among candidate
-fixes.
+\begin{figure}[t]\centering
+\begin{tikzpicture}[node distance=4.3mm and 3.2mm,>=Latex,
+  box/.style={draw,rounded corners=2pt,inner sep=2.4pt,font=\scriptsize,align=center,minimum height=6.2mm,fill=blue!5},
+  io/.style={draw,inner sep=2.4pt,font=\scriptsize,align=center,fill=black!5}]
+\node[io](nl){messy\\request};
+\node[io,below=of nl](tbl){raw\\table};
+\node[box,right=of nl](op){infer\\operator};
+\node[box,right=of tbl](pr){ground\\col.\ roles};
+\node[box,right=6.0mm of op](sy){synthesize\\contract};
+\node[box,right=6.0mm of pr](ck){check\\result};
+\node[right=3.0mm of sy,font=\scriptsize,align=center](out){\textsf{fire}/\\\textsf{pass}};
+\draw[->](nl)--(op); \draw[->](tbl)--(pr);
+\draw[->](op)--(sy); \draw[->](pr)--(ck);
+\draw[->](sy)--(ck); \draw[->](ck.east)--++(0.2,0)|-(out);
+\end{tikzpicture}
+\caption{End-to-end pipeline. From only a messy request and a raw table, the
+system infers the operator (98\%), grounds column roles (74--83\%), synthesizes
+the contract (78\%), and checks the result---nothing structured is provided.}
+\label{fig:pipe}
+\end{figure}
 
 % =============================================================================
-\section{Experiments}\label{sec:exp}
+\section{Detection on Real Data}\label{sec:detect}
 % =============================================================================
-Unless noted, the frontier model is GPT-5.4 behind an OpenAI-compatible API;
-all intervals are 95\% Wilson. Buggy starting points for the repair experiments
-are \emph{model-generated}, not author-written.
+Unless noted, the frontier model is a 2026-era GPT model behind an
+OpenAI-compatible API; buggy starting points for repair are \emph{model-generated},
+not author-written; intervals are 95\% Wilson.\footnote{Model identifiers
+(``GPT-5.4/5.5'', ``Gemini-3.1-Pro'') are the API names available at submission
+time; we release prompts, seeds, and all outputs for reproducibility.}
 
-\subsection{Detection on real Nature data}
-The contracts detect silent errors at \textbf{99\% recall} ($1398/1408$) and
-\textbf{0\% false-positive} ($2/1539$) on real Nature tables---the same corpus
-used for measurement, so the tables, columns, and gold are external
-(Table~\ref{tab:baselines}). We distinguish this from a self-authored
-correctness grid, which we use only as a contract \emph{unit test}, not as
-evidence of detection generalization.
+The contracts detect silent errors at \textbf{98\% recall} ($1438/1471$, CI
+$97$--$98$) and \textbf{0\% false-positive} ($4/1855$, CI $0.1$--$0.6$) on a
+71-article independent sample; a second, table-dense slice gives $1398/1408$
+recall ($99\%$) and $2/1539$ false-positive. We report the more conservative
+71-article number as the headline because it maximizes cross-paper independence.
+We stress a distinction the framing depends on: this measures detection under
+\emph{known} operator and parameters; the self-authored correctness grid used in
+development is a contract \emph{unit test}, not evidence of generalization, and
+we exclude it from headline claims. ``0\%'' false-positive is literally $4/1855$;
+we report the exact fraction and interval throughout.
 
-\subsection{Automatic contract synthesis}\label{sec:exp-synth}
-Table~\ref{tab:synth} reports one-shot synthesis over 23 operators. The
-de-leaked drop is only 5 points (83$\to$78 CORE), and the result is stable
-across GPT-5.4, GPT-5.5, and (different vendor) Gemini-3.1-Pro at 83\%,
-ruling out model cherry-picking. The goldless CEGIS loop is monotone-safe and
-neutral on the already-strong one-shot (both 83\% CORE, $N{=}12$)---we report
-this honestly: its value is a \emph{goldless verification algorithm}, not an
-accuracy boost; residual failures are recall-type, which false-positive
-refinement cannot address.
+% =============================================================================
+\section{Synthesis, Grounding, and End-to-End}\label{sec:synth}
+% =============================================================================
+\subsection{Synthesizing contracts from a goal}
+Table~\ref{tab:synth} reports one-shot synthesis over 23 operators. Removing the
+formula from the intent costs only 5 CORE points ($83{\to}78$); we are careful
+\emph{not} to over-read this small-$N$ gap (the Wilson intervals overlap), and
+claim only that goldless synthesis from a high-level goal is \emph{feasible at
+useful rates}, not that de-leaking is free. The result is stable across GPT-5.4,
+GPT-5.5, and (different vendor) Gemini-3.1-Pro at $\approx$83\% CORE, which
+argues against model cherry-picking. The goldless refinement loop is
+monotone-safe and \emph{neutral} on this already-strong one-shot synthesizer
+(both 83\% CORE, $N{=}12$); we include it as a verification mechanism with a
+no-regression guarantee, not as an accuracy contribution.
 
 \begin{table}[t]\centering\small
 \begin{tabular}{@{}lcc@{}}
 \toprule
 Intent given to synthesizer & CORE & FULL\\
 \midrule
-Formula-stating (``leaky'') & 83\% & 78\%\\
-\textbf{High-level goal only (de-leaked)} & \textbf{78\%} & 70\%\\
+Formula-stating (``leaky'') & 83\% [63--93] & 78\% [58--90]\\
+\textbf{High-level goal only (de-leaked)} & \textbf{78\% [58--90]} & 70\% [49--84]\\
 \bottomrule
 \end{tabular}
-\caption{One-shot goldless contract synthesis, $N{=}23$ operators. CORE $=$
-fires-on-slip and passes-on-correct; FULL adds robustness to alternative valid
-implementations. Only $-5$ points when the formula is removed: the model
-\emph{derives} the invariant.}
+\caption{One-shot goldless synthesis, $N{=}23$ operators. \textbf{CORE}: fires
+on the slip and passes on the correct impl. \textbf{FULL}: CORE and robust to
+alternative valid impls. Intervals overlap at $N{=}23$; we claim feasibility,
+not a significant de-leak gap.}
 \label{tab:synth}
 \end{table}
 
-\subsection{Recovering the operator from natural language}
+\subsection{Recovering operator and roles from language}
 Given a realistic request with \emph{no operator keyword}, the frontier model
-recovers the operator on real Nature tasks at \textbf{98\%} ($147/150$), while
-a keyword regex collapses to \textbf{21\%} ($31/150$)---confirming the model
-uses semantics, not string matching (the keyword-stuffed upper bound is 100\%
-for both). End-to-end detection retention under inferred (vs.\ given) operators
-is 98\%.
+recovers the operator on real Nature tasks at \textbf{98\%} ($147/150$, CI
+$94$--$99$), while a keyword regex collapses to \textbf{21\%} ($31/150$)---the
+model uses semantics, not string matching (the keyword-stuffed upper bound is
+100\% for both). Column-role grounding from the request reaches \textbf{83\%} on
+type-disambiguated roles (categorical group vs.\ numeric value) and 74\% overall;
+the shortfall is genuinely symmetric roles (a weighted mean's value-vs-weight, a
+pooled rate's numerator-vs-denominator) that the request does not uniquely fix
+---an \emph{ambiguity}, not a method failure.
 
-\subsection{End-to-end from only a messy request and a raw table}
+\subsection{End-to-end from only a request and a table}\label{sec:e2e}
 Table~\ref{tab:e2e} runs the full pipeline with nothing template-given. On
 generated fixtures the full system catches 61\%; on \emph{real} Nature tables
-58\%; and when even the column-role parameters are inferred from the request
-(so the input is \emph{only} a messy sentence and a raw table), 51\%---just
-3 points below the params-given setting. Parameter grounding is 83\% on
-type-disambiguated roles (categorical group vs.\ numeric value); the lower
-overall figure comes from genuinely symmetric roles (weighted mean's
-value-vs-weight, pooled rate's numerator-vs-denominator) that the request does
-not uniquely fix. We report 51\% as a \emph{useful early-warning} floor, not a
-near-deployable figure: the deployable regime is the structured-intent
-99\%/0\%.
+58\%; and when even the column roles are inferred (so the input is \emph{only} a
+messy sentence and a raw table), 51\%---just 3 points below the params-given
+setting. We frame 51--58\% honestly as a \emph{useful early-warning floor}, not
+a deployable figure: roughly half of silent errors still pass, and the
+deployable regime remains the structured-intent $98\%/0\%$. The value of the
+end-to-end result is scientific---it shows the pipeline degrades gracefully and
+localizes where accuracy is lost (operator inference and symmetric-role
+grounding), not that a shipping product would rely on the floor.
 
 \begin{table}[t]\centering\small
 \begin{tabular}{@{}lccc@{}}
 \toprule
 Setting & Op infer & Contract & Full system\\
 \midrule
-Synthetic fixtures & 83\% & 74\% & 61\%\\
-Real Nature tables & 76--83\% & 70--74\% & 58\%\\
-\;+ inferred column roles & \multicolumn{2}{c}{params 74\% (83\% clean)} & \textbf{51\%}\\
+Synthetic fixtures ($N{=}23$) & 83\% & 74\% & 61\% [41--78]\\
+Real Nature tables ($N{=}33$) & 76\% & 70\% & 58\% [41--73]\\
+\;+ inferred roles ($N{=}35$) & \multicolumn{2}{c}{roles 74/83\%} & \textbf{51\% [36--67]}\\
 \bottomrule
 \end{tabular}
-\caption{End-to-end zero-template detection ($N{=}23$ fixtures; $N{=}33$/$35$
-real tables). The last row provides \emph{only} a messy request and a raw
-table---operator, column roles, and contract are all inferred.}
+\caption{End-to-end zero-template detection. The last row provides \emph{only} a
+messy request and a raw table---operator, roles, and contract are all inferred.
+$N$ is small; intervals are wide and reported.}
 \label{tab:e2e}
 \end{table}
 
-\subsection{Substrate-agnostic transfer (pandas $\to$ SQL)}
+\subsection{Substrate-agnostic transfer (pandas $\to$ SQL)}\label{sec:sql}
 Because a contract reads only $(D,\theta,r)$, the \emph{same} contracts fire on
 the identical semantic slip written in SQL. Over 10 operators (weighted AVG,
 \texttt{WHERE g IS NOT NULL}, join fan-out, inner-join drop, \texttt{AVG} of
 ratios, missing \texttt{DISTINCT}, \texttt{COUNT(col)} vs \texttt{COUNT(*)},
-window \texttt{OVER()} vs \texttt{PARTITION BY}, \dots), the contracts fire on
+window \texttt{OVER()} vs \texttt{PARTITION BY}, \dots) the contracts fire on
 every SQL slip and pass every correct SQL, with \textbf{zero} SQL-specific code
-(10/10).
+(10/10, CI 72--100). We do not over-claim: these invariants are
+conservation/range/row-count properties that transfer by construction; operators
+whose invariant relies on pandas-specific NaN semantics would need restating.
 
-\subsection{Zero-training repair}
-Feeding the violated invariant back as a targeted repair prompt fixes
-\textbf{79\%} ($34/43$) of silent errors, versus \textbf{5\%} ($2/43$) for a
-strong self-debug baseline (per-value re-check $+$ self-critique) and 45\% for
-localization-only---the invariant contributes a large, statistically separated
-gain (disjoint CIs). Best-of-$N$ selection using the contract (no gold) lifts
-repair further with zero mis-repairs.
+% =============================================================================
+\section{Zero-Training Repair}\label{sec:repair}
+% =============================================================================
+Feeding the violated invariant back as a targeted repair prompt fixes silent
+errors far better than strong goldless self-repair (Table~\ref{tab:repair}).
+Targeted repair reaches \textbf{79\%} vs.\ \textbf{5\%} for a strong self-debug
+baseline (per-value re-derivation $+$ decision enumeration $+$ self-critique),
+with \emph{disjoint} intervals; localization-only reaches 45\%, so the invariant
+\emph{content}---not merely knowing \emph{where} to look---drives the gain. A
+telling negative result: strong self-debug (5\%) underperforms even generic
+retry (14\%), because it confidently ``re-derives'' the same wrong operator; only
+an \emph{external} specification breaks the loop. Best-of-$N$ selection using the
+contract (no gold) adds further gains with zero mis-repairs.
+
+\begin{table}[t]\centering\small
+\begin{tabular}{@{}lcc@{}}
+\toprule
+Repair arm ($N{=}43$, model-generated bugs) & Fixed & Over-repair\\
+\midrule
+generic (retry only) & 14\% [7--27] & 0\%\\
+strong self-debug & 5\% [1--15] & 0\%\\
+localization-only & 45\% & 0\%\\
+\textbf{targeted (contract invariant)} & \textbf{79\% [65--89]} & 0\%\\
+ceiling (gold-diff oracle) & 93\% [81--98] & 5\%\\
+\bottomrule
+\end{tabular}
+\caption{Contract-guided repair. The invariant lifts repair from 5\% (strong
+self-debug) to 79\% with disjoint CIs and no over-repair; self-debug falling
+\emph{below} generic retry shows an external specification is necessary.}
+\label{tab:repair}
+\end{table}
 
 % =============================================================================
 \section{Limitations and Honest Boundaries}\label{sec:limits}
@@ -362,48 +488,54 @@ repair further with zero mis-repairs.
 \textbf{Conditional validity.} The method's strength lives where operator-level
 intent is recoverable. On \emph{raw free-text code} (DS-1000), inferring which
 operator to check is the bottleneck and no operating point reaches usable
-recall/precision; a calibrated LLM scope-gate instead makes out-of-scope inputs
-\emph{abstain}, cutting spurious firing from 55\% to 5\%. The deployable claim
-is therefore ``NL intent recoverable,'' not ``arbitrary code.''
-\textbf{Parameter symmetry.} For operators with symmetric numeric roles the
-request may not fix which column is which; we report this as ambiguity, not a
-method failure. \textbf{End-to-end ceiling.} The 51--58\% zero-structure figure
-is an early-warning floor, well below the 99\%/0\% structured-intent regime.
-\textbf{CEGIS is neutral} on the strong one-shot synthesizer; we include it as a
-goldless \emph{algorithm}, not an accuracy gain. \textbf{Scope.} Results are on
-tabular data transforms (pandas/SQL); other substrates are future work.
+recall/precision; a calibrated scope-gate instead makes out-of-scope inputs
+\emph{abstain}, cutting spurious firing from 55\% to 5\%. The deployable claim is
+``NL intent recoverable,'' not ``arbitrary code.''
+\textbf{Taxonomy coverage.} Contracts detect the slips they specify; we report
+coverage honestly and treat the self-authored grid as a unit test, not evidence
+of generalization---the real-data 98\%/0\% is the generalization claim.
+\textbf{Small samples.} Synthesis ($N{=}23$) and end-to-end ($N{=}33/35$) have
+wide intervals; we claim feasibility and report every CI rather than
+significance. \textbf{Symmetric roles.} For operators with interchangeable
+numeric roles the request may not fix which column is which; we score this as
+ambiguity. \textbf{End-to-end ceiling.} The 51--58\% zero-structure figure is an
+early-warning floor, well below the structured-intent regime.
+\textbf{Prevalence conditioning.} The 77\% headline is under ambiguous phrasing
+(10\% clarified); characterizing the ambiguity distribution of real analyst
+requests is future work.
 
 % =============================================================================
 \section{Conclusion}
 % =============================================================================
 LLMs silently compute the wrong data transform far more often than execution- or
-shape-based checks reveal (77\% on real Nature data; 0\% caught by simple
-safeguards). Typed operator contracts detect these errors without any gold
-reference (99\%/0\%), can be auto-synthesized from a high-level request, transfer
-across execution substrates, and drive a zero-training repair recipe---and the
-whole pipeline runs end-to-end from only a messy request and a raw table. We
-frame silent semantic error detection as grounding an informal intent into a
-verifiable, goldless constraint, and release the measurement suite and code.
+shape-based checks reveal (77\% under ambiguous requests; 0\% caught by simple
+safeguards). Specification-derived operator contracts detect these errors without
+a per-task gold reference (98--99\%/0\%), can be synthesized from a high-level
+request, transfer across execution substrates, and drive a zero-training repair
+recipe---and the whole pipeline runs end-to-end from only a messy request and a
+raw table. We frame silent-error detection as \emph{grounding an informal intent
+into a verifiable specification}, and release the measurement suite and code.
 
-% For the official build (with a full TeX install) use bibtex instead:
-%   \bibliographystyle{aaai}  \bibliography{references}
-% The manual list below lets this skeleton compile with a minimal pdflatex.
 {\small
+% For the official build use: \bibliographystyle{aaai2026}\bibliography{references}
 \begin{thebibliography}{99}
 \bibitem{chen2021humaneval} M.~Chen et al. Evaluating Large Language Models Trained on Code. arXiv:2107.03374, 2021.
 \bibitem{austin2021mbpp} J.~Austin et al. Program Synthesis with Large Language Models. arXiv:2108.07732, 2021.
 \bibitem{lai2023ds1000} Y.~Lai et al. DS-1000: A Natural and Reliable Benchmark for Data Science Code Generation. ICML, 2023.
 \bibitem{jimenez2024swebench} C.~E.~Jimenez et al. SWE-bench: Can Language Models Resolve Real-World GitHub Issues? ICLR, 2024.
+\bibitem{gx2020} Great Expectations. Always Know What to Expect From Your Data. \url{https://greatexpectations.io}, 2020.
+\bibitem{pandera2020} N.~Bantilan. pandera: Statistical Data Validation of Pandas Dataframes. SciPy, 2020.
 \bibitem{meyer1992dbc} B.~Meyer. Applying Design by Contract. IEEE Computer, 25(10):40--51, 1992.
-\bibitem{claessen2000quickcheck} K.~Claessen and J.~Hughes. QuickCheck: A Lightweight Tool for Random Testing of Haskell Programs. ICFP, 2000.
+\bibitem{claessen2000quickcheck} K.~Claessen and J.~Hughes. QuickCheck: Lightweight Random Testing of Haskell Programs. ICFP, 2000.
 \bibitem{chen1998metamorphic} T.~Y.~Chen, S.~C.~Cheung, and S.~M.~Yiu. Metamorphic Testing. Tech.\ Rep.\ HKUST-CS98-01, 1998.
-\bibitem{wang2023selfconsistency} X.~Wang et al. Self-Consistency Improves Chain of Thought Reasoning in Language Models. ICLR, 2023.
+\bibitem{wang2023selfconsistency} X.~Wang et al. Self-Consistency Improves Chain-of-Thought Reasoning. ICLR, 2023.
 \bibitem{madaan2023selfrefine} A.~Madaan et al. Self-Refine: Iterative Refinement with Self-Feedback. NeurIPS, 2023.
 \bibitem{zheng2023judge} L.~Zheng et al. Judging LLM-as-a-Judge with MT-Bench and Chatbot Arena. NeurIPS, 2023.
-\bibitem{yang2024matplotbench} Z.~Yang et al. MatPlotAgent: Method and Evaluation for LLM-Based Agentic Scientific Data Visualization. ACL Findings, 2024.
-\bibitem{wu2024plot2code} C.~Wu et al. Plot2Code: A Comprehensive Benchmark for Evaluating MLLMs in Code Generation from Scientific Plots. arXiv:2405.07990, 2024.
-\bibitem{shi2024chartmimic} C.~Shi et al. ChartMimic: Evaluating LMM's Cross-Modal Reasoning via Chart-to-Code Generation. arXiv:2406.09961, 2024.
-\bibitem{chen2024viseval} N.~Chen et al. VisEval: A Benchmark for Data Visualization in the Era of Large Language Models. IEEE TVCG, 2024.
+\bibitem{ni2023lever} A.~Ni et al. LEVER: Learning to Verify Language-to-Code Generation with Execution. ICML, 2023.
+\bibitem{yang2024matplotbench} Z.~Yang et al. MatPlotAgent: Evaluation for LLM-Based Agentic Scientific Visualization. ACL Findings, 2024.
+\bibitem{wu2024plot2code} C.~Wu et al. Plot2Code: Benchmarking MLLMs in Code Generation from Scientific Plots. arXiv:2405.07990, 2024.
+\bibitem{shi2024chartmimic} C.~Shi et al. ChartMimic: Evaluating Cross-Modal Reasoning via Chart-to-Code Generation. arXiv:2406.09961, 2024.
+\bibitem{chen2024viseval} N.~Chen et al. VisEval: A Benchmark for Data Visualization in the Era of LLMs. IEEE TVCG, 2024.
 \end{thebibliography}
 }
 
