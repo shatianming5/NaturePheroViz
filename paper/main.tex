@@ -431,6 +431,31 @@ has negligible practical effect. The four false-positives arise on degenerate
 tables (a single group, or all-equal values) where the invariant is trivially
 satisfied by both branches; a schema pre-filter removes them.
 
+\paragraph{Per-operator breakdown.} Detection is uniform across operators, not
+driven by one easy case (Table~\ref{tab:perop}): recall is $\geq$99\% for four of
+five operators and is only pulled down by \texttt{median-not-mean} (95\%),
+exactly the near-tie regime the failure analysis predicts (groups where the
+median and mean nearly coincide). The result is not cherry-picked to a
+favorable operator.
+
+\begin{table}[t]\centering\small
+\begin{tabular}{@{}lc@{}}
+\toprule
+Operator & Recall on real silent errors\\
+\midrule
+weighted-mean & $140/140 = 100\%$\\
+nan-as-zero-sum & $16/16 = 100\%$\\
+within-group-share & $538/539 = 99.8\%$\\
+pooled-rate & $118/119 = 99\%$\\
+median-not-mean & $626/657 = 95\%$\\
+\bottomrule
+\end{tabular}
+\caption{Per-operator detection recall on the real Nature sample. High and
+uniform; \texttt{median-not-mean}'s 95\% is the near-tie detectability limit
+(Failure analysis), not a contract defect.}
+\label{tab:perop}
+\end{table}
+
 % =============================================================================
 \section{Synthesis, Grounding, and End-to-End}\label{sec:synth}
 % =============================================================================
