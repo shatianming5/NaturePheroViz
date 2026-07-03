@@ -293,11 +293,12 @@ false-positives.}
 \end{figure}
 
 \begin{table}[t]\centering\small
+\setlength{\tabcolsep}{4.5pt}
 \begin{tabular}{@{}lcc@{}}
 \toprule
 Safeguard & Recall & False-positive\\
 \midrule
-Execution / shape / range / consistency & 0\% & 0\%\\
+Execution/shape/range/consistency & 0\% & 0\%\\
 LLM self-critique & 61\% & 40\%\\
 \textbf{Specification contracts (ours)} & \textbf{98--99\%} & \textbf{0.2\%}\\
 \bottomrule
@@ -354,7 +355,7 @@ silent slip \emph{and} passes on the correct implementation) and \textbf{FULL}
 
 \subsection{Goldless counterexample-guided refinement}
 Synthesis can over-fire on valid alternatives. We add a monotone-safe refinement
-loop with a goldless oracle (Alg.~\ref{alg:cegis}): sample $K$ diverse
+loop with a goldless oracle (Fig.~\ref{alg:cegis}): sample $K$ diverse
 implementations of the intent, cluster by output into a \emph{consensus}
 (probably-correct) set, and treat any contract that fires on a consensus member
 as a false-positive counterexample; \emph{metamorphic} perturbations of a
@@ -366,7 +367,7 @@ never regresses below one-shot by construction. We report this as a
 
 \begin{figure}[t]\centering
 \fbox{\begin{minipage}{0.93\columnwidth}\small
-\textbf{Algorithm 1:} goldless refinement of a synthesized contract\\[2pt]
+\textbf{Goldless refinement of a synthesized contract}\\[2pt]
 \textbf{input} intent $\iota$, params $\theta$, input $D$; \textbf{output} contract $C$\\
 \rule{\linewidth}{0.3pt}\\
 1\ \ $C \leftarrow \textsc{Synthesize}(\iota,\theta)$\hfill\emph{// one-shot}\\
@@ -555,6 +556,7 @@ localizes where accuracy is lost (operator inference and symmetric-role
 grounding), not that a shipping product would rely on the floor.
 
 \begin{table}[t]\centering\small
+\setlength{\tabcolsep}{4pt}
 \begin{tabular}{@{}lccc@{}}
 \toprule
 Setting & Op infer & Contract & Full system\\
@@ -596,9 +598,10 @@ an \emph{external} specification breaks the loop. Best-of-$N$ selection using th
 contract (no gold) adds further gains with zero mis-repairs.
 
 \begin{table}[t]\centering\small
+\setlength{\tabcolsep}{4pt}
 \begin{tabular}{@{}lcc@{}}
 \toprule
-Repair arm ($N{=}43$, model-generated bugs) & Fixed & Over-repair\\
+Repair arm ($N{=}43$) & Fixed & Over-rep.\\
 \midrule
 generic (retry only) & 14\% [7--27] & 0\%\\
 strong self-debug & 5\% [1--15] & 0\%\\
@@ -607,9 +610,10 @@ localization-only & 45\% & 0\%\\
 ceiling (gold-diff oracle) & 93\% [81--98] & 5\%\\
 \bottomrule
 \end{tabular}
-\caption{Contract-guided repair. The invariant lifts repair from 5\% (strong
-self-debug) to 79\% with disjoint CIs and no over-repair; self-debug falling
-\emph{below} generic retry shows an external specification is necessary.}
+\caption{Contract-guided repair (buggy starts are model-generated). The
+invariant lifts repair from 5\% (strong self-debug) to 79\% with disjoint CIs
+and no over-repair; self-debug falling \emph{below} generic retry shows an
+external specification is necessary.}
 \label{tab:repair}
 \end{table}
 
