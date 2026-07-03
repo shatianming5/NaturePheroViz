@@ -54,8 +54,8 @@ self-critique misses 39\% while false-flagging 40\%. We introduce
 \emph{no per-task gold answer}---the specification comes from the operator
 intent, not a stored label, and can be auto-synthesized from a natural-language
 goal. Across two independent real-data slices (up to 1{,}855 checks) the
-contracts detect silent errors at \textbf{98--99\% recall / 0\% false-positive}
-where existing checks are structurally blind. We show the contracts can be
+contracts detect silent errors at \textbf{98--99\% recall / near-zero
+(0.2\%) false-positive} where existing checks are structurally blind. We show the contracts can be
 synthesized from a high-level goal (78--83\% correct, $N{=}23$, one-shot),
 transfer across execution substrates unchanged (pandas${\to}$SQL, 10/10
 operators), and drive a zero-training repair recipe (79\% vs.\ 5\% for strong
@@ -125,9 +125,9 @@ data-transform code: 77\% under ambiguous requests (10\% disambiguated),
 checks detect 0\%, self-critique 61\% recall at 40\% false-positive
 (Sec.~\ref{sec:measure}).
 \item \textbf{Specification-derived operator contracts} that detect the errors
-at 98--99\% recall / 0\% false-positive across two independent real-data slices
-(up to 1{,}855 checks), where code-layer baselines are structurally blind
-(Sec.~\ref{sec:detect}).
+at 98--99\% recall / near-zero (0.2\%) false-positive across two independent
+real-data slices (up to 1{,}855 checks), where code-layer baselines are
+structurally blind (Sec.~\ref{sec:detect}).
 \item \textbf{Grounding intent into a specification}: the invariant can be
 auto-synthesized from a high-level goal (78--83\%, $N{=}23$, one-shot; stable
 across GPT and Gemini), and the operator (98\%) and column roles (74--83\%) can
@@ -298,7 +298,7 @@ Safeguard & Recall & False-positive\\
 \midrule
 Execution / shape / range / consistency & 0\% & 0\%\\
 LLM self-critique & 61\% & 40\%\\
-\textbf{Specification contracts (ours)} & \textbf{98--99\%} & \textbf{0\%}\\
+\textbf{Specification contracts (ours)} & \textbf{98--99\%} & \textbf{0.2\%}\\
 \bottomrule
 \end{tabular}
 \caption{Detection of silent semantic errors on real Nature data. Simple
@@ -411,7 +411,7 @@ not author-written; intervals are 95\% Wilson.\footnote{Model identifiers
 time; we release prompts, seeds, and all outputs for reproducibility.}
 
 The contracts detect silent errors at \textbf{98\% recall} ($1438/1471$, CI
-$97$--$98$) and \textbf{0\% false-positive} ($4/1855$, CI $0.1$--$0.6$) on a
+$97$--$98$) and \textbf{0.2\% false-positive} ($4/1855$, CI $0.1$--$0.6$) on a
 71-article independent sample; a second, table-dense slice gives $1398/1408$
 recall ($99\%$) and $2/1539$ false-positive. We report the more conservative
 71-article number as the headline because it maximizes cross-paper independence.
@@ -420,6 +420,16 @@ We stress a distinction the framing depends on: this measures detection under
 development is a contract \emph{unit test}, not evidence of generalization, and
 we exclude it from headline claims. ``0\%'' false-positive is literally $4/1855$;
 we report the exact fraction and interval throughout.
+
+\paragraph{Failure analysis.} The $\sim$2\% of silent errors the contracts miss
+are not contract bugs but an inherent \emph{detectability} limit: they
+concentrate where the slip's output is numerically near-identical to the correct
+one---e.g., a group whose values are near-uniform (so mean $\approx$ median) or a
+weight column that is near-constant (so weighted $\approx$ plain mean). There,
+\emph{no} invariant can separate the two within tolerance, and the ``error''
+has negligible practical effect. The four false-positives arise on degenerate
+tables (a single group, or all-equal values) where the invariant is trivially
+satisfied by both branches; a schema pre-filter removes them.
 
 % =============================================================================
 \section{Synthesis, Grounding, and End-to-End}\label{sec:synth}
@@ -470,7 +480,7 @@ generated fixtures the full system catches 61\%; on \emph{real} Nature tables
 messy sentence and a raw table), 51\%---just 3 points below the params-given
 setting. We frame 51--58\% honestly as a \emph{useful early-warning floor}, not
 a deployable figure: roughly half of silent errors still pass, and the
-deployable regime remains the structured-intent $98\%/0\%$. The value of the
+deployable regime remains the structured-intent $98\%/0.2\%$. The value of the
 end-to-end result is scientific---it shows the pipeline degrades gracefully and
 localizes where accuracy is lost (operator inference and symmetric-role
 grounding), not that a shipping product would rely on the floor.
@@ -545,7 +555,7 @@ recall/precision; a calibrated scope-gate instead makes out-of-scope inputs
 ``NL intent recoverable,'' not ``arbitrary code.''
 \textbf{Taxonomy coverage.} Contracts detect the slips they specify; we report
 coverage honestly and treat the self-authored grid as a unit test, not evidence
-of generalization---the real-data 98\%/0\% is the generalization claim.
+of generalization---the real-data 98\%/0.2\% is the generalization claim.
 \textbf{Small samples.} Synthesis ($N{=}23$) and end-to-end ($N{=}33/35$) have
 wide intervals; we claim feasibility and report every CI rather than
 significance. \textbf{Symmetric roles.} For operators with interchangeable
@@ -562,11 +572,24 @@ requests is future work.
 LLMs silently compute the wrong data transform far more often than execution- or
 shape-based checks reveal (77\% under ambiguous requests; 0\% caught by simple
 safeguards). Specification-derived operator contracts detect these errors without
-a per-task gold reference (98--99\%/0\%), can be synthesized from a high-level
+a per-task gold reference (98--99\%/0.2\%), can be synthesized from a high-level
 request, transfer across execution substrates, and drive a zero-training repair
 recipe---and the whole pipeline runs end-to-end from only a messy request and a
 raw table. We frame silent-error detection as \emph{grounding an informal intent
 into a verifiable specification}, and release the measurement suite and code.
+
+\section*{Appendix: Operator Taxonomy}
+The 24 operators (synthesis uses the 23 with tabular fixtures) are grounded in
+observed real-data slips, not chosen post hoc. \emph{Core group-aggregation}:
+median-not-mean, within-group-share, weighted-mean, pooled-rate, pct-point,
+dedup-then-agg, left-join-keep-all, cumulative-running, topn-with-ties,
+nan-as-zero-sum, count-includes-empty, proportion-true. \emph{Framework/plumbing}:
+index-align, dtype-coerce, groupby-dropna-key, order-dependent-dedup,
+resample-boundary, string-normalize-join, join-fanout, null-in-agg-count,
+scale-before-split-leakage, latlon-swap, lookahead-return, numpy-broadcast. Each
+maps to a documented mistake (e.g., \texttt{groupby} silently dropping NaN keys,
+train/test leakage, look-ahead in time series). Full contracts and fixtures are
+released.
 
 {\small
 % For the official build use: \bibliographystyle{aaai2026}\bibliography{references}
