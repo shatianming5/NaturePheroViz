@@ -189,6 +189,30 @@ score whether a figure \emph{looks} right, not whether the plotted numbers
 \emph{equal} the data. We measure and detect the upstream data-transform error
 such judges cannot see.
 
+\begin{table}[t]\centering\small
+\setlength{\tabcolsep}{3.2pt}
+\begin{tabular}{@{}lccccc@{}}
+\toprule
+& \rotatebox{90}{semantic} & \rotatebox{90}{no per-task} & \rotatebox{90}{from NL} & \rotatebox{90}{no gold} & \rotatebox{90}{infer.-time}\\
+Approach & \rotatebox{90}{operator} & \rotatebox{90}{authoring} & \rotatebox{90}{intent} & \rotatebox{90}{label} & \rotatebox{90}{detector}\\
+\midrule
+Great Expectations / pandera & $\times$ & $\times$ & $\times$ & \checkmark & \checkmark\\
+Property-based testing & $\sim$ & $\times$ & $\times$ & $\sim$ & $\times$\\
+Metamorphic testing & $\sim$ & $\times$ & $\times$ & \checkmark & $\times$\\
+LLM self-critique & \checkmark & \checkmark & \checkmark & \checkmark & \checkmark\\
+\;\;(but 61\% recall / 40\% FP) & & & & & \\
+\textbf{Ours} & \checkmark & \checkmark & \checkmark & \checkmark & \checkmark\\
+\bottomrule
+\end{tabular}
+\caption{Positioning. Data-validation frameworks check \emph{surface}
+properties (types/ranges) that silent errors preserve; PBT/metamorphic testing
+are developer-time and hand-authored; self-critique is inference-time but too
+noisy (Sec.~\ref{sec:measure}). We check \emph{operator semantics}, synthesized
+from intent, with no per-task label, as an inference-time detector.
+($\sim$: partial/varies.)}
+\label{tab:position}
+\end{table}
+
 % =============================================================================
 \section{Problem Formulation}\label{sec:problem}
 % =============================================================================
@@ -347,6 +371,34 @@ among candidate fixes.
 system infers the operator (98\%), grounds column roles (74--83\%), synthesizes
 the contract (78\%), and checks the result---nothing structured is provided.}
 \label{fig:pipe}
+\end{figure}
+
+\begin{figure}[t]\centering
+\begin{tikzpicture}
+\node[draw,rounded corners=2pt,fill=black!3,inner sep=4pt,text width=0.93\columnwidth,
+      font=\ttfamily\scriptsize,align=left]{%
+\textbf{\rmfamily Request:} ``add a column with each row's sales\\
+\hphantom{\textbf{\rmfamily Request:} }as its part of the total sales for that region''\\[2pt]
+\rmfamily(1) infer operator \(\rightarrow\) \ttfamily within\_group\_share\\
+\rmfamily(2) ground roles \(\rightarrow\) \ttfamily group=region, value=sales\\
+\rmfamily(3) synthesize contract (from the goal, no gold):\\
+\ \ per = result.groupby(g)[share].sum()\\
+\ \ fire\ \ if\ \ any(|per - 1| > tol)\ \ \# per-GROUP\\
+\rmfamily(4) model's code \rmfamily\emph{(silent slip)}\rmfamily:\\
+\ \ df[share] = df[sales] / df[sales].sum()\ \ \# GLOBAL\\
+\rmfamily(5) contract \textbf{\rmfamily FIRES}: ``shares sum to 1 globally,\\
+\ \ \ \ \ should be per-group''\\
+\rmfamily(6) targeted repair \(\rightarrow\)\\
+\ \ df[share] = df[sales] /\\
+\ \ \ \ df.groupby(region)[sales].transform(sum)\ \ \# PASS%
+};
+\end{tikzpicture}
+\caption{A worked example on a real Nature table. The same specification catches
+a \texttt{within\_group\_share} silent slip (global instead of per-group total)
+and drives the targeted repair---no per-task gold, operator and roles inferred
+from the request. This is a semantic invariant, not a hand-written per-table
+assertion.}
+\label{fig:worked}
 \end{figure}
 
 % =============================================================================
