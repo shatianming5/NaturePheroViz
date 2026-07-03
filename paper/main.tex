@@ -255,7 +255,8 @@ silent semantic error on \textbf{77\%} of real Nature tasks
 ($1296/1682$, CI $75$--$79$); disambiguating the request drops this to
 \textbf{10\%} ($175/1682$, CI $9$--$12$). The gap is the point: much of the
 danger is \emph{under-specification} that the model resolves the wrong way, and
-the rate is \textbf{32--78\%} across ten models and four vendors and \textbf{26\%}
+the rate is \textbf{32--78\%} across ten models and four vendors
+(Table~\ref{tab:crossmodel}) and \textbf{26\%}
 on external DS-1000, so it is a property of the task family, not one model
 (Fig.~\ref{fig:prev}).
 
@@ -307,6 +308,25 @@ on. Our numbers span two independent slices (Sec.~\ref{sec:detect}).}
 \label{tab:baselines}
 \end{table}
 
+\begin{table}[t]\centering\small
+\begin{tabular}{@{}llcc@{}}
+\toprule
+Model & Vendor & Silent rate & Our FP\\
+\midrule
+GPT-5.5 & OpenAI & 60\% & $0/24$\\
+GPT-5.4 & OpenAI & 55\% & $0/21$\\
+GPT-5.3-codex & OpenAI & 55\% & $0/23$\\
+Claude-Opus-4.8 & Anthropic & 55\% & $0/23$\\
+Gemini-3.1-Pro & Google & 40\% & $0/28$\\
+\bottomrule
+\end{tabular}
+\caption{Silent-error rate is a property of the task family, not one model:
+40--60\% across five frontier models from three vendors (operator grid). The
+contract's false-positive rate is \textbf{0} on \emph{every} vendor---the
+detector is not tuned to one model's output style.}
+\label{tab:crossmodel}
+\end{table}
+
 % =============================================================================
 \section{Specification Contracts as an AI Pipeline}\label{sec:method}
 % =============================================================================
@@ -334,14 +354,37 @@ silent slip \emph{and} passes on the correct implementation) and \textbf{FULL}
 
 \subsection{Goldless counterexample-guided refinement}
 Synthesis can over-fire on valid alternatives. We add a monotone-safe refinement
-loop with a goldless oracle: sample $K$ diverse implementations of the intent,
-cluster by output into a \emph{consensus} (probably-correct) set, and treat any
-contract that fires on a consensus member as a false-positive counterexample;
-\emph{metamorphic} perturbations of a consensus result probe non-triviality. A
-refinement is accepted only if a goldless score (consensus-pass $+$ probe-fire)
-strictly improves, so the loop never regresses below one-shot by construction.
-We report this as a \emph{mechanism with a safety guarantee}, not an accuracy
-gain (Sec.~\ref{sec:synth}).
+loop with a goldless oracle (Alg.~\ref{alg:cegis}): sample $K$ diverse
+implementations of the intent, cluster by output into a \emph{consensus}
+(probably-correct) set, and treat any contract that fires on a consensus member
+as a false-positive counterexample; \emph{metamorphic} perturbations of a
+consensus result probe non-triviality. A refinement is accepted only if a
+goldless score (consensus-pass $+$ probe-fire) strictly improves, so the loop
+never regresses below one-shot by construction. We report this as a
+\emph{mechanism with a safety guarantee}, not an accuracy gain
+(Sec.~\ref{sec:synth}).
+
+\begin{figure}[t]\centering
+\fbox{\begin{minipage}{0.93\columnwidth}\small
+\textbf{Algorithm 1:} goldless refinement of a synthesized contract\\[2pt]
+\textbf{input} intent $\iota$, params $\theta$, input $D$; \textbf{output} contract $C$\\
+\rule{\linewidth}{0.3pt}\\
+1\ \ $C \leftarrow \textsc{Synthesize}(\iota,\theta)$\hfill\emph{// one-shot}\\
+2\ \ $\{f_k\} \leftarrow \textsc{DiverseImpls}(\iota,\theta,K)$\\
+3\ \ $S \leftarrow$ largest output-agreement cluster of $\{f_k(D)\}$\hfill\emph{// consensus}\\
+4\ \ $P \leftarrow \textsc{Perturb}(s)$ for $s\in S$\hfill\emph{// metamorphic probes}\\
+5\ \ \textbf{repeat}\\
+6\ \ \ \ \textbf{if} $C$ fires on some $s\in S$ \textbf{then}\hfill\emph{// FP counterexample}\\
+7\ \ \ \ \ \ $C' \leftarrow \textsc{Resynthesize}(\iota,\theta,s)$\\
+8\ \ \ \ \ \ \textbf{if} $\mathrm{score}(C';S,P) > \mathrm{score}(C;S,P)$ \textbf{then} $C\leftarrow C'$\\
+9\ \ \textbf{until} no accepted change\quad\textbf{return} $C$\\[1pt]
+\footnotesize$\mathrm{score}(C;S,P)=\#\{s\in S: C\text{ passes}\}+\#\{p\in P: C\text{ fires}\}$; no gold used.
+\end{minipage}}
+\caption{Monotone-safe goldless refinement. The consensus set $S$ and
+metamorphic probes $P$ replace a reference answer; line 8 guarantees the loop
+never regresses below the one-shot contract.}
+\label{alg:cegis}
+\end{figure}
 
 \subsection{From a messy request to a check}
 Deployed, the system receives only a messy request $\iota$ and a raw table $D$

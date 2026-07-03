@@ -14,7 +14,7 @@ pdflatex main.tex && pdflatex main.tex      # -> main.pdf (4 pp.)
 
 The skeleton compiles with a **minimal pdflatex** (manual `thebibliography`,
 TikZ figures, no bibtex). `references.bib` is provided for the real build.
-Current draft: **5 pages, 2 figures** (prevalence/detection bar chart; end-to-end
+Current draft: **7 pages, 3 figures, 1 algorithm, 7 tables** (prevalence bars; pipeline; worked example; algorithm; and 7
 pipeline diagram).
 
 ## Switch to the official AAAI style for submission
