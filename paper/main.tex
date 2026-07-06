@@ -56,7 +56,10 @@ self-critique misses 39\% while false-flagging 40\%. We introduce
 intent, not a stored label, and can be auto-synthesized from a natural-language
 goal. Across two independent real-data slices (up to 1{,}855 checks) the
 contracts detect silent errors at \textbf{98--99\% recall / near-zero
-(0.2\%) false-positive} where existing checks are structurally blind. We show the contracts can be
+(0.2\%) false-positive} where existing checks are structurally blind---about
+half of these checks via \emph{pure relational invariants} that compute no
+reference value (99.8\% recall) and half via \emph{parameterized recomputation}
+from the known operator, which we are explicit about (96.6\%). We show the contracts can be
 synthesized from a high-level goal (78--83\% correct, $N{=}23$, one-shot),
 transfer across execution substrates unchanged (pandas${\to}$SQL, 10/10
 operators), and drive a zero-training repair recipe (79\% vs.\ 5\% for strong
@@ -173,6 +176,11 @@ make, (ii) checks that need \emph{no per-task gold and can be
 \underline{synthesized from natural language}}, and (iii) a pipeline that
 \emph{grounds a free-text request into the right invariant}---turning
 property-based testing from a developer tool into an inference-time detector.
+Concretely, a generic PBT or metamorphic tool cannot flag a global-vs-per-group
+share slip on its own: \emph{which} property to enforce (shares sum to one per
+group, not globally) \emph{is} the user's inferred intent. Selecting and
+instantiating that invariant from a messy request is the inference problem we
+solve; the assertion itself is deliberately old and simple.
 
 \paragraph{Validating LLM outputs without gold.} Self-consistency
 \cite{wang2023selfconsistency}, self-critique / self-refine
@@ -502,6 +510,28 @@ uniform; \texttt{median-not-mean}'s 95\% is the near-tie detectability limit
 \label{tab:perop}
 \end{table}
 
+\paragraph{Two kinds of contract (what ``no gold'' really buys).} We separate
+recall by contract class, because the two make different epistemic claims and a
+reviewer should see the split rather than a pooled number. A \emph{pure
+invariant} certifies a relational property that no single implementation pins
+down and derives \emph{no expected value}---within-group shares must sum to one
+\emph{per group}, a left join must preserve every left row, a running total's
+last entry must equal the column sum. A \emph{recomputation} instead derives the
+expected value from the (known or inferred) operator and parameters and checks
+agreement---a weighted mean equals $\sum v_iw_i/\sum w_i$, a pooled rate equals
+$\sum\text{num}/\sum\text{den}$. We concede the latter amounts to a
+\emph{parameterized reference computed on the fly}, not merely an invariant: its
+power is real but conditional on knowing the operator. On the real Nature sample
+the \emph{pure-invariant} contract (\texttt{within-group-share}) detects at
+$538/539=\mathbf{99.8\%}$---the cleanest evidence that the goldless signal is not
+smuggled in through recomputation---while the \emph{recomputation} contracts
+(weighted-mean, pooled-rate, median, nan-as-zero) detect at
+$900/932=\mathbf{96.6\%}$. Both need \emph{no per-task human-labeled answer}; the
+honest distinction is whether a reference \emph{value} is derived, and we state
+plainly that roughly half of the headline checks are recomputations whose
+strength presupposes a known operator (Sec.~\ref{sec:e2e} measures what happens
+when it must be inferred).
+
 % =============================================================================
 \section{Synthesis, Grounding, and End-to-End}\label{sec:synth}
 % =============================================================================
@@ -553,8 +583,8 @@ setting. We frame 51--58\% honestly as a \emph{useful early-warning floor}, not
 a deployable figure: roughly half of silent errors still pass, and the
 deployable regime remains the structured-intent $98\%/0.2\%$. The value of the
 end-to-end result is scientific---it shows the pipeline degrades gracefully and
-localizes where accuracy is lost (operator inference and symmetric-role
-grounding), not that a shipping product would rely on the floor.
+localizes where accuracy is lost (Sec.~\ref{sec:e2e-decomp}), not that a
+shipping product would rely on the floor.
 
 \begin{table}[t]\centering\small
 \setlength{\tabcolsep}{4pt}
@@ -565,13 +595,32 @@ Setting & Op infer & Contract & Full system\\
 Synthetic fixtures ($N{=}23$) & 83\% & 74\% & 61\% [41--78]\\
 Real Nature tables ($N{=}33$) & 76\% & 70\% & 58\% [41--73]\\
 \;+ inferred roles ($N{=}35$) & \multicolumn{2}{c}{roles 74/83\%} & \textbf{51\% [36--67]}\\
+\midrule
+Cross-vendor pooled ($N{=}46$) & 78\% & 67\% & \textbf{50\% [36--64]}\\
 \bottomrule
 \end{tabular}
-\caption{End-to-end zero-template detection. The last row provides \emph{only} a
+\caption{End-to-end zero-template detection. The last block provides \emph{only} a
 messy request and a raw table---operator, roles, and contract are all inferred.
-$N$ is small; intervals are wide and reported.}
+The cross-vendor pooled row (GPT-5.4 $+$ Gemini-3.1-Pro, $N{=}46$) doubles the
+sample and tightens the interval; it \emph{confirms}, slightly below, the
+single-run $61\%$.}
 \label{tab:e2e}
 \end{table}
+
+\paragraph{Scaling and where the loss is.}\label{sec:e2e-decomp}
+Pooling the zero-template pipeline across two vendors (GPT-5.4, Gemini-3.1-Pro;
+$N{=}46$) tightens the full-system estimate to $\mathbf{50\%}$ [36--64] (interval
+width $28$ vs.\ $38$ at $N{=}23$) and, more usefully, lets us \emph{decompose}
+the miss. Of the 23 full-system misses, $\mathbf{57\%}$ are contract-\emph{synthesis}
+failures (the operator was inferred correctly but the auto-synthesized invariant
+was wrong), $\mathbf{35\%}$ are operator-\emph{inference} failures (the oracle
+contract \emph{would} have fired had the operator been known), and $9\%$ fail at
+both stages. So in the zero-structure regime the dominant bottleneck is
+\emph{invariant synthesis}, not operator inference---correcting the natural guess
+and naming the concrete target for future work. De-leaked synthesis alone, scaled
+to the same $N{=}46$ cross-vendor, holds at $76\%$ [62--86] CORE (GPT $78\%$,
+Gemini $74\%$), confirming the small-$N$ feasibility number was not a
+single-model artifact.
 
 \subsection{Substrate-agnostic transfer (pandas $\to$ SQL)}\label{sec:sql}
 Because a contract reads only $(D,\theta,r)$, the \emph{same} contracts fire on
@@ -630,12 +679,15 @@ recall/precision; a calibrated scope-gate instead makes out-of-scope inputs
 \textbf{Taxonomy coverage.} Contracts detect the slips they specify; we report
 coverage honestly and treat the self-authored grid as a unit test, not evidence
 of generalization---the real-data 98\%/0.2\% is the generalization claim.
-\textbf{Small samples.} Synthesis ($N{=}23$) and end-to-end ($N{=}33/35$) have
-wide intervals; we claim feasibility and report every CI rather than
-significance. \textbf{Symmetric roles.} For operators with interchangeable
+\textbf{Small samples.} Per-condition synthesis and end-to-end slices are small
+($N{=}23$--$35$); we mitigate by pooling the zero-template pipeline across two
+vendors to $N{=}46$ (Sec.~\ref{sec:e2e-decomp}, interval width $38{\to}28$), but
+still claim feasibility and report every CI rather than significance.
+\textbf{Symmetric roles.} For operators with interchangeable
 numeric roles the request may not fix which column is which; we score this as
-ambiguity. \textbf{End-to-end ceiling.} The 51--58\% zero-structure figure is an
-early-warning floor, well below the structured-intent regime.
+ambiguity. \textbf{End-to-end ceiling.} The 50--58\% zero-structure figure is an
+early-warning floor, well below the structured-intent regime, and its dominant
+failure is invariant synthesis, not operator inference.
 \textbf{Prevalence conditioning.} The 77\% headline is under ambiguous phrasing
 (10\% clarified); characterizing the ambiguity distribution of real analyst
 requests is future work.

@@ -1,0 +1,40 @@
+{
+  "pooled_n": 46,
+  "op_infer": [
+    36,
+    46
+  ],
+  "synth_core": [
+    31,
+    46
+  ],
+  "synth_core_given_op": [
+    23,
+    36
+  ],
+  "full_system": [
+    23,
+    46
+  ],
+  "decomposition": {
+    "OP_only": 8,
+    "SYNTH_only": 13,
+    "BOTH": 2
+  },
+  "per_vendor": [
+    {
+      "model": "gemini-3.1-pro-preview",
+      "n": 23,
+      "op_ok": 18,
+      "core": 15,
+      "full": 11
+    },
+    {
+      "model": "gpt-5.4",
+      "n": 23,
+      "op_ok": 18,
+      "core": 16,
+      "full": 12
+    }
+  ]
+}
