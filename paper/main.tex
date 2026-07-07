@@ -125,7 +125,8 @@ request.
 \begin{enumerate}
 \item \textbf{A measurement study} of silent semantic errors in LLM
 data-transform code: 77\% under ambiguous requests (10\% disambiguated),
-32--78\% across ten models/four vendors, 26\% on external DS-1000; deterministic
+32--65\% across eight models and four vendors, 26\% on external DS-1000;
+deterministic
 checks detect 0\%, self-critique 61\% recall at 40\% false-positive
 (Sec.~\ref{sec:measure}).
 \item \textbf{Specification-derived operator contracts} that detect the errors
@@ -251,8 +252,10 @@ from $\iota$.
 \paragraph{Corpus and protocol.} We pair Nature figures with their Source-Data
 tables and instantiate operator-semantic tasks (median-vs-mean, within-group
 share, weighted mean, pooled rate, NaN-as-zero, \dots) on the real tables, so
-the table, the columns, and the ground-truth transform are \emph{not} authored
-by us. Each task carries a matched pair of prompts: an \emph{ambiguous} phrasing
+the tables and their columns are real scientific data, \emph{not} authored by
+us; the operator set, its gold transform, and the ambiguous/clarified prompts
+are fixed author-written templates instantiated on those tables (table-level
+independence, not task-level). Each task carries a matched pair of prompts: an \emph{ambiguous} phrasing
 (``a typical value per group''---the natural way a hurried analyst asks) and a
 \emph{clarified} phrasing that names the disambiguation. Gold is the template
 transform; a response is scored \emph{silent} if it runs, is schema-valid, and
@@ -262,10 +265,12 @@ article contributes a capped number of tasks) with 95\% Wilson intervals.
 \paragraph{Prevalence.} Under the ambiguous phrasing, frontier models emit a
 silent semantic error on \textbf{77\%} of real Nature tasks
 ($1296/1682$, CI $75$--$79$); disambiguating the request drops this to
-\textbf{10\%} ($175/1682$, CI $9$--$12$). The gap is the point: much of the
+\textbf{10\%} ($175/1682$, CI $9$--$12$; $21\%$ on a larger 229-article slice). The gap is the point: much of the
 danger is \emph{under-specification} that the model resolves the wrong way, and
-the rate is \textbf{32--78\%} across ten models and four vendors
-(Table~\ref{tab:crossmodel}) and \textbf{26\%}
+the rate is \textbf{40--60\%} across five frontier models and three vendors on
+the expansion grid (Table~\ref{tab:crossmodel}; \textbf{32--42\%} for the same
+models on the core grid), rises to \textbf{65\%} for smaller open models
+(Qwen-2.5-Coder-7B, falling to 44\% at 32B), and is \textbf{26\%}
 on external DS-1000, so it is a property of the task family, not one model
 (Fig.~\ref{fig:prev}).
 
@@ -312,9 +317,10 @@ LLM self-critique & 61\% & 40\%\\
 \textbf{Specification contracts (ours)} & \textbf{98--99\%} & \textbf{0.2\%}\\
 \bottomrule
 \end{tabular}
-\caption{Detection of silent semantic errors on real Nature data. Simple
-deterministic checks are structurally blind; self-critique is too noisy to gate
-on. Our numbers span two independent slices (Sec.~\ref{sec:detect}).}
+\caption{Detection of silent semantic errors. Deterministic checks and
+self-critique are measured on the operator grid (synthetic instances); the
+\textbf{ours} row (98--99\%) is on real Nature data (Sec.~\ref{sec:detect}).
+Deterministic checks are structurally blind; self-critique is too noisy to gate on.}
 \label{tab:baselines}
 \end{table}
 
@@ -331,7 +337,9 @@ Gemini-3.1-Pro & Google & 40\% & $0/28$\\
 \bottomrule
 \end{tabular}
 \caption{Silent-error rate is a property of the task family, not one model:
-40--60\% across five frontier models from three vendors (operator grid). The
+40--60\% across five frontier models from three vendors on the harder
+expansion-operator grid ($N{=}20$/model; the same models score 32--42\% on the
+core grid). The
 contract's false-positive rate is \textbf{0} on \emph{every} vendor---the
 detector is not tuned to one model's output style.}
 \label{tab:crossmodel}
@@ -343,7 +351,7 @@ detector is not tuned to one model's output style.}
 \subsection{Typed operator contracts}
 Each operator is certified by one small check ($\approx$10 lines, reading only
 $(D,\theta,r)$). Examples: a \emph{weighted mean} must equal $\sum v_iw_i/\sum
-w_i$ and lie within the value range; \emph{within-group shares} must sum to one
+w_i$; \emph{within-group shares} must sum to one
 \emph{per group} (not globally); a \emph{pooled rate} equals $\sum\text{num}/
 \sum\text{den}$, not the mean of per-row ratios; a \emph{left join} preserves
 every left row. Contracts range from pure invariants (share, join) to
@@ -357,8 +365,9 @@ To show the taxonomy is not a closed hand-written set, we ask a frontier model t
 \emph{synthesize} the contract from only the NL goal, the parameter names, and
 the result schema---never the reference implementation. To rule out the model
 merely \emph{transcribing a stated formula}, we run a \emph{de-leaked} condition
-whose intent gives only the high-level goal (no formula, no ``not-the-$X$'', no
-invariant). We score each synthesized contract \textbf{CORE} (fires on the
+whose intent gives only a high-level goal---no formula and no ``not-the-$X$''
+slip-contrast (a plain-language goal may still \emph{imply} the target property
+for some operators, a residual we audit in Sec.~\ref{sec:synth}). We score each synthesized contract \textbf{CORE} (fires on the
 silent slip \emph{and} passes on the correct implementation) and \textbf{FULL}
 (CORE \emph{and} robust to alternative valid implementations).
 
@@ -392,7 +401,8 @@ never regresses below one-shot by construction. We report this as a
 \end{minipage}}
 \caption{Monotone-safe goldless refinement. The consensus set $S$ and
 metamorphic probes $P$ replace a reference answer; line 8 guarantees the loop
-never regresses below the one-shot contract.}
+never regresses below the one-shot contract \emph{on the goldless score} (not
+necessarily on downstream detection quality).}
 \label{alg:cegis}
 \end{figure}
 
@@ -482,15 +492,19 @@ one---e.g., a group whose values are near-uniform (so mean $\approx$ median) or 
 weight column that is near-constant (so weighted $\approx$ plain mean). There,
 \emph{no} invariant can separate the two within tolerance, and the ``error''
 has negligible practical effect. The four false-positives arise on degenerate
-tables (a single group, or all-equal values) where the invariant is trivially
-satisfied by both branches; a schema pre-filter removes them.
+tables (a single group, or all-equal values) where the invariant is
+\emph{undefined} on the correct output (e.g.\ a per-group share of $0/0{=}$NaN),
+so the contract fires on a valid result; a schema/degeneracy pre-filter removes them.
 
 \paragraph{Per-operator breakdown.} Detection is uniform across operators, not
 driven by one easy case (Table~\ref{tab:perop}): recall is $\geq$99\% for four of
 five operators and is only pulled down by \texttt{median-not-mean} (95\%),
 exactly the near-tie regime the failure analysis predicts (groups where the
-median and mean nearly coincide). The result is not cherry-picked to a
-favorable operator.
+median and mean nearly coincide). Which operator carries the residual misses is
+\emph{slice-dependent}---on other real slices \texttt{median-not-mean} is $100\%$
+and the misses fall on within-group-share/pooled-rate---so the invariant claim is
+that residual misses are near-ties at the chosen tolerance, not that median is
+intrinsically the hardest operator.
 
 \begin{table}[t]\centering\small
 \begin{tabular}{@{}lc@{}}
@@ -599,11 +613,12 @@ Real Nature tables ($N{=}33$) & 76\% & 70\% & 58\% [41--73]\\
 Cross-vendor pooled ($N{=}46$) & 78\% & 67\% & \textbf{50\% [36--64]}\\
 \bottomrule
 \end{tabular}
-\caption{End-to-end zero-template detection. The last block provides \emph{only} a
-messy request and a raw table---operator, roles, and contract are all inferred.
-The cross-vendor pooled row (GPT-5.4 $+$ Gemini-3.1-Pro, $N{=}46$) doubles the
-sample and tightens the interval; it \emph{confirms}, slightly below, the
-single-run $61\%$.}
+\caption{End-to-end zero-template detection. Operator and contract are inferred
+throughout; the $N{=}35$ row additionally infers column roles (only the messy
+request and raw table are given). The cross-vendor pooled row (GPT-5.4 $+$
+Gemini-3.1-Pro, $N{=}46$; column roles given) doubles the
+sample and tightens the interval; per-vendor $52\%/48\%$, it \emph{confirms},
+slightly below, the single-run $61\%$.}
 \label{tab:e2e}
 \end{table}
 
@@ -613,24 +628,25 @@ $N{=}46$) tightens the full-system estimate to $\mathbf{50\%}$ [36--64] (interva
 width $28$ vs.\ $38$ at $N{=}23$) and, more usefully, lets us \emph{decompose}
 the miss. Of the 23 full-system misses, $\mathbf{57\%}$ are contract-\emph{synthesis}
 failures (the operator was inferred correctly but the auto-synthesized invariant
-was wrong), $\mathbf{35\%}$ are operator-\emph{inference} failures (the oracle
-contract \emph{would} have fired had the operator been known), and $9\%$ fail at
-both stages. So in the zero-structure regime the dominant bottleneck is
-\emph{invariant synthesis}, not operator inference---correcting the natural guess
-and naming the concrete target for future work. De-leaked synthesis alone, scaled
+was wrong), $\mathbf{35\%}$ are operator-\emph{inference} failures (the
+auto-synthesized contract \emph{would} have fired had the operator been known), and $9\%$ fail at
+both stages. So in the zero-structure regime the larger share of misses is
+\emph{invariant synthesis} rather than operator inference (13 vs.\ 8 misses; the
+intervals overlap, so this is directional), pointing at the concrete target for future work. De-leaked synthesis alone, scaled
 to the same $N{=}46$ cross-vendor, holds at $76\%$ [62--86] CORE (GPT $78\%$,
 Gemini $74\%$), confirming the small-$N$ feasibility number was not a
 single-model artifact.
 
 \paragraph{Exemplar prompting does not fix synthesis (ablation).} The natural fix
-for the synthesis bottleneck---show the synthesizer a worked contract---\emph{back\-fires}.
-Holding the messy request and operator fixed, adding a single out-of-set exemplar
-\emph{lowers} CORE synthesis from a zero-shot $74\%$ to $59\%$, and three diverse
-exemplars to $57\%$, consistently across both vendors ($N{=}46$; GPT $83{\to}65{\to}57$,
-Gemini $65{\to}52{\to}57$). An exemplar anchors the synthesizer to \emph{its}
-invariant family and crowds out the task-appropriate one, and more exemplars
-anchor harder. Zero-shot synthesis is therefore the right design (and the one we
-use); the residual failures concentrate on mechanically-intricate operators
+for the synthesis bottleneck---show the synthesizer a worked contract---does
+\emph{not} help. Holding the messy request and operator fixed, adding a single
+out-of-set exemplar leaves CORE synthesis no better than zero-shot and trends
+lower ($74\%\to59\%\to57\%$ for zero/one/three exemplars, $N{=}46$; GPT
+$83{\to}65{\to}57$, but Gemini non-monotonic $65{\to}52{\to}57$). The Wilson
+intervals overlap and the shift is within single-draw noise, so we claim only
+that exemplars do not reliably improve synthesis---not a significant backfire.
+Zero-shot synthesis is therefore the right default; the residual failures
+concentrate on mechanically-intricate operators
 (index alignment, dtype coercion, resample boundaries) and are a fine-tuning /
 tool-use target, not a prompting fix.
 
@@ -667,7 +683,7 @@ Repair arm ($N{=}43$) & Fixed & Over-rep.\\
 \midrule
 generic (retry only) & 14\% [7--27] & 0\%\\
 strong self-debug & 5\% [1--15] & 0\%\\
-localization-only & 45\% & 0\%\\
+localization-only$^\dagger$ & 45\% & ---\\
 \textbf{targeted (contract invariant)} & \textbf{79\% [65--89]} & 0\%\\
 ceiling (gold-diff oracle) & 93\% [81--98] & 5\%\\
 \bottomrule
@@ -675,7 +691,9 @@ ceiling (gold-diff oracle) & 93\% [81--98] & 5\%\\
 \caption{Contract-guided repair (buggy starts are model-generated). The
 invariant lifts repair from 5\% (strong self-debug) to 79\% with disjoint CIs
 and no over-repair; self-debug falling \emph{below} generic retry shows an
-external specification is necessary.}
+external specification is necessary. $^\dagger$Localization-only is from a
+separate $N{=}31$ ablation (targeted $81\%$ there); the other rows are the
+$N{=}43$ run, and targeted over-repair is $0\%$ at $N{=}43$ (up to $10\%$ at $N{=}31$).}
 \label{tab:repair}
 \end{table}
 
@@ -703,6 +721,15 @@ failure is invariant synthesis, not operator inference.
 \textbf{Prevalence conditioning.} The 77\% headline is under ambiguous phrasing
 (10\% clarified); characterizing the ambiguity distribution of real analyst
 requests is future work.
+\textbf{Reproducibility and precision.} Frontier generations use default API
+sampling (no fixed seed for reasoning models), so single-draw numbers (synthesis,
+end-to-end, repair, ablation) carry generation stochasticity beyond the reported
+task-clustered Wilson intervals; seeded/averaged re-runs are future work. For the
+recomputation operators the contract's reference equals the gold template, so
+their real-data recall/false-positive is a tolerance-robustness check under a
+known operator---the pure-invariant contract is the non-circular core---and FULL
+robustness is tested against a limited alternative-implementation set on the core
+operators.
 
 % =============================================================================
 \section{Conclusion}
