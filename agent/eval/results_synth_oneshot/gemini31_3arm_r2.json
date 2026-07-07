@@ -1,0 +1,194 @@
+{
+  "model": "gemini-3.1-pro-preview",
+  "n": 23,
+  "baseline_core": [
+    14,
+    23
+  ],
+  "baseline_ci": [
+    61,
+    41,
+    78
+  ],
+  "oneshot_core": [
+    10,
+    23
+  ],
+  "oneshot_ci": [
+    43,
+    26,
+    63
+  ],
+  "fewshot_core": [
+    13,
+    23
+  ],
+  "fewshot_ci": [
+    57,
+    37,
+    74
+  ],
+  "cases": [
+    {
+      "op": "weighted_mean",
+      "baseline_core": true,
+      "oneshot_core": false,
+      "fewshot_core": false,
+      "baseline_exec": true
+    },
+    {
+      "op": "within_group_share",
+      "baseline_core": true,
+      "oneshot_core": true,
+      "fewshot_core": true,
+      "baseline_exec": true
+    },
+    {
+      "op": "pct_point",
+      "baseline_core": true,
+      "oneshot_core": false,
+      "fewshot_core": true,
+      "baseline_exec": true
+    },
+    {
+      "op": "dedup_then_agg",
+      "baseline_core": true,
+      "oneshot_core": false,
+      "fewshot_core": true,
+      "baseline_exec": true
+    },
+    {
+      "op": "left_join_keep_all",
+      "baseline_core": false,
+      "oneshot_core": false,
+      "fewshot_core": false,
+      "baseline_exec": true
+    },
+    {
+      "op": "pooled_rate",
+      "baseline_core": true,
+      "oneshot_core": true,
+      "fewshot_core": true,
+      "baseline_exec": true
+    },
+    {
+      "op": "median_not_mean",
+      "baseline_core": false,
+      "oneshot_core": false,
+      "fewshot_core": false,
+      "baseline_exec": true
+    },
+    {
+      "op": "cumulative_running",
+      "baseline_core": true,
+      "oneshot_core": false,
+      "fewshot_core": true,
+      "baseline_exec": true
+    },
+    {
+      "op": "topn_with_ties",
+      "baseline_core": true,
+      "oneshot_core": true,
+      "fewshot_core": true,
+      "baseline_exec": true
+    },
+    {
+      "op": "nan_as_zero_sum",
+      "baseline_core": true,
+      "oneshot_core": true,
+      "fewshot_core": true,
+      "baseline_exec": true
+    },
+    {
+      "op": "count_includes_empty",
+      "baseline_core": true,
+      "oneshot_core": true,
+      "fewshot_core": false,
+      "baseline_exec": true
+    },
+    {
+      "op": "proportion_true",
+      "baseline_core": false,
+      "oneshot_core": false,
+      "fewshot_core": false,
+      "baseline_exec": true
+    },
+    {
+      "op": "index_align",
+      "baseline_core": true,
+      "oneshot_core": true,
+      "fewshot_core": true,
+      "baseline_exec": true
+    },
+    {
+      "op": "dtype_coerce",
+      "baseline_core": false,
+      "oneshot_core": false,
+      "fewshot_core": false,
+      "baseline_exec": true
+    },
+    {
+      "op": "groupby_dropna_key",
+      "baseline_core": true,
+      "oneshot_core": true,
+      "fewshot_core": true,
+      "baseline_exec": true
+    },
+    {
+      "op": "order_dependent_dedup",
+      "baseline_core": true,
+      "oneshot_core": true,
+      "fewshot_core": true,
+      "baseline_exec": true
+    },
+    {
+      "op": "resample_boundary",
+      "baseline_core": false,
+      "oneshot_core": false,
+      "fewshot_core": false,
+      "baseline_exec": true
+    },
+    {
+      "op": "string_normalize_join",
+      "baseline_core": false,
+      "oneshot_core": false,
+      "fewshot_core": false,
+      "baseline_exec": true
+    },
+    {
+      "op": "join_fanout",
+      "baseline_core": true,
+      "oneshot_core": true,
+      "fewshot_core": true,
+      "baseline_exec": true
+    },
+    {
+      "op": "null_in_agg_count",
+      "baseline_core": false,
+      "oneshot_core": false,
+      "fewshot_core": true,
+      "baseline_exec": true
+    },
+    {
+      "op": "scale_before_split_leakage",
+      "baseline_core": false,
+      "oneshot_core": false,
+      "fewshot_core": false,
+      "baseline_exec": true
+    },
+    {
+      "op": "latlon_swap",
+      "baseline_core": false,
+      "oneshot_core": false,
+      "fewshot_core": false,
+      "baseline_exec": true
+    },
+    {
+      "op": "lookahead_return",
+      "baseline_core": true,
+      "oneshot_core": true,
+      "fewshot_core": true,
+      "baseline_exec": true
+    }
+  ]
+}

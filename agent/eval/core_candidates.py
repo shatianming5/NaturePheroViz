@@ -38,7 +38,8 @@ CORE_CANDIDATES.append(_c(
     {"group": "region", "share_col": "share"},
     lambda inp: inp["df"].assign(share=inp["df"]["sales"] / inp["df"]["sales"].sum()),
     lambda inp: inp["df"].assign(share=inp["df"]["sales"] / inp["df"].groupby("region")["sales"].transform("sum")),
-    [lambda inp: inp["df"].assign(share=inp["df"].groupby("region")["sales"].apply(lambda s: s / s.sum()).reset_index(level=0, drop=True))]))
+    [lambda inp: inp["df"].assign(share=inp["df"].groupby("region")["sales"].apply(lambda s: s / s.sum()).reset_index(level=0, drop=True)),
+     lambda inp: inp["df"].iloc[::-1].assign(share=inp["df"].iloc[::-1]["sales"] / inp["df"].iloc[::-1].groupby("region")["sales"].transform("sum")).reset_index(drop=True)]))
 
 # pct_point
 CORE_CANDIDATES.append(_c(
@@ -75,7 +76,8 @@ CORE_CANDIDATES.append(_c(
     {"group": "region", "num": "clicks", "den": "imps", "out": "ctr"},
     lambda inp: inp["df"].assign(_r=inp["df"]["clicks"] / inp["df"]["imps"]).groupby("region")["_r"].mean().reset_index(name="ctr"),
     lambda inp: inp["df"].groupby("region").apply(lambda g: g["clicks"].sum() / g["imps"].sum(), include_groups=False).reset_index(name="ctr"),
-    [lambda inp: (inp["df"].groupby("region")["clicks"].sum() / inp["df"].groupby("region")["imps"].sum()).reset_index(name="ctr")]))
+    [lambda inp: (inp["df"].groupby("region")["clicks"].sum() / inp["df"].groupby("region")["imps"].sum()).reset_index(name="ctr"),
+     lambda inp: inp["df"].groupby("region").apply(lambda g: g["clicks"].sum() / g["imps"].sum(), include_groups=False).reset_index(name="ctr").iloc[::-1].reset_index(drop=True)]))
 
 # median_not_mean
 CORE_CANDIDATES.append(_c(
@@ -84,7 +86,8 @@ CORE_CANDIDATES.append(_c(
     {"group": "grp", "value": "v"},
     lambda inp: inp["df"].groupby("grp", as_index=False)["v"].mean(),
     lambda inp: inp["df"].groupby("grp", as_index=False)["v"].median(),
-    [lambda inp: inp["df"].groupby("grp")["v"].median().reset_index()]))
+    [lambda inp: inp["df"].groupby("grp")["v"].median().reset_index(),
+     lambda inp: inp["df"].groupby("grp", as_index=False)["v"].median().iloc[::-1].reset_index(drop=True)]))
 
 # cumulative_running
 CORE_CANDIDATES.append(_c(
@@ -111,7 +114,8 @@ CORE_CANDIDATES.append(_c(
     {"group": "grp", "value": "v"},
     lambda inp: pd.DataFrame({"grp": ["x", "y"], "v": [np.nan, 5.0]}),
     lambda inp: inp["df"].assign(v=inp["df"]["v"].fillna(0)).groupby("grp", as_index=False)["v"].sum(),
-    [lambda inp: inp["df"].fillna({"v": 0}).groupby("grp", as_index=False)["v"].sum()]))
+    [lambda inp: inp["df"].fillna({"v": 0}).groupby("grp", as_index=False)["v"].sum(),
+     lambda inp: inp["df"].assign(v=inp["df"]["v"].fillna(0)).groupby("grp", as_index=False)["v"].sum().iloc[::-1].reset_index(drop=True)]))
 
 # count_includes_empty
 CORE_CANDIDATES.append(_c(

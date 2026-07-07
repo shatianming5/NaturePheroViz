@@ -641,10 +641,11 @@ single-model artifact.
 for the synthesis bottleneck---show the synthesizer a worked contract---does
 \emph{not} help. Holding the messy request and operator fixed, adding a single
 out-of-set exemplar leaves CORE synthesis no better than zero-shot and trends
-lower ($74\%\to59\%\to57\%$ for zero/one/three exemplars, $N{=}46$; GPT
-$83{\to}65{\to}57$, but Gemini non-monotonic $65{\to}52{\to}57$). The Wilson
-intervals overlap and the shift is within single-draw noise, so we claim only
-that exemplars do not reliably improve synthesis---not a significant backfire.
+lower. Over $k{=}2$--$3$ independent runs per vendor, zero-shot is the most stable
+arm (GPT $83{\pm}0\%$, $19/23$ every run) and exemplars fall below it (pooled
+zero-shot $75\%$ vs.\ one-shot $58{\pm}9\%$ vs.\ few-shot $57{\pm}5\%$); the
+run-to-run sd is as large as the exemplar effect, so we claim only that exemplars
+do not reliably improve synthesis---not a significant backfire.
 Zero-shot synthesis is therefore the right default; the residual failures
 concentrate on mechanically-intricate operators
 (index alignment, dtype coercion, resample boundaries) and are a fine-tuning /
@@ -722,14 +723,17 @@ failure is invariant synthesis, not operator inference.
 (10\% clarified); characterizing the ambiguity distribution of real analyst
 requests is future work.
 \textbf{Reproducibility and precision.} Frontier generations use default API
-sampling (no fixed seed for reasoning models), so single-draw numbers (synthesis,
-end-to-end, repair, ablation) carry generation stochasticity beyond the reported
-task-clustered Wilson intervals; seeded/averaged re-runs are future work. For the
+sampling (reasoning models are not bit-reproducible even at temperature 0), so we
+repeat the synthesis/ablation $k{=}2$--$3\times$ and report mean$\pm$sd: zero-shot
+synthesis is stable (GPT $83{\pm}0\%$) while the exemplar effect is within
+run-to-run noise (Sec.~\ref{sec:synth}). End-to-end and repair remain single
+draws whose stochasticity exceeds the task-clustered Wilson intervals; fuller
+averaging is future work. For the
 recomputation operators the contract's reference equals the gold template, so
 their real-data recall/false-positive is a tolerance-robustness check under a
-known operator---the pure-invariant contract is the non-circular core---and FULL
-robustness is tested against a limited alternative-implementation set on the core
-operators.
+known operator---the pure-invariant contract is the non-circular core. FULL
+robustness, re-tested against representation-diverse (row-order) valid
+implementations, holds at CORE on the core operators ($11/12$ for GPT).
 
 % =============================================================================
 \section{Conclusion}
