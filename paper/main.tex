@@ -49,25 +49,28 @@ models emit such silent semantic errors in \textbf{77\%} of \emph{ambiguously}
 phrased data-transform tasks (10\% when the request is disambiguated), and the
 failure is \emph{invisible} to every simple safeguard: deterministic checks
 (execution, shape, range, self-consistency) catch \textbf{0\%}, and LLM
-self-critique misses 39\% while false-flagging 40\%. We introduce
+self-critique misses 39\% while false-flagging 40\%---a pervasive, invisible
+failure mode whose measurement is our primary contribution. As a goldless remedy
+where the operator is known or inferable, we introduce
 \emph{specification-derived operator contracts}: executable checks over the
 (input, parameters, result) triple that certify an operator's semantics using
 \emph{no per-task gold answer}---the specification comes from the operator
 intent, not a stored label, and can be auto-synthesized from a natural-language
-goal. Across two independent real-data slices (up to 1{,}855 checks) the
-contracts detect silent errors at \textbf{98--99\% recall / near-zero
-(0.2\%) false-positive} where existing checks are structurally blind---about
-a third of these checks via \emph{pure relational invariants} that compute no
-reference value (99.8\% recall) and the rest via \emph{parameterized recomputation}
-from the known operator, which we are explicit about (96.6\%). We show the contracts can be
+goal. Across two real-data slices (up to 1{,}855 checks) they flag silent
+errors at \textbf{98--99\% recall / 0.2\% false-positive} under a \emph{known}
+operator, where existing checks are structurally blind---about
+a third via \emph{pure relational invariants} that compute no
+reference value (99.8\%, the non-circular core) and the rest via \emph{parameterized recomputation}
+that presupposes the operator (96.6\%). We show the contracts can be
 synthesized from a high-level goal (78--83\% correct, $N{=}23$, one-shot),
 transfer across execution substrates unchanged (pandas${\to}$SQL, 10/10
 operators), and drive a zero-training repair recipe (79\% vs.\ 5\% for strong
 self-debug). Finally, we run the \emph{entire} pipeline---infer operator, ground
 column roles, synthesize contract, detect---from only a messy request and a raw
 table, catching 50--58\% of silent errors with nothing structured provided. We
-frame the contribution as \emph{grounding an informal request into a
-verifiable specification}, and release the measurement suite and code.
+frame the work \emph{measurement-first}---a common, invisible failure quantified,
+with operator intent (once recovered) making it checkable without a per-task gold
+answer---and release the measurement suite and code.
 \end{abstract}
 
 % =============================================================================
@@ -92,11 +95,12 @@ is still \emph{valid} code producing \emph{valid-looking} output. Verifying the
 deployment there is none: if we already knew the right answer we would not be
 asking the model.
 
-\paragraph{This paper.} We make three moves. \textbf{(1) Measurement.} We
+\paragraph{This paper.} We make three moves. \textbf{(1) Measurement}---our
+primary contribution. We
 quantify how often frontier LLMs silently compute the wrong data transform, on
 \emph{real} scientific data (Nature source-data tables) and across models, and
 quantify how completely existing checks miss it. \textbf{(2) A
-specification-derived detector.} We introduce \emph{typed operator contracts}:
+specification-derived detector} for the known- or inferred-operator regime. We introduce \emph{typed operator contracts}:
 executable checks of an operator's semantics---conservation laws, per-group
 identities, row-count and range constraints, or, where appropriate, an
 intent-derived recomputation---evaluated over the (input, params, result) triple
@@ -129,10 +133,11 @@ data-transform code: 77\% under ambiguous requests (10\% disambiguated),
 deterministic
 checks detect 0\%, self-critique 61\% recall at 40\% false-positive
 (Sec.~\ref{sec:measure}).
-\item \textbf{Specification-derived operator contracts} that detect the errors
-at 98--99\% recall / near-zero (0.2\%) false-positive across two independent
-real-data slices (up to 1{,}855 checks), where code-layer baselines are
-structurally blind (Sec.~\ref{sec:detect}).
+\item \textbf{Specification-derived operator contracts} that, \emph{given a
+known or inferred operator}, flag the errors at 98--99\% recall / 0.2\%
+false-positive on real tables---anchored by a pure relational invariant (99.8\%,
+deriving no reference value), the rest presupposing the operator---where
+code-layer baselines are structurally blind (Sec.~\ref{sec:detect}).
 \item \textbf{Grounding intent into a specification}: the invariant can be
 auto-synthesized from a high-level goal (78--83\%, $N{=}23$, one-shot; stable
 across GPT and Gemini), and the operator (98\%) and column roles (74--83\%) can
@@ -642,9 +647,9 @@ single-model artifact.
 for the synthesis bottleneck---show the synthesizer a worked contract---does
 \emph{not} help. Holding the messy request and operator fixed, adding a single
 out-of-set exemplar leaves CORE synthesis no better than zero-shot and trends
-lower. Over $k{=}2$--$3$ independent runs per vendor, zero-shot is the most stable
+lower. Over $k{=}3$ independent runs per vendor, zero-shot is the most stable
 arm (GPT $83{\pm}0\%$, $19/23$ every run) and exemplars fall below it (pooled
-zero-shot $75\%$ vs.\ one-shot $58{\pm}9\%$ vs.\ few-shot $57{\pm}5\%$); the
+zero-shot $72\%$ vs.\ one-shot $57{\pm}9\%$ vs.\ few-shot $54{\pm}7\%$); the
 run-to-run sd is as large as the exemplar effect, so we claim only that exemplars
 do not reliably improve synthesis---not a significant backfire.
 Zero-shot synthesis is therefore the right default; the residual failures
@@ -728,7 +733,7 @@ failure is invariant synthesis, not operator inference.
 requests is future work.
 \textbf{Reproducibility and precision.} Frontier generations use default API
 sampling (reasoning models are not bit-reproducible even at temperature 0), so we
-repeat the synthesis/ablation $k{=}2$--$3\times$ and report mean$\pm$sd: zero-shot
+repeat the synthesis/ablation $k{=}3\times$ and report mean$\pm$sd: zero-shot
 synthesis is stable (GPT $83{\pm}0\%$) while the exemplar effect is within
 run-to-run noise (Sec.~\ref{sec:synth}). End-to-end and repair remain single
 draws whose stochasticity exceeds the task-clustered Wilson intervals; fuller
