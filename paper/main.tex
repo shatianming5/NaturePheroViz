@@ -65,7 +65,7 @@ transfer across execution substrates unchanged (pandas${\to}$SQL, 10/10
 operators), and drive a zero-training repair recipe (79\% vs.\ 5\% for strong
 self-debug). Finally, we run the \emph{entire} pipeline---infer operator, ground
 column roles, synthesize contract, detect---from only a messy request and a raw
-table, catching 51--58\% of silent errors with nothing structured provided. We
+table, catching 50--58\% of silent errors with nothing structured provided. We
 frame the contribution as \emph{grounding an informal request into a
 verifiable specification}, and release the measurement suite and code.
 \end{abstract}
@@ -137,7 +137,7 @@ auto-synthesized from a high-level goal (78--83\%, $N{=}23$, one-shot; stable
 across GPT and Gemini), and the operator (98\%) and column roles (74--83\%) can
 be recovered from a keyword-free request (Sec.~\ref{sec:synth}--\ref{sec:e2e}).
 \item \textbf{An end-to-end pipeline} run on \emph{real} Nature tables from only
-a messy request and a raw table---nothing structured given---catching 51--58\%
+a messy request and a raw table---nothing structured given---catching 50--58\%
 of silent errors, plus \textbf{substrate-agnostic transfer}
 (pandas${\to}$SQL, 10/10 operators, zero SQL-specific code) and a
 \textbf{zero-training repair recipe} (targeted 79\% vs.\ 5\% strong self-debug;
@@ -579,7 +579,7 @@ Table~\ref{tab:e2e} runs the full pipeline with nothing template-given. On
 generated fixtures the full system catches 61\%; on \emph{real} Nature tables
 58\%; and when even the column roles are inferred (so the input is \emph{only} a
 messy sentence and a raw table), 51\%---just 3 points below the params-given
-setting. We frame 51--58\% honestly as a \emph{useful early-warning floor}, not
+setting. We frame 50--58\% honestly as a \emph{useful early-warning floor}, not
 a deployable figure: roughly half of silent errors still pass, and the
 deployable regime remains the structured-intent $98\%/0.2\%$. The value of the
 end-to-end result is scientific---it shows the pipeline degrades gracefully and
