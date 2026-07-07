@@ -1,0 +1,5059 @@
+[
+  {
+    "op": "median_not_mean",
+    "cond": "ambiguous",
+    "model": "gpt-4o",
+    "tag": "SILENT",
+    "flags": {
+      "ours": 1,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 1,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "median_not_mean",
+    "cond": "ambiguous",
+    "model": "claude-sonnet-4.6",
+    "tag": "ok",
+    "flags": {
+      "ours": 0,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 1,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "median_not_mean",
+    "cond": "clarified",
+    "model": "gpt-4o",
+    "tag": "ok",
+    "flags": {
+      "ours": 0,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 1,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "median_not_mean",
+    "cond": "clarified",
+    "model": "claude-sonnet-4.6",
+    "tag": "SILENT",
+    "flags": {
+      "ours": 1,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 1,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "within_group_share",
+    "cond": "ambiguous",
+    "model": "gpt-4o",
+    "tag": "SILENT",
+    "flags": {
+      "ours": 1,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 1,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "within_group_share",
+    "cond": "ambiguous",
+    "model": "claude-sonnet-4.6",
+    "tag": "SILENT",
+    "flags": {
+      "ours": 1,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 1,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "within_group_share",
+    "cond": "clarified",
+    "model": "gpt-4o",
+    "tag": "ok",
+    "flags": {
+      "ours": 0,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 1,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "within_group_share",
+    "cond": "clarified",
+    "model": "claude-sonnet-4.6",
+    "tag": "ok",
+    "flags": {
+      "ours": 0,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 0,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "median_not_mean",
+    "cond": "ambiguous",
+    "model": "gpt-4o",
+    "tag": "SILENT",
+    "flags": {
+      "ours": 1,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 0,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "median_not_mean",
+    "cond": "ambiguous",
+    "model": "claude-sonnet-4.6",
+    "tag": "ok",
+    "flags": {
+      "ours": 0,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 1,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "median_not_mean",
+    "cond": "clarified",
+    "model": "gpt-4o",
+    "tag": "ok",
+    "flags": {
+      "ours": 0,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 0,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "median_not_mean",
+    "cond": "clarified",
+    "model": "claude-sonnet-4.6",
+    "tag": "SILENT",
+    "flags": {
+      "ours": 1,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 1,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "within_group_share",
+    "cond": "ambiguous",
+    "model": "gpt-4o",
+    "tag": "SILENT",
+    "flags": {
+      "ours": 1,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 1,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "within_group_share",
+    "cond": "ambiguous",
+    "model": "claude-sonnet-4.6",
+    "tag": "SILENT",
+    "flags": {
+      "ours": 1,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 0,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "within_group_share",
+    "cond": "clarified",
+    "model": "gpt-4o",
+    "tag": "ok",
+    "flags": {
+      "ours": 0,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 1,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "within_group_share",
+    "cond": "clarified",
+    "model": "claude-sonnet-4.6",
+    "tag": "ok",
+    "flags": {
+      "ours": 0,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 0,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "weighted_mean",
+    "cond": "ambiguous",
+    "model": "gpt-4o",
+    "tag": "SILENT",
+    "flags": {
+      "ours": 1,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 1,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "weighted_mean",
+    "cond": "ambiguous",
+    "model": "claude-sonnet-4.6",
+    "tag": "SILENT",
+    "flags": {
+      "ours": 1,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 0,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "weighted_mean",
+    "cond": "clarified",
+    "model": "gpt-4o",
+    "tag": "ok",
+    "flags": {
+      "ours": 0,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 1,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "weighted_mean",
+    "cond": "clarified",
+    "model": "claude-sonnet-4.6",
+    "tag": "ok",
+    "flags": {
+      "ours": 0,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 0,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "pooled_rate",
+    "cond": "ambiguous",
+    "model": "gpt-4o",
+    "tag": "SILENT",
+    "flags": {
+      "ours": 1,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 1,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "pooled_rate",
+    "cond": "ambiguous",
+    "model": "claude-sonnet-4.6",
+    "tag": "ok",
+    "flags": {
+      "ours": 0,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 1,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "pooled_rate",
+    "cond": "clarified",
+    "model": "gpt-4o",
+    "tag": "ok",
+    "flags": {
+      "ours": 0,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 1,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "pooled_rate",
+    "cond": "clarified",
+    "model": "claude-sonnet-4.6",
+    "tag": "ok",
+    "flags": {
+      "ours": 0,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 1,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "median_not_mean",
+    "cond": "ambiguous",
+    "model": "gpt-4o",
+    "tag": "SILENT",
+    "flags": {
+      "ours": 1,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 0,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "median_not_mean",
+    "cond": "ambiguous",
+    "model": "claude-sonnet-4.6",
+    "tag": "SILENT",
+    "flags": {
+      "ours": 1,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 0,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "median_not_mean",
+    "cond": "clarified",
+    "model": "gpt-4o",
+    "tag": "ok",
+    "flags": {
+      "ours": 0,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 1,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "median_not_mean",
+    "cond": "clarified",
+    "model": "claude-sonnet-4.6",
+    "tag": "SILENT",
+    "flags": {
+      "ours": 1,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 0,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "within_group_share",
+    "cond": "ambiguous",
+    "model": "gpt-4o",
+    "tag": "SILENT",
+    "flags": {
+      "ours": 1,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 0,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "within_group_share",
+    "cond": "ambiguous",
+    "model": "claude-sonnet-4.6",
+    "tag": "SILENT",
+    "flags": {
+      "ours": 1,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 0,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "within_group_share",
+    "cond": "clarified",
+    "model": "gpt-4o",
+    "tag": "ok",
+    "flags": {
+      "ours": 0,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 0,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "within_group_share",
+    "cond": "clarified",
+    "model": "claude-sonnet-4.6",
+    "tag": "ok",
+    "flags": {
+      "ours": 0,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 0,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "median_not_mean",
+    "cond": "ambiguous",
+    "model": "gpt-4o",
+    "tag": "SILENT",
+    "flags": {
+      "ours": 1,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 0,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "median_not_mean",
+    "cond": "ambiguous",
+    "model": "claude-sonnet-4.6",
+    "tag": "ok",
+    "flags": {
+      "ours": 0,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 1,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "median_not_mean",
+    "cond": "clarified",
+    "model": "gpt-4o",
+    "tag": "ok",
+    "flags": {
+      "ours": 0,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 0,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "median_not_mean",
+    "cond": "clarified",
+    "model": "claude-sonnet-4.6",
+    "tag": "SILENT",
+    "flags": {
+      "ours": 1,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 1,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "within_group_share",
+    "cond": "ambiguous",
+    "model": "gpt-4o",
+    "tag": "SILENT",
+    "flags": {
+      "ours": 1,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 1,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "within_group_share",
+    "cond": "ambiguous",
+    "model": "claude-sonnet-4.6",
+    "tag": "SILENT",
+    "flags": {
+      "ours": 1,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 0,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "within_group_share",
+    "cond": "clarified",
+    "model": "gpt-4o",
+    "tag": "ok",
+    "flags": {
+      "ours": 0,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 1,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "within_group_share",
+    "cond": "clarified",
+    "model": "claude-sonnet-4.6",
+    "tag": "ok",
+    "flags": {
+      "ours": 0,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 0,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "weighted_mean",
+    "cond": "ambiguous",
+    "model": "gpt-4o",
+    "tag": "SILENT",
+    "flags": {
+      "ours": 1,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 1,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "weighted_mean",
+    "cond": "ambiguous",
+    "model": "claude-sonnet-4.6",
+    "tag": "SILENT",
+    "flags": {
+      "ours": 1,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 0,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "weighted_mean",
+    "cond": "clarified",
+    "model": "gpt-4o",
+    "tag": "ok",
+    "flags": {
+      "ours": 0,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 1,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "weighted_mean",
+    "cond": "clarified",
+    "model": "claude-sonnet-4.6",
+    "tag": "ok",
+    "flags": {
+      "ours": 0,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 1,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "pooled_rate",
+    "cond": "ambiguous",
+    "model": "gpt-4o",
+    "tag": "SILENT",
+    "flags": {
+      "ours": 1,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 0,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "pooled_rate",
+    "cond": "ambiguous",
+    "model": "claude-sonnet-4.6",
+    "tag": "ok",
+    "flags": {
+      "ours": 0,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 1,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "pooled_rate",
+    "cond": "clarified",
+    "model": "gpt-4o",
+    "tag": "ok",
+    "flags": {
+      "ours": 0,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 1,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "pooled_rate",
+    "cond": "clarified",
+    "model": "claude-sonnet-4.6",
+    "tag": "ok",
+    "flags": {
+      "ours": 0,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 1,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "median_not_mean",
+    "cond": "ambiguous",
+    "model": "gpt-4o",
+    "tag": "SILENT",
+    "flags": {
+      "ours": 1,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 1,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "median_not_mean",
+    "cond": "ambiguous",
+    "model": "claude-sonnet-4.6",
+    "tag": "SILENT",
+    "flags": {
+      "ours": 1,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 0,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "median_not_mean",
+    "cond": "clarified",
+    "model": "gpt-4o",
+    "tag": "ok",
+    "flags": {
+      "ours": 0,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 1,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "median_not_mean",
+    "cond": "clarified",
+    "model": "claude-sonnet-4.6",
+    "tag": "SILENT",
+    "flags": {
+      "ours": 1,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 0,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "within_group_share",
+    "cond": "ambiguous",
+    "model": "gpt-4o",
+    "tag": "SILENT",
+    "flags": {
+      "ours": 1,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 1,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "within_group_share",
+    "cond": "ambiguous",
+    "model": "claude-sonnet-4.6",
+    "tag": "SILENT",
+    "flags": {
+      "ours": 1,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 0,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "within_group_share",
+    "cond": "clarified",
+    "model": "gpt-4o",
+    "tag": "ok",
+    "flags": {
+      "ours": 0,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 1,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "within_group_share",
+    "cond": "clarified",
+    "model": "claude-sonnet-4.6",
+    "tag": "ok",
+    "flags": {
+      "ours": 0,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 0,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "nan_as_zero_sum",
+    "cond": "ambiguous",
+    "model": "gpt-4o",
+    "tag": "ok",
+    "flags": {
+      "ours": 0,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 1,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "nan_as_zero_sum",
+    "cond": "ambiguous",
+    "model": "claude-sonnet-4.6",
+    "tag": "ok",
+    "flags": {
+      "ours": 0,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 0,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "nan_as_zero_sum",
+    "cond": "clarified",
+    "model": "gpt-4o",
+    "tag": "ok",
+    "flags": {
+      "ours": 0,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 1,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "nan_as_zero_sum",
+    "cond": "clarified",
+    "model": "claude-sonnet-4.6",
+    "tag": "SILENT",
+    "flags": {
+      "ours": 1,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 0,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "median_not_mean",
+    "cond": "ambiguous",
+    "model": "gpt-4o",
+    "tag": "ok",
+    "flags": {
+      "ours": 0,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 1,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "median_not_mean",
+    "cond": "ambiguous",
+    "model": "claude-sonnet-4.6",
+    "tag": "ok",
+    "flags": {
+      "ours": 0,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 0,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "median_not_mean",
+    "cond": "clarified",
+    "model": "gpt-4o",
+    "tag": "ok",
+    "flags": {
+      "ours": 0,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 1,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "median_not_mean",
+    "cond": "clarified",
+    "model": "claude-sonnet-4.6",
+    "tag": "SILENT",
+    "flags": {
+      "ours": 1,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 0,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "within_group_share",
+    "cond": "ambiguous",
+    "model": "gpt-4o",
+    "tag": "SILENT",
+    "flags": {
+      "ours": 1,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 1,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "within_group_share",
+    "cond": "ambiguous",
+    "model": "claude-sonnet-4.6",
+    "tag": "SILENT",
+    "flags": {
+      "ours": 1,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 1,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "within_group_share",
+    "cond": "clarified",
+    "model": "gpt-4o",
+    "tag": "ok",
+    "flags": {
+      "ours": 0,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 1,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "within_group_share",
+    "cond": "clarified",
+    "model": "claude-sonnet-4.6",
+    "tag": "ok",
+    "flags": {
+      "ours": 0,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 1,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "nan_as_zero_sum",
+    "cond": "ambiguous",
+    "model": "gpt-4o",
+    "tag": "ok",
+    "flags": {
+      "ours": 0,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 1,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "nan_as_zero_sum",
+    "cond": "ambiguous",
+    "model": "claude-sonnet-4.6",
+    "tag": "ok",
+    "flags": {
+      "ours": 0,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 0,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "nan_as_zero_sum",
+    "cond": "clarified",
+    "model": "gpt-4o",
+    "tag": "ok",
+    "flags": {
+      "ours": 0,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 1,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "nan_as_zero_sum",
+    "cond": "clarified",
+    "model": "claude-sonnet-4.6",
+    "tag": "SILENT",
+    "flags": {
+      "ours": 1,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 1,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "median_not_mean",
+    "cond": "ambiguous",
+    "model": "gpt-4o",
+    "tag": "SILENT",
+    "flags": {
+      "ours": 1,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 1,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "median_not_mean",
+    "cond": "ambiguous",
+    "model": "claude-sonnet-4.6",
+    "tag": "ok",
+    "flags": {
+      "ours": 0,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 0,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "median_not_mean",
+    "cond": "clarified",
+    "model": "gpt-4o",
+    "tag": "ok",
+    "flags": {
+      "ours": 0,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 1,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "median_not_mean",
+    "cond": "clarified",
+    "model": "claude-sonnet-4.6",
+    "tag": "ok",
+    "flags": {
+      "ours": 0,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 0,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "within_group_share",
+    "cond": "ambiguous",
+    "model": "gpt-4o",
+    "tag": "SILENT",
+    "flags": {
+      "ours": 1,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 1,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "within_group_share",
+    "cond": "ambiguous",
+    "model": "claude-sonnet-4.6",
+    "tag": "SILENT",
+    "flags": {
+      "ours": 1,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 1,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "within_group_share",
+    "cond": "clarified",
+    "model": "gpt-4o",
+    "tag": "ok",
+    "flags": {
+      "ours": 0,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 1,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "within_group_share",
+    "cond": "clarified",
+    "model": "claude-sonnet-4.6",
+    "tag": "ok",
+    "flags": {
+      "ours": 0,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 0,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "nan_as_zero_sum",
+    "cond": "ambiguous",
+    "model": "gpt-4o",
+    "tag": "ok",
+    "flags": {
+      "ours": 0,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 1,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "nan_as_zero_sum",
+    "cond": "ambiguous",
+    "model": "claude-sonnet-4.6",
+    "tag": "ok",
+    "flags": {
+      "ours": 0,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 0,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "nan_as_zero_sum",
+    "cond": "clarified",
+    "model": "gpt-4o",
+    "tag": "ok",
+    "flags": {
+      "ours": 0,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 1,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "nan_as_zero_sum",
+    "cond": "clarified",
+    "model": "claude-sonnet-4.6",
+    "tag": "ok",
+    "flags": {
+      "ours": 0,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 0,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "median_not_mean",
+    "cond": "ambiguous",
+    "model": "gpt-4o",
+    "tag": "ok",
+    "flags": {
+      "ours": 0,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 1,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "median_not_mean",
+    "cond": "ambiguous",
+    "model": "claude-sonnet-4.6",
+    "tag": "SILENT",
+    "flags": {
+      "ours": 1,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 1,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "median_not_mean",
+    "cond": "clarified",
+    "model": "gpt-4o",
+    "tag": "ok",
+    "flags": {
+      "ours": 0,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 1,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "median_not_mean",
+    "cond": "clarified",
+    "model": "claude-sonnet-4.6",
+    "tag": "SILENT",
+    "flags": {
+      "ours": 1,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 1,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "within_group_share",
+    "cond": "ambiguous",
+    "model": "gpt-4o",
+    "tag": "SILENT",
+    "flags": {
+      "ours": 1,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 1,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "within_group_share",
+    "cond": "ambiguous",
+    "model": "claude-sonnet-4.6",
+    "tag": "SILENT",
+    "flags": {
+      "ours": 1,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 1,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "within_group_share",
+    "cond": "clarified",
+    "model": "gpt-4o",
+    "tag": "ok",
+    "flags": {
+      "ours": 0,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 1,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "within_group_share",
+    "cond": "clarified",
+    "model": "claude-sonnet-4.6",
+    "tag": "ok",
+    "flags": {
+      "ours": 0,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 0,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "nan_as_zero_sum",
+    "cond": "ambiguous",
+    "model": "gpt-4o",
+    "tag": "ok",
+    "flags": {
+      "ours": 0,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 1,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "nan_as_zero_sum",
+    "cond": "ambiguous",
+    "model": "claude-sonnet-4.6",
+    "tag": "ok",
+    "flags": {
+      "ours": 0,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 0,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "nan_as_zero_sum",
+    "cond": "clarified",
+    "model": "gpt-4o",
+    "tag": "ok",
+    "flags": {
+      "ours": 0,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 1,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "nan_as_zero_sum",
+    "cond": "clarified",
+    "model": "claude-sonnet-4.6",
+    "tag": "SILENT",
+    "flags": {
+      "ours": 1,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 1,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "median_not_mean",
+    "cond": "ambiguous",
+    "model": "gpt-4o",
+    "tag": "SILENT",
+    "flags": {
+      "ours": 1,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 1,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "median_not_mean",
+    "cond": "ambiguous",
+    "model": "claude-sonnet-4.6",
+    "tag": "ok",
+    "flags": {
+      "ours": 0,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 0,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "median_not_mean",
+    "cond": "clarified",
+    "model": "gpt-4o",
+    "tag": "ok",
+    "flags": {
+      "ours": 0,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 1,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "median_not_mean",
+    "cond": "clarified",
+    "model": "claude-sonnet-4.6",
+    "tag": "SILENT",
+    "flags": {
+      "ours": 1,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 1,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "within_group_share",
+    "cond": "ambiguous",
+    "model": "gpt-4o",
+    "tag": "SILENT",
+    "flags": {
+      "ours": 1,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 1,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "within_group_share",
+    "cond": "ambiguous",
+    "model": "claude-sonnet-4.6",
+    "tag": "SILENT",
+    "flags": {
+      "ours": 1,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 0,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "within_group_share",
+    "cond": "clarified",
+    "model": "gpt-4o",
+    "tag": "ok",
+    "flags": {
+      "ours": 0,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 1,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "within_group_share",
+    "cond": "clarified",
+    "model": "claude-sonnet-4.6",
+    "tag": "ok",
+    "flags": {
+      "ours": 0,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 0,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "weighted_mean",
+    "cond": "ambiguous",
+    "model": "gpt-4o",
+    "tag": "SILENT",
+    "flags": {
+      "ours": 1,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 1,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "weighted_mean",
+    "cond": "ambiguous",
+    "model": "claude-sonnet-4.6",
+    "tag": "SILENT",
+    "flags": {
+      "ours": 1,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 1,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "weighted_mean",
+    "cond": "clarified",
+    "model": "gpt-4o",
+    "tag": "ok",
+    "flags": {
+      "ours": 0,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 1,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "weighted_mean",
+    "cond": "clarified",
+    "model": "claude-sonnet-4.6",
+    "tag": "ok",
+    "flags": {
+      "ours": 0,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 0,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "pooled_rate",
+    "cond": "ambiguous",
+    "model": "gpt-4o",
+    "tag": "ok",
+    "flags": {
+      "ours": 0,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 1,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "pooled_rate",
+    "cond": "ambiguous",
+    "model": "claude-sonnet-4.6",
+    "tag": "SILENT",
+    "flags": {
+      "ours": 1,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 0,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "pooled_rate",
+    "cond": "clarified",
+    "model": "gpt-4o",
+    "tag": "ok",
+    "flags": {
+      "ours": 0,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 1,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "pooled_rate",
+    "cond": "clarified",
+    "model": "claude-sonnet-4.6",
+    "tag": "ok",
+    "flags": {
+      "ours": 0,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 1,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "nan_as_zero_sum",
+    "cond": "ambiguous",
+    "model": "gpt-4o",
+    "tag": "ok",
+    "flags": {
+      "ours": 0,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 1,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "nan_as_zero_sum",
+    "cond": "ambiguous",
+    "model": "claude-sonnet-4.6",
+    "tag": "ok",
+    "flags": {
+      "ours": 0,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 0,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "nan_as_zero_sum",
+    "cond": "clarified",
+    "model": "gpt-4o",
+    "tag": "ok",
+    "flags": {
+      "ours": 0,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 1,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "nan_as_zero_sum",
+    "cond": "clarified",
+    "model": "claude-sonnet-4.6",
+    "tag": "ok",
+    "flags": {
+      "ours": 0,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 0,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "median_not_mean",
+    "cond": "ambiguous",
+    "model": "gpt-4o",
+    "tag": "ok",
+    "flags": {
+      "ours": 0,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 1,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "median_not_mean",
+    "cond": "clarified",
+    "model": "gpt-4o",
+    "tag": "ok",
+    "flags": {
+      "ours": 0,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 1,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "median_not_mean",
+    "cond": "clarified",
+    "model": "claude-sonnet-4.6",
+    "tag": "ok",
+    "flags": {
+      "ours": 0,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 0,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "median_not_mean",
+    "cond": "ambiguous",
+    "model": "gpt-4o",
+    "tag": "SILENT",
+    "flags": {
+      "ours": 1,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 1,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "median_not_mean",
+    "cond": "ambiguous",
+    "model": "claude-sonnet-4.6",
+    "tag": "ok",
+    "flags": {
+      "ours": 0,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 0,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "median_not_mean",
+    "cond": "clarified",
+    "model": "gpt-4o",
+    "tag": "SILENT",
+    "flags": {
+      "ours": 1,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 1,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "median_not_mean",
+    "cond": "clarified",
+    "model": "claude-sonnet-4.6",
+    "tag": "SILENT",
+    "flags": {
+      "ours": 1,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 1,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "within_group_share",
+    "cond": "ambiguous",
+    "model": "gpt-4o",
+    "tag": "SILENT",
+    "flags": {
+      "ours": 1,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 0,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "within_group_share",
+    "cond": "ambiguous",
+    "model": "claude-sonnet-4.6",
+    "tag": "SILENT",
+    "flags": {
+      "ours": 1,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 0,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "within_group_share",
+    "cond": "clarified",
+    "model": "gpt-4o",
+    "tag": "ok",
+    "flags": {
+      "ours": 0,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 0,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "within_group_share",
+    "cond": "clarified",
+    "model": "claude-sonnet-4.6",
+    "tag": "ok",
+    "flags": {
+      "ours": 0,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 0,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "median_not_mean",
+    "cond": "ambiguous",
+    "model": "gpt-4o",
+    "tag": "SILENT",
+    "flags": {
+      "ours": 1,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 1,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "median_not_mean",
+    "cond": "ambiguous",
+    "model": "claude-sonnet-4.6",
+    "tag": "SILENT",
+    "flags": {
+      "ours": 0,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 1,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "median_not_mean",
+    "cond": "clarified",
+    "model": "gpt-4o",
+    "tag": "SILENT",
+    "flags": {
+      "ours": 1,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 1,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "median_not_mean",
+    "cond": "clarified",
+    "model": "claude-sonnet-4.6",
+    "tag": "SILENT",
+    "flags": {
+      "ours": 1,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 1,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "within_group_share",
+    "cond": "ambiguous",
+    "model": "gpt-4o",
+    "tag": "SILENT",
+    "flags": {
+      "ours": 1,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 0,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "within_group_share",
+    "cond": "ambiguous",
+    "model": "claude-sonnet-4.6",
+    "tag": "SILENT",
+    "flags": {
+      "ours": 1,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 0,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "within_group_share",
+    "cond": "clarified",
+    "model": "gpt-4o",
+    "tag": "ok",
+    "flags": {
+      "ours": 0,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 0,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "within_group_share",
+    "cond": "clarified",
+    "model": "claude-sonnet-4.6",
+    "tag": "ok",
+    "flags": {
+      "ours": 0,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 0,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "median_not_mean",
+    "cond": "ambiguous",
+    "model": "gpt-4o",
+    "tag": "SILENT",
+    "flags": {
+      "ours": 1,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 1,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "median_not_mean",
+    "cond": "ambiguous",
+    "model": "claude-sonnet-4.6",
+    "tag": "ok",
+    "flags": {
+      "ours": 0,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 0,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "median_not_mean",
+    "cond": "clarified",
+    "model": "gpt-4o",
+    "tag": "ok",
+    "flags": {
+      "ours": 0,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 1,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "median_not_mean",
+    "cond": "clarified",
+    "model": "claude-sonnet-4.6",
+    "tag": "ok",
+    "flags": {
+      "ours": 0,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 1,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "within_group_share",
+    "cond": "ambiguous",
+    "model": "gpt-4o",
+    "tag": "SILENT",
+    "flags": {
+      "ours": 1,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 0,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "within_group_share",
+    "cond": "ambiguous",
+    "model": "claude-sonnet-4.6",
+    "tag": "SILENT",
+    "flags": {
+      "ours": 1,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 0,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "within_group_share",
+    "cond": "clarified",
+    "model": "gpt-4o",
+    "tag": "ok",
+    "flags": {
+      "ours": 0,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 0,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "within_group_share",
+    "cond": "clarified",
+    "model": "claude-sonnet-4.6",
+    "tag": "ok",
+    "flags": {
+      "ours": 0,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 0,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "median_not_mean",
+    "cond": "ambiguous",
+    "model": "gpt-4o",
+    "tag": "SILENT",
+    "flags": {
+      "ours": 1,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 1,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "median_not_mean",
+    "cond": "ambiguous",
+    "model": "claude-sonnet-4.6",
+    "tag": "SILENT",
+    "flags": {
+      "ours": 1,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 1,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "median_not_mean",
+    "cond": "clarified",
+    "model": "gpt-4o",
+    "tag": "ok",
+    "flags": {
+      "ours": 0,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 1,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "median_not_mean",
+    "cond": "clarified",
+    "model": "claude-sonnet-4.6",
+    "tag": "ok",
+    "flags": {
+      "ours": 0,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 1,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "within_group_share",
+    "cond": "ambiguous",
+    "model": "gpt-4o",
+    "tag": "SILENT",
+    "flags": {
+      "ours": 1,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 0,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "within_group_share",
+    "cond": "ambiguous",
+    "model": "claude-sonnet-4.6",
+    "tag": "SILENT",
+    "flags": {
+      "ours": 1,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 0,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "median_not_mean",
+    "cond": "ambiguous",
+    "model": "claude-sonnet-4.6",
+    "tag": "ok",
+    "flags": {
+      "ours": 0,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 0,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "median_not_mean",
+    "cond": "clarified",
+    "model": "gpt-4o",
+    "tag": "ok",
+    "flags": {
+      "ours": 0,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 1,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "median_not_mean",
+    "cond": "clarified",
+    "model": "claude-sonnet-4.6",
+    "tag": "ok",
+    "flags": {
+      "ours": 0,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 1,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "within_group_share",
+    "cond": "ambiguous",
+    "model": "gpt-4o",
+    "tag": "SILENT",
+    "flags": {
+      "ours": 1,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 0,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "within_group_share",
+    "cond": "ambiguous",
+    "model": "claude-sonnet-4.6",
+    "tag": "SILENT",
+    "flags": {
+      "ours": 1,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 1,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "within_group_share",
+    "cond": "clarified",
+    "model": "gpt-4o",
+    "tag": "ok",
+    "flags": {
+      "ours": 0,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 0,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "within_group_share",
+    "cond": "clarified",
+    "model": "claude-sonnet-4.6",
+    "tag": "ok",
+    "flags": {
+      "ours": 0,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 0,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "median_not_mean",
+    "cond": "ambiguous",
+    "model": "gpt-4o",
+    "tag": "SILENT",
+    "flags": {
+      "ours": 1,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 1,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "median_not_mean",
+    "cond": "ambiguous",
+    "model": "claude-sonnet-4.6",
+    "tag": "ok",
+    "flags": {
+      "ours": 0,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 0,
+      "consistency": 1
+    }
+  },
+  {
+    "op": "median_not_mean",
+    "cond": "clarified",
+    "model": "gpt-4o",
+    "tag": "SILENT",
+    "flags": {
+      "ours": 1,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 1,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "median_not_mean",
+    "cond": "clarified",
+    "model": "claude-sonnet-4.6",
+    "tag": "ok",
+    "flags": {
+      "ours": 0,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 0,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "within_group_share",
+    "cond": "ambiguous",
+    "model": "claude-sonnet-4.6",
+    "tag": "SILENT",
+    "flags": {
+      "ours": 1,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 0,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "within_group_share",
+    "cond": "clarified",
+    "model": "gpt-4o",
+    "tag": "ok",
+    "flags": {
+      "ours": 0,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 0,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "within_group_share",
+    "cond": "clarified",
+    "model": "claude-sonnet-4.6",
+    "tag": "ok",
+    "flags": {
+      "ours": 0,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 0,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "median_not_mean",
+    "cond": "ambiguous",
+    "model": "gpt-4o",
+    "tag": "SILENT",
+    "flags": {
+      "ours": 1,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 1,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "median_not_mean",
+    "cond": "ambiguous",
+    "model": "claude-sonnet-4.6",
+    "tag": "SILENT",
+    "flags": {
+      "ours": 1,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 0,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "median_not_mean",
+    "cond": "clarified",
+    "model": "gpt-4o",
+    "tag": "SILENT",
+    "flags": {
+      "ours": 1,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 1,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "median_not_mean",
+    "cond": "clarified",
+    "model": "claude-sonnet-4.6",
+    "tag": "ok",
+    "flags": {
+      "ours": 0,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 0,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "within_group_share",
+    "cond": "ambiguous",
+    "model": "gpt-4o",
+    "tag": "SILENT",
+    "flags": {
+      "ours": 1,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 0,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "within_group_share",
+    "cond": "ambiguous",
+    "model": "claude-sonnet-4.6",
+    "tag": "SILENT",
+    "flags": {
+      "ours": 1,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 0,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "within_group_share",
+    "cond": "clarified",
+    "model": "gpt-4o",
+    "tag": "ok",
+    "flags": {
+      "ours": 0,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 0,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "within_group_share",
+    "cond": "clarified",
+    "model": "claude-sonnet-4.6",
+    "tag": "ok",
+    "flags": {
+      "ours": 0,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 0,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "median_not_mean",
+    "cond": "ambiguous",
+    "model": "gpt-4o",
+    "tag": "SILENT",
+    "flags": {
+      "ours": 1,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 1,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "median_not_mean",
+    "cond": "ambiguous",
+    "model": "claude-sonnet-4.6",
+    "tag": "SILENT",
+    "flags": {
+      "ours": 1,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 1,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "median_not_mean",
+    "cond": "clarified",
+    "model": "gpt-4o",
+    "tag": "ok",
+    "flags": {
+      "ours": 0,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 1,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "median_not_mean",
+    "cond": "clarified",
+    "model": "claude-sonnet-4.6",
+    "tag": "SILENT",
+    "flags": {
+      "ours": 1,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 0,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "within_group_share",
+    "cond": "ambiguous",
+    "model": "gpt-4o",
+    "tag": "SILENT",
+    "flags": {
+      "ours": 1,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 1,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "within_group_share",
+    "cond": "clarified",
+    "model": "gpt-4o",
+    "tag": "ok",
+    "flags": {
+      "ours": 0,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 1,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "within_group_share",
+    "cond": "clarified",
+    "model": "claude-sonnet-4.6",
+    "tag": "ok",
+    "flags": {
+      "ours": 0,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 0,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "median_not_mean",
+    "cond": "ambiguous",
+    "model": "gpt-4o",
+    "tag": "SILENT",
+    "flags": {
+      "ours": 1,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 1,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "median_not_mean",
+    "cond": "ambiguous",
+    "model": "claude-sonnet-4.6",
+    "tag": "SILENT",
+    "flags": {
+      "ours": 1,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 0,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "median_not_mean",
+    "cond": "clarified",
+    "model": "gpt-4o",
+    "tag": "ok",
+    "flags": {
+      "ours": 0,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 1,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "median_not_mean",
+    "cond": "clarified",
+    "model": "claude-sonnet-4.6",
+    "tag": "SILENT",
+    "flags": {
+      "ours": 1,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 1,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "within_group_share",
+    "cond": "ambiguous",
+    "model": "gpt-4o",
+    "tag": "SILENT",
+    "flags": {
+      "ours": 1,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 0,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "within_group_share",
+    "cond": "ambiguous",
+    "model": "claude-sonnet-4.6",
+    "tag": "SILENT",
+    "flags": {
+      "ours": 1,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 0,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "within_group_share",
+    "cond": "clarified",
+    "model": "gpt-4o",
+    "tag": "ok",
+    "flags": {
+      "ours": 0,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 0,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "within_group_share",
+    "cond": "clarified",
+    "model": "claude-sonnet-4.6",
+    "tag": "ok",
+    "flags": {
+      "ours": 0,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 0,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "median_not_mean",
+    "cond": "ambiguous",
+    "model": "gpt-4o",
+    "tag": "SILENT",
+    "flags": {
+      "ours": 1,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 1,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "median_not_mean",
+    "cond": "ambiguous",
+    "model": "claude-sonnet-4.6",
+    "tag": "SILENT",
+    "flags": {
+      "ours": 1,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 1,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "median_not_mean",
+    "cond": "clarified",
+    "model": "gpt-4o",
+    "tag": "ok",
+    "flags": {
+      "ours": 0,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 0,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "median_not_mean",
+    "cond": "clarified",
+    "model": "claude-sonnet-4.6",
+    "tag": "ok",
+    "flags": {
+      "ours": 0,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 0,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "within_group_share",
+    "cond": "ambiguous",
+    "model": "gpt-4o",
+    "tag": "SILENT",
+    "flags": {
+      "ours": 1,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 0,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "within_group_share",
+    "cond": "ambiguous",
+    "model": "claude-sonnet-4.6",
+    "tag": "SILENT",
+    "flags": {
+      "ours": 1,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 0,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "within_group_share",
+    "cond": "clarified",
+    "model": "gpt-4o",
+    "tag": "ok",
+    "flags": {
+      "ours": 0,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 0,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "within_group_share",
+    "cond": "clarified",
+    "model": "claude-sonnet-4.6",
+    "tag": "ok",
+    "flags": {
+      "ours": 0,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 0,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "median_not_mean",
+    "cond": "ambiguous",
+    "model": "gpt-4o",
+    "tag": "SILENT",
+    "flags": {
+      "ours": 1,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 1,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "median_not_mean",
+    "cond": "ambiguous",
+    "model": "claude-sonnet-4.6",
+    "tag": "ok",
+    "flags": {
+      "ours": 0,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 1,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "median_not_mean",
+    "cond": "clarified",
+    "model": "gpt-4o",
+    "tag": "ok",
+    "flags": {
+      "ours": 0,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 1,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "median_not_mean",
+    "cond": "clarified",
+    "model": "claude-sonnet-4.6",
+    "tag": "ok",
+    "flags": {
+      "ours": 0,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 1,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "within_group_share",
+    "cond": "ambiguous",
+    "model": "gpt-4o",
+    "tag": "SILENT",
+    "flags": {
+      "ours": 1,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 0,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "within_group_share",
+    "cond": "ambiguous",
+    "model": "claude-sonnet-4.6",
+    "tag": "SILENT",
+    "flags": {
+      "ours": 1,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 0,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "within_group_share",
+    "cond": "clarified",
+    "model": "gpt-4o",
+    "tag": "ok",
+    "flags": {
+      "ours": 0,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 0,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "within_group_share",
+    "cond": "clarified",
+    "model": "claude-sonnet-4.6",
+    "tag": "ok",
+    "flags": {
+      "ours": 0,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 0,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "median_not_mean",
+    "cond": "ambiguous",
+    "model": "gpt-4o",
+    "tag": "SILENT",
+    "flags": {
+      "ours": 1,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 1,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "median_not_mean",
+    "cond": "ambiguous",
+    "model": "claude-sonnet-4.6",
+    "tag": "SILENT",
+    "flags": {
+      "ours": 1,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 1,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "median_not_mean",
+    "cond": "clarified",
+    "model": "gpt-4o",
+    "tag": "ok",
+    "flags": {
+      "ours": 0,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 1,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "median_not_mean",
+    "cond": "clarified",
+    "model": "claude-sonnet-4.6",
+    "tag": "SILENT",
+    "flags": {
+      "ours": 1,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 1,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "median_not_mean",
+    "cond": "ambiguous",
+    "model": "gpt-4o",
+    "tag": "SILENT",
+    "flags": {
+      "ours": 1,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 1,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "median_not_mean",
+    "cond": "ambiguous",
+    "model": "claude-sonnet-4.6",
+    "tag": "SILENT",
+    "flags": {
+      "ours": 1,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 1,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "median_not_mean",
+    "cond": "clarified",
+    "model": "gpt-4o",
+    "tag": "ok",
+    "flags": {
+      "ours": 0,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 1,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "median_not_mean",
+    "cond": "clarified",
+    "model": "claude-sonnet-4.6",
+    "tag": "ok",
+    "flags": {
+      "ours": 0,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 1,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "within_group_share",
+    "cond": "ambiguous",
+    "model": "gpt-4o",
+    "tag": "SILENT",
+    "flags": {
+      "ours": 1,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 1,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "within_group_share",
+    "cond": "ambiguous",
+    "model": "claude-sonnet-4.6",
+    "tag": "SILENT",
+    "flags": {
+      "ours": 1,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 0,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "within_group_share",
+    "cond": "clarified",
+    "model": "gpt-4o",
+    "tag": "ok",
+    "flags": {
+      "ours": 0,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 1,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "within_group_share",
+    "cond": "clarified",
+    "model": "claude-sonnet-4.6",
+    "tag": "ok",
+    "flags": {
+      "ours": 0,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 0,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "pooled_rate",
+    "cond": "ambiguous",
+    "model": "gpt-4o",
+    "tag": "SILENT",
+    "flags": {
+      "ours": 1,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 1,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "pooled_rate",
+    "cond": "ambiguous",
+    "model": "claude-sonnet-4.6",
+    "tag": "SILENT",
+    "flags": {
+      "ours": 1,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 0,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "pooled_rate",
+    "cond": "clarified",
+    "model": "gpt-4o",
+    "tag": "ok",
+    "flags": {
+      "ours": 0,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 1,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "pooled_rate",
+    "cond": "clarified",
+    "model": "claude-sonnet-4.6",
+    "tag": "ok",
+    "flags": {
+      "ours": 0,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 1,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "median_not_mean",
+    "cond": "ambiguous",
+    "model": "gpt-4o",
+    "tag": "SILENT",
+    "flags": {
+      "ours": 1,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 1,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "median_not_mean",
+    "cond": "ambiguous",
+    "model": "claude-sonnet-4.6",
+    "tag": "SILENT",
+    "flags": {
+      "ours": 1,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 1,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "median_not_mean",
+    "cond": "clarified",
+    "model": "gpt-4o",
+    "tag": "SILENT",
+    "flags": {
+      "ours": 1,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 1,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "median_not_mean",
+    "cond": "clarified",
+    "model": "claude-sonnet-4.6",
+    "tag": "SILENT",
+    "flags": {
+      "ours": 1,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 1,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "within_group_share",
+    "cond": "ambiguous",
+    "model": "gpt-4o",
+    "tag": "SILENT",
+    "flags": {
+      "ours": 1,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 1,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "within_group_share",
+    "cond": "ambiguous",
+    "model": "claude-sonnet-4.6",
+    "tag": "SILENT",
+    "flags": {
+      "ours": 1,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 1,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "within_group_share",
+    "cond": "clarified",
+    "model": "claude-sonnet-4.6",
+    "tag": "ok",
+    "flags": {
+      "ours": 0,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 0,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "weighted_mean",
+    "cond": "ambiguous",
+    "model": "gpt-4o",
+    "tag": "SILENT",
+    "flags": {
+      "ours": 1,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 1,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "weighted_mean",
+    "cond": "ambiguous",
+    "model": "claude-sonnet-4.6",
+    "tag": "ok",
+    "flags": {
+      "ours": 0,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 1,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "weighted_mean",
+    "cond": "clarified",
+    "model": "gpt-4o",
+    "tag": "ok",
+    "flags": {
+      "ours": 0,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 1,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "weighted_mean",
+    "cond": "clarified",
+    "model": "claude-sonnet-4.6",
+    "tag": "ok",
+    "flags": {
+      "ours": 0,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 1,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "pooled_rate",
+    "cond": "ambiguous",
+    "model": "gpt-4o",
+    "tag": "SILENT",
+    "flags": {
+      "ours": 1,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 1,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "pooled_rate",
+    "cond": "ambiguous",
+    "model": "claude-sonnet-4.6",
+    "tag": "SILENT",
+    "flags": {
+      "ours": 1,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 1,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "pooled_rate",
+    "cond": "clarified",
+    "model": "gpt-4o",
+    "tag": "ok",
+    "flags": {
+      "ours": 0,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 1,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "pooled_rate",
+    "cond": "clarified",
+    "model": "claude-sonnet-4.6",
+    "tag": "ok",
+    "flags": {
+      "ours": 0,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 0,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "nan_as_zero_sum",
+    "cond": "ambiguous",
+    "model": "gpt-4o",
+    "tag": "ok",
+    "flags": {
+      "ours": 0,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 1,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "nan_as_zero_sum",
+    "cond": "ambiguous",
+    "model": "claude-sonnet-4.6",
+    "tag": "ok",
+    "flags": {
+      "ours": 0,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 0,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "nan_as_zero_sum",
+    "cond": "clarified",
+    "model": "gpt-4o",
+    "tag": "SILENT",
+    "flags": {
+      "ours": 1,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 0,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "nan_as_zero_sum",
+    "cond": "clarified",
+    "model": "claude-sonnet-4.6",
+    "tag": "SILENT",
+    "flags": {
+      "ours": 1,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 0,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "median_not_mean",
+    "cond": "ambiguous",
+    "model": "gpt-4o",
+    "tag": "SILENT",
+    "flags": {
+      "ours": 1,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 1,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "median_not_mean",
+    "cond": "ambiguous",
+    "model": "claude-sonnet-4.6",
+    "tag": "SILENT",
+    "flags": {
+      "ours": 1,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 1,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "median_not_mean",
+    "cond": "clarified",
+    "model": "gpt-4o",
+    "tag": "ok",
+    "flags": {
+      "ours": 0,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 1,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "median_not_mean",
+    "cond": "clarified",
+    "model": "claude-sonnet-4.6",
+    "tag": "ok",
+    "flags": {
+      "ours": 0,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 1,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "within_group_share",
+    "cond": "ambiguous",
+    "model": "gpt-4o",
+    "tag": "SILENT",
+    "flags": {
+      "ours": 1,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 1,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "within_group_share",
+    "cond": "ambiguous",
+    "model": "claude-sonnet-4.6",
+    "tag": "SILENT",
+    "flags": {
+      "ours": 1,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 0,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "within_group_share",
+    "cond": "clarified",
+    "model": "gpt-4o",
+    "tag": "ok",
+    "flags": {
+      "ours": 0,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 0,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "within_group_share",
+    "cond": "clarified",
+    "model": "claude-sonnet-4.6",
+    "tag": "ok",
+    "flags": {
+      "ours": 0,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 0,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "median_not_mean",
+    "cond": "ambiguous",
+    "model": "gpt-4o",
+    "tag": "SILENT",
+    "flags": {
+      "ours": 1,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 1,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "median_not_mean",
+    "cond": "ambiguous",
+    "model": "claude-sonnet-4.6",
+    "tag": "SILENT",
+    "flags": {
+      "ours": 1,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 1,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "median_not_mean",
+    "cond": "clarified",
+    "model": "gpt-4o",
+    "tag": "ok",
+    "flags": {
+      "ours": 0,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 1,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "median_not_mean",
+    "cond": "clarified",
+    "model": "claude-sonnet-4.6",
+    "tag": "ok",
+    "flags": {
+      "ours": 0,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 1,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "within_group_share",
+    "cond": "ambiguous",
+    "model": "gpt-4o",
+    "tag": "SILENT",
+    "flags": {
+      "ours": 1,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 1,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "within_group_share",
+    "cond": "ambiguous",
+    "model": "claude-sonnet-4.6",
+    "tag": "SILENT",
+    "flags": {
+      "ours": 1,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 1,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "within_group_share",
+    "cond": "clarified",
+    "model": "gpt-4o",
+    "tag": "ok",
+    "flags": {
+      "ours": 0,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 1,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "within_group_share",
+    "cond": "clarified",
+    "model": "claude-sonnet-4.6",
+    "tag": "ok",
+    "flags": {
+      "ours": 0,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 0,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "median_not_mean",
+    "cond": "ambiguous",
+    "model": "gpt-4o",
+    "tag": "SILENT",
+    "flags": {
+      "ours": 1,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 1,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "median_not_mean",
+    "cond": "ambiguous",
+    "model": "claude-sonnet-4.6",
+    "tag": "SILENT",
+    "flags": {
+      "ours": 1,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 0,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "median_not_mean",
+    "cond": "clarified",
+    "model": "gpt-4o",
+    "tag": "SILENT",
+    "flags": {
+      "ours": 1,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 1,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "median_not_mean",
+    "cond": "clarified",
+    "model": "claude-sonnet-4.6",
+    "tag": "SILENT",
+    "flags": {
+      "ours": 1,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 0,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "median_not_mean",
+    "cond": "ambiguous",
+    "model": "claude-sonnet-4.6",
+    "tag": "SILENT",
+    "flags": {
+      "ours": 1,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 1,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "median_not_mean",
+    "cond": "clarified",
+    "model": "gpt-4o",
+    "tag": "SILENT",
+    "flags": {
+      "ours": 1,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 1,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "median_not_mean",
+    "cond": "clarified",
+    "model": "claude-sonnet-4.6",
+    "tag": "SILENT",
+    "flags": {
+      "ours": 1,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 0,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "median_not_mean",
+    "cond": "ambiguous",
+    "model": "claude-sonnet-4.6",
+    "tag": "SILENT",
+    "flags": {
+      "ours": 1,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 1,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "median_not_mean",
+    "cond": "clarified",
+    "model": "gpt-4o",
+    "tag": "SILENT",
+    "flags": {
+      "ours": 1,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 1,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "median_not_mean",
+    "cond": "clarified",
+    "model": "claude-sonnet-4.6",
+    "tag": "SILENT",
+    "flags": {
+      "ours": 1,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 0,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "median_not_mean",
+    "cond": "ambiguous",
+    "model": "gpt-4o",
+    "tag": "ok",
+    "flags": {
+      "ours": 0,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 1,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "median_not_mean",
+    "cond": "ambiguous",
+    "model": "claude-sonnet-4.6",
+    "tag": "SILENT",
+    "flags": {
+      "ours": 0,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 1,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "median_not_mean",
+    "cond": "clarified",
+    "model": "gpt-4o",
+    "tag": "ok",
+    "flags": {
+      "ours": 0,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 1,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "median_not_mean",
+    "cond": "clarified",
+    "model": "claude-sonnet-4.6",
+    "tag": "SILENT",
+    "flags": {
+      "ours": 1,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 0,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "nan_as_zero_sum",
+    "cond": "ambiguous",
+    "model": "gpt-4o",
+    "tag": "ok",
+    "flags": {
+      "ours": 0,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 1,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "nan_as_zero_sum",
+    "cond": "ambiguous",
+    "model": "claude-sonnet-4.6",
+    "tag": "ok",
+    "flags": {
+      "ours": 0,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 0,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "nan_as_zero_sum",
+    "cond": "clarified",
+    "model": "gpt-4o",
+    "tag": "ok",
+    "flags": {
+      "ours": 0,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 1,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "nan_as_zero_sum",
+    "cond": "clarified",
+    "model": "claude-sonnet-4.6",
+    "tag": "ok",
+    "flags": {
+      "ours": 0,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 1,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "median_not_mean",
+    "cond": "ambiguous",
+    "model": "gpt-4o",
+    "tag": "ok",
+    "flags": {
+      "ours": 0,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 1,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "median_not_mean",
+    "cond": "ambiguous",
+    "model": "claude-sonnet-4.6",
+    "tag": "ok",
+    "flags": {
+      "ours": 0,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 0,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "median_not_mean",
+    "cond": "clarified",
+    "model": "gpt-4o",
+    "tag": "ok",
+    "flags": {
+      "ours": 0,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 1,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "median_not_mean",
+    "cond": "clarified",
+    "model": "claude-sonnet-4.6",
+    "tag": "SILENT",
+    "flags": {
+      "ours": 1,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 0,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "nan_as_zero_sum",
+    "cond": "ambiguous",
+    "model": "gpt-4o",
+    "tag": "ok",
+    "flags": {
+      "ours": 0,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 1,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "nan_as_zero_sum",
+    "cond": "ambiguous",
+    "model": "claude-sonnet-4.6",
+    "tag": "ok",
+    "flags": {
+      "ours": 0,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 0,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "nan_as_zero_sum",
+    "cond": "clarified",
+    "model": "gpt-4o",
+    "tag": "ok",
+    "flags": {
+      "ours": 0,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 1,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "nan_as_zero_sum",
+    "cond": "clarified",
+    "model": "claude-sonnet-4.6",
+    "tag": "ok",
+    "flags": {
+      "ours": 0,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 0,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "median_not_mean",
+    "cond": "ambiguous",
+    "model": "gpt-4o",
+    "tag": "SILENT",
+    "flags": {
+      "ours": 1,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 1,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "median_not_mean",
+    "cond": "ambiguous",
+    "model": "claude-sonnet-4.6",
+    "tag": "ok",
+    "flags": {
+      "ours": 0,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 0,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "median_not_mean",
+    "cond": "clarified",
+    "model": "gpt-4o",
+    "tag": "ok",
+    "flags": {
+      "ours": 0,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 1,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "median_not_mean",
+    "cond": "clarified",
+    "model": "claude-sonnet-4.6",
+    "tag": "SILENT",
+    "flags": {
+      "ours": 1,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 0,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "nan_as_zero_sum",
+    "cond": "ambiguous",
+    "model": "gpt-4o",
+    "tag": "ok",
+    "flags": {
+      "ours": 0,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 1,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "nan_as_zero_sum",
+    "cond": "ambiguous",
+    "model": "claude-sonnet-4.6",
+    "tag": "ok",
+    "flags": {
+      "ours": 0,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 0,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "nan_as_zero_sum",
+    "cond": "clarified",
+    "model": "gpt-4o",
+    "tag": "ok",
+    "flags": {
+      "ours": 0,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 1,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "nan_as_zero_sum",
+    "cond": "clarified",
+    "model": "claude-sonnet-4.6",
+    "tag": "ok",
+    "flags": {
+      "ours": 0,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 0,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "median_not_mean",
+    "cond": "ambiguous",
+    "model": "gpt-4o",
+    "tag": "ok",
+    "flags": {
+      "ours": 0,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 1,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "median_not_mean",
+    "cond": "ambiguous",
+    "model": "claude-sonnet-4.6",
+    "tag": "SILENT",
+    "flags": {
+      "ours": 1,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 0,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "median_not_mean",
+    "cond": "clarified",
+    "model": "gpt-4o",
+    "tag": "ok",
+    "flags": {
+      "ours": 0,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 1,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "median_not_mean",
+    "cond": "clarified",
+    "model": "claude-sonnet-4.6",
+    "tag": "SILENT",
+    "flags": {
+      "ours": 1,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 0,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "nan_as_zero_sum",
+    "cond": "ambiguous",
+    "model": "gpt-4o",
+    "tag": "ok",
+    "flags": {
+      "ours": 0,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 1,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "nan_as_zero_sum",
+    "cond": "ambiguous",
+    "model": "claude-sonnet-4.6",
+    "tag": "SILENT",
+    "flags": {
+      "ours": 1,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 0,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "nan_as_zero_sum",
+    "cond": "clarified",
+    "model": "gpt-4o",
+    "tag": "ok",
+    "flags": {
+      "ours": 0,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 1,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "nan_as_zero_sum",
+    "cond": "clarified",
+    "model": "claude-sonnet-4.6",
+    "tag": "ok",
+    "flags": {
+      "ours": 0,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 1,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "median_not_mean",
+    "cond": "ambiguous",
+    "model": "gpt-4o",
+    "tag": "ok",
+    "flags": {
+      "ours": 0,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 1,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "median_not_mean",
+    "cond": "ambiguous",
+    "model": "claude-sonnet-4.6",
+    "tag": "ok",
+    "flags": {
+      "ours": 0,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 0,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "median_not_mean",
+    "cond": "clarified",
+    "model": "gpt-4o",
+    "tag": "ok",
+    "flags": {
+      "ours": 0,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 1,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "median_not_mean",
+    "cond": "clarified",
+    "model": "claude-sonnet-4.6",
+    "tag": "SILENT",
+    "flags": {
+      "ours": 1,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 1,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "nan_as_zero_sum",
+    "cond": "ambiguous",
+    "model": "gpt-4o",
+    "tag": "ok",
+    "flags": {
+      "ours": 0,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 1,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "nan_as_zero_sum",
+    "cond": "ambiguous",
+    "model": "claude-sonnet-4.6",
+    "tag": "ok",
+    "flags": {
+      "ours": 0,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 1,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "nan_as_zero_sum",
+    "cond": "clarified",
+    "model": "gpt-4o",
+    "tag": "ok",
+    "flags": {
+      "ours": 0,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 1,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "nan_as_zero_sum",
+    "cond": "clarified",
+    "model": "claude-sonnet-4.6",
+    "tag": "ok",
+    "flags": {
+      "ours": 0,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 0,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "median_not_mean",
+    "cond": "clarified",
+    "model": "gpt-4o",
+    "tag": "SILENT",
+    "flags": {
+      "ours": 1,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 1,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "median_not_mean",
+    "cond": "clarified",
+    "model": "claude-sonnet-4.6",
+    "tag": "SILENT",
+    "flags": {
+      "ours": 1,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 0,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "nan_as_zero_sum",
+    "cond": "ambiguous",
+    "model": "gpt-4o",
+    "tag": "ok",
+    "flags": {
+      "ours": 0,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 1,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "nan_as_zero_sum",
+    "cond": "ambiguous",
+    "model": "claude-sonnet-4.6",
+    "tag": "ok",
+    "flags": {
+      "ours": 0,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 0,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "nan_as_zero_sum",
+    "cond": "clarified",
+    "model": "gpt-4o",
+    "tag": "SILENT",
+    "flags": {
+      "ours": 1,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 1,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "nan_as_zero_sum",
+    "cond": "clarified",
+    "model": "claude-sonnet-4.6",
+    "tag": "SILENT",
+    "flags": {
+      "ours": 1,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 1,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "median_not_mean",
+    "cond": "clarified",
+    "model": "gpt-4o",
+    "tag": "ok",
+    "flags": {
+      "ours": 0,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 1,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "median_not_mean",
+    "cond": "clarified",
+    "model": "claude-sonnet-4.6",
+    "tag": "SILENT",
+    "flags": {
+      "ours": 1,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 0,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "nan_as_zero_sum",
+    "cond": "ambiguous",
+    "model": "gpt-4o",
+    "tag": "ok",
+    "flags": {
+      "ours": 0,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 1,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "nan_as_zero_sum",
+    "cond": "ambiguous",
+    "model": "claude-sonnet-4.6",
+    "tag": "ok",
+    "flags": {
+      "ours": 0,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 1,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "nan_as_zero_sum",
+    "cond": "clarified",
+    "model": "claude-sonnet-4.6",
+    "tag": "SILENT",
+    "flags": {
+      "ours": 1,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 0,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "median_not_mean",
+    "cond": "clarified",
+    "model": "gpt-4o",
+    "tag": "SILENT",
+    "flags": {
+      "ours": 1,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 0,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "median_not_mean",
+    "cond": "clarified",
+    "model": "claude-sonnet-4.6",
+    "tag": "SILENT",
+    "flags": {
+      "ours": 1,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 0,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "within_group_share",
+    "cond": "ambiguous",
+    "model": "gpt-4o",
+    "tag": "SILENT",
+    "flags": {
+      "ours": 1,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 1,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "within_group_share",
+    "cond": "ambiguous",
+    "model": "claude-sonnet-4.6",
+    "tag": "SILENT",
+    "flags": {
+      "ours": 1,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 0,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "within_group_share",
+    "cond": "clarified",
+    "model": "gpt-4o",
+    "tag": "ok",
+    "flags": {
+      "ours": 0,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 1,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "within_group_share",
+    "cond": "clarified",
+    "model": "claude-sonnet-4.6",
+    "tag": "ok",
+    "flags": {
+      "ours": 0,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 0,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "nan_as_zero_sum",
+    "cond": "ambiguous",
+    "model": "claude-sonnet-4.6",
+    "tag": "SILENT",
+    "flags": {
+      "ours": 1,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 0,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "nan_as_zero_sum",
+    "cond": "clarified",
+    "model": "claude-sonnet-4.6",
+    "tag": "SILENT",
+    "flags": {
+      "ours": 1,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 0,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "median_not_mean",
+    "cond": "clarified",
+    "model": "gpt-4o",
+    "tag": "SILENT",
+    "flags": {
+      "ours": 1,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 1,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "median_not_mean",
+    "cond": "clarified",
+    "model": "claude-sonnet-4.6",
+    "tag": "SILENT",
+    "flags": {
+      "ours": 1,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 0,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "within_group_share",
+    "cond": "ambiguous",
+    "model": "gpt-4o",
+    "tag": "SILENT",
+    "flags": {
+      "ours": 1,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 0,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "within_group_share",
+    "cond": "ambiguous",
+    "model": "claude-sonnet-4.6",
+    "tag": "SILENT",
+    "flags": {
+      "ours": 1,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 0,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "within_group_share",
+    "cond": "clarified",
+    "model": "gpt-4o",
+    "tag": "ok",
+    "flags": {
+      "ours": 0,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 1,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "within_group_share",
+    "cond": "clarified",
+    "model": "claude-sonnet-4.6",
+    "tag": "ok",
+    "flags": {
+      "ours": 0,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 0,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "nan_as_zero_sum",
+    "cond": "ambiguous",
+    "model": "claude-sonnet-4.6",
+    "tag": "ok",
+    "flags": {
+      "ours": 0,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 1,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "nan_as_zero_sum",
+    "cond": "clarified",
+    "model": "claude-sonnet-4.6",
+    "tag": "SILENT",
+    "flags": {
+      "ours": 1,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 0,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "median_not_mean",
+    "cond": "clarified",
+    "model": "gpt-4o",
+    "tag": "ok",
+    "flags": {
+      "ours": 0,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 1,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "median_not_mean",
+    "cond": "clarified",
+    "model": "claude-sonnet-4.6",
+    "tag": "SILENT",
+    "flags": {
+      "ours": 1,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 1,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "within_group_share",
+    "cond": "ambiguous",
+    "model": "gpt-4o",
+    "tag": "SILENT",
+    "flags": {
+      "ours": 1,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 1,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "within_group_share",
+    "cond": "ambiguous",
+    "model": "claude-sonnet-4.6",
+    "tag": "SILENT",
+    "flags": {
+      "ours": 1,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 0,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "within_group_share",
+    "cond": "clarified",
+    "model": "gpt-4o",
+    "tag": "ok",
+    "flags": {
+      "ours": 0,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 1,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "within_group_share",
+    "cond": "clarified",
+    "model": "claude-sonnet-4.6",
+    "tag": "ok",
+    "flags": {
+      "ours": 0,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 0,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "nan_as_zero_sum",
+    "cond": "ambiguous",
+    "model": "gpt-4o",
+    "tag": "SILENT",
+    "flags": {
+      "ours": 1,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 1,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "nan_as_zero_sum",
+    "cond": "ambiguous",
+    "model": "claude-sonnet-4.6",
+    "tag": "SILENT",
+    "flags": {
+      "ours": 1,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 0,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "nan_as_zero_sum",
+    "cond": "clarified",
+    "model": "gpt-4o",
+    "tag": "SILENT",
+    "flags": {
+      "ours": 1,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 1,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "nan_as_zero_sum",
+    "cond": "clarified",
+    "model": "claude-sonnet-4.6",
+    "tag": "SILENT",
+    "flags": {
+      "ours": 1,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 0,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "median_not_mean",
+    "cond": "clarified",
+    "model": "gpt-4o",
+    "tag": "SILENT",
+    "flags": {
+      "ours": 1,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 0,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "median_not_mean",
+    "cond": "clarified",
+    "model": "claude-sonnet-4.6",
+    "tag": "SILENT",
+    "flags": {
+      "ours": 1,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 0,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "pooled_rate",
+    "cond": "clarified",
+    "model": "gpt-4o",
+    "tag": "SILENT",
+    "flags": {
+      "ours": 1,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 1,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "pooled_rate",
+    "cond": "clarified",
+    "model": "claude-sonnet-4.6",
+    "tag": "ok",
+    "flags": {
+      "ours": 0,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 0,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "median_not_mean",
+    "cond": "ambiguous",
+    "model": "gpt-4o",
+    "tag": "SILENT",
+    "flags": {
+      "ours": 1,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 1,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "median_not_mean",
+    "cond": "ambiguous",
+    "model": "claude-sonnet-4.6",
+    "tag": "SILENT",
+    "flags": {
+      "ours": 1,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 1,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "median_not_mean",
+    "cond": "clarified",
+    "model": "gpt-4o",
+    "tag": "ok",
+    "flags": {
+      "ours": 0,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 1,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "median_not_mean",
+    "cond": "clarified",
+    "model": "claude-sonnet-4.6",
+    "tag": "ok",
+    "flags": {
+      "ours": 0,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 1,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "within_group_share",
+    "cond": "ambiguous",
+    "model": "gpt-4o",
+    "tag": "SILENT",
+    "flags": {
+      "ours": 1,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 1,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "within_group_share",
+    "cond": "ambiguous",
+    "model": "claude-sonnet-4.6",
+    "tag": "SILENT",
+    "flags": {
+      "ours": 1,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 1,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "within_group_share",
+    "cond": "clarified",
+    "model": "gpt-4o",
+    "tag": "ok",
+    "flags": {
+      "ours": 0,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 1,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "within_group_share",
+    "cond": "clarified",
+    "model": "claude-sonnet-4.6",
+    "tag": "ok",
+    "flags": {
+      "ours": 0,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 0,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "nan_as_zero_sum",
+    "cond": "ambiguous",
+    "model": "gpt-4o",
+    "tag": "ok",
+    "flags": {
+      "ours": 0,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 1,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "nan_as_zero_sum",
+    "cond": "ambiguous",
+    "model": "claude-sonnet-4.6",
+    "tag": "ok",
+    "flags": {
+      "ours": 0,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 1,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "nan_as_zero_sum",
+    "cond": "clarified",
+    "model": "gpt-4o",
+    "tag": "ok",
+    "flags": {
+      "ours": 0,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 1,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "nan_as_zero_sum",
+    "cond": "clarified",
+    "model": "claude-sonnet-4.6",
+    "tag": "ok",
+    "flags": {
+      "ours": 0,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 1,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "median_not_mean",
+    "cond": "ambiguous",
+    "model": "gpt-4o",
+    "tag": "SILENT",
+    "flags": {
+      "ours": 1,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 0,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "median_not_mean",
+    "cond": "ambiguous",
+    "model": "claude-sonnet-4.6",
+    "tag": "SILENT",
+    "flags": {
+      "ours": 1,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 0,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "median_not_mean",
+    "cond": "clarified",
+    "model": "gpt-4o",
+    "tag": "ok",
+    "flags": {
+      "ours": 0,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 1,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "median_not_mean",
+    "cond": "clarified",
+    "model": "claude-sonnet-4.6",
+    "tag": "ok",
+    "flags": {
+      "ours": 0,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 1,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "within_group_share",
+    "cond": "ambiguous",
+    "model": "gpt-4o",
+    "tag": "SILENT",
+    "flags": {
+      "ours": 1,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 1,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "within_group_share",
+    "cond": "ambiguous",
+    "model": "claude-sonnet-4.6",
+    "tag": "SILENT",
+    "flags": {
+      "ours": 1,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 1,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "within_group_share",
+    "cond": "clarified",
+    "model": "gpt-4o",
+    "tag": "ok",
+    "flags": {
+      "ours": 0,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 1,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "within_group_share",
+    "cond": "clarified",
+    "model": "claude-sonnet-4.6",
+    "tag": "ok",
+    "flags": {
+      "ours": 0,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 0,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "nan_as_zero_sum",
+    "cond": "ambiguous",
+    "model": "gpt-4o",
+    "tag": "ok",
+    "flags": {
+      "ours": 0,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 1,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "nan_as_zero_sum",
+    "cond": "ambiguous",
+    "model": "claude-sonnet-4.6",
+    "tag": "ok",
+    "flags": {
+      "ours": 0,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 0,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "nan_as_zero_sum",
+    "cond": "clarified",
+    "model": "gpt-4o",
+    "tag": "ok",
+    "flags": {
+      "ours": 0,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 1,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "nan_as_zero_sum",
+    "cond": "clarified",
+    "model": "claude-sonnet-4.6",
+    "tag": "ok",
+    "flags": {
+      "ours": 0,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 0,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "median_not_mean",
+    "cond": "ambiguous",
+    "model": "gpt-4o",
+    "tag": "SILENT",
+    "flags": {
+      "ours": 1,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 1,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "median_not_mean",
+    "cond": "ambiguous",
+    "model": "claude-sonnet-4.6",
+    "tag": "SILENT",
+    "flags": {
+      "ours": 1,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 1,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "median_not_mean",
+    "cond": "clarified",
+    "model": "gpt-4o",
+    "tag": "ok",
+    "flags": {
+      "ours": 0,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 1,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "median_not_mean",
+    "cond": "clarified",
+    "model": "claude-sonnet-4.6",
+    "tag": "ok",
+    "flags": {
+      "ours": 0,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 0,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "within_group_share",
+    "cond": "ambiguous",
+    "model": "gpt-4o",
+    "tag": "SILENT",
+    "flags": {
+      "ours": 1,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 1,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "within_group_share",
+    "cond": "ambiguous",
+    "model": "claude-sonnet-4.6",
+    "tag": "SILENT",
+    "flags": {
+      "ours": 1,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 0,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "within_group_share",
+    "cond": "clarified",
+    "model": "gpt-4o",
+    "tag": "ok",
+    "flags": {
+      "ours": 0,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 1,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "within_group_share",
+    "cond": "clarified",
+    "model": "claude-sonnet-4.6",
+    "tag": "ok",
+    "flags": {
+      "ours": 0,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 0,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "nan_as_zero_sum",
+    "cond": "ambiguous",
+    "model": "gpt-4o",
+    "tag": "ok",
+    "flags": {
+      "ours": 0,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 1,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "nan_as_zero_sum",
+    "cond": "ambiguous",
+    "model": "claude-sonnet-4.6",
+    "tag": "ok",
+    "flags": {
+      "ours": 0,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 0,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "nan_as_zero_sum",
+    "cond": "clarified",
+    "model": "gpt-4o",
+    "tag": "ok",
+    "flags": {
+      "ours": 0,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 1,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "nan_as_zero_sum",
+    "cond": "clarified",
+    "model": "claude-sonnet-4.6",
+    "tag": "ok",
+    "flags": {
+      "ours": 0,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 0,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "median_not_mean",
+    "cond": "ambiguous",
+    "model": "gpt-4o",
+    "tag": "SILENT",
+    "flags": {
+      "ours": 1,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 1,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "median_not_mean",
+    "cond": "ambiguous",
+    "model": "claude-sonnet-4.6",
+    "tag": "ok",
+    "flags": {
+      "ours": 0,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 0,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "median_not_mean",
+    "cond": "clarified",
+    "model": "gpt-4o",
+    "tag": "ok",
+    "flags": {
+      "ours": 0,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 1,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "median_not_mean",
+    "cond": "clarified",
+    "model": "claude-sonnet-4.6",
+    "tag": "SILENT",
+    "flags": {
+      "ours": 1,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 0,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "within_group_share",
+    "cond": "ambiguous",
+    "model": "gpt-4o",
+    "tag": "SILENT",
+    "flags": {
+      "ours": 1,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 1,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "within_group_share",
+    "cond": "ambiguous",
+    "model": "claude-sonnet-4.6",
+    "tag": "SILENT",
+    "flags": {
+      "ours": 1,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 0,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "within_group_share",
+    "cond": "clarified",
+    "model": "gpt-4o",
+    "tag": "ok",
+    "flags": {
+      "ours": 0,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 0,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "within_group_share",
+    "cond": "clarified",
+    "model": "claude-sonnet-4.6",
+    "tag": "ok",
+    "flags": {
+      "ours": 0,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 0,
+      "consistency": 0
+    }
+  },
+  {
+    "op": "nan_as_zero_sum",
+    "cond": "ambiguous",
+    "model": "gpt-4o",
+    "tag": "ok",
+    "flags": {
+      "ours": 0,
+      "exec_pass": 0,
+      "validity": 0,
+      "self_check": 1,
+      "consistency": 0
+    }
+  }
+]
