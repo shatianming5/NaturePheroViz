@@ -1,0 +1,3422 @@
+{
+  "offline": false,
+  "aggregate": {
+    "generic": {
+      "n": 65.0,
+      "success": 12.0,
+      "rounds": 105.0,
+      "calls": 105.0,
+      "over_a": 0.0,
+      "over_b": 0.0,
+      "malformed": 2.0,
+      "stop_malformed": 2.0,
+      "stop_fixpoint": 48.0,
+      "stop_budget": 15.0
+    },
+    "selfdebug": {
+      "n": 65.0,
+      "success": 8.0,
+      "rounds": 90.0,
+      "calls": 90.0,
+      "over_a": 0.0,
+      "over_b": 0.0,
+      "malformed": 1.0,
+      "stop_fixpoint": 60.0,
+      "stop_malformed": 1.0,
+      "stop_budget": 4.0
+    },
+    "localize": {
+      "n": 65.0,
+      "success": 34.0,
+      "rounds": 107.0,
+      "calls": 107.0,
+      "over_a": 0.0,
+      "over_b": 0.0,
+      "malformed": 0.0,
+      "stop_contract_pass": 45.0,
+      "stop_budget": 20.0
+    },
+    "targeted": {
+      "n": 65.0,
+      "success": 49.0,
+      "rounds": 70.0,
+      "calls": 70.0,
+      "over_a": 2.0,
+      "over_b": 0.0,
+      "malformed": 0.0,
+      "stop_contract_pass": 64.0,
+      "stop_budget": 1.0
+    },
+    "ceiling": {
+      "n": 65.0,
+      "success": 60.0,
+      "rounds": 73.0,
+      "calls": 73.0,
+      "over_a": 4.0,
+      "over_b": 0.0,
+      "malformed": 1.0,
+      "stop_gold_match": 60.0,
+      "stop_malformed": 1.0,
+      "stop_budget": 4.0
+    }
+  },
+  "per_family": {
+    "generic": {
+      "weighted_mean": [
+        0,
+        3
+      ],
+      "within_group_share": [
+        5,
+        5
+      ],
+      "pct_point": [
+        0,
+        11
+      ],
+      "dedup_then_agg": [
+        0,
+        12
+      ],
+      "median_not_mean": [
+        1,
+        2
+      ],
+      "topn_with_ties": [
+        0,
+        12
+      ],
+      "zscore_within_group": [
+        4,
+        12
+      ],
+      "dense_rank": [
+        2,
+        8
+      ]
+    },
+    "selfdebug": {
+      "weighted_mean": [
+        2,
+        3
+      ],
+      "within_group_share": [
+        2,
+        5
+      ],
+      "pct_point": [
+        0,
+        11
+      ],
+      "dedup_then_agg": [
+        0,
+        12
+      ],
+      "median_not_mean": [
+        2,
+        2
+      ],
+      "topn_with_ties": [
+        0,
+        12
+      ],
+      "zscore_within_group": [
+        2,
+        12
+      ],
+      "dense_rank": [
+        0,
+        8
+      ]
+    },
+    "localize": {
+      "weighted_mean": [
+        3,
+        3
+      ],
+      "within_group_share": [
+        5,
+        5
+      ],
+      "pct_point": [
+        4,
+        11
+      ],
+      "dedup_then_agg": [
+        4,
+        12
+      ],
+      "median_not_mean": [
+        2,
+        2
+      ],
+      "topn_with_ties": [
+        8,
+        12
+      ],
+      "zscore_within_group": [
+        5,
+        12
+      ],
+      "dense_rank": [
+        3,
+        8
+      ]
+    },
+    "targeted": {
+      "weighted_mean": [
+        3,
+        3
+      ],
+      "within_group_share": [
+        5,
+        5
+      ],
+      "pct_point": [
+        11,
+        11
+      ],
+      "dedup_then_agg": [
+        11,
+        12
+      ],
+      "median_not_mean": [
+        2,
+        2
+      ],
+      "topn_with_ties": [
+        12,
+        12
+      ],
+      "zscore_within_group": [
+        2,
+        12
+      ],
+      "dense_rank": [
+        3,
+        8
+      ]
+    },
+    "ceiling": {
+      "weighted_mean": [
+        2,
+        3
+      ],
+      "within_group_share": [
+        5,
+        5
+      ],
+      "pct_point": [
+        11,
+        11
+      ],
+      "dedup_then_agg": [
+        9,
+        12
+      ],
+      "median_not_mean": [
+        2,
+        2
+      ],
+      "topn_with_ties": [
+        12,
+        12
+      ],
+      "zscore_within_group": [
+        11,
+        12
+      ],
+      "dense_rank": [
+        8,
+        8
+      ]
+    }
+  },
+  "cases": [
+    {
+      "case": "weighted_mean#1",
+      "model": "gpt-5.4",
+      "generic": {
+        "success": false,
+        "rounds": 1,
+        "calls": 1,
+        "over_repair_a": 0,
+        "over_repair_b": false,
+        "stop_reason": "malformed",
+        "n_malformed": 1
+      },
+      "selfdebug": {
+        "success": false,
+        "rounds": 3,
+        "calls": 3,
+        "over_repair_a": 0,
+        "over_repair_b": false,
+        "stop_reason": "fixpoint",
+        "n_malformed": 0
+      },
+      "localize": {
+        "success": true,
+        "rounds": 1,
+        "calls": 1,
+        "over_repair_a": 0,
+        "over_repair_b": false,
+        "stop_reason": "contract_pass",
+        "n_malformed": 0
+      },
+      "targeted": {
+        "success": true,
+        "rounds": 1,
+        "calls": 1,
+        "over_repair_a": 0,
+        "over_repair_b": false,
+        "stop_reason": "contract_pass",
+        "n_malformed": 0
+      },
+      "ceiling": {
+        "success": true,
+        "rounds": 1,
+        "calls": 1,
+        "over_repair_a": 0,
+        "over_repair_b": false,
+        "stop_reason": "gold_match",
+        "n_malformed": 0
+      }
+    },
+    {
+      "case": "weighted_mean#2",
+      "model": "gpt-5.4",
+      "generic": {
+        "success": false,
+        "rounds": 1,
+        "calls": 1,
+        "over_repair_a": 0,
+        "over_repair_b": false,
+        "stop_reason": "malformed",
+        "n_malformed": 1
+      },
+      "selfdebug": {
+        "success": true,
+        "rounds": 2,
+        "calls": 2,
+        "over_repair_a": 0,
+        "over_repair_b": false,
+        "stop_reason": "malformed",
+        "n_malformed": 1
+      },
+      "localize": {
+        "success": true,
+        "rounds": 1,
+        "calls": 1,
+        "over_repair_a": 0,
+        "over_repair_b": false,
+        "stop_reason": "contract_pass",
+        "n_malformed": 0
+      },
+      "targeted": {
+        "success": true,
+        "rounds": 1,
+        "calls": 1,
+        "over_repair_a": 0,
+        "over_repair_b": false,
+        "stop_reason": "contract_pass",
+        "n_malformed": 0
+      },
+      "ceiling": {
+        "success": false,
+        "rounds": 1,
+        "calls": 1,
+        "over_repair_a": 0,
+        "over_repair_b": false,
+        "stop_reason": "malformed",
+        "n_malformed": 1
+      }
+    },
+    {
+      "case": "weighted_mean#3",
+      "model": "gpt-5.4",
+      "generic": {
+        "success": false,
+        "rounds": 1,
+        "calls": 1,
+        "over_repair_a": 0,
+        "over_repair_b": false,
+        "stop_reason": "fixpoint",
+        "n_malformed": 0
+      },
+      "selfdebug": {
+        "success": true,
+        "rounds": 2,
+        "calls": 2,
+        "over_repair_a": 0,
+        "over_repair_b": false,
+        "stop_reason": "fixpoint",
+        "n_malformed": 0
+      },
+      "localize": {
+        "success": true,
+        "rounds": 1,
+        "calls": 1,
+        "over_repair_a": 0,
+        "over_repair_b": false,
+        "stop_reason": "contract_pass",
+        "n_malformed": 0
+      },
+      "targeted": {
+        "success": true,
+        "rounds": 1,
+        "calls": 1,
+        "over_repair_a": 0,
+        "over_repair_b": false,
+        "stop_reason": "contract_pass",
+        "n_malformed": 0
+      },
+      "ceiling": {
+        "success": true,
+        "rounds": 1,
+        "calls": 1,
+        "over_repair_a": 0,
+        "over_repair_b": false,
+        "stop_reason": "gold_match",
+        "n_malformed": 0
+      }
+    },
+    {
+      "case": "within_group_share#1",
+      "model": "gemini-3.1-pro-preview",
+      "generic": {
+        "success": true,
+        "rounds": 3,
+        "calls": 3,
+        "over_repair_a": 0,
+        "over_repair_b": false,
+        "stop_reason": "budget",
+        "n_malformed": 0
+      },
+      "selfdebug": {
+        "success": true,
+        "rounds": 2,
+        "calls": 2,
+        "over_repair_a": 0,
+        "over_repair_b": false,
+        "stop_reason": "fixpoint",
+        "n_malformed": 0
+      },
+      "localize": {
+        "success": true,
+        "rounds": 1,
+        "calls": 1,
+        "over_repair_a": 0,
+        "over_repair_b": false,
+        "stop_reason": "contract_pass",
+        "n_malformed": 0
+      },
+      "targeted": {
+        "success": true,
+        "rounds": 1,
+        "calls": 1,
+        "over_repair_a": 0,
+        "over_repair_b": false,
+        "stop_reason": "contract_pass",
+        "n_malformed": 0
+      },
+      "ceiling": {
+        "success": true,
+        "rounds": 1,
+        "calls": 1,
+        "over_repair_a": 0,
+        "over_repair_b": false,
+        "stop_reason": "gold_match",
+        "n_malformed": 0
+      }
+    },
+    {
+      "case": "within_group_share#2",
+      "model": "gpt-5.5",
+      "generic": {
+        "success": true,
+        "rounds": 3,
+        "calls": 3,
+        "over_repair_a": 0,
+        "over_repair_b": false,
+        "stop_reason": "budget",
+        "n_malformed": 0
+      },
+      "selfdebug": {
+        "success": false,
+        "rounds": 1,
+        "calls": 1,
+        "over_repair_a": 0,
+        "over_repair_b": false,
+        "stop_reason": "fixpoint",
+        "n_malformed": 0
+      },
+      "localize": {
+        "success": true,
+        "rounds": 1,
+        "calls": 1,
+        "over_repair_a": 0,
+        "over_repair_b": false,
+        "stop_reason": "contract_pass",
+        "n_malformed": 0
+      },
+      "targeted": {
+        "success": true,
+        "rounds": 1,
+        "calls": 1,
+        "over_repair_a": 0,
+        "over_repair_b": false,
+        "stop_reason": "contract_pass",
+        "n_malformed": 0
+      },
+      "ceiling": {
+        "success": true,
+        "rounds": 1,
+        "calls": 1,
+        "over_repair_a": 0,
+        "over_repair_b": false,
+        "stop_reason": "gold_match",
+        "n_malformed": 0
+      }
+    },
+    {
+      "case": "within_group_share#2",
+      "model": "gemini-3.1-pro-preview",
+      "generic": {
+        "success": true,
+        "rounds": 3,
+        "calls": 3,
+        "over_repair_a": 0,
+        "over_repair_b": false,
+        "stop_reason": "budget",
+        "n_malformed": 0
+      },
+      "selfdebug": {
+        "success": false,
+        "rounds": 1,
+        "calls": 1,
+        "over_repair_a": 0,
+        "over_repair_b": false,
+        "stop_reason": "fixpoint",
+        "n_malformed": 0
+      },
+      "localize": {
+        "success": true,
+        "rounds": 1,
+        "calls": 1,
+        "over_repair_a": 0,
+        "over_repair_b": false,
+        "stop_reason": "contract_pass",
+        "n_malformed": 0
+      },
+      "targeted": {
+        "success": true,
+        "rounds": 1,
+        "calls": 1,
+        "over_repair_a": 0,
+        "over_repair_b": false,
+        "stop_reason": "contract_pass",
+        "n_malformed": 0
+      },
+      "ceiling": {
+        "success": true,
+        "rounds": 1,
+        "calls": 1,
+        "over_repair_a": 0,
+        "over_repair_b": false,
+        "stop_reason": "gold_match",
+        "n_malformed": 0
+      }
+    },
+    {
+      "case": "within_group_share#3",
+      "model": "gpt-5.5",
+      "generic": {
+        "success": true,
+        "rounds": 3,
+        "calls": 3,
+        "over_repair_a": 0,
+        "over_repair_b": false,
+        "stop_reason": "budget",
+        "n_malformed": 0
+      },
+      "selfdebug": {
+        "success": true,
+        "rounds": 3,
+        "calls": 3,
+        "over_repair_a": 0,
+        "over_repair_b": false,
+        "stop_reason": "budget",
+        "n_malformed": 0
+      },
+      "localize": {
+        "success": true,
+        "rounds": 1,
+        "calls": 1,
+        "over_repair_a": 0,
+        "over_repair_b": false,
+        "stop_reason": "contract_pass",
+        "n_malformed": 0
+      },
+      "targeted": {
+        "success": true,
+        "rounds": 1,
+        "calls": 1,
+        "over_repair_a": 0,
+        "over_repair_b": false,
+        "stop_reason": "contract_pass",
+        "n_malformed": 0
+      },
+      "ceiling": {
+        "success": true,
+        "rounds": 1,
+        "calls": 1,
+        "over_repair_a": 0,
+        "over_repair_b": false,
+        "stop_reason": "gold_match",
+        "n_malformed": 0
+      }
+    },
+    {
+      "case": "within_group_share#3",
+      "model": "gemini-3.1-pro-preview",
+      "generic": {
+        "success": true,
+        "rounds": 3,
+        "calls": 3,
+        "over_repair_a": 0,
+        "over_repair_b": false,
+        "stop_reason": "budget",
+        "n_malformed": 0
+      },
+      "selfdebug": {
+        "success": false,
+        "rounds": 3,
+        "calls": 3,
+        "over_repair_a": 0,
+        "over_repair_b": false,
+        "stop_reason": "fixpoint",
+        "n_malformed": 0
+      },
+      "localize": {
+        "success": true,
+        "rounds": 1,
+        "calls": 1,
+        "over_repair_a": 0,
+        "over_repair_b": false,
+        "stop_reason": "contract_pass",
+        "n_malformed": 0
+      },
+      "targeted": {
+        "success": true,
+        "rounds": 1,
+        "calls": 1,
+        "over_repair_a": 0,
+        "over_repair_b": false,
+        "stop_reason": "contract_pass",
+        "n_malformed": 0
+      },
+      "ceiling": {
+        "success": true,
+        "rounds": 1,
+        "calls": 1,
+        "over_repair_a": 0,
+        "over_repair_b": false,
+        "stop_reason": "gold_match",
+        "n_malformed": 0
+      }
+    },
+    {
+      "case": "pct_point#1",
+      "model": "gpt-5.4",
+      "generic": {
+        "success": false,
+        "rounds": 1,
+        "calls": 1,
+        "over_repair_a": 0,
+        "over_repair_b": false,
+        "stop_reason": "fixpoint",
+        "n_malformed": 0
+      },
+      "selfdebug": {
+        "success": false,
+        "rounds": 1,
+        "calls": 1,
+        "over_repair_a": 0,
+        "over_repair_b": false,
+        "stop_reason": "fixpoint",
+        "n_malformed": 0
+      },
+      "localize": {
+        "success": false,
+        "rounds": 3,
+        "calls": 3,
+        "over_repair_a": 0,
+        "over_repair_b": false,
+        "stop_reason": "budget",
+        "n_malformed": 0
+      },
+      "targeted": {
+        "success": true,
+        "rounds": 1,
+        "calls": 1,
+        "over_repair_a": 0,
+        "over_repair_b": false,
+        "stop_reason": "contract_pass",
+        "n_malformed": 0
+      },
+      "ceiling": {
+        "success": true,
+        "rounds": 1,
+        "calls": 1,
+        "over_repair_a": 0,
+        "over_repair_b": false,
+        "stop_reason": "gold_match",
+        "n_malformed": 0
+      }
+    },
+    {
+      "case": "pct_point#1",
+      "model": "gpt-5.5",
+      "generic": {
+        "success": false,
+        "rounds": 1,
+        "calls": 1,
+        "over_repair_a": 0,
+        "over_repair_b": false,
+        "stop_reason": "fixpoint",
+        "n_malformed": 0
+      },
+      "selfdebug": {
+        "success": false,
+        "rounds": 1,
+        "calls": 1,
+        "over_repair_a": 0,
+        "over_repair_b": false,
+        "stop_reason": "fixpoint",
+        "n_malformed": 0
+      },
+      "localize": {
+        "success": false,
+        "rounds": 3,
+        "calls": 3,
+        "over_repair_a": 0,
+        "over_repair_b": false,
+        "stop_reason": "budget",
+        "n_malformed": 0
+      },
+      "targeted": {
+        "success": true,
+        "rounds": 1,
+        "calls": 1,
+        "over_repair_a": 0,
+        "over_repair_b": false,
+        "stop_reason": "contract_pass",
+        "n_malformed": 0
+      },
+      "ceiling": {
+        "success": true,
+        "rounds": 1,
+        "calls": 1,
+        "over_repair_a": 0,
+        "over_repair_b": false,
+        "stop_reason": "gold_match",
+        "n_malformed": 0
+      }
+    },
+    {
+      "case": "pct_point#1",
+      "model": "gpt-5.3-codex",
+      "generic": {
+        "success": false,
+        "rounds": 1,
+        "calls": 1,
+        "over_repair_a": 0,
+        "over_repair_b": false,
+        "stop_reason": "fixpoint",
+        "n_malformed": 0
+      },
+      "selfdebug": {
+        "success": false,
+        "rounds": 1,
+        "calls": 1,
+        "over_repair_a": 0,
+        "over_repair_b": false,
+        "stop_reason": "fixpoint",
+        "n_malformed": 0
+      },
+      "localize": {
+        "success": false,
+        "rounds": 3,
+        "calls": 3,
+        "over_repair_a": 0,
+        "over_repair_b": false,
+        "stop_reason": "budget",
+        "n_malformed": 0
+      },
+      "targeted": {
+        "success": true,
+        "rounds": 1,
+        "calls": 1,
+        "over_repair_a": 0,
+        "over_repair_b": false,
+        "stop_reason": "contract_pass",
+        "n_malformed": 0
+      },
+      "ceiling": {
+        "success": true,
+        "rounds": 1,
+        "calls": 1,
+        "over_repair_a": 0,
+        "over_repair_b": false,
+        "stop_reason": "gold_match",
+        "n_malformed": 0
+      }
+    },
+    {
+      "case": "pct_point#1",
+      "model": "gemini-3.1-pro-preview",
+      "generic": {
+        "success": false,
+        "rounds": 1,
+        "calls": 1,
+        "over_repair_a": 0,
+        "over_repair_b": false,
+        "stop_reason": "fixpoint",
+        "n_malformed": 0
+      },
+      "selfdebug": {
+        "success": false,
+        "rounds": 1,
+        "calls": 1,
+        "over_repair_a": 0,
+        "over_repair_b": false,
+        "stop_reason": "fixpoint",
+        "n_malformed": 0
+      },
+      "localize": {
+        "success": false,
+        "rounds": 3,
+        "calls": 3,
+        "over_repair_a": 0,
+        "over_repair_b": false,
+        "stop_reason": "budget",
+        "n_malformed": 0
+      },
+      "targeted": {
+        "success": true,
+        "rounds": 1,
+        "calls": 1,
+        "over_repair_a": 0,
+        "over_repair_b": false,
+        "stop_reason": "contract_pass",
+        "n_malformed": 0
+      },
+      "ceiling": {
+        "success": true,
+        "rounds": 1,
+        "calls": 1,
+        "over_repair_a": 0,
+        "over_repair_b": false,
+        "stop_reason": "gold_match",
+        "n_malformed": 0
+      }
+    },
+    {
+      "case": "pct_point#2",
+      "model": "gpt-5.4",
+      "generic": {
+        "success": false,
+        "rounds": 1,
+        "calls": 1,
+        "over_repair_a": 0,
+        "over_repair_b": false,
+        "stop_reason": "fixpoint",
+        "n_malformed": 0
+      },
+      "selfdebug": {
+        "success": false,
+        "rounds": 1,
+        "calls": 1,
+        "over_repair_a": 0,
+        "over_repair_b": false,
+        "stop_reason": "fixpoint",
+        "n_malformed": 0
+      },
+      "localize": {
+        "success": true,
+        "rounds": 2,
+        "calls": 2,
+        "over_repair_a": 0,
+        "over_repair_b": false,
+        "stop_reason": "contract_pass",
+        "n_malformed": 0
+      },
+      "targeted": {
+        "success": true,
+        "rounds": 1,
+        "calls": 1,
+        "over_repair_a": 0,
+        "over_repair_b": false,
+        "stop_reason": "contract_pass",
+        "n_malformed": 0
+      },
+      "ceiling": {
+        "success": true,
+        "rounds": 1,
+        "calls": 1,
+        "over_repair_a": 0,
+        "over_repair_b": false,
+        "stop_reason": "gold_match",
+        "n_malformed": 0
+      }
+    },
+    {
+      "case": "pct_point#2",
+      "model": "gpt-5.5",
+      "generic": {
+        "success": false,
+        "rounds": 1,
+        "calls": 1,
+        "over_repair_a": 0,
+        "over_repair_b": false,
+        "stop_reason": "fixpoint",
+        "n_malformed": 0
+      },
+      "selfdebug": {
+        "success": false,
+        "rounds": 1,
+        "calls": 1,
+        "over_repair_a": 0,
+        "over_repair_b": false,
+        "stop_reason": "fixpoint",
+        "n_malformed": 0
+      },
+      "localize": {
+        "success": true,
+        "rounds": 1,
+        "calls": 1,
+        "over_repair_a": 0,
+        "over_repair_b": false,
+        "stop_reason": "contract_pass",
+        "n_malformed": 0
+      },
+      "targeted": {
+        "success": true,
+        "rounds": 1,
+        "calls": 1,
+        "over_repair_a": 0,
+        "over_repair_b": false,
+        "stop_reason": "contract_pass",
+        "n_malformed": 0
+      },
+      "ceiling": {
+        "success": true,
+        "rounds": 1,
+        "calls": 1,
+        "over_repair_a": 0,
+        "over_repair_b": false,
+        "stop_reason": "gold_match",
+        "n_malformed": 0
+      }
+    },
+    {
+      "case": "pct_point#2",
+      "model": "gpt-5.3-codex",
+      "generic": {
+        "success": false,
+        "rounds": 1,
+        "calls": 1,
+        "over_repair_a": 0,
+        "over_repair_b": false,
+        "stop_reason": "fixpoint",
+        "n_malformed": 0
+      },
+      "selfdebug": {
+        "success": false,
+        "rounds": 1,
+        "calls": 1,
+        "over_repair_a": 0,
+        "over_repair_b": false,
+        "stop_reason": "fixpoint",
+        "n_malformed": 0
+      },
+      "localize": {
+        "success": true,
+        "rounds": 1,
+        "calls": 1,
+        "over_repair_a": 0,
+        "over_repair_b": false,
+        "stop_reason": "contract_pass",
+        "n_malformed": 0
+      },
+      "targeted": {
+        "success": true,
+        "rounds": 1,
+        "calls": 1,
+        "over_repair_a": 0,
+        "over_repair_b": false,
+        "stop_reason": "contract_pass",
+        "n_malformed": 0
+      },
+      "ceiling": {
+        "success": true,
+        "rounds": 1,
+        "calls": 1,
+        "over_repair_a": 0,
+        "over_repair_b": false,
+        "stop_reason": "gold_match",
+        "n_malformed": 0
+      }
+    },
+    {
+      "case": "pct_point#2",
+      "model": "gemini-3.1-pro-preview",
+      "generic": {
+        "success": false,
+        "rounds": 1,
+        "calls": 1,
+        "over_repair_a": 0,
+        "over_repair_b": false,
+        "stop_reason": "fixpoint",
+        "n_malformed": 0
+      },
+      "selfdebug": {
+        "success": false,
+        "rounds": 1,
+        "calls": 1,
+        "over_repair_a": 0,
+        "over_repair_b": false,
+        "stop_reason": "fixpoint",
+        "n_malformed": 0
+      },
+      "localize": {
+        "success": false,
+        "rounds": 3,
+        "calls": 3,
+        "over_repair_a": 0,
+        "over_repair_b": false,
+        "stop_reason": "budget",
+        "n_malformed": 0
+      },
+      "targeted": {
+        "success": true,
+        "rounds": 1,
+        "calls": 1,
+        "over_repair_a": 0,
+        "over_repair_b": false,
+        "stop_reason": "contract_pass",
+        "n_malformed": 0
+      },
+      "ceiling": {
+        "success": true,
+        "rounds": 1,
+        "calls": 1,
+        "over_repair_a": 0,
+        "over_repair_b": false,
+        "stop_reason": "gold_match",
+        "n_malformed": 0
+      }
+    },
+    {
+      "case": "pct_point#3",
+      "model": "gpt-5.5",
+      "generic": {
+        "success": false,
+        "rounds": 3,
+        "calls": 3,
+        "over_repair_a": 0,
+        "over_repair_b": false,
+        "stop_reason": "fixpoint",
+        "n_malformed": 0
+      },
+      "selfdebug": {
+        "success": false,
+        "rounds": 1,
+        "calls": 1,
+        "over_repair_a": 0,
+        "over_repair_b": false,
+        "stop_reason": "fixpoint",
+        "n_malformed": 0
+      },
+      "localize": {
+        "success": true,
+        "rounds": 1,
+        "calls": 1,
+        "over_repair_a": 0,
+        "over_repair_b": false,
+        "stop_reason": "contract_pass",
+        "n_malformed": 0
+      },
+      "targeted": {
+        "success": true,
+        "rounds": 1,
+        "calls": 1,
+        "over_repair_a": 0,
+        "over_repair_b": false,
+        "stop_reason": "contract_pass",
+        "n_malformed": 0
+      },
+      "ceiling": {
+        "success": true,
+        "rounds": 1,
+        "calls": 1,
+        "over_repair_a": 0,
+        "over_repair_b": false,
+        "stop_reason": "gold_match",
+        "n_malformed": 0
+      }
+    },
+    {
+      "case": "pct_point#3",
+      "model": "gpt-5.3-codex",
+      "generic": {
+        "success": false,
+        "rounds": 1,
+        "calls": 1,
+        "over_repair_a": 0,
+        "over_repair_b": false,
+        "stop_reason": "fixpoint",
+        "n_malformed": 0
+      },
+      "selfdebug": {
+        "success": false,
+        "rounds": 1,
+        "calls": 1,
+        "over_repair_a": 0,
+        "over_repair_b": false,
+        "stop_reason": "fixpoint",
+        "n_malformed": 0
+      },
+      "localize": {
+        "success": false,
+        "rounds": 3,
+        "calls": 3,
+        "over_repair_a": 0,
+        "over_repair_b": false,
+        "stop_reason": "budget",
+        "n_malformed": 0
+      },
+      "targeted": {
+        "success": true,
+        "rounds": 1,
+        "calls": 1,
+        "over_repair_a": 0,
+        "over_repair_b": false,
+        "stop_reason": "contract_pass",
+        "n_malformed": 0
+      },
+      "ceiling": {
+        "success": true,
+        "rounds": 1,
+        "calls": 1,
+        "over_repair_a": 0,
+        "over_repair_b": false,
+        "stop_reason": "gold_match",
+        "n_malformed": 0
+      }
+    },
+    {
+      "case": "pct_point#3",
+      "model": "gemini-3.1-pro-preview",
+      "generic": {
+        "success": false,
+        "rounds": 1,
+        "calls": 1,
+        "over_repair_a": 0,
+        "over_repair_b": false,
+        "stop_reason": "fixpoint",
+        "n_malformed": 0
+      },
+      "selfdebug": {
+        "success": false,
+        "rounds": 1,
+        "calls": 1,
+        "over_repair_a": 0,
+        "over_repair_b": false,
+        "stop_reason": "fixpoint",
+        "n_malformed": 0
+      },
+      "localize": {
+        "success": false,
+        "rounds": 3,
+        "calls": 3,
+        "over_repair_a": 0,
+        "over_repair_b": false,
+        "stop_reason": "budget",
+        "n_malformed": 0
+      },
+      "targeted": {
+        "success": true,
+        "rounds": 1,
+        "calls": 1,
+        "over_repair_a": 0,
+        "over_repair_b": false,
+        "stop_reason": "contract_pass",
+        "n_malformed": 0
+      },
+      "ceiling": {
+        "success": true,
+        "rounds": 1,
+        "calls": 1,
+        "over_repair_a": 0,
+        "over_repair_b": false,
+        "stop_reason": "gold_match",
+        "n_malformed": 0
+      }
+    },
+    {
+      "case": "dedup_then_agg#1",
+      "model": "gpt-5.4",
+      "generic": {
+        "success": false,
+        "rounds": 1,
+        "calls": 1,
+        "over_repair_a": 0,
+        "over_repair_b": false,
+        "stop_reason": "fixpoint",
+        "n_malformed": 0
+      },
+      "selfdebug": {
+        "success": false,
+        "rounds": 1,
+        "calls": 1,
+        "over_repair_a": 0,
+        "over_repair_b": false,
+        "stop_reason": "fixpoint",
+        "n_malformed": 0
+      },
+      "localize": {
+        "success": false,
+        "rounds": 3,
+        "calls": 3,
+        "over_repair_a": 0,
+        "over_repair_b": false,
+        "stop_reason": "budget",
+        "n_malformed": 0
+      },
+      "targeted": {
+        "success": true,
+        "rounds": 1,
+        "calls": 1,
+        "over_repair_a": 0,
+        "over_repair_b": false,
+        "stop_reason": "contract_pass",
+        "n_malformed": 0
+      },
+      "ceiling": {
+        "success": true,
+        "rounds": 1,
+        "calls": 1,
+        "over_repair_a": 0,
+        "over_repair_b": false,
+        "stop_reason": "gold_match",
+        "n_malformed": 0
+      }
+    },
+    {
+      "case": "dedup_then_agg#1",
+      "model": "gpt-5.5",
+      "generic": {
+        "success": false,
+        "rounds": 1,
+        "calls": 1,
+        "over_repair_a": 0,
+        "over_repair_b": false,
+        "stop_reason": "fixpoint",
+        "n_malformed": 0
+      },
+      "selfdebug": {
+        "success": false,
+        "rounds": 1,
+        "calls": 1,
+        "over_repair_a": 0,
+        "over_repair_b": false,
+        "stop_reason": "fixpoint",
+        "n_malformed": 0
+      },
+      "localize": {
+        "success": false,
+        "rounds": 3,
+        "calls": 3,
+        "over_repair_a": 0,
+        "over_repair_b": false,
+        "stop_reason": "budget",
+        "n_malformed": 0
+      },
+      "targeted": {
+        "success": true,
+        "rounds": 1,
+        "calls": 1,
+        "over_repair_a": 0,
+        "over_repair_b": false,
+        "stop_reason": "contract_pass",
+        "n_malformed": 0
+      },
+      "ceiling": {
+        "success": true,
+        "rounds": 1,
+        "calls": 1,
+        "over_repair_a": 0,
+        "over_repair_b": false,
+        "stop_reason": "gold_match",
+        "n_malformed": 0
+      }
+    },
+    {
+      "case": "dedup_then_agg#1",
+      "model": "gpt-5.3-codex",
+      "generic": {
+        "success": false,
+        "rounds": 1,
+        "calls": 1,
+        "over_repair_a": 0,
+        "over_repair_b": false,
+        "stop_reason": "fixpoint",
+        "n_malformed": 0
+      },
+      "selfdebug": {
+        "success": false,
+        "rounds": 1,
+        "calls": 1,
+        "over_repair_a": 0,
+        "over_repair_b": false,
+        "stop_reason": "fixpoint",
+        "n_malformed": 0
+      },
+      "localize": {
+        "success": false,
+        "rounds": 3,
+        "calls": 3,
+        "over_repair_a": 0,
+        "over_repair_b": false,
+        "stop_reason": "budget",
+        "n_malformed": 0
+      },
+      "targeted": {
+        "success": true,
+        "rounds": 1,
+        "calls": 1,
+        "over_repair_a": 0,
+        "over_repair_b": false,
+        "stop_reason": "contract_pass",
+        "n_malformed": 0
+      },
+      "ceiling": {
+        "success": true,
+        "rounds": 1,
+        "calls": 1,
+        "over_repair_a": 0,
+        "over_repair_b": false,
+        "stop_reason": "gold_match",
+        "n_malformed": 0
+      }
+    },
+    {
+      "case": "dedup_then_agg#1",
+      "model": "gemini-3.1-pro-preview",
+      "generic": {
+        "success": false,
+        "rounds": 1,
+        "calls": 1,
+        "over_repair_a": 0,
+        "over_repair_b": false,
+        "stop_reason": "fixpoint",
+        "n_malformed": 0
+      },
+      "selfdebug": {
+        "success": false,
+        "rounds": 1,
+        "calls": 1,
+        "over_repair_a": 0,
+        "over_repair_b": false,
+        "stop_reason": "fixpoint",
+        "n_malformed": 0
+      },
+      "localize": {
+        "success": true,
+        "rounds": 1,
+        "calls": 1,
+        "over_repair_a": 0,
+        "over_repair_b": false,
+        "stop_reason": "contract_pass",
+        "n_malformed": 0
+      },
+      "targeted": {
+        "success": true,
+        "rounds": 1,
+        "calls": 1,
+        "over_repair_a": 0,
+        "over_repair_b": false,
+        "stop_reason": "contract_pass",
+        "n_malformed": 0
+      },
+      "ceiling": {
+        "success": true,
+        "rounds": 1,
+        "calls": 1,
+        "over_repair_a": 0,
+        "over_repair_b": false,
+        "stop_reason": "gold_match",
+        "n_malformed": 0
+      }
+    },
+    {
+      "case": "dedup_then_agg#2",
+      "model": "gpt-5.4",
+      "generic": {
+        "success": false,
+        "rounds": 1,
+        "calls": 1,
+        "over_repair_a": 0,
+        "over_repair_b": false,
+        "stop_reason": "fixpoint",
+        "n_malformed": 0
+      },
+      "selfdebug": {
+        "success": false,
+        "rounds": 1,
+        "calls": 1,
+        "over_repair_a": 0,
+        "over_repair_b": false,
+        "stop_reason": "fixpoint",
+        "n_malformed": 0
+      },
+      "localize": {
+        "success": false,
+        "rounds": 3,
+        "calls": 3,
+        "over_repair_a": 0,
+        "over_repair_b": false,
+        "stop_reason": "budget",
+        "n_malformed": 0
+      },
+      "targeted": {
+        "success": false,
+        "rounds": 3,
+        "calls": 3,
+        "over_repair_a": 2,
+        "over_repair_b": false,
+        "stop_reason": "budget",
+        "n_malformed": 0
+      },
+      "ceiling": {
+        "success": true,
+        "rounds": 1,
+        "calls": 1,
+        "over_repair_a": 0,
+        "over_repair_b": false,
+        "stop_reason": "gold_match",
+        "n_malformed": 0
+      }
+    },
+    {
+      "case": "dedup_then_agg#2",
+      "model": "gpt-5.5",
+      "generic": {
+        "success": false,
+        "rounds": 1,
+        "calls": 1,
+        "over_repair_a": 0,
+        "over_repair_b": false,
+        "stop_reason": "fixpoint",
+        "n_malformed": 0
+      },
+      "selfdebug": {
+        "success": false,
+        "rounds": 1,
+        "calls": 1,
+        "over_repair_a": 0,
+        "over_repair_b": false,
+        "stop_reason": "fixpoint",
+        "n_malformed": 0
+      },
+      "localize": {
+        "success": false,
+        "rounds": 3,
+        "calls": 3,
+        "over_repair_a": 0,
+        "over_repair_b": false,
+        "stop_reason": "budget",
+        "n_malformed": 0
+      },
+      "targeted": {
+        "success": true,
+        "rounds": 2,
+        "calls": 2,
+        "over_repair_a": 0,
+        "over_repair_b": false,
+        "stop_reason": "contract_pass",
+        "n_malformed": 0
+      },
+      "ceiling": {
+        "success": false,
+        "rounds": 3,
+        "calls": 3,
+        "over_repair_a": 2,
+        "over_repair_b": false,
+        "stop_reason": "budget",
+        "n_malformed": 0
+      }
+    },
+    {
+      "case": "dedup_then_agg#2",
+      "model": "gpt-5.3-codex",
+      "generic": {
+        "success": false,
+        "rounds": 1,
+        "calls": 1,
+        "over_repair_a": 0,
+        "over_repair_b": false,
+        "stop_reason": "fixpoint",
+        "n_malformed": 0
+      },
+      "selfdebug": {
+        "success": false,
+        "rounds": 1,
+        "calls": 1,
+        "over_repair_a": 0,
+        "over_repair_b": false,
+        "stop_reason": "fixpoint",
+        "n_malformed": 0
+      },
+      "localize": {
+        "success": false,
+        "rounds": 3,
+        "calls": 3,
+        "over_repair_a": 0,
+        "over_repair_b": false,
+        "stop_reason": "budget",
+        "n_malformed": 0
+      },
+      "targeted": {
+        "success": true,
+        "rounds": 3,
+        "calls": 3,
+        "over_repair_a": 0,
+        "over_repair_b": false,
+        "stop_reason": "contract_pass",
+        "n_malformed": 0
+      },
+      "ceiling": {
+        "success": false,
+        "rounds": 3,
+        "calls": 3,
+        "over_repair_a": 2,
+        "over_repair_b": false,
+        "stop_reason": "budget",
+        "n_malformed": 0
+      }
+    },
+    {
+      "case": "dedup_then_agg#2",
+      "model": "gemini-3.1-pro-preview",
+      "generic": {
+        "success": false,
+        "rounds": 1,
+        "calls": 1,
+        "over_repair_a": 0,
+        "over_repair_b": false,
+        "stop_reason": "fixpoint",
+        "n_malformed": 0
+      },
+      "selfdebug": {
+        "success": false,
+        "rounds": 1,
+        "calls": 1,
+        "over_repair_a": 0,
+        "over_repair_b": false,
+        "stop_reason": "fixpoint",
+        "n_malformed": 0
+      },
+      "localize": {
+        "success": true,
+        "rounds": 1,
+        "calls": 1,
+        "over_repair_a": 0,
+        "over_repair_b": false,
+        "stop_reason": "contract_pass",
+        "n_malformed": 0
+      },
+      "targeted": {
+        "success": true,
+        "rounds": 1,
+        "calls": 1,
+        "over_repair_a": 0,
+        "over_repair_b": false,
+        "stop_reason": "contract_pass",
+        "n_malformed": 0
+      },
+      "ceiling": {
+        "success": true,
+        "rounds": 1,
+        "calls": 1,
+        "over_repair_a": 0,
+        "over_repair_b": false,
+        "stop_reason": "gold_match",
+        "n_malformed": 0
+      }
+    },
+    {
+      "case": "dedup_then_agg#3",
+      "model": "gpt-5.4",
+      "generic": {
+        "success": false,
+        "rounds": 1,
+        "calls": 1,
+        "over_repair_a": 0,
+        "over_repair_b": false,
+        "stop_reason": "fixpoint",
+        "n_malformed": 0
+      },
+      "selfdebug": {
+        "success": false,
+        "rounds": 1,
+        "calls": 1,
+        "over_repair_a": 0,
+        "over_repair_b": false,
+        "stop_reason": "fixpoint",
+        "n_malformed": 0
+      },
+      "localize": {
+        "success": false,
+        "rounds": 3,
+        "calls": 3,
+        "over_repair_a": 0,
+        "over_repair_b": false,
+        "stop_reason": "budget",
+        "n_malformed": 0
+      },
+      "targeted": {
+        "success": true,
+        "rounds": 1,
+        "calls": 1,
+        "over_repair_a": 0,
+        "over_repair_b": false,
+        "stop_reason": "contract_pass",
+        "n_malformed": 0
+      },
+      "ceiling": {
+        "success": false,
+        "rounds": 3,
+        "calls": 3,
+        "over_repair_a": 0,
+        "over_repair_b": false,
+        "stop_reason": "budget",
+        "n_malformed": 0
+      }
+    },
+    {
+      "case": "dedup_then_agg#3",
+      "model": "gpt-5.5",
+      "generic": {
+        "success": false,
+        "rounds": 1,
+        "calls": 1,
+        "over_repair_a": 0,
+        "over_repair_b": false,
+        "stop_reason": "fixpoint",
+        "n_malformed": 0
+      },
+      "selfdebug": {
+        "success": false,
+        "rounds": 1,
+        "calls": 1,
+        "over_repair_a": 0,
+        "over_repair_b": false,
+        "stop_reason": "fixpoint",
+        "n_malformed": 0
+      },
+      "localize": {
+        "success": false,
+        "rounds": 3,
+        "calls": 3,
+        "over_repair_a": 0,
+        "over_repair_b": false,
+        "stop_reason": "budget",
+        "n_malformed": 0
+      },
+      "targeted": {
+        "success": true,
+        "rounds": 1,
+        "calls": 1,
+        "over_repair_a": 0,
+        "over_repair_b": false,
+        "stop_reason": "contract_pass",
+        "n_malformed": 0
+      },
+      "ceiling": {
+        "success": true,
+        "rounds": 1,
+        "calls": 1,
+        "over_repair_a": 0,
+        "over_repair_b": false,
+        "stop_reason": "gold_match",
+        "n_malformed": 0
+      }
+    },
+    {
+      "case": "dedup_then_agg#3",
+      "model": "gpt-5.3-codex",
+      "generic": {
+        "success": false,
+        "rounds": 1,
+        "calls": 1,
+        "over_repair_a": 0,
+        "over_repair_b": false,
+        "stop_reason": "fixpoint",
+        "n_malformed": 0
+      },
+      "selfdebug": {
+        "success": false,
+        "rounds": 1,
+        "calls": 1,
+        "over_repair_a": 0,
+        "over_repair_b": false,
+        "stop_reason": "fixpoint",
+        "n_malformed": 0
+      },
+      "localize": {
+        "success": true,
+        "rounds": 2,
+        "calls": 2,
+        "over_repair_a": 0,
+        "over_repair_b": false,
+        "stop_reason": "contract_pass",
+        "n_malformed": 0
+      },
+      "targeted": {
+        "success": true,
+        "rounds": 1,
+        "calls": 1,
+        "over_repair_a": 0,
+        "over_repair_b": false,
+        "stop_reason": "contract_pass",
+        "n_malformed": 0
+      },
+      "ceiling": {
+        "success": true,
+        "rounds": 1,
+        "calls": 1,
+        "over_repair_a": 0,
+        "over_repair_b": false,
+        "stop_reason": "gold_match",
+        "n_malformed": 0
+      }
+    },
+    {
+      "case": "dedup_then_agg#3",
+      "model": "gemini-3.1-pro-preview",
+      "generic": {
+        "success": false,
+        "rounds": 1,
+        "calls": 1,
+        "over_repair_a": 0,
+        "over_repair_b": false,
+        "stop_reason": "fixpoint",
+        "n_malformed": 0
+      },
+      "selfdebug": {
+        "success": false,
+        "rounds": 1,
+        "calls": 1,
+        "over_repair_a": 0,
+        "over_repair_b": false,
+        "stop_reason": "fixpoint",
+        "n_malformed": 0
+      },
+      "localize": {
+        "success": true,
+        "rounds": 1,
+        "calls": 1,
+        "over_repair_a": 0,
+        "over_repair_b": false,
+        "stop_reason": "contract_pass",
+        "n_malformed": 0
+      },
+      "targeted": {
+        "success": true,
+        "rounds": 1,
+        "calls": 1,
+        "over_repair_a": 0,
+        "over_repair_b": false,
+        "stop_reason": "contract_pass",
+        "n_malformed": 0
+      },
+      "ceiling": {
+        "success": true,
+        "rounds": 1,
+        "calls": 1,
+        "over_repair_a": 0,
+        "over_repair_b": false,
+        "stop_reason": "gold_match",
+        "n_malformed": 0
+      }
+    },
+    {
+      "case": "median_not_mean#1",
+      "model": "gpt-5.5",
+      "generic": {
+        "success": true,
+        "rounds": 2,
+        "calls": 2,
+        "over_repair_a": 0,
+        "over_repair_b": false,
+        "stop_reason": "fixpoint",
+        "n_malformed": 0
+      },
+      "selfdebug": {
+        "success": true,
+        "rounds": 2,
+        "calls": 2,
+        "over_repair_a": 0,
+        "over_repair_b": false,
+        "stop_reason": "fixpoint",
+        "n_malformed": 0
+      },
+      "localize": {
+        "success": true,
+        "rounds": 1,
+        "calls": 1,
+        "over_repair_a": 0,
+        "over_repair_b": false,
+        "stop_reason": "contract_pass",
+        "n_malformed": 0
+      },
+      "targeted": {
+        "success": true,
+        "rounds": 1,
+        "calls": 1,
+        "over_repair_a": 0,
+        "over_repair_b": false,
+        "stop_reason": "contract_pass",
+        "n_malformed": 0
+      },
+      "ceiling": {
+        "success": true,
+        "rounds": 1,
+        "calls": 1,
+        "over_repair_a": 0,
+        "over_repair_b": false,
+        "stop_reason": "gold_match",
+        "n_malformed": 0
+      }
+    },
+    {
+      "case": "median_not_mean#2",
+      "model": "gpt-5.5",
+      "generic": {
+        "success": false,
+        "rounds": 1,
+        "calls": 1,
+        "over_repair_a": 0,
+        "over_repair_b": false,
+        "stop_reason": "fixpoint",
+        "n_malformed": 0
+      },
+      "selfdebug": {
+        "success": true,
+        "rounds": 2,
+        "calls": 2,
+        "over_repair_a": 0,
+        "over_repair_b": false,
+        "stop_reason": "fixpoint",
+        "n_malformed": 0
+      },
+      "localize": {
+        "success": true,
+        "rounds": 1,
+        "calls": 1,
+        "over_repair_a": 0,
+        "over_repair_b": false,
+        "stop_reason": "contract_pass",
+        "n_malformed": 0
+      },
+      "targeted": {
+        "success": true,
+        "rounds": 1,
+        "calls": 1,
+        "over_repair_a": 0,
+        "over_repair_b": false,
+        "stop_reason": "contract_pass",
+        "n_malformed": 0
+      },
+      "ceiling": {
+        "success": true,
+        "rounds": 1,
+        "calls": 1,
+        "over_repair_a": 0,
+        "over_repair_b": false,
+        "stop_reason": "gold_match",
+        "n_malformed": 0
+      }
+    },
+    {
+      "case": "topn_with_ties#1",
+      "model": "gpt-5.4",
+      "generic": {
+        "success": false,
+        "rounds": 1,
+        "calls": 1,
+        "over_repair_a": 0,
+        "over_repair_b": false,
+        "stop_reason": "fixpoint",
+        "n_malformed": 0
+      },
+      "selfdebug": {
+        "success": false,
+        "rounds": 1,
+        "calls": 1,
+        "over_repair_a": 0,
+        "over_repair_b": false,
+        "stop_reason": "fixpoint",
+        "n_malformed": 0
+      },
+      "localize": {
+        "success": false,
+        "rounds": 3,
+        "calls": 3,
+        "over_repair_a": 0,
+        "over_repair_b": false,
+        "stop_reason": "budget",
+        "n_malformed": 0
+      },
+      "targeted": {
+        "success": true,
+        "rounds": 1,
+        "calls": 1,
+        "over_repair_a": 0,
+        "over_repair_b": false,
+        "stop_reason": "contract_pass",
+        "n_malformed": 0
+      },
+      "ceiling": {
+        "success": true,
+        "rounds": 1,
+        "calls": 1,
+        "over_repair_a": 0,
+        "over_repair_b": false,
+        "stop_reason": "gold_match",
+        "n_malformed": 0
+      }
+    },
+    {
+      "case": "topn_with_ties#1",
+      "model": "gpt-5.5",
+      "generic": {
+        "success": false,
+        "rounds": 1,
+        "calls": 1,
+        "over_repair_a": 0,
+        "over_repair_b": false,
+        "stop_reason": "fixpoint",
+        "n_malformed": 0
+      },
+      "selfdebug": {
+        "success": false,
+        "rounds": 1,
+        "calls": 1,
+        "over_repair_a": 0,
+        "over_repair_b": false,
+        "stop_reason": "fixpoint",
+        "n_malformed": 0
+      },
+      "localize": {
+        "success": true,
+        "rounds": 1,
+        "calls": 1,
+        "over_repair_a": 0,
+        "over_repair_b": false,
+        "stop_reason": "contract_pass",
+        "n_malformed": 0
+      },
+      "targeted": {
+        "success": true,
+        "rounds": 1,
+        "calls": 1,
+        "over_repair_a": 0,
+        "over_repair_b": false,
+        "stop_reason": "contract_pass",
+        "n_malformed": 0
+      },
+      "ceiling": {
+        "success": true,
+        "rounds": 1,
+        "calls": 1,
+        "over_repair_a": 0,
+        "over_repair_b": false,
+        "stop_reason": "gold_match",
+        "n_malformed": 0
+      }
+    },
+    {
+      "case": "topn_with_ties#1",
+      "model": "gpt-5.3-codex",
+      "generic": {
+        "success": false,
+        "rounds": 1,
+        "calls": 1,
+        "over_repair_a": 0,
+        "over_repair_b": false,
+        "stop_reason": "fixpoint",
+        "n_malformed": 0
+      },
+      "selfdebug": {
+        "success": false,
+        "rounds": 1,
+        "calls": 1,
+        "over_repair_a": 0,
+        "over_repair_b": false,
+        "stop_reason": "fixpoint",
+        "n_malformed": 0
+      },
+      "localize": {
+        "success": true,
+        "rounds": 1,
+        "calls": 1,
+        "over_repair_a": 0,
+        "over_repair_b": false,
+        "stop_reason": "contract_pass",
+        "n_malformed": 0
+      },
+      "targeted": {
+        "success": true,
+        "rounds": 1,
+        "calls": 1,
+        "over_repair_a": 0,
+        "over_repair_b": false,
+        "stop_reason": "contract_pass",
+        "n_malformed": 0
+      },
+      "ceiling": {
+        "success": true,
+        "rounds": 1,
+        "calls": 1,
+        "over_repair_a": 0,
+        "over_repair_b": false,
+        "stop_reason": "gold_match",
+        "n_malformed": 0
+      }
+    },
+    {
+      "case": "topn_with_ties#1",
+      "model": "gemini-3.1-pro-preview",
+      "generic": {
+        "success": false,
+        "rounds": 1,
+        "calls": 1,
+        "over_repair_a": 0,
+        "over_repair_b": false,
+        "stop_reason": "fixpoint",
+        "n_malformed": 0
+      },
+      "selfdebug": {
+        "success": false,
+        "rounds": 1,
+        "calls": 1,
+        "over_repair_a": 0,
+        "over_repair_b": false,
+        "stop_reason": "fixpoint",
+        "n_malformed": 0
+      },
+      "localize": {
+        "success": true,
+        "rounds": 1,
+        "calls": 1,
+        "over_repair_a": 0,
+        "over_repair_b": false,
+        "stop_reason": "contract_pass",
+        "n_malformed": 0
+      },
+      "targeted": {
+        "success": true,
+        "rounds": 1,
+        "calls": 1,
+        "over_repair_a": 0,
+        "over_repair_b": false,
+        "stop_reason": "contract_pass",
+        "n_malformed": 0
+      },
+      "ceiling": {
+        "success": true,
+        "rounds": 1,
+        "calls": 1,
+        "over_repair_a": 0,
+        "over_repair_b": false,
+        "stop_reason": "gold_match",
+        "n_malformed": 0
+      }
+    },
+    {
+      "case": "topn_with_ties#2",
+      "model": "gpt-5.4",
+      "generic": {
+        "success": false,
+        "rounds": 1,
+        "calls": 1,
+        "over_repair_a": 0,
+        "over_repair_b": false,
+        "stop_reason": "fixpoint",
+        "n_malformed": 0
+      },
+      "selfdebug": {
+        "success": false,
+        "rounds": 1,
+        "calls": 1,
+        "over_repair_a": 0,
+        "over_repair_b": false,
+        "stop_reason": "fixpoint",
+        "n_malformed": 0
+      },
+      "localize": {
+        "success": false,
+        "rounds": 3,
+        "calls": 3,
+        "over_repair_a": 0,
+        "over_repair_b": false,
+        "stop_reason": "budget",
+        "n_malformed": 0
+      },
+      "targeted": {
+        "success": true,
+        "rounds": 1,
+        "calls": 1,
+        "over_repair_a": 0,
+        "over_repair_b": false,
+        "stop_reason": "contract_pass",
+        "n_malformed": 0
+      },
+      "ceiling": {
+        "success": true,
+        "rounds": 1,
+        "calls": 1,
+        "over_repair_a": 0,
+        "over_repair_b": false,
+        "stop_reason": "gold_match",
+        "n_malformed": 0
+      }
+    },
+    {
+      "case": "topn_with_ties#2",
+      "model": "gpt-5.5",
+      "generic": {
+        "success": false,
+        "rounds": 1,
+        "calls": 1,
+        "over_repair_a": 0,
+        "over_repair_b": false,
+        "stop_reason": "fixpoint",
+        "n_malformed": 0
+      },
+      "selfdebug": {
+        "success": false,
+        "rounds": 1,
+        "calls": 1,
+        "over_repair_a": 0,
+        "over_repair_b": false,
+        "stop_reason": "fixpoint",
+        "n_malformed": 0
+      },
+      "localize": {
+        "success": true,
+        "rounds": 1,
+        "calls": 1,
+        "over_repair_a": 0,
+        "over_repair_b": false,
+        "stop_reason": "contract_pass",
+        "n_malformed": 0
+      },
+      "targeted": {
+        "success": true,
+        "rounds": 1,
+        "calls": 1,
+        "over_repair_a": 0,
+        "over_repair_b": false,
+        "stop_reason": "contract_pass",
+        "n_malformed": 0
+      },
+      "ceiling": {
+        "success": true,
+        "rounds": 1,
+        "calls": 1,
+        "over_repair_a": 0,
+        "over_repair_b": false,
+        "stop_reason": "gold_match",
+        "n_malformed": 0
+      }
+    },
+    {
+      "case": "topn_with_ties#2",
+      "model": "gpt-5.3-codex",
+      "generic": {
+        "success": false,
+        "rounds": 1,
+        "calls": 1,
+        "over_repair_a": 0,
+        "over_repair_b": false,
+        "stop_reason": "fixpoint",
+        "n_malformed": 0
+      },
+      "selfdebug": {
+        "success": false,
+        "rounds": 1,
+        "calls": 1,
+        "over_repair_a": 0,
+        "over_repair_b": false,
+        "stop_reason": "fixpoint",
+        "n_malformed": 0
+      },
+      "localize": {
+        "success": false,
+        "rounds": 3,
+        "calls": 3,
+        "over_repair_a": 0,
+        "over_repair_b": false,
+        "stop_reason": "budget",
+        "n_malformed": 0
+      },
+      "targeted": {
+        "success": true,
+        "rounds": 1,
+        "calls": 1,
+        "over_repair_a": 0,
+        "over_repair_b": false,
+        "stop_reason": "contract_pass",
+        "n_malformed": 0
+      },
+      "ceiling": {
+        "success": true,
+        "rounds": 1,
+        "calls": 1,
+        "over_repair_a": 0,
+        "over_repair_b": false,
+        "stop_reason": "gold_match",
+        "n_malformed": 0
+      }
+    },
+    {
+      "case": "topn_with_ties#2",
+      "model": "gemini-3.1-pro-preview",
+      "generic": {
+        "success": false,
+        "rounds": 1,
+        "calls": 1,
+        "over_repair_a": 0,
+        "over_repair_b": false,
+        "stop_reason": "fixpoint",
+        "n_malformed": 0
+      },
+      "selfdebug": {
+        "success": false,
+        "rounds": 1,
+        "calls": 1,
+        "over_repair_a": 0,
+        "over_repair_b": false,
+        "stop_reason": "fixpoint",
+        "n_malformed": 0
+      },
+      "localize": {
+        "success": true,
+        "rounds": 1,
+        "calls": 1,
+        "over_repair_a": 0,
+        "over_repair_b": false,
+        "stop_reason": "contract_pass",
+        "n_malformed": 0
+      },
+      "targeted": {
+        "success": true,
+        "rounds": 1,
+        "calls": 1,
+        "over_repair_a": 0,
+        "over_repair_b": false,
+        "stop_reason": "contract_pass",
+        "n_malformed": 0
+      },
+      "ceiling": {
+        "success": true,
+        "rounds": 1,
+        "calls": 1,
+        "over_repair_a": 0,
+        "over_repair_b": false,
+        "stop_reason": "gold_match",
+        "n_malformed": 0
+      }
+    },
+    {
+      "case": "topn_with_ties#3",
+      "model": "gpt-5.4",
+      "generic": {
+        "success": false,
+        "rounds": 1,
+        "calls": 1,
+        "over_repair_a": 0,
+        "over_repair_b": false,
+        "stop_reason": "fixpoint",
+        "n_malformed": 0
+      },
+      "selfdebug": {
+        "success": false,
+        "rounds": 1,
+        "calls": 1,
+        "over_repair_a": 0,
+        "over_repair_b": false,
+        "stop_reason": "fixpoint",
+        "n_malformed": 0
+      },
+      "localize": {
+        "success": false,
+        "rounds": 3,
+        "calls": 3,
+        "over_repair_a": 0,
+        "over_repair_b": false,
+        "stop_reason": "budget",
+        "n_malformed": 0
+      },
+      "targeted": {
+        "success": true,
+        "rounds": 1,
+        "calls": 1,
+        "over_repair_a": 0,
+        "over_repair_b": false,
+        "stop_reason": "contract_pass",
+        "n_malformed": 0
+      },
+      "ceiling": {
+        "success": true,
+        "rounds": 1,
+        "calls": 1,
+        "over_repair_a": 0,
+        "over_repair_b": false,
+        "stop_reason": "gold_match",
+        "n_malformed": 0
+      }
+    },
+    {
+      "case": "topn_with_ties#3",
+      "model": "gpt-5.5",
+      "generic": {
+        "success": false,
+        "rounds": 1,
+        "calls": 1,
+        "over_repair_a": 0,
+        "over_repair_b": false,
+        "stop_reason": "fixpoint",
+        "n_malformed": 0
+      },
+      "selfdebug": {
+        "success": false,
+        "rounds": 1,
+        "calls": 1,
+        "over_repair_a": 0,
+        "over_repair_b": false,
+        "stop_reason": "fixpoint",
+        "n_malformed": 0
+      },
+      "localize": {
+        "success": true,
+        "rounds": 1,
+        "calls": 1,
+        "over_repair_a": 0,
+        "over_repair_b": false,
+        "stop_reason": "contract_pass",
+        "n_malformed": 0
+      },
+      "targeted": {
+        "success": true,
+        "rounds": 1,
+        "calls": 1,
+        "over_repair_a": 0,
+        "over_repair_b": false,
+        "stop_reason": "contract_pass",
+        "n_malformed": 0
+      },
+      "ceiling": {
+        "success": true,
+        "rounds": 1,
+        "calls": 1,
+        "over_repair_a": 0,
+        "over_repair_b": false,
+        "stop_reason": "gold_match",
+        "n_malformed": 0
+      }
+    },
+    {
+      "case": "topn_with_ties#3",
+      "model": "gpt-5.3-codex",
+      "generic": {
+        "success": false,
+        "rounds": 1,
+        "calls": 1,
+        "over_repair_a": 0,
+        "over_repair_b": false,
+        "stop_reason": "fixpoint",
+        "n_malformed": 0
+      },
+      "selfdebug": {
+        "success": false,
+        "rounds": 1,
+        "calls": 1,
+        "over_repair_a": 0,
+        "over_repair_b": false,
+        "stop_reason": "fixpoint",
+        "n_malformed": 0
+      },
+      "localize": {
+        "success": true,
+        "rounds": 1,
+        "calls": 1,
+        "over_repair_a": 0,
+        "over_repair_b": false,
+        "stop_reason": "contract_pass",
+        "n_malformed": 0
+      },
+      "targeted": {
+        "success": true,
+        "rounds": 1,
+        "calls": 1,
+        "over_repair_a": 0,
+        "over_repair_b": false,
+        "stop_reason": "contract_pass",
+        "n_malformed": 0
+      },
+      "ceiling": {
+        "success": true,
+        "rounds": 1,
+        "calls": 1,
+        "over_repair_a": 0,
+        "over_repair_b": false,
+        "stop_reason": "gold_match",
+        "n_malformed": 0
+      }
+    },
+    {
+      "case": "topn_with_ties#3",
+      "model": "gemini-3.1-pro-preview",
+      "generic": {
+        "success": false,
+        "rounds": 1,
+        "calls": 1,
+        "over_repair_a": 0,
+        "over_repair_b": false,
+        "stop_reason": "fixpoint",
+        "n_malformed": 0
+      },
+      "selfdebug": {
+        "success": false,
+        "rounds": 1,
+        "calls": 1,
+        "over_repair_a": 0,
+        "over_repair_b": false,
+        "stop_reason": "fixpoint",
+        "n_malformed": 0
+      },
+      "localize": {
+        "success": true,
+        "rounds": 1,
+        "calls": 1,
+        "over_repair_a": 0,
+        "over_repair_b": false,
+        "stop_reason": "contract_pass",
+        "n_malformed": 0
+      },
+      "targeted": {
+        "success": true,
+        "rounds": 1,
+        "calls": 1,
+        "over_repair_a": 0,
+        "over_repair_b": false,
+        "stop_reason": "contract_pass",
+        "n_malformed": 0
+      },
+      "ceiling": {
+        "success": true,
+        "rounds": 1,
+        "calls": 1,
+        "over_repair_a": 0,
+        "over_repair_b": false,
+        "stop_reason": "gold_match",
+        "n_malformed": 0
+      }
+    },
+    {
+      "case": "zscore_within_group#1",
+      "model": "gpt-5.4",
+      "generic": {
+        "success": false,
+        "rounds": 1,
+        "calls": 1,
+        "over_repair_a": 0,
+        "over_repair_b": false,
+        "stop_reason": "fixpoint",
+        "n_malformed": 0
+      },
+      "selfdebug": {
+        "success": false,
+        "rounds": 1,
+        "calls": 1,
+        "over_repair_a": 0,
+        "over_repair_b": false,
+        "stop_reason": "fixpoint",
+        "n_malformed": 0
+      },
+      "localize": {
+        "success": false,
+        "rounds": 3,
+        "calls": 3,
+        "over_repair_a": 0,
+        "over_repair_b": false,
+        "stop_reason": "budget",
+        "n_malformed": 0
+      },
+      "targeted": {
+        "success": false,
+        "rounds": 1,
+        "calls": 1,
+        "over_repair_a": 0,
+        "over_repair_b": false,
+        "stop_reason": "contract_pass",
+        "n_malformed": 0
+      },
+      "ceiling": {
+        "success": true,
+        "rounds": 1,
+        "calls": 1,
+        "over_repair_a": 0,
+        "over_repair_b": false,
+        "stop_reason": "gold_match",
+        "n_malformed": 0
+      }
+    },
+    {
+      "case": "zscore_within_group#1",
+      "model": "gpt-5.5",
+      "generic": {
+        "success": true,
+        "rounds": 3,
+        "calls": 3,
+        "over_repair_a": 0,
+        "over_repair_b": false,
+        "stop_reason": "budget",
+        "n_malformed": 0
+      },
+      "selfdebug": {
+        "success": false,
+        "rounds": 1,
+        "calls": 1,
+        "over_repair_a": 0,
+        "over_repair_b": false,
+        "stop_reason": "fixpoint",
+        "n_malformed": 0
+      },
+      "localize": {
+        "success": false,
+        "rounds": 1,
+        "calls": 1,
+        "over_repair_a": 0,
+        "over_repair_b": false,
+        "stop_reason": "contract_pass",
+        "n_malformed": 0
+      },
+      "targeted": {
+        "success": false,
+        "rounds": 1,
+        "calls": 1,
+        "over_repair_a": 0,
+        "over_repair_b": false,
+        "stop_reason": "contract_pass",
+        "n_malformed": 0
+      },
+      "ceiling": {
+        "success": true,
+        "rounds": 1,
+        "calls": 1,
+        "over_repair_a": 0,
+        "over_repair_b": false,
+        "stop_reason": "gold_match",
+        "n_malformed": 0
+      }
+    },
+    {
+      "case": "zscore_within_group#1",
+      "model": "gpt-5.3-codex",
+      "generic": {
+        "success": true,
+        "rounds": 3,
+        "calls": 3,
+        "over_repair_a": 0,
+        "over_repair_b": false,
+        "stop_reason": "budget",
+        "n_malformed": 0
+      },
+      "selfdebug": {
+        "success": false,
+        "rounds": 1,
+        "calls": 1,
+        "over_repair_a": 0,
+        "over_repair_b": false,
+        "stop_reason": "fixpoint",
+        "n_malformed": 0
+      },
+      "localize": {
+        "success": false,
+        "rounds": 1,
+        "calls": 1,
+        "over_repair_a": 0,
+        "over_repair_b": false,
+        "stop_reason": "contract_pass",
+        "n_malformed": 0
+      },
+      "targeted": {
+        "success": false,
+        "rounds": 1,
+        "calls": 1,
+        "over_repair_a": 0,
+        "over_repair_b": false,
+        "stop_reason": "contract_pass",
+        "n_malformed": 0
+      },
+      "ceiling": {
+        "success": true,
+        "rounds": 1,
+        "calls": 1,
+        "over_repair_a": 0,
+        "over_repair_b": false,
+        "stop_reason": "gold_match",
+        "n_malformed": 0
+      }
+    },
+    {
+      "case": "zscore_within_group#1",
+      "model": "gemini-3.1-pro-preview",
+      "generic": {
+        "success": false,
+        "rounds": 3,
+        "calls": 3,
+        "over_repair_a": 0,
+        "over_repair_b": false,
+        "stop_reason": "budget",
+        "n_malformed": 0
+      },
+      "selfdebug": {
+        "success": false,
+        "rounds": 1,
+        "calls": 1,
+        "over_repair_a": 0,
+        "over_repair_b": false,
+        "stop_reason": "fixpoint",
+        "n_malformed": 0
+      },
+      "localize": {
+        "success": false,
+        "rounds": 1,
+        "calls": 1,
+        "over_repair_a": 0,
+        "over_repair_b": false,
+        "stop_reason": "contract_pass",
+        "n_malformed": 0
+      },
+      "targeted": {
+        "success": false,
+        "rounds": 1,
+        "calls": 1,
+        "over_repair_a": 0,
+        "over_repair_b": false,
+        "stop_reason": "contract_pass",
+        "n_malformed": 0
+      },
+      "ceiling": {
+        "success": true,
+        "rounds": 1,
+        "calls": 1,
+        "over_repair_a": 0,
+        "over_repair_b": false,
+        "stop_reason": "gold_match",
+        "n_malformed": 0
+      }
+    },
+    {
+      "case": "zscore_within_group#2",
+      "model": "gpt-5.4",
+      "generic": {
+        "success": false,
+        "rounds": 1,
+        "calls": 1,
+        "over_repair_a": 0,
+        "over_repair_b": false,
+        "stop_reason": "fixpoint",
+        "n_malformed": 0
+      },
+      "selfdebug": {
+        "success": false,
+        "rounds": 1,
+        "calls": 1,
+        "over_repair_a": 0,
+        "over_repair_b": false,
+        "stop_reason": "fixpoint",
+        "n_malformed": 0
+      },
+      "localize": {
+        "success": true,
+        "rounds": 1,
+        "calls": 1,
+        "over_repair_a": 0,
+        "over_repair_b": false,
+        "stop_reason": "contract_pass",
+        "n_malformed": 0
+      },
+      "targeted": {
+        "success": false,
+        "rounds": 1,
+        "calls": 1,
+        "over_repair_a": 0,
+        "over_repair_b": false,
+        "stop_reason": "contract_pass",
+        "n_malformed": 0
+      },
+      "ceiling": {
+        "success": true,
+        "rounds": 1,
+        "calls": 1,
+        "over_repair_a": 0,
+        "over_repair_b": false,
+        "stop_reason": "gold_match",
+        "n_malformed": 0
+      }
+    },
+    {
+      "case": "zscore_within_group#2",
+      "model": "gpt-5.5",
+      "generic": {
+        "success": false,
+        "rounds": 3,
+        "calls": 3,
+        "over_repair_a": 0,
+        "over_repair_b": false,
+        "stop_reason": "budget",
+        "n_malformed": 0
+      },
+      "selfdebug": {
+        "success": false,
+        "rounds": 1,
+        "calls": 1,
+        "over_repair_a": 0,
+        "over_repair_b": false,
+        "stop_reason": "fixpoint",
+        "n_malformed": 0
+      },
+      "localize": {
+        "success": false,
+        "rounds": 1,
+        "calls": 1,
+        "over_repair_a": 0,
+        "over_repair_b": false,
+        "stop_reason": "contract_pass",
+        "n_malformed": 0
+      },
+      "targeted": {
+        "success": false,
+        "rounds": 1,
+        "calls": 1,
+        "over_repair_a": 0,
+        "over_repair_b": false,
+        "stop_reason": "contract_pass",
+        "n_malformed": 0
+      },
+      "ceiling": {
+        "success": true,
+        "rounds": 1,
+        "calls": 1,
+        "over_repair_a": 0,
+        "over_repair_b": false,
+        "stop_reason": "gold_match",
+        "n_malformed": 0
+      }
+    },
+    {
+      "case": "zscore_within_group#2",
+      "model": "gpt-5.3-codex",
+      "generic": {
+        "success": true,
+        "rounds": 3,
+        "calls": 3,
+        "over_repair_a": 0,
+        "over_repair_b": false,
+        "stop_reason": "budget",
+        "n_malformed": 0
+      },
+      "selfdebug": {
+        "success": false,
+        "rounds": 1,
+        "calls": 1,
+        "over_repair_a": 0,
+        "over_repair_b": false,
+        "stop_reason": "fixpoint",
+        "n_malformed": 0
+      },
+      "localize": {
+        "success": true,
+        "rounds": 1,
+        "calls": 1,
+        "over_repair_a": 0,
+        "over_repair_b": false,
+        "stop_reason": "contract_pass",
+        "n_malformed": 0
+      },
+      "targeted": {
+        "success": true,
+        "rounds": 1,
+        "calls": 1,
+        "over_repair_a": 0,
+        "over_repair_b": false,
+        "stop_reason": "contract_pass",
+        "n_malformed": 0
+      },
+      "ceiling": {
+        "success": true,
+        "rounds": 1,
+        "calls": 1,
+        "over_repair_a": 0,
+        "over_repair_b": false,
+        "stop_reason": "gold_match",
+        "n_malformed": 0
+      }
+    },
+    {
+      "case": "zscore_within_group#2",
+      "model": "gemini-3.1-pro-preview",
+      "generic": {
+        "success": false,
+        "rounds": 3,
+        "calls": 3,
+        "over_repair_a": 0,
+        "over_repair_b": false,
+        "stop_reason": "budget",
+        "n_malformed": 0
+      },
+      "selfdebug": {
+        "success": true,
+        "rounds": 3,
+        "calls": 3,
+        "over_repair_a": 0,
+        "over_repair_b": false,
+        "stop_reason": "budget",
+        "n_malformed": 0
+      },
+      "localize": {
+        "success": true,
+        "rounds": 1,
+        "calls": 1,
+        "over_repair_a": 0,
+        "over_repair_b": false,
+        "stop_reason": "contract_pass",
+        "n_malformed": 0
+      },
+      "targeted": {
+        "success": false,
+        "rounds": 1,
+        "calls": 1,
+        "over_repair_a": 0,
+        "over_repair_b": false,
+        "stop_reason": "contract_pass",
+        "n_malformed": 0
+      },
+      "ceiling": {
+        "success": true,
+        "rounds": 1,
+        "calls": 1,
+        "over_repair_a": 0,
+        "over_repair_b": false,
+        "stop_reason": "gold_match",
+        "n_malformed": 0
+      }
+    },
+    {
+      "case": "zscore_within_group#3",
+      "model": "gpt-5.4",
+      "generic": {
+        "success": false,
+        "rounds": 1,
+        "calls": 1,
+        "over_repair_a": 0,
+        "over_repair_b": false,
+        "stop_reason": "fixpoint",
+        "n_malformed": 0
+      },
+      "selfdebug": {
+        "success": false,
+        "rounds": 1,
+        "calls": 1,
+        "over_repair_a": 0,
+        "over_repair_b": false,
+        "stop_reason": "fixpoint",
+        "n_malformed": 0
+      },
+      "localize": {
+        "success": false,
+        "rounds": 1,
+        "calls": 1,
+        "over_repair_a": 0,
+        "over_repair_b": false,
+        "stop_reason": "contract_pass",
+        "n_malformed": 0
+      },
+      "targeted": {
+        "success": false,
+        "rounds": 1,
+        "calls": 1,
+        "over_repair_a": 0,
+        "over_repair_b": false,
+        "stop_reason": "contract_pass",
+        "n_malformed": 0
+      },
+      "ceiling": {
+        "success": false,
+        "rounds": 3,
+        "calls": 3,
+        "over_repair_a": 0,
+        "over_repair_b": false,
+        "stop_reason": "budget",
+        "n_malformed": 0
+      }
+    },
+    {
+      "case": "zscore_within_group#3",
+      "model": "gpt-5.5",
+      "generic": {
+        "success": false,
+        "rounds": 3,
+        "calls": 3,
+        "over_repair_a": 0,
+        "over_repair_b": false,
+        "stop_reason": "budget",
+        "n_malformed": 0
+      },
+      "selfdebug": {
+        "success": false,
+        "rounds": 3,
+        "calls": 3,
+        "over_repair_a": 0,
+        "over_repair_b": false,
+        "stop_reason": "fixpoint",
+        "n_malformed": 0
+      },
+      "localize": {
+        "success": false,
+        "rounds": 1,
+        "calls": 1,
+        "over_repair_a": 0,
+        "over_repair_b": false,
+        "stop_reason": "contract_pass",
+        "n_malformed": 0
+      },
+      "targeted": {
+        "success": false,
+        "rounds": 1,
+        "calls": 1,
+        "over_repair_a": 0,
+        "over_repair_b": false,
+        "stop_reason": "contract_pass",
+        "n_malformed": 0
+      },
+      "ceiling": {
+        "success": true,
+        "rounds": 1,
+        "calls": 1,
+        "over_repair_a": 0,
+        "over_repair_b": false,
+        "stop_reason": "gold_match",
+        "n_malformed": 0
+      }
+    },
+    {
+      "case": "zscore_within_group#3",
+      "model": "gpt-5.3-codex",
+      "generic": {
+        "success": true,
+        "rounds": 3,
+        "calls": 3,
+        "over_repair_a": 0,
+        "over_repair_b": false,
+        "stop_reason": "budget",
+        "n_malformed": 0
+      },
+      "selfdebug": {
+        "success": false,
+        "rounds": 1,
+        "calls": 1,
+        "over_repair_a": 0,
+        "over_repair_b": false,
+        "stop_reason": "fixpoint",
+        "n_malformed": 0
+      },
+      "localize": {
+        "success": true,
+        "rounds": 1,
+        "calls": 1,
+        "over_repair_a": 0,
+        "over_repair_b": false,
+        "stop_reason": "contract_pass",
+        "n_malformed": 0
+      },
+      "targeted": {
+        "success": true,
+        "rounds": 1,
+        "calls": 1,
+        "over_repair_a": 0,
+        "over_repair_b": false,
+        "stop_reason": "contract_pass",
+        "n_malformed": 0
+      },
+      "ceiling": {
+        "success": true,
+        "rounds": 1,
+        "calls": 1,
+        "over_repair_a": 0,
+        "over_repair_b": false,
+        "stop_reason": "gold_match",
+        "n_malformed": 0
+      }
+    },
+    {
+      "case": "zscore_within_group#3",
+      "model": "gemini-3.1-pro-preview",
+      "generic": {
+        "success": false,
+        "rounds": 3,
+        "calls": 3,
+        "over_repair_a": 0,
+        "over_repair_b": false,
+        "stop_reason": "budget",
+        "n_malformed": 0
+      },
+      "selfdebug": {
+        "success": true,
+        "rounds": 3,
+        "calls": 3,
+        "over_repair_a": 0,
+        "over_repair_b": false,
+        "stop_reason": "budget",
+        "n_malformed": 0
+      },
+      "localize": {
+        "success": true,
+        "rounds": 1,
+        "calls": 1,
+        "over_repair_a": 0,
+        "over_repair_b": false,
+        "stop_reason": "contract_pass",
+        "n_malformed": 0
+      },
+      "targeted": {
+        "success": false,
+        "rounds": 1,
+        "calls": 1,
+        "over_repair_a": 0,
+        "over_repair_b": false,
+        "stop_reason": "contract_pass",
+        "n_malformed": 0
+      },
+      "ceiling": {
+        "success": true,
+        "rounds": 1,
+        "calls": 1,
+        "over_repair_a": 0,
+        "over_repair_b": false,
+        "stop_reason": "gold_match",
+        "n_malformed": 0
+      }
+    },
+    {
+      "case": "dense_rank#1",
+      "model": "gpt-5.4",
+      "generic": {
+        "success": false,
+        "rounds": 1,
+        "calls": 1,
+        "over_repair_a": 0,
+        "over_repair_b": false,
+        "stop_reason": "fixpoint",
+        "n_malformed": 0
+      },
+      "selfdebug": {
+        "success": false,
+        "rounds": 2,
+        "calls": 2,
+        "over_repair_a": 0,
+        "over_repair_b": false,
+        "stop_reason": "fixpoint",
+        "n_malformed": 0
+      },
+      "localize": {
+        "success": true,
+        "rounds": 1,
+        "calls": 1,
+        "over_repair_a": 0,
+        "over_repair_b": false,
+        "stop_reason": "contract_pass",
+        "n_malformed": 0
+      },
+      "targeted": {
+        "success": true,
+        "rounds": 1,
+        "calls": 1,
+        "over_repair_a": 0,
+        "over_repair_b": false,
+        "stop_reason": "contract_pass",
+        "n_malformed": 0
+      },
+      "ceiling": {
+        "success": true,
+        "rounds": 1,
+        "calls": 1,
+        "over_repair_a": 0,
+        "over_repair_b": false,
+        "stop_reason": "gold_match",
+        "n_malformed": 0
+      }
+    },
+    {
+      "case": "dense_rank#1",
+      "model": "gpt-5.5",
+      "generic": {
+        "success": false,
+        "rounds": 3,
+        "calls": 3,
+        "over_repair_a": 0,
+        "over_repair_b": false,
+        "stop_reason": "fixpoint",
+        "n_malformed": 0
+      },
+      "selfdebug": {
+        "success": false,
+        "rounds": 2,
+        "calls": 2,
+        "over_repair_a": 0,
+        "over_repair_b": false,
+        "stop_reason": "fixpoint",
+        "n_malformed": 0
+      },
+      "localize": {
+        "success": false,
+        "rounds": 1,
+        "calls": 1,
+        "over_repair_a": 0,
+        "over_repair_b": false,
+        "stop_reason": "contract_pass",
+        "n_malformed": 0
+      },
+      "targeted": {
+        "success": false,
+        "rounds": 1,
+        "calls": 1,
+        "over_repair_a": 0,
+        "over_repair_b": false,
+        "stop_reason": "contract_pass",
+        "n_malformed": 0
+      },
+      "ceiling": {
+        "success": true,
+        "rounds": 1,
+        "calls": 1,
+        "over_repair_a": 0,
+        "over_repair_b": false,
+        "stop_reason": "gold_match",
+        "n_malformed": 0
+      }
+    },
+    {
+      "case": "dense_rank#1",
+      "model": "gemini-3.1-pro-preview",
+      "generic": {
+        "success": false,
+        "rounds": 2,
+        "calls": 2,
+        "over_repair_a": 0,
+        "over_repair_b": false,
+        "stop_reason": "fixpoint",
+        "n_malformed": 0
+      },
+      "selfdebug": {
+        "success": false,
+        "rounds": 1,
+        "calls": 1,
+        "over_repair_a": 0,
+        "over_repair_b": false,
+        "stop_reason": "fixpoint",
+        "n_malformed": 0
+      },
+      "localize": {
+        "success": false,
+        "rounds": 1,
+        "calls": 1,
+        "over_repair_a": 0,
+        "over_repair_b": false,
+        "stop_reason": "contract_pass",
+        "n_malformed": 0
+      },
+      "targeted": {
+        "success": false,
+        "rounds": 1,
+        "calls": 1,
+        "over_repair_a": 0,
+        "over_repair_b": false,
+        "stop_reason": "contract_pass",
+        "n_malformed": 0
+      },
+      "ceiling": {
+        "success": true,
+        "rounds": 1,
+        "calls": 1,
+        "over_repair_a": 0,
+        "over_repair_b": false,
+        "stop_reason": "gold_match",
+        "n_malformed": 0
+      }
+    },
+    {
+      "case": "dense_rank#2",
+      "model": "gpt-5.4",
+      "generic": {
+        "success": false,
+        "rounds": 1,
+        "calls": 1,
+        "over_repair_a": 0,
+        "over_repair_b": false,
+        "stop_reason": "fixpoint",
+        "n_malformed": 0
+      },
+      "selfdebug": {
+        "success": false,
+        "rounds": 2,
+        "calls": 2,
+        "over_repair_a": 0,
+        "over_repair_b": false,
+        "stop_reason": "fixpoint",
+        "n_malformed": 0
+      },
+      "localize": {
+        "success": true,
+        "rounds": 1,
+        "calls": 1,
+        "over_repair_a": 0,
+        "over_repair_b": false,
+        "stop_reason": "contract_pass",
+        "n_malformed": 0
+      },
+      "targeted": {
+        "success": true,
+        "rounds": 1,
+        "calls": 1,
+        "over_repair_a": 0,
+        "over_repair_b": false,
+        "stop_reason": "contract_pass",
+        "n_malformed": 0
+      },
+      "ceiling": {
+        "success": true,
+        "rounds": 1,
+        "calls": 1,
+        "over_repair_a": 0,
+        "over_repair_b": false,
+        "stop_reason": "gold_match",
+        "n_malformed": 0
+      }
+    },
+    {
+      "case": "dense_rank#2",
+      "model": "gpt-5.5",
+      "generic": {
+        "success": false,
+        "rounds": 3,
+        "calls": 3,
+        "over_repair_a": 0,
+        "over_repair_b": false,
+        "stop_reason": "budget",
+        "n_malformed": 0
+      },
+      "selfdebug": {
+        "success": false,
+        "rounds": 2,
+        "calls": 2,
+        "over_repair_a": 0,
+        "over_repair_b": false,
+        "stop_reason": "fixpoint",
+        "n_malformed": 0
+      },
+      "localize": {
+        "success": false,
+        "rounds": 1,
+        "calls": 1,
+        "over_repair_a": 0,
+        "over_repair_b": false,
+        "stop_reason": "contract_pass",
+        "n_malformed": 0
+      },
+      "targeted": {
+        "success": false,
+        "rounds": 1,
+        "calls": 1,
+        "over_repair_a": 0,
+        "over_repair_b": false,
+        "stop_reason": "contract_pass",
+        "n_malformed": 0
+      },
+      "ceiling": {
+        "success": true,
+        "rounds": 1,
+        "calls": 1,
+        "over_repair_a": 0,
+        "over_repair_b": false,
+        "stop_reason": "gold_match",
+        "n_malformed": 0
+      }
+    },
+    {
+      "case": "dense_rank#2",
+      "model": "gpt-5.3-codex",
+      "generic": {
+        "success": true,
+        "rounds": 2,
+        "calls": 2,
+        "over_repair_a": 0,
+        "over_repair_b": false,
+        "stop_reason": "fixpoint",
+        "n_malformed": 0
+      },
+      "selfdebug": {
+        "success": false,
+        "rounds": 2,
+        "calls": 2,
+        "over_repair_a": 0,
+        "over_repair_b": false,
+        "stop_reason": "fixpoint",
+        "n_malformed": 0
+      },
+      "localize": {
+        "success": true,
+        "rounds": 1,
+        "calls": 1,
+        "over_repair_a": 0,
+        "over_repair_b": false,
+        "stop_reason": "contract_pass",
+        "n_malformed": 0
+      },
+      "targeted": {
+        "success": true,
+        "rounds": 1,
+        "calls": 1,
+        "over_repair_a": 0,
+        "over_repair_b": false,
+        "stop_reason": "contract_pass",
+        "n_malformed": 0
+      },
+      "ceiling": {
+        "success": true,
+        "rounds": 1,
+        "calls": 1,
+        "over_repair_a": 0,
+        "over_repair_b": false,
+        "stop_reason": "gold_match",
+        "n_malformed": 0
+      }
+    },
+    {
+      "case": "dense_rank#2",
+      "model": "gemini-3.1-pro-preview",
+      "generic": {
+        "success": false,
+        "rounds": 2,
+        "calls": 2,
+        "over_repair_a": 0,
+        "over_repair_b": false,
+        "stop_reason": "fixpoint",
+        "n_malformed": 0
+      },
+      "selfdebug": {
+        "success": false,
+        "rounds": 3,
+        "calls": 3,
+        "over_repair_a": 0,
+        "over_repair_b": false,
+        "stop_reason": "budget",
+        "n_malformed": 0
+      },
+      "localize": {
+        "success": false,
+        "rounds": 1,
+        "calls": 1,
+        "over_repair_a": 0,
+        "over_repair_b": false,
+        "stop_reason": "contract_pass",
+        "n_malformed": 0
+      },
+      "targeted": {
+        "success": false,
+        "rounds": 1,
+        "calls": 1,
+        "over_repair_a": 0,
+        "over_repair_b": false,
+        "stop_reason": "contract_pass",
+        "n_malformed": 0
+      },
+      "ceiling": {
+        "success": true,
+        "rounds": 1,
+        "calls": 1,
+        "over_repair_a": 0,
+        "over_repair_b": false,
+        "stop_reason": "gold_match",
+        "n_malformed": 0
+      }
+    },
+    {
+      "case": "dense_rank#3",
+      "model": "gemini-3.1-pro-preview",
+      "generic": {
+        "success": true,
+        "rounds": 3,
+        "calls": 3,
+        "over_repair_a": 0,
+        "over_repair_b": false,
+        "stop_reason": "fixpoint",
+        "n_malformed": 0
+      },
+      "selfdebug": {
+        "success": false,
+        "rounds": 2,
+        "calls": 2,
+        "over_repair_a": 0,
+        "over_repair_b": false,
+        "stop_reason": "fixpoint",
+        "n_malformed": 0
+      },
+      "localize": {
+        "success": false,
+        "rounds": 1,
+        "calls": 1,
+        "over_repair_a": 0,
+        "over_repair_b": false,
+        "stop_reason": "contract_pass",
+        "n_malformed": 0
+      },
+      "targeted": {
+        "success": false,
+        "rounds": 1,
+        "calls": 1,
+        "over_repair_a": 0,
+        "over_repair_b": false,
+        "stop_reason": "contract_pass",
+        "n_malformed": 0
+      },
+      "ceiling": {
+        "success": true,
+        "rounds": 1,
+        "calls": 1,
+        "over_repair_a": 0,
+        "over_repair_b": false,
+        "stop_reason": "gold_match",
+        "n_malformed": 0
+      }
+    }
+  ]
+}

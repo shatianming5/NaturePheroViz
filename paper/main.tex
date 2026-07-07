@@ -64,7 +64,7 @@ reference value (99.8\%, the non-circular core) and the rest via \emph{parameter
 that presupposes the operator (96.6\%). We show the contracts can be
 synthesized from a high-level goal (78--83\% correct, $N{=}23$, one-shot),
 transfer across execution substrates unchanged (pandas${\to}$SQL, 10/10
-operators), and drive a zero-training repair recipe (79\% vs.\ 5\% for strong
+operators), and drive a zero-training repair recipe (75\% vs.\ 12\% for strong
 self-debug). Finally, we run the \emph{entire} pipeline---infer operator, ground
 column roles, synthesize contract, detect---from only a messy request and a raw
 table, catching 51--59\% of silent errors with nothing structured provided. We
@@ -146,7 +146,7 @@ be recovered from a keyword-free request (Sec.~\ref{sec:synth}--\ref{sec:e2e}).
 a messy request and a raw table---nothing structured given---catching 51--59\%
 of silent errors, plus \textbf{substrate-agnostic transfer}
 (pandas${\to}$SQL, 10/10 operators, zero SQL-specific code) and a
-\textbf{zero-training repair recipe} (targeted 79\% vs.\ 5\% strong self-debug;
+\textbf{zero-training repair recipe} (targeted 75\% vs.\ 12\% strong self-debug;
 Sec.~\ref{sec:e2e}--\ref{sec:repair}).
 \item \textbf{Honest, quantified boundaries}: the method's power lives where
 operator-level intent is recoverable; on raw free-text code operator inference
@@ -672,12 +672,12 @@ whose invariant relies on pandas-specific NaN semantics would need restating.
 % =============================================================================
 Feeding the violated invariant back as a targeted repair prompt fixes silent
 errors far better than strong goldless self-repair (Table~\ref{tab:repair}).
-Targeted repair reaches \textbf{79\%} vs.\ \textbf{5\%} for a strong self-debug
+Targeted repair reaches \textbf{75\%} vs.\ \textbf{12\%} for a strong self-debug
 baseline (per-value re-derivation $+$ decision enumeration $+$ self-critique),
-with \emph{disjoint} intervals; localization-only reaches 45\%, so the invariant
-\emph{content}---not merely knowing \emph{where} to look---drives the gain. A
-telling negative result: strong self-debug (5\%) underperforms even generic
-retry (14\%), because it confidently ``re-derives'' the same wrong operator; only
+with \emph{disjoint} intervals; localization-only reaches 52\%, so the invariant
+\emph{content}---not merely knowing \emph{where} to look---adds a further $+23$
+points. A telling negative result: strong self-debug (12\%) underperforms even generic
+retry (18\%), because it confidently ``re-derives'' the same wrong operator; only
 an \emph{external} specification breaks the loop. Best-of-$N$ selection using the
 contract (no gold) adds further gains with zero mis-repairs.
 
@@ -685,21 +685,21 @@ contract (no gold) adds further gains with zero mis-repairs.
 \setlength{\tabcolsep}{4pt}
 \begin{tabular}{@{}lcc@{}}
 \toprule
-Repair arm ($N{=}43$) & Fixed & Over-rep.\\
+Repair arm ($N{=}65$, 4 models) & Fixed & Over-rep.\\
 \midrule
-generic (retry only) & 14\% [7--27] & 0\%\\
-strong self-debug & 5\% [1--15] & 0\%\\
-localization-only$^\dagger$ & 45\% & ---\\
-\textbf{targeted (contract invariant)} & \textbf{79\% [65--89]} & 0\%\\
-ceiling (gold-diff oracle) & 93\% [81--98] & 5\%\\
+generic (retry only) & 18\% [11--30] & 0\%\\
+strong self-debug & 12\% [6--22] & 0\%\\
+localization-only & 52\% [40--64] & 0\%\\
+\textbf{targeted (contract invariant)} & \textbf{75\% [64--84]} & 3\%\\
+ceiling (gold-diff oracle) & 92\% [83--97] & 6\%\\
 \bottomrule
 \end{tabular}
-\caption{Contract-guided repair (buggy starts are model-generated). The
-invariant lifts repair from 5\% (strong self-debug) to 79\% with disjoint CIs
-and no over-repair; self-debug falling \emph{below} generic retry shows an
-external specification is necessary. $^\dagger$Localization-only is from a
-separate $N{=}31$ ablation (targeted $81\%$ there); the other rows are the
-$N{=}43$ run, and targeted over-repair is $0\%$ at $N{=}43$ (up to $10\%$ at $N{=}31$).}
+\caption{Contract-guided repair (buggy starts are model-generated; one run over
+four models, all arms on the same $N{=}65$ silent starts). The invariant lifts
+repair from 12\% (strong self-debug) to 75\% with disjoint CIs and 3\%
+over-repair; self-debug falling \emph{below} generic retry (12 vs.\ 18\%) shows an
+external specification is necessary, and the $+23$-point gap over
+localization-only shows the invariant \emph{content} matters, not just location.}
 \label{tab:repair}
 \end{table}
 
@@ -718,10 +718,10 @@ of generalization---the real-data 98\%/0.2\% shows detection generalizes across
 real input \emph{tables} under a known operator (the pure-invariant contract is
 the non-circular core), while cross-\emph{operator} generalization is
 Sec.~\ref{sec:e2e}.
-\textbf{Small samples.} Per-condition synthesis and end-to-end slices are small
-($N{=}23$--$35$); we mitigate by pooling the zero-template pipeline across two
-vendors to $N{=}46$ (Sec.~\ref{sec:e2e-decomp}, interval width $38{\to}28$), but
-still claim feasibility and report every CI rather than significance.
+\textbf{Small samples.} Per-condition slices start small
+($N{=}23$--$35$); we mitigate by pooling across four models---synthesis and
+end-to-end to $N{=}92$, repair to $N{=}65$ (Sec.~\ref{sec:e2e-decomp}, interval
+width $38{\to}19$)---but still report every CI rather than significance.
 \textbf{Symmetric roles.} For operators with interchangeable
 numeric roles the request may not fix which column is which; we score this as
 ambiguity. \textbf{End-to-end ceiling.} The 51--59\% zero-structure figure is an
