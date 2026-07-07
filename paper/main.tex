@@ -274,10 +274,11 @@ models on the core grid), rises to \textbf{65\%} for smaller open models
 on external DS-1000, so it is a property of the task family, not one model
 (Fig.~\ref{fig:prev}).
 
-\paragraph{Invisibility.} On the same corpus we measure what existing safeguards
-catch (Table~\ref{tab:baselines}). Deterministic checks---execution, shape/type,
-value-range, multi-sample consistency---catch \textbf{0\%}: the wrong code runs,
-is shaped correctly, and is \emph{stably} wrong. LLM self-critique catches 61\%
+\paragraph{Invisibility.} We measure what existing safeguards catch on the
+operator grid (Table~\ref{tab:baselines}). Deterministic checks---execution, shape/type,
+value-range, multi-sample consistency---catch \textbf{0\%} by construction: the wrong code runs,
+is shaped correctly, and is \emph{stably} wrong (a property that holds on any
+corpus). LLM self-critique catches 61\%
 but false-flags 40\%, unusable as a gate.
 
 \begin{figure}[t]\centering
@@ -709,7 +710,10 @@ recall/precision; a calibrated scope-gate instead makes out-of-scope inputs
 ``NL intent recoverable,'' not ``arbitrary code.''
 \textbf{Taxonomy coverage.} Contracts detect the slips they specify; we report
 coverage honestly and treat the self-authored grid as a unit test, not evidence
-of generalization---the real-data 98\%/0.2\% is the generalization claim.
+of generalization---the real-data 98\%/0.2\% shows detection generalizes across
+real input \emph{tables} under a known operator (the pure-invariant contract is
+the non-circular core), while cross-\emph{operator} generalization is
+Sec.~\ref{sec:e2e}.
 \textbf{Small samples.} Per-condition synthesis and end-to-end slices are small
 ($N{=}23$--$35$); we mitigate by pooling the zero-template pipeline across two
 vendors to $N{=}46$ (Sec.~\ref{sec:e2e-decomp}, interval width $38{\to}28$), but
