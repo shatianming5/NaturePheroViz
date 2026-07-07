@@ -622,6 +622,18 @@ to the same $N{=}46$ cross-vendor, holds at $76\%$ [62--86] CORE (GPT $78\%$,
 Gemini $74\%$), confirming the small-$N$ feasibility number was not a
 single-model artifact.
 
+\paragraph{Exemplar prompting does not fix synthesis (ablation).} The natural fix
+for the synthesis bottleneck---show the synthesizer a worked contract---\emph{back\-fires}.
+Holding the messy request and operator fixed, adding a single out-of-set exemplar
+\emph{lowers} CORE synthesis from a zero-shot $74\%$ to $59\%$, and three diverse
+exemplars to $57\%$, consistently across both vendors ($N{=}46$; GPT $83{\to}65{\to}57$,
+Gemini $65{\to}52{\to}57$). An exemplar anchors the synthesizer to \emph{its}
+invariant family and crowds out the task-appropriate one, and more exemplars
+anchor harder. Zero-shot synthesis is therefore the right design (and the one we
+use); the residual failures concentrate on mechanically-intricate operators
+(index alignment, dtype coercion, resample boundaries) and are a fine-tuning /
+tool-use target, not a prompting fix.
+
 \subsection{Substrate-agnostic transfer (pandas $\to$ SQL)}\label{sec:sql}
 Because a contract reads only $(D,\theta,r)$, the \emph{same} contracts fire on
 the identical semantic slip written in SQL. Over 10 operators (weighted AVG,
