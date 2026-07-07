@@ -281,9 +281,12 @@ on external DS-1000, so it is a property of the task family, not one model
 
 \paragraph{Invisibility.} We measure what existing safeguards catch on the
 operator grid (Table~\ref{tab:baselines}). Deterministic checks---execution, shape/type,
-value-range, multi-sample consistency---catch \textbf{0\%} by construction: the wrong code runs,
-is shaped correctly, and is \emph{stably} wrong (a property that holds on any
-corpus). LLM self-critique catches 61\%
+value-range, multi-sample consistency---catch \textbf{0\%}: the wrong code runs,
+is shaped correctly, and is \emph{stably} wrong. Multi-sample consistency stays at
+$0\%$ even when the $K$ samples are drawn at temperature $0.8$ (recall $0/38$):
+the silent errors are \emph{common-mode}---the model resamples the same wrong
+transform ($92\%$ of tasks give identical output even at $T{=}0.8$), so
+disagreement-based checks never fire. LLM self-critique catches 61\%
 but false-flags 40\%, unusable as a gate.
 
 \begin{figure}[t]\centering

@@ -1,0 +1,952 @@
+{
+  "model": "gpt-4o",
+  "k": 5,
+  "temp": 0.8,
+  "wrong": 38,
+  "right": 95,
+  "recall": [
+    0,
+    38
+  ],
+  "fp": [
+    0,
+    95
+  ],
+  "diverse_tasks": [
+    10,
+    133
+  ],
+  "cases": [
+    {
+      "op": "weighted_mean",
+      "cond": "ambiguous",
+      "correct": true,
+      "flag": false,
+      "distinct_sigs": 1
+    },
+    {
+      "op": "weighted_mean",
+      "cond": "clarified",
+      "correct": true,
+      "flag": false,
+      "distinct_sigs": 1
+    },
+    {
+      "op": "weighted_mean",
+      "cond": "ambiguous",
+      "correct": true,
+      "flag": false,
+      "distinct_sigs": 1
+    },
+    {
+      "op": "weighted_mean",
+      "cond": "clarified",
+      "correct": true,
+      "flag": false,
+      "distinct_sigs": 1
+    },
+    {
+      "op": "weighted_mean",
+      "cond": "ambiguous",
+      "correct": true,
+      "flag": false,
+      "distinct_sigs": 1
+    },
+    {
+      "op": "weighted_mean",
+      "cond": "clarified",
+      "correct": true,
+      "flag": false,
+      "distinct_sigs": 1
+    },
+    {
+      "op": "weighted_mean",
+      "cond": "ambiguous",
+      "correct": true,
+      "flag": false,
+      "distinct_sigs": 1
+    },
+    {
+      "op": "weighted_mean",
+      "cond": "clarified",
+      "correct": true,
+      "flag": false,
+      "distinct_sigs": 1
+    },
+    {
+      "op": "within_group_share",
+      "cond": "ambiguous",
+      "correct": true,
+      "flag": false,
+      "distinct_sigs": 1
+    },
+    {
+      "op": "within_group_share",
+      "cond": "clarified",
+      "correct": true,
+      "flag": false,
+      "distinct_sigs": 1
+    },
+    {
+      "op": "within_group_share",
+      "cond": "ambiguous",
+      "correct": true,
+      "flag": false,
+      "distinct_sigs": 1
+    },
+    {
+      "op": "within_group_share",
+      "cond": "clarified",
+      "correct": true,
+      "flag": false,
+      "distinct_sigs": 1
+    },
+    {
+      "op": "within_group_share",
+      "cond": "ambiguous",
+      "correct": true,
+      "flag": false,
+      "distinct_sigs": 1
+    },
+    {
+      "op": "within_group_share",
+      "cond": "clarified",
+      "correct": true,
+      "flag": false,
+      "distinct_sigs": 1
+    },
+    {
+      "op": "within_group_share",
+      "cond": "ambiguous",
+      "correct": true,
+      "flag": false,
+      "distinct_sigs": 1
+    },
+    {
+      "op": "within_group_share",
+      "cond": "clarified",
+      "correct": true,
+      "flag": false,
+      "distinct_sigs": 1
+    },
+    {
+      "op": "pct_point",
+      "cond": "ambiguous",
+      "correct": false,
+      "flag": false,
+      "distinct_sigs": 1
+    },
+    {
+      "op": "pct_point",
+      "cond": "clarified",
+      "correct": true,
+      "flag": false,
+      "distinct_sigs": 1
+    },
+    {
+      "op": "pct_point",
+      "cond": "ambiguous",
+      "correct": false,
+      "flag": false,
+      "distinct_sigs": 1
+    },
+    {
+      "op": "pct_point",
+      "cond": "clarified",
+      "correct": true,
+      "flag": false,
+      "distinct_sigs": 1
+    },
+    {
+      "op": "pct_point",
+      "cond": "ambiguous",
+      "correct": false,
+      "flag": false,
+      "distinct_sigs": 1
+    },
+    {
+      "op": "pct_point",
+      "cond": "clarified",
+      "correct": true,
+      "flag": false,
+      "distinct_sigs": 1
+    },
+    {
+      "op": "pct_point",
+      "cond": "ambiguous",
+      "correct": false,
+      "flag": false,
+      "distinct_sigs": 1
+    },
+    {
+      "op": "pct_point",
+      "cond": "clarified",
+      "correct": true,
+      "flag": false,
+      "distinct_sigs": 1
+    },
+    {
+      "op": "dedup_then_agg",
+      "cond": "ambiguous",
+      "correct": false,
+      "flag": false,
+      "distinct_sigs": 1
+    },
+    {
+      "op": "dedup_then_agg",
+      "cond": "clarified",
+      "correct": true,
+      "flag": false,
+      "distinct_sigs": 1
+    },
+    {
+      "op": "dedup_then_agg",
+      "cond": "ambiguous",
+      "correct": false,
+      "flag": false,
+      "distinct_sigs": 1
+    },
+    {
+      "op": "dedup_then_agg",
+      "cond": "clarified",
+      "correct": true,
+      "flag": false,
+      "distinct_sigs": 1
+    },
+    {
+      "op": "dedup_then_agg",
+      "cond": "ambiguous",
+      "correct": false,
+      "flag": false,
+      "distinct_sigs": 1
+    },
+    {
+      "op": "dedup_then_agg",
+      "cond": "clarified",
+      "correct": true,
+      "flag": false,
+      "distinct_sigs": 1
+    },
+    {
+      "op": "dedup_then_agg",
+      "cond": "ambiguous",
+      "correct": false,
+      "flag": false,
+      "distinct_sigs": 1
+    },
+    {
+      "op": "dedup_then_agg",
+      "cond": "clarified",
+      "correct": true,
+      "flag": false,
+      "distinct_sigs": 1
+    },
+    {
+      "op": "left_join_keep_all",
+      "cond": "ambiguous",
+      "correct": true,
+      "flag": false,
+      "distinct_sigs": 1
+    },
+    {
+      "op": "left_join_keep_all",
+      "cond": "clarified",
+      "correct": true,
+      "flag": false,
+      "distinct_sigs": 1
+    },
+    {
+      "op": "left_join_keep_all",
+      "cond": "ambiguous",
+      "correct": true,
+      "flag": false,
+      "distinct_sigs": 1
+    },
+    {
+      "op": "left_join_keep_all",
+      "cond": "clarified",
+      "correct": true,
+      "flag": false,
+      "distinct_sigs": 1
+    },
+    {
+      "op": "left_join_keep_all",
+      "cond": "ambiguous",
+      "correct": true,
+      "flag": false,
+      "distinct_sigs": 1
+    },
+    {
+      "op": "left_join_keep_all",
+      "cond": "clarified",
+      "correct": true,
+      "flag": false,
+      "distinct_sigs": 1
+    },
+    {
+      "op": "left_join_keep_all",
+      "cond": "ambiguous",
+      "correct": true,
+      "flag": false,
+      "distinct_sigs": 1
+    },
+    {
+      "op": "left_join_keep_all",
+      "cond": "clarified",
+      "correct": true,
+      "flag": false,
+      "distinct_sigs": 1
+    },
+    {
+      "op": "pooled_rate",
+      "cond": "ambiguous",
+      "correct": true,
+      "flag": false,
+      "distinct_sigs": 1
+    },
+    {
+      "op": "pooled_rate",
+      "cond": "clarified",
+      "correct": true,
+      "flag": false,
+      "distinct_sigs": 1
+    },
+    {
+      "op": "pooled_rate",
+      "cond": "ambiguous",
+      "correct": true,
+      "flag": false,
+      "distinct_sigs": 1
+    },
+    {
+      "op": "pooled_rate",
+      "cond": "clarified",
+      "correct": true,
+      "flag": false,
+      "distinct_sigs": 1
+    },
+    {
+      "op": "pooled_rate",
+      "cond": "ambiguous",
+      "correct": true,
+      "flag": false,
+      "distinct_sigs": 1
+    },
+    {
+      "op": "pooled_rate",
+      "cond": "clarified",
+      "correct": true,
+      "flag": false,
+      "distinct_sigs": 1
+    },
+    {
+      "op": "pooled_rate",
+      "cond": "ambiguous",
+      "correct": true,
+      "flag": false,
+      "distinct_sigs": 1
+    },
+    {
+      "op": "pooled_rate",
+      "cond": "clarified",
+      "correct": true,
+      "flag": false,
+      "distinct_sigs": 1
+    },
+    {
+      "op": "median_not_mean",
+      "cond": "ambiguous",
+      "correct": false,
+      "flag": false,
+      "distinct_sigs": 1
+    },
+    {
+      "op": "median_not_mean",
+      "cond": "clarified",
+      "correct": true,
+      "flag": false,
+      "distinct_sigs": 1
+    },
+    {
+      "op": "median_not_mean",
+      "cond": "ambiguous",
+      "correct": false,
+      "flag": false,
+      "distinct_sigs": 1
+    },
+    {
+      "op": "median_not_mean",
+      "cond": "clarified",
+      "correct": true,
+      "flag": false,
+      "distinct_sigs": 2
+    },
+    {
+      "op": "median_not_mean",
+      "cond": "ambiguous",
+      "correct": false,
+      "flag": false,
+      "distinct_sigs": 1
+    },
+    {
+      "op": "median_not_mean",
+      "cond": "clarified",
+      "correct": false,
+      "flag": false,
+      "distinct_sigs": 2
+    },
+    {
+      "op": "median_not_mean",
+      "cond": "ambiguous",
+      "correct": false,
+      "flag": false,
+      "distinct_sigs": 1
+    },
+    {
+      "op": "median_not_mean",
+      "cond": "clarified",
+      "correct": true,
+      "flag": false,
+      "distinct_sigs": 2
+    },
+    {
+      "op": "cumulative_running",
+      "cond": "ambiguous",
+      "correct": true,
+      "flag": false,
+      "distinct_sigs": 1
+    },
+    {
+      "op": "cumulative_running",
+      "cond": "clarified",
+      "correct": true,
+      "flag": false,
+      "distinct_sigs": 1
+    },
+    {
+      "op": "cumulative_running",
+      "cond": "ambiguous",
+      "correct": true,
+      "flag": false,
+      "distinct_sigs": 1
+    },
+    {
+      "op": "cumulative_running",
+      "cond": "clarified",
+      "correct": true,
+      "flag": false,
+      "distinct_sigs": 1
+    },
+    {
+      "op": "cumulative_running",
+      "cond": "ambiguous",
+      "correct": true,
+      "flag": false,
+      "distinct_sigs": 1
+    },
+    {
+      "op": "cumulative_running",
+      "cond": "clarified",
+      "correct": true,
+      "flag": false,
+      "distinct_sigs": 1
+    },
+    {
+      "op": "cumulative_running",
+      "cond": "ambiguous",
+      "correct": true,
+      "flag": false,
+      "distinct_sigs": 1
+    },
+    {
+      "op": "cumulative_running",
+      "cond": "clarified",
+      "correct": true,
+      "flag": false,
+      "distinct_sigs": 1
+    },
+    {
+      "op": "topn_with_ties",
+      "cond": "ambiguous",
+      "correct": false,
+      "flag": false,
+      "distinct_sigs": 1
+    },
+    {
+      "op": "topn_with_ties",
+      "cond": "clarified",
+      "correct": true,
+      "flag": false,
+      "distinct_sigs": 1
+    },
+    {
+      "op": "topn_with_ties",
+      "cond": "ambiguous",
+      "correct": false,
+      "flag": false,
+      "distinct_sigs": 1
+    },
+    {
+      "op": "topn_with_ties",
+      "cond": "clarified",
+      "correct": true,
+      "flag": false,
+      "distinct_sigs": 1
+    },
+    {
+      "op": "topn_with_ties",
+      "cond": "ambiguous",
+      "correct": false,
+      "flag": false,
+      "distinct_sigs": 1
+    },
+    {
+      "op": "topn_with_ties",
+      "cond": "clarified",
+      "correct": true,
+      "flag": false,
+      "distinct_sigs": 1
+    },
+    {
+      "op": "topn_with_ties",
+      "cond": "ambiguous",
+      "correct": false,
+      "flag": false,
+      "distinct_sigs": 1
+    },
+    {
+      "op": "topn_with_ties",
+      "cond": "clarified",
+      "correct": true,
+      "flag": false,
+      "distinct_sigs": 1
+    },
+    {
+      "op": "nan_as_zero_sum",
+      "cond": "ambiguous",
+      "correct": true,
+      "flag": false,
+      "distinct_sigs": 1
+    },
+    {
+      "op": "nan_as_zero_sum",
+      "cond": "clarified",
+      "correct": true,
+      "flag": false,
+      "distinct_sigs": 1
+    },
+    {
+      "op": "nan_as_zero_sum",
+      "cond": "ambiguous",
+      "correct": true,
+      "flag": false,
+      "distinct_sigs": 1
+    },
+    {
+      "op": "nan_as_zero_sum",
+      "cond": "clarified",
+      "correct": true,
+      "flag": false,
+      "distinct_sigs": 1
+    },
+    {
+      "op": "nan_as_zero_sum",
+      "cond": "ambiguous",
+      "correct": true,
+      "flag": false,
+      "distinct_sigs": 1
+    },
+    {
+      "op": "nan_as_zero_sum",
+      "cond": "clarified",
+      "correct": true,
+      "flag": false,
+      "distinct_sigs": 1
+    },
+    {
+      "op": "nan_as_zero_sum",
+      "cond": "ambiguous",
+      "correct": true,
+      "flag": false,
+      "distinct_sigs": 1
+    },
+    {
+      "op": "nan_as_zero_sum",
+      "cond": "clarified",
+      "correct": true,
+      "flag": false,
+      "distinct_sigs": 1
+    },
+    {
+      "op": "count_includes_empty",
+      "cond": "ambiguous",
+      "correct": true,
+      "flag": false,
+      "distinct_sigs": 2
+    },
+    {
+      "op": "count_includes_empty",
+      "cond": "clarified",
+      "correct": false,
+      "flag": false,
+      "distinct_sigs": 1
+    },
+    {
+      "op": "count_includes_empty",
+      "cond": "ambiguous",
+      "correct": false,
+      "flag": false,
+      "distinct_sigs": 2
+    },
+    {
+      "op": "count_includes_empty",
+      "cond": "clarified",
+      "correct": false,
+      "flag": false,
+      "distinct_sigs": 1
+    },
+    {
+      "op": "count_includes_empty",
+      "cond": "ambiguous",
+      "correct": true,
+      "flag": false,
+      "distinct_sigs": 2
+    },
+    {
+      "op": "count_includes_empty",
+      "cond": "clarified",
+      "correct": false,
+      "flag": false,
+      "distinct_sigs": 1
+    },
+    {
+      "op": "count_includes_empty",
+      "cond": "ambiguous",
+      "correct": true,
+      "flag": false,
+      "distinct_sigs": 1
+    },
+    {
+      "op": "count_includes_empty",
+      "cond": "clarified",
+      "correct": false,
+      "flag": false,
+      "distinct_sigs": 2
+    },
+    {
+      "op": "proportion_true",
+      "cond": "ambiguous",
+      "correct": true,
+      "flag": false,
+      "distinct_sigs": 1
+    },
+    {
+      "op": "proportion_true",
+      "cond": "clarified",
+      "correct": true,
+      "flag": false,
+      "distinct_sigs": 1
+    },
+    {
+      "op": "proportion_true",
+      "cond": "ambiguous",
+      "correct": true,
+      "flag": false,
+      "distinct_sigs": 1
+    },
+    {
+      "op": "proportion_true",
+      "cond": "clarified",
+      "correct": true,
+      "flag": false,
+      "distinct_sigs": 1
+    },
+    {
+      "op": "proportion_true",
+      "cond": "ambiguous",
+      "correct": true,
+      "flag": false,
+      "distinct_sigs": 1
+    },
+    {
+      "op": "proportion_true",
+      "cond": "clarified",
+      "correct": true,
+      "flag": false,
+      "distinct_sigs": 1
+    },
+    {
+      "op": "proportion_true",
+      "cond": "ambiguous",
+      "correct": true,
+      "flag": false,
+      "distinct_sigs": 1
+    },
+    {
+      "op": "proportion_true",
+      "cond": "clarified",
+      "correct": true,
+      "flag": false,
+      "distinct_sigs": 1
+    },
+    {
+      "op": "zscore_within_group",
+      "cond": "ambiguous",
+      "correct": false,
+      "flag": false,
+      "distinct_sigs": 1
+    },
+    {
+      "op": "zscore_within_group",
+      "cond": "clarified",
+      "correct": false,
+      "flag": false,
+      "distinct_sigs": 1
+    },
+    {
+      "op": "zscore_within_group",
+      "cond": "ambiguous",
+      "correct": false,
+      "flag": false,
+      "distinct_sigs": 1
+    },
+    {
+      "op": "zscore_within_group",
+      "cond": "clarified",
+      "correct": false,
+      "flag": false,
+      "distinct_sigs": 1
+    },
+    {
+      "op": "zscore_within_group",
+      "cond": "ambiguous",
+      "correct": false,
+      "flag": false,
+      "distinct_sigs": 1
+    },
+    {
+      "op": "zscore_within_group",
+      "cond": "clarified",
+      "correct": false,
+      "flag": false,
+      "distinct_sigs": 1
+    },
+    {
+      "op": "zscore_within_group",
+      "cond": "ambiguous",
+      "correct": false,
+      "flag": false,
+      "distinct_sigs": 1
+    },
+    {
+      "op": "dense_rank",
+      "cond": "ambiguous",
+      "correct": false,
+      "flag": false,
+      "distinct_sigs": 1
+    },
+    {
+      "op": "dense_rank",
+      "cond": "clarified",
+      "correct": true,
+      "flag": false,
+      "distinct_sigs": 1
+    },
+    {
+      "op": "dense_rank",
+      "cond": "ambiguous",
+      "correct": true,
+      "flag": false,
+      "distinct_sigs": 2
+    },
+    {
+      "op": "dense_rank",
+      "cond": "clarified",
+      "correct": true,
+      "flag": false,
+      "distinct_sigs": 1
+    },
+    {
+      "op": "dense_rank",
+      "cond": "ambiguous",
+      "correct": true,
+      "flag": false,
+      "distinct_sigs": 1
+    },
+    {
+      "op": "dense_rank",
+      "cond": "clarified",
+      "correct": true,
+      "flag": false,
+      "distinct_sigs": 1
+    },
+    {
+      "op": "dense_rank",
+      "cond": "ambiguous",
+      "correct": false,
+      "flag": false,
+      "distinct_sigs": 1
+    },
+    {
+      "op": "dense_rank",
+      "cond": "clarified",
+      "correct": true,
+      "flag": false,
+      "distinct_sigs": 1
+    },
+    {
+      "op": "cumcount_per_group",
+      "cond": "ambiguous",
+      "correct": true,
+      "flag": false,
+      "distinct_sigs": 1
+    },
+    {
+      "op": "cumcount_per_group",
+      "cond": "clarified",
+      "correct": true,
+      "flag": false,
+      "distinct_sigs": 1
+    },
+    {
+      "op": "cumcount_per_group",
+      "cond": "ambiguous",
+      "correct": true,
+      "flag": false,
+      "distinct_sigs": 1
+    },
+    {
+      "op": "cumcount_per_group",
+      "cond": "clarified",
+      "correct": true,
+      "flag": false,
+      "distinct_sigs": 1
+    },
+    {
+      "op": "cumcount_per_group",
+      "cond": "ambiguous",
+      "correct": true,
+      "flag": false,
+      "distinct_sigs": 1
+    },
+    {
+      "op": "cumcount_per_group",
+      "cond": "clarified",
+      "correct": true,
+      "flag": false,
+      "distinct_sigs": 1
+    },
+    {
+      "op": "cumcount_per_group",
+      "cond": "ambiguous",
+      "correct": true,
+      "flag": false,
+      "distinct_sigs": 1
+    },
+    {
+      "op": "cumcount_per_group",
+      "cond": "clarified",
+      "correct": true,
+      "flag": false,
+      "distinct_sigs": 1
+    },
+    {
+      "op": "rank_pct",
+      "cond": "ambiguous",
+      "correct": false,
+      "flag": false,
+      "distinct_sigs": 2
+    },
+    {
+      "op": "rank_pct",
+      "cond": "clarified",
+      "correct": true,
+      "flag": false,
+      "distinct_sigs": 1
+    },
+    {
+      "op": "rank_pct",
+      "cond": "ambiguous",
+      "correct": false,
+      "flag": false,
+      "distinct_sigs": 1
+    },
+    {
+      "op": "rank_pct",
+      "cond": "clarified",
+      "correct": true,
+      "flag": false,
+      "distinct_sigs": 1
+    },
+    {
+      "op": "rank_pct",
+      "cond": "ambiguous",
+      "correct": false,
+      "flag": false,
+      "distinct_sigs": 2
+    },
+    {
+      "op": "rank_pct",
+      "cond": "clarified",
+      "correct": true,
+      "flag": false,
+      "distinct_sigs": 1
+    },
+    {
+      "op": "rank_pct",
+      "cond": "ambiguous",
+      "correct": false,
+      "flag": false,
+      "distinct_sigs": 1
+    },
+    {
+      "op": "rank_pct",
+      "cond": "clarified",
+      "correct": true,
+      "flag": false,
+      "distinct_sigs": 1
+    },
+    {
+      "op": "clip_outlier",
+      "cond": "ambiguous",
+      "correct": false,
+      "flag": false,
+      "distinct_sigs": 1
+    },
+    {
+      "op": "clip_outlier",
+      "cond": "clarified",
+      "correct": true,
+      "flag": false,
+      "distinct_sigs": 1
+    },
+    {
+      "op": "clip_outlier",
+      "cond": "ambiguous",
+      "correct": false,
+      "flag": false,
+      "distinct_sigs": 1
+    },
+    {
+      "op": "clip_outlier",
+      "cond": "clarified",
+      "correct": true,
+      "flag": false,
+      "distinct_sigs": 1
+    },
+    {
+      "op": "clip_outlier",
+      "cond": "ambiguous",
+      "correct": false,
+      "flag": false,
+      "distinct_sigs": 1
+    },
+    {
+      "op": "clip_outlier",
+      "cond": "clarified",
+      "correct": true,
+      "flag": false,
+      "distinct_sigs": 1
+    }
+  ]
+}
