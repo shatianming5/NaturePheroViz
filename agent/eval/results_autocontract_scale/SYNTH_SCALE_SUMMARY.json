@@ -1,19 +1,25 @@
 {
-  "pooled_n": 46,
+  "pooled_n": 92,
   "core": [
-    35,
-    46
+    77,
+    92
   ],
   "full": [
-    34,
-    46
+    75,
+    92
   ],
   "core_ci": [
-    76.1,
-    62.1,
-    86.1
+    83.7,
+    74.8,
+    89.9
   ],
   "per_vendor": [
+    {
+      "model": "gpt-5.3-codex",
+      "n": 23,
+      "core": 20,
+      "full": 19
+    },
     {
       "model": "gemini-3.1-pro-preview",
       "n": 23,
@@ -25,6 +31,12 @@
       "n": 23,
       "core": 18,
       "full": 18
+    },
+    {
+      "model": "gpt-5.5",
+      "n": 23,
+      "core": 22,
+      "full": 22
     }
   ]
 }

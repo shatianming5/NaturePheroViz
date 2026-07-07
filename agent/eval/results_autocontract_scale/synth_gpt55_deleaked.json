@@ -1,0 +1,250 @@
+{
+  "model": "gpt-5.5",
+  "intent_mode": "deleaked",
+  "n_operators": 23,
+  "auto_full_correct": 22,
+  "auto_full_ci": [
+    96,
+    79,
+    99
+  ],
+  "auto_core_correct": 22,
+  "auto_core_ci": [
+    96,
+    79,
+    99
+  ],
+  "exec_ok": 23,
+  "cases": [
+    {
+      "op": "weighted_mean",
+      "cid": "CORE-weighted_mean",
+      "core_correct": true,
+      "fired_on_wrong": true,
+      "fired_on_correct": false,
+      "alt_robust": true,
+      "correct": true,
+      "exec_ok": true
+    },
+    {
+      "op": "within_group_share",
+      "cid": "CORE-within_group_share",
+      "core_correct": true,
+      "fired_on_wrong": true,
+      "fired_on_correct": false,
+      "alt_robust": true,
+      "correct": true,
+      "exec_ok": true
+    },
+    {
+      "op": "pct_point",
+      "cid": "CORE-pct_point",
+      "core_correct": true,
+      "fired_on_wrong": true,
+      "fired_on_correct": false,
+      "alt_robust": true,
+      "correct": true,
+      "exec_ok": true
+    },
+    {
+      "op": "dedup_then_agg",
+      "cid": "CORE-dedup_then_agg",
+      "core_correct": true,
+      "fired_on_wrong": true,
+      "fired_on_correct": false,
+      "alt_robust": true,
+      "correct": true,
+      "exec_ok": true
+    },
+    {
+      "op": "left_join_keep_all",
+      "cid": "CORE-left_join_keep_all",
+      "core_correct": true,
+      "fired_on_wrong": true,
+      "fired_on_correct": false,
+      "alt_robust": true,
+      "correct": true,
+      "exec_ok": true
+    },
+    {
+      "op": "pooled_rate",
+      "cid": "CORE-pooled_rate",
+      "core_correct": true,
+      "fired_on_wrong": true,
+      "fired_on_correct": false,
+      "alt_robust": true,
+      "correct": true,
+      "exec_ok": true
+    },
+    {
+      "op": "median_not_mean",
+      "cid": "CORE-median_not_mean",
+      "core_correct": true,
+      "fired_on_wrong": true,
+      "fired_on_correct": false,
+      "alt_robust": true,
+      "correct": true,
+      "exec_ok": true
+    },
+    {
+      "op": "cumulative_running",
+      "cid": "CORE-cumulative_running",
+      "core_correct": true,
+      "fired_on_wrong": true,
+      "fired_on_correct": false,
+      "alt_robust": true,
+      "correct": true,
+      "exec_ok": true
+    },
+    {
+      "op": "topn_with_ties",
+      "cid": "CORE-topn_with_ties",
+      "core_correct": true,
+      "fired_on_wrong": true,
+      "fired_on_correct": false,
+      "alt_robust": true,
+      "correct": true,
+      "exec_ok": true
+    },
+    {
+      "op": "nan_as_zero_sum",
+      "cid": "CORE-nan_as_zero_sum",
+      "core_correct": true,
+      "fired_on_wrong": true,
+      "fired_on_correct": false,
+      "alt_robust": true,
+      "correct": true,
+      "exec_ok": true
+    },
+    {
+      "op": "count_includes_empty",
+      "cid": "CORE-count_includes_empty",
+      "core_correct": true,
+      "fired_on_wrong": true,
+      "fired_on_correct": false,
+      "alt_robust": true,
+      "correct": true,
+      "exec_ok": true
+    },
+    {
+      "op": "proportion_true",
+      "cid": "CORE-proportion_true",
+      "core_correct": true,
+      "fired_on_wrong": true,
+      "fired_on_correct": false,
+      "alt_robust": true,
+      "correct": true,
+      "exec_ok": true
+    },
+    {
+      "op": "index_align",
+      "cid": "D1-1",
+      "core_correct": true,
+      "fired_on_wrong": true,
+      "fired_on_correct": false,
+      "alt_robust": true,
+      "correct": true,
+      "exec_ok": true
+    },
+    {
+      "op": "dtype_coerce",
+      "cid": "D1-2",
+      "core_correct": false,
+      "fired_on_wrong": false,
+      "fired_on_correct": false,
+      "alt_robust": true,
+      "correct": false,
+      "exec_ok": true
+    },
+    {
+      "op": "groupby_dropna_key",
+      "cid": "D1-3",
+      "core_correct": true,
+      "fired_on_wrong": true,
+      "fired_on_correct": false,
+      "alt_robust": true,
+      "correct": true,
+      "exec_ok": true
+    },
+    {
+      "op": "order_dependent_dedup",
+      "cid": "D1-4",
+      "core_correct": true,
+      "fired_on_wrong": true,
+      "fired_on_correct": false,
+      "alt_robust": true,
+      "correct": true,
+      "exec_ok": true
+    },
+    {
+      "op": "resample_boundary",
+      "cid": "D1-5",
+      "core_correct": true,
+      "fired_on_wrong": true,
+      "fired_on_correct": false,
+      "alt_robust": true,
+      "correct": true,
+      "exec_ok": true
+    },
+    {
+      "op": "string_normalize_join",
+      "cid": "D1-6",
+      "core_correct": true,
+      "fired_on_wrong": true,
+      "fired_on_correct": false,
+      "alt_robust": true,
+      "correct": true,
+      "exec_ok": true
+    },
+    {
+      "op": "join_fanout",
+      "cid": "D2-1",
+      "core_correct": true,
+      "fired_on_wrong": true,
+      "fired_on_correct": false,
+      "alt_robust": true,
+      "correct": true,
+      "exec_ok": true
+    },
+    {
+      "op": "null_in_agg_count",
+      "cid": "D2-2",
+      "core_correct": true,
+      "fired_on_wrong": true,
+      "fired_on_correct": false,
+      "alt_robust": true,
+      "correct": true,
+      "exec_ok": true
+    },
+    {
+      "op": "scale_before_split_leakage",
+      "cid": "D2-3",
+      "core_correct": true,
+      "fired_on_wrong": true,
+      "fired_on_correct": false,
+      "alt_robust": true,
+      "correct": true,
+      "exec_ok": true
+    },
+    {
+      "op": "latlon_swap",
+      "cid": "D2-5",
+      "core_correct": true,
+      "fired_on_wrong": true,
+      "fired_on_correct": false,
+      "alt_robust": true,
+      "correct": true,
+      "exec_ok": true
+    },
+    {
+      "op": "lookahead_return",
+      "cid": "D2-6",
+      "core_correct": true,
+      "fired_on_wrong": true,
+      "fired_on_correct": false,
+      "alt_robust": true,
+      "correct": true,
+      "exec_ok": true
+    }
+  ]
+}
