@@ -57,8 +57,8 @@ intent, not a stored label, and can be auto-synthesized from a natural-language
 goal. Across two independent real-data slices (up to 1{,}855 checks) the
 contracts detect silent errors at \textbf{98--99\% recall / near-zero
 (0.2\%) false-positive} where existing checks are structurally blind---about
-half of these checks via \emph{pure relational invariants} that compute no
-reference value (99.8\% recall) and half via \emph{parameterized recomputation}
+a third of these checks via \emph{pure relational invariants} that compute no
+reference value (99.8\% recall) and the rest via \emph{parameterized recomputation}
 from the known operator, which we are explicit about (96.6\%). We show the contracts can be
 synthesized from a high-level goal (78--83\% correct, $N{=}23$, one-shot),
 transfer across execution substrates unchanged (pandas${\to}$SQL, 10/10
@@ -196,7 +196,7 @@ code-/visual-similarity judges (MatPlotAgent, Plot2Code, ChartMimic, VisEval)
 \cite{yang2024matplotbench,wu2024plot2code,shi2024chartmimic,chen2024viseval}
 score whether a figure \emph{looks} right, not whether the plotted numbers
 \emph{equal} the data. We measure and detect the upstream data-transform error
-such judges cannot see.
+such judges cannot see. Table~\ref{tab:position} summarizes these distinctions.
 
 \begin{table}[t]\centering\small
 \setlength{\tabcolsep}{3.2pt}
@@ -403,7 +403,7 @@ Deployed, the system receives only a messy request $\iota$ and a raw table $D$
 (3) synthesizes $C_{\hat o}$, and (4) checks $r$. When a contract fires, the
 same signal drives \emph{repair}: the violated invariant is fed back as a
 targeted prompt, and best-of-$N$ selection uses the contract (not gold) to pick
-among candidate fixes.
+among candidate fixes. Figure~\ref{fig:worked} walks through one real case end to end.
 
 \begin{figure}[t]\centering
 \begin{tikzpicture}[node distance=4.3mm and 3.2mm,>=Latex,
@@ -528,7 +528,7 @@ smuggled in through recomputation---while the \emph{recomputation} contracts
 (weighted-mean, pooled-rate, median, nan-as-zero) detect at
 $900/932=\mathbf{96.6\%}$. Both need \emph{no per-task human-labeled answer}; the
 honest distinction is whether a reference \emph{value} is derived, and we state
-plainly that roughly half of the headline checks are recomputations whose
+plainly that roughly two-thirds of the headline checks are recomputations whose
 strength presupposes a known operator (Sec.~\ref{sec:e2e} measures what happens
 when it must be inferred).
 
