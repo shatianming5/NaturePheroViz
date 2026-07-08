@@ -24,6 +24,34 @@ from eval.baseline_compare import (d_ours, d_exec_pass, d_validity, _self_check,
 DETECTORS = ["ours", "exec_pass", "validity", "self_check", "consistency"]
 
 
+def _write_report(out: Path, wrong: int, right: int, fire_wrong, fire_right,
+                  rows, models, k: int, partial: bool = False):
+    """Serialize the report + records. Called periodically (checkpoint) and at the end so an
+    interrupted run still leaves a valid writer-generated artifact (no log-recovery needed)."""
+    def pct(n, d): return f"{100*n/d:.0f}%" if d else "n/a"
+    header = "# Baseline detectors on REAL Nature tasks (closes e1-F4)"
+    if partial:
+        header += f" — CHECKPOINT (in progress, {len(rows)} rows so far)"
+    lines = [header + "\n",
+             f"Real Nature Source-Data tables; silent (wrong): {wrong} | correct: {right} | "
+             f"models={models} | K={k}.\n",
+             "| detector | recall (flags/silent) | false-positive (flags/correct) |",
+             "|---|---|---|"]
+    for d in DETECTORS:
+        lines.append(f"| {d} | {fire_wrong[d]}/{wrong} ({pct(fire_wrong[d],wrong)}) | "
+                     f"{fire_right[d]}/{right} ({pct(fire_right[d],right)}) |")
+    lines += ["\n## Reading",
+              "- exec_pass / validity / consistency recall on REAL data confirms (or revises) the",
+              "  synthetic-grid 0% — these numbers are now genuinely on Nature tables (not the grid).",
+              "- self_check recall/FP is the real-data self-critique baseline.",
+              "- ours = the goldless operator contracts (should stay high recall / near-0 FP)."]
+    out.mkdir(parents=True, exist_ok=True)
+    (out / "baseline_real_report.md").write_text("\n".join(lines), encoding="utf-8")
+    (out / "baseline_real_records.json").write_text(
+        json.dumps(rows, ensure_ascii=False, indent=2, default=str), encoding="utf-8")
+    return lines
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--pairs-root", default="../data/nature_pairs/articles")
@@ -32,6 +60,8 @@ def main():
     ap.add_argument("--k", type=int, default=5, help="K samples for the consistency detector")
     ap.add_argument("--models", default=None, help="comma-separated (default = ambiguity_calibration.MODELS)")
     ap.add_argument("--out", default="eval/results_baseline_real")
+    ap.add_argument("--checkpoint-every", type=int, default=10,
+                    help="write a partial report every N tasks (crash-safe; 0 disables)")
     a = ap.parse_args()
     models = [m.strip() for m in a.models.split(",")] if a.models else MODELS
 
@@ -42,7 +72,8 @@ def main():
     wrong = right = 0
     fire_wrong = Counter(); fire_right = Counter()
     rows = []
-    for t in tasks:
+    out = Path(a.out)
+    for ti, t in enumerate(tasks, 1):
         for cond in ("ambiguous", "clarified"):
             for m in models:
                 code = _llm_code(t, t[cond], m)
@@ -72,25 +103,11 @@ def main():
                 print(f"  [{str(t.get('op'))[:18]:18}] {cond:10} {m:20} "
                       f"{'ok' if correct else 'SILENT':7} "
                       + " ".join(f"{d}={int(flags[d])}" for d in DETECTORS), flush=True)
+        if a.checkpoint_every and ti % a.checkpoint_every == 0:
+            _write_report(out, wrong, right, fire_wrong, fire_right, rows, models, a.k, partial=True)
+            print(f"  [checkpoint] {ti}/{len(tasks)} tasks -> {out}/baseline_real_report.md", flush=True)
 
-    def pct(n, d): return f"{100*n/d:.0f}%" if d else "n/a"
-    lines = ["# Baseline detectors on REAL Nature tasks (closes e1-F4)\n",
-             f"Real Nature Source-Data tables; silent (wrong): {wrong} | correct: {right} | "
-             f"models={models} | K={a.k}.\n",
-             "| detector | recall (flags/silent) | false-positive (flags/correct) |",
-             "|---|---|---|"]
-    for d in DETECTORS:
-        lines.append(f"| {d} | {fire_wrong[d]}/{wrong} ({pct(fire_wrong[d],wrong)}) | "
-                     f"{fire_right[d]}/{right} ({pct(fire_right[d],right)}) |")
-    lines += ["\n## Reading",
-              "- exec_pass / validity / consistency recall on REAL data confirms (or revises) the",
-              "  synthetic-grid 0% — these numbers are now genuinely on Nature tables (not the grid).",
-              "- self_check recall/FP is the real-data self-critique baseline.",
-              "- ours = the goldless operator contracts (should stay high recall / near-0 FP)."]
-    out = Path(a.out); out.mkdir(parents=True, exist_ok=True)
-    (out / "baseline_real_report.md").write_text("\n".join(lines), encoding="utf-8")
-    (out / "baseline_real_records.json").write_text(
-        json.dumps(rows, ensure_ascii=False, indent=2, default=str), encoding="utf-8")
+    lines = _write_report(out, wrong, right, fire_wrong, fire_right, rows, models, a.k, partial=False)
     print("\n" + "\n".join(lines))
     print(f"\n[saved] {out}/baseline_real_report.md")
     return 0
