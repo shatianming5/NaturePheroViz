@@ -50,3 +50,19 @@ DS-1000 NL coverage 17% keyword but ref-code precision 10% → true 2% < hand-pa
 - W2 real firing: w2_firing.py with --out-json + Wilson CI + incremental write. pilot N=12 recall 3/6=50% FP0/2; scaled N=30 recall 2/5=40% [12-77], FP 1/6=17% [3-56], crash 19/30 (free-model limit). raw results_w2_firing/firing.json. Honest: small N, API model = cheapest scale-up.
 - master rows 13-14 updated with CIs. 35 tests pass. No API key used.
 - Net: qualitative residuals CLOSED with real LLM evidence + audit trail; quantitative N bounded by free-model crash rate (disclosed, not hidden).
+
+## Round 4 — 2026-07-09 (fresh aris-reviewer on measurement-first paper, post Gap A/B sync)
+Reviewer: aris-reviewer. **Score 7.5/10 · ALMOST.** Internal consistency VERIFIED (77/0/98/80/75/57 all match artifacts; opus 5th vendor + baseline_real 119 correctly reflected in N=115).
+
+### Ranked gaps + closure
+- **[BLOCKING] Ecological validity of 77% headline** — prevalence is on author-designed ambiguous *prompts* (tables are real). CLOSED (writing): abstract + intro now say "author-designed ambiguous requests"; Limitations elevated to a "Ecological validity of the prevalence measurement" threats-to-validity paragraph. (Stronger option, NOT done: sample 20-30 real analyst prompts to report an ambiguity rate — optional experiment.)
+- **[DECISIVE] Self-critique baseline under-specified** — CLOSED (writing): §Measurement now documents the exact self-critique setup (same model shown the *clarified* request + result preview, one-turn JSON verdict). Key rebuttal made explicit: the judge is handed the *disambiguated* intent (favorable) and still 61%/40%. (Optional CODE part pending: run one stronger CoT self-check variant on the 119-task slice — needs API key.)
+- **[DECISIVE] Missing Daikon / invariant-mining citation** — CLOSED (writing): §Related Work adds Daikon (ernst2007daikon) sentence + \bibitem + references.bib entry. NOTE: build uses a MANUAL thebibliography (main.tex:806+), so references.bib is vestigial for compilation — new cites need a \bibitem.
+- **[DECISIVE] Abstract implies 98-99% detection is unconditional** — CLOSED (writing): abstract already had "under a known operator" inline; added explicit contrast at the e2e sentence ("early-warning floor, far below the known-operator regime").
+- **[NICE] Per-vendor Tab.3 CIs** — CLOSED (writing): caption notes per-model rates (N=20-23) are directional; primary claims pool to N=115.
+- **[NICE] DS-1000 26% prevalence absent from evidence ledger** — CLOSED: master_table.md row 25 (results_ds1000, 70/273=26% [21-31]).
+- **[NICE] Gold-label reliability** — CLOSED (writing): Limitations discloses no second-rater agreement study (4/1855 FP not independently adjudicated).
+
+### Build/verify
+tectonic clean, 8 pages, 0 undefined refs, headline numbers render. Cheapest next lever per reviewer = the two abstract framing fixes (done). Remaining OPTIONAL experiment: stronger self-critique CoT variant (needs LLM key); would further defend the invisibility claim but reviewer says gap is already robust.
+

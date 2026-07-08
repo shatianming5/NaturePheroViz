@@ -45,8 +45,10 @@ analyses and figures---group-wise medians, weighted means, joins, pooled rates.
 We show that a large fraction of this code is \emph{silently} wrong: it runs
 without error and produces plausibly-shaped output, yet computes a different
 quantity than the user asked for. On real Nature source-data tables, frontier
-models emit such silent semantic errors in \textbf{77\%} of \emph{ambiguously}
-phrased data-transform tasks (10\% when the request is disambiguated), and the
+models emit such silent semantic errors in \textbf{77\%} of data-transform tasks
+phrased with \emph{author-designed ambiguous} requests---templates that model how
+a hurried analyst under-specifies intent (10\% when the request is
+disambiguated)---and the
 failure is \emph{invisible} to every simple safeguard: deterministic checks
 (execution, shape, range, self-consistency) catch \textbf{0\%}, and LLM
 self-critique misses 39\% while false-flagging 40\%---a pervasive, invisible
@@ -67,7 +69,9 @@ transfer across execution substrates unchanged (pandas${\to}$SQL, 10/10
 operators), and drive a zero-training repair recipe (75\% vs.\ 12\% for strong
 self-debug). Finally, we run the \emph{entire} pipeline---infer operator, ground
 column roles, synthesize contract, detect---from only a messy request and a raw
-table, catching 51--58\% of silent errors with nothing structured provided. We
+table, catching 51--58\% of silent errors with nothing structured provided---a
+useful early-warning floor, far below the known-operator regime rather than a
+deployable replacement for it. We
 frame the work \emph{measurement-first}---a common, invisible failure quantified,
 with operator intent (once recovered) making it checkable without a per-task gold
 answer---and release the measurement suite and code.
@@ -128,7 +132,7 @@ request.
 \paragraph{Contributions.}
 \begin{enumerate}
 \item \textbf{A measurement study} of silent semantic errors in LLM
-data-transform code: 77\% under ambiguous requests (10\% disambiguated),
+data-transform code: 77\% under author-designed ambiguous requests (10\% disambiguated),
 32--65\% across eight models and four vendors, 26\% on external DS-1000;
 deterministic
 checks detect 0\%, self-critique 61\% recall at 40\% false-positive
@@ -175,7 +179,11 @@ exactly the properties that silent semantic errors preserve. We instead check
 \paragraph{Property-based and metamorphic testing.} Property-based testing
 \cite{claessen2000quickcheck} and design-by-contract \cite{meyer1992dbc} predate
 us by decades; metamorphic testing \cite{chen1998metamorphic} verifies relations
-between outputs without a gold oracle. Our mechanism is in this family. Our
+between outputs without a gold oracle. Invariant mining (Daikon;
+\cite{ernst2007daikon}) automatically discovers likely assertions from a corpus
+of \emph{correct} executions; we instead derive the assertion from
+natural-language \emph{intent}, with no correct execution to mine. Our mechanism
+is in this family. Our
 contribution is not the mechanism of asserting a property but (i) an
 \emph{empirically-grounded} taxonomy of the operator-level slips LLMs actually
 make, (ii) checks that need \emph{no per-task gold and can be
@@ -286,8 +294,12 @@ is shaped correctly, and is \emph{stably} wrong. Multi-sample consistency stays 
 $0\%$ even when the $K$ samples are drawn at temperature $0.8$ (recall $0/38$):
 the silent errors are \emph{common-mode}---the model resamples the same wrong
 transform ($92\%$ of tasks give identical output even at $T{=}0.8$), so
-disagreement-based checks never fire. LLM self-critique catches 61\%
-but false-flags 40\%, unusable as a gate. Re-running the same five detectors
+disagreement-based checks never fire. LLM self-critique---the same model, shown
+the \emph{clarified} request and a preview of the produced table and asked in one
+turn for a JSON correct/incorrect verdict---catches 61\%
+but false-flags 40\%, unusable as a gate; note this is a \emph{favorable} setup
+(the judge is handed the disambiguated intent, not the ambiguous one) and it
+still fails. Re-running the same five detectors
 \emph{directly} on the real Nature slice (119 tasks) confirms this is not an
 artifact of the synthetic grid: execution, validity, and multi-sample consistency
 stay at $0\%$ recall on real data, and self-critique is if anything worse in the
@@ -355,7 +367,8 @@ Gemini-3.1-Pro & Google & 40\% & $0/28$\\
 \caption{Silent-error rate is a property of the task family, not one model:
 40--60\% across five frontier models from three vendors on the harder
 expansion-operator grid ($N{=}20$/model; the same models score 32--42\% on the
-core grid). The
+core grid). Per-model rates ($N{=}20$--$23$) are directional; primary claims pool
+to $N{=}115$ (Sec.~\ref{sec:e2e-decomp}). The
 contract's false-positive rate is \textbf{0} on \emph{every} vendor---the
 detector is not tuned to one model's output style.}
 \label{tab:crossmodel}
@@ -738,9 +751,18 @@ numeric roles the request may not fix which column is which; we score this as
 ambiguity. \textbf{End-to-end ceiling.} The 51--58\% zero-structure figure is an
 early-warning floor, well below the structured-intent regime, and its dominant
 failure is invariant synthesis, not operator inference.
-\textbf{Prevalence conditioning.} The 77\% headline is under ambiguous phrasing
-(10\% clarified); characterizing the ambiguity distribution of real analyst
-requests is future work.
+\textbf{Ecological validity of the prevalence measurement.} The 77\% headline is
+the paper's primary contribution, so what it is conditioned on matters: the
+Nature \emph{tables} are real, but the ambiguous \emph{requests} are author-written
+templates designed to model how a hurried analyst under-specifies intent, not a
+sampled corpus of deployed analyst prompts. The clarified-phrasing drop to 10\%
+shows the ambiguity---not task difficulty---drives the errors, but it does not
+establish how often real requests are this ambiguous; quantifying the ambiguity
+distribution of deployed requests is the key threat to external validity and is
+future work. \textbf{Gold-label reliability.} Gold is the author-written template
+transform; we did not run a second-rater agreement study, so the $4/1855$
+false-positives---attributed above to degenerate tables---are not independently
+adjudicated.
 \textbf{Reproducibility and precision.} Frontier generations use default API
 sampling (reasoning models are not bit-reproducible even at temperature 0), so we
 repeat the synthesis/ablation $k{=}3\times$ and report mean$\pm$sd: zero-shot
@@ -791,6 +813,7 @@ released.
 \bibitem{meyer1992dbc} B.~Meyer. Applying Design by Contract. IEEE Computer, 25(10):40--51, 1992.
 \bibitem{claessen2000quickcheck} K.~Claessen and J.~Hughes. QuickCheck: Lightweight Random Testing of Haskell Programs. ICFP, 2000.
 \bibitem{chen1998metamorphic} T.~Y.~Chen, S.~C.~Cheung, and S.~M.~Yiu. Metamorphic Testing. Tech.\ Rep.\ HKUST-CS98-01, 1998.
+\bibitem{ernst2007daikon} M.~D.~Ernst et al. The Daikon System for Dynamic Detection of Likely Invariants. Science of Computer Programming, 69(1--3):35--45, 2007.
 \bibitem{wang2023selfconsistency} X.~Wang et al. Self-Consistency Improves Chain-of-Thought Reasoning. ICLR, 2023.
 \bibitem{madaan2023selfrefine} A.~Madaan et al. Self-Refine: Iterative Refinement with Self-Feedback. NeurIPS, 2023.
 \bibitem{zheng2023judge} L.~Zheng et al. Judging LLM-as-a-Judge with MT-Bench and Chatbot Arena. NeurIPS, 2023.
