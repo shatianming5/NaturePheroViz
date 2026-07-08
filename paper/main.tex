@@ -67,7 +67,7 @@ transfer across execution substrates unchanged (pandas${\to}$SQL, 10/10
 operators), and drive a zero-training repair recipe (75\% vs.\ 12\% for strong
 self-debug). Finally, we run the \emph{entire} pipeline---infer operator, ground
 column roles, synthesize contract, detect---from only a messy request and a raw
-table, catching 51--59\% of silent errors with nothing structured provided. We
+table, catching 51--58\% of silent errors with nothing structured provided. We
 frame the work \emph{measurement-first}---a common, invisible failure quantified,
 with operator intent (once recovered) making it checkable without a per-task gold
 answer---and release the measurement suite and code.
@@ -143,7 +143,7 @@ auto-synthesized from a high-level goal (78--83\%, $N{=}23$, one-shot; stable
 across GPT and Gemini), and the operator (98\%) and column roles (74--83\%) can
 be recovered from a keyword-free request (Sec.~\ref{sec:synth}--\ref{sec:e2e}).
 \item \textbf{An end-to-end pipeline} run on \emph{real} Nature tables from only
-a messy request and a raw table---nothing structured given---catching 51--59\%
+a messy request and a raw table---nothing structured given---catching 51--58\%
 of silent errors, plus \textbf{substrate-agnostic transfer}
 (pandas${\to}$SQL, 10/10 operators, zero SQL-specific code) and a
 \textbf{zero-training repair recipe} (targeted 75\% vs.\ 12\% strong self-debug;
@@ -287,7 +287,12 @@ $0\%$ even when the $K$ samples are drawn at temperature $0.8$ (recall $0/38$):
 the silent errors are \emph{common-mode}---the model resamples the same wrong
 transform ($92\%$ of tasks give identical output even at $T{=}0.8$), so
 disagreement-based checks never fire. LLM self-critique catches 61\%
-but false-flags 40\%, unusable as a gate.
+but false-flags 40\%, unusable as a gate. Re-running the same five detectors
+\emph{directly} on the real Nature slice (119 tasks) confirms this is not an
+artifact of the synthetic grid: execution, validity, and multi-sample consistency
+stay at $0\%$ recall on real data, and self-critique is if anything worse in the
+wild (62\% recall at 67\% false-positive), while our contracts hold at
+$100\%$/$0\%$.
 
 \begin{figure}[t]\centering
 \begin{tikzpicture}[scale=1.0]
@@ -327,9 +332,11 @@ LLM self-critique & 61\% & 40\%\\
 \bottomrule
 \end{tabular}
 \caption{Detection of silent semantic errors. Deterministic checks and
-self-critique are measured on the operator grid (synthetic instances); the
-\textbf{ours} row (98--99\%) is on real Nature data (Sec.~\ref{sec:detect}).
-Deterministic checks are structurally blind; self-critique is too noisy to gate on.}
+self-critique are shown on the operator grid; a 119-task real-Nature re-run gives
+the same profile ($0\%$ recall / $62\%$ recall at $67\%$ FP), so the $0\%$ is not
+a synthetic artifact. The \textbf{ours} row (98--99\%) is on real Nature data
+(Sec.~\ref{sec:detect}). Deterministic checks are structurally blind;
+self-critique is too noisy to gate on.}
 \label{tab:baselines}
 \end{table}
 
@@ -602,7 +609,7 @@ Table~\ref{tab:e2e} runs the full pipeline with nothing template-given. On
 generated fixtures the full system catches 61\%; on \emph{real} Nature tables
 58\%; and when even the column roles are inferred (so the input is \emph{only} a
 messy sentence and a raw table), 51\%---just 3 points below the params-given
-setting. We frame 51--59\% honestly as a \emph{useful early-warning floor}, not
+setting. We frame 51--58\% honestly as a \emph{useful early-warning floor}, not
 a deployable figure: roughly half of silent errors still pass, and the
 deployable regime remains the structured-intent $98\%/0.2\%$. The value of the
 end-to-end result is scientific---it shows the pipeline degrades gracefully and
@@ -619,30 +626,30 @@ Synthetic fixtures ($N{=}23$) & 83\% & 74\% & 61\% [41--78]\\
 Real Nature tables ($N{=}33$) & 76\% & 70\% & 58\% [41--73]\\
 \;+ inferred roles ($N{=}35$) & \multicolumn{2}{c}{roles 74/83\%} & \textbf{51\% [36--67]}\\
 \midrule
-Cross-vendor pooled ($N{=}92$, 4 models) & 79\% & 73\% & \textbf{59\% [49--68]}\\
+Cross-vendor pooled ($N{=}115$, 5 vendors) & 80\% & 70\% & \textbf{57\% [48--66]}\\
 \bottomrule
 \end{tabular}
 \caption{End-to-end zero-template detection. Operator and contract are inferred
 throughout; the $N{=}35$ row additionally infers column roles (only the messy
-request and raw table are given). The cross-vendor pooled row (four models across
-OpenAI and Google, $N{=}92$; column roles given) quadruples the
-sample and tightens the interval; per-vendor full-system spans $48$--$70\%$.}
+request and raw table are given). The cross-vendor pooled row (five models across
+OpenAI, Google, and Anthropic, $N{=}115$; column roles given) tightens the
+interval; per-vendor full-system spans $48$--$70\%$.}
 \label{tab:e2e}
 \end{table}
 
 \paragraph{Scaling and where the loss is.}\label{sec:e2e-decomp}
-Pooling the zero-template pipeline across four models (three OpenAI, one Google;
-$N{=}92$) tightens the full-system estimate to $\mathbf{59\%}$ [49--68] (interval
-width $19$ vs.\ $38$ at $N{=}23$) and, more usefully, lets us \emph{decompose}
-the miss. Of the 38 full-system misses, $\mathbf{50\%}$ are contract-\emph{synthesis}
+Pooling the zero-template pipeline across five models (three OpenAI, one Google,
+one Anthropic; $N{=}115$) tightens the full-system estimate to $\mathbf{57\%}$ [48--66]
+(interval width $18$ vs.\ $38$ at $N{=}23$) and, more usefully, lets us \emph{decompose}
+the miss. Of the 49 full-system misses, $\mathbf{53\%}$ are contract-\emph{synthesis}
 failures (the operator was inferred correctly but the auto-synthesized invariant
-was wrong), $\mathbf{34\%}$ are operator-\emph{inference} failures (the
+was wrong), $\mathbf{31\%}$ are operator-\emph{inference} failures (the
 auto-synthesized contract \emph{would} have fired had the operator been known), and $16\%$ fail at
 both stages. So in the zero-structure regime the larger share of misses is
-\emph{invariant synthesis} rather than operator inference (19 vs.\ 13 misses; the
+\emph{invariant synthesis} rather than operator inference (26 vs.\ 15 misses; the
 intervals overlap, so this is directional), pointing at the concrete target for future work. De-leaked synthesis alone, scaled
-to the same $N{=}92$ cross-model set, holds at $84\%$ [75--90] CORE (GPT-5.5 $96\%$,
-codex $87\%$, GPT-5.4 $78\%$, Gemini $74\%$), confirming the feasibility number was not a
+to the same $N{=}115$ cross-vendor set, holds at $80\%$ [72--86] CORE (GPT-5.5 $96\%$,
+codex $87\%$, GPT-5.4 $78\%$, Gemini $74\%$, Opus $65\%$), confirming the feasibility number was not a
 single-model artifact.
 
 \paragraph{Exemplar prompting does not fix synthesis (ablation).} The natural fix
@@ -722,12 +729,13 @@ real input \emph{tables} under a known operator (the pure-invariant contract is
 the non-circular core), while cross-\emph{operator} generalization is
 Sec.~\ref{sec:e2e}.
 \textbf{Small samples.} Per-condition slices start small
-($N{=}23$--$35$); we mitigate by pooling across four models---synthesis and
-end-to-end to $N{=}92$, repair to $N{=}65$ (Sec.~\ref{sec:e2e-decomp}, interval
-width $38{\to}19$)---but still report every CI rather than significance.
+($N{=}23$--$35$); we mitigate by pooling across vendors---synthesis and
+end-to-end to $N{=}115$ (five vendors), repair to $N{=}65$ (four models)
+(Sec.~\ref{sec:e2e-decomp}, interval width $38{\to}18$)---but still report every
+CI rather than significance.
 \textbf{Symmetric roles.} For operators with interchangeable
 numeric roles the request may not fix which column is which; we score this as
-ambiguity. \textbf{End-to-end ceiling.} The 51--59\% zero-structure figure is an
+ambiguity. \textbf{End-to-end ceiling.} The 51--58\% zero-structure figure is an
 early-warning floor, well below the structured-intent regime, and its dominant
 failure is invariant synthesis, not operator inference.
 \textbf{Prevalence conditioning.} The 77\% headline is under ambiguous phrasing
