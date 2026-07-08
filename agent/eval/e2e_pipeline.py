@@ -29,7 +29,7 @@ import pandas as pd  # noqa
 from eval.operator_expansion import CANDIDATES
 from eval.w2_firing import _chat_api, classify_op_llm
 from eval.autocontract_synth import (SYNTH_PROMPT, DELEAKED_INTENT, _schema, _result_schema,
-                                     _run_auto, _as_frame, wilson)
+                                     _run_auto, _as_frame, wilson, _parse_code)
 
 # The messy-query generator sees ONLY the de-leaked high-level goal (already formula/keyword-
 # free) and must paraphrase it into a rushed, underspecified analyst request. It never sees the
@@ -63,18 +63,16 @@ def synth_from_text(cand, intent_text, model):
     kind, rcols = _result_schema(cand.correct_fn(inp))
     prompt = SYNTH_PROMPT.format(intent=intent_text, cols=cols, extra=extra,
                                  params=cand.params, kind=kind, rcols=rcols)
-    out = _chat_api([{"role": "user", "content": prompt}], model, max_tok=4000)
-    m = re.search(r"\{.*\}", out or "", re.S)
-    code = None
-    if m:
-        try:
-            code = json.loads(m.group(0)).get("code")
-        except Exception:
-            code = None
-    if code is None:
-        m2 = re.search(r"def contract.*", out or "", re.S)
-        code = m2.group(0) if m2 else None
-    return code
+    # reasoning-heavy models (opus/sonnet) sometimes spend the whole budget "thinking" and emit
+    # empty content on a long structured prompt. Retry with a terse directive + bigger budget.
+    for attempt in range(3):
+        p = prompt if attempt == 0 else (
+            prompt + "\n\nIMPORTANT: output ONLY the JSON object now, no analysis or explanation.")
+        out = _chat_api([{"role": "user", "content": p}], model, max_tok=4000 + attempt * 8000)
+        code = _parse_code(out)
+        if code:
+            return code
+    return None
 
 
 def evaluate(cand, code):

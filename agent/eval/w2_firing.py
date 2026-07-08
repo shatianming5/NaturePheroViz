@@ -74,9 +74,16 @@ def _chat_api(messages, model, max_tok=2000):
     base = os.environ["LLM_API_BASE"].rstrip("/"); key = os.environ["LLM_API_KEY"]
     ml = model.lower()
     reasoning = ml.startswith(("gpt-5", "o1", "o3", "o4")) or "codex" in ml
+    # opus/sonnet spend a large hidden reasoning budget before emitting the answer; on a long
+    # structured prompt they can burn ~7k tokens thinking, so a small cap yields finish=length
+    # (truncated) or even empty content (all budget went to reasoning). Give them a big budget
+    # so the structured output actually finishes (finish_reason=stop).
+    heavy = "opus" in ml or "sonnet" in ml
     payload = {"model": model, "messages": messages}
     if reasoning:
-        payload["max_completion_tokens"] = max(max_tok, 8000)
+        payload["max_completion_tokens"] = max(max_tok, 16000)
+    elif heavy:
+        payload["temperature"] = 0.0; payload["max_tokens"] = max(max_tok, 16000)
     else:
         payload["temperature"] = 0.0; payload["max_tokens"] = max_tok
     try:

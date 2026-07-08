@@ -137,6 +137,19 @@ def _result_schema(res):
     return "scalar", ["value"]
 
 
+def _parse_code(out):
+    m = re.search(r"\{.*\}", out or "", re.S)
+    if m:
+        try:
+            c = json.loads(m.group(0)).get("code")
+            if c:
+                return c
+        except Exception:
+            pass
+    m2 = re.search(r"def contract.*", out or "", re.S)
+    return m2.group(0) if m2 else None
+
+
 def synth_contract(cand, model, intent_map=INTENT):
     inp = cand.fixture()
     cols, extra = _schema(inp)
@@ -146,18 +159,16 @@ def synth_contract(cand, model, intent_map=INTENT):
     intent = intent_map.get(cand.operator, f"Correctly compute the `{cand.operator}` transform.")
     prompt = SYNTH_PROMPT.format(intent=intent, cols=cols, extra=extra,
                                  params=cand.params, kind=kind, rcols=rcols)
-    out = _chat_api([{"role": "user", "content": prompt}], model, max_tok=4000)
-    m = re.search(r"\{.*\}", out, re.S)
-    code = None
-    if m:
-        try:
-            code = json.loads(m.group(0)).get("code")
-        except Exception:
-            code = None
-    if code is None:
-        m2 = re.search(r"def contract.*", out, re.S)
-        code = m2.group(0) if m2 else None
-    return code
+    # reasoning-heavy models (opus/sonnet) sometimes spend the whole budget "thinking" and emit
+    # empty content on a long structured prompt. Retry with a terse directive + bigger budget.
+    for attempt in range(3):
+        p = prompt if attempt == 0 else (
+            prompt + "\n\nIMPORTANT: output ONLY the JSON object now, no analysis or explanation.")
+        out = _chat_api([{"role": "user", "content": p}], model, max_tok=4000 + attempt * 8000)
+        code = _parse_code(out)
+        if code:
+            return code
+    return None
 
 
 def _run_auto(code, inp, params, result):

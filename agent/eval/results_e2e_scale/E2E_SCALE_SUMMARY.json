@@ -1,25 +1,25 @@
 {
-  "pooled_n": 92,
+  "pooled_n": 115,
   "op_infer": [
-    73,
-    92
+    92,
+    115
   ],
   "synth_core": [
-    67,
-    92
+    81,
+    115
   ],
   "synth_core_given_op": [
-    54,
-    73
-  ],
-  "full_system": [
-    54,
+    66,
     92
   ],
+  "full_system": [
+    66,
+    115
+  ],
   "decomposition": {
-    "OP_only": 13,
-    "SYNTH_only": 19,
-    "BOTH": 6
+    "OP_only": 15,
+    "SYNTH_only": 26,
+    "BOTH": 8
   },
   "per_vendor": [
     {
@@ -49,6 +49,13 @@
       "op_ok": 19,
       "core": 18,
       "full": 16
+    },
+    {
+      "model": "claude-opus-4.8",
+      "n": 23,
+      "op_ok": 19,
+      "core": 14,
+      "full": 12
     }
   ]
 }
