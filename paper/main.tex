@@ -40,11 +40,12 @@ Large language models increasingly write the \emph{data-transform} code behind
 analyses and figures---group-wise medians, weighted means, joins, pooled rates.
 We show that a large fraction of this code is \emph{silently} wrong: it runs
 without error and produces plausibly-shaped output, yet computes a different
-quantity than the user asked for. On real Nature source-data tables, frontier
-models emit such silent semantic errors in \textbf{77\%} of data-transform tasks
-phrased with \emph{author-designed ambiguous} requests---templates that model how
-a hurried analyst under-specifies intent (10\% when the request is
-disambiguated)---and the
+quantity than the user asked for. The hazard is \emph{executable and gold-free}:
+an under-specified request admits several defensible readings that \emph{disagree
+materially} on the actual table, and the model \emph{silently commits} to one
+without flagging the fork. On real Nature source-data tables, frontier models
+commit away from the natural reading in \textbf{77\%} of \emph{ambiguously}-phrased
+data-transform tasks (10\% when disambiguated), and the
 failure is \emph{invisible} to every simple safeguard: deterministic checks
 (execution, shape, range, self-consistency) catch \textbf{0\%}, and LLM
 self-critique misses 39\% while false-flagging 40\%---a pervasive, invisible
@@ -58,7 +59,8 @@ goal. Across two real-data slices (up to 1{,}855 checks) they flag silent
 errors at \textbf{98--99\% recall / 0.2\% false-positive} under a \emph{known}
 operator, where existing checks are structurally blind---about
 a third via \emph{pure relational invariants} that compute no
-reference value (99.8\%, the non-circular core) and the rest via \emph{parameterized recomputation}
+reference value (a \emph{five-family} non-circular core; 99.8\% on the large real slice)
+and the rest via \emph{parameterized recomputation}
 that presupposes the operator (96.6\%). We show the contracts can be
 synthesized from a high-level goal (78--83\% correct, $N{=}23$, one-shot),
 transfer across execution substrates unchanged (pandas${\to}$SQL, 10/10
@@ -113,19 +115,23 @@ specification}: it infers the operator and column roles from a messy request,
 synthesizes the invariant from a natural-language goal, and repairs the
 code---end to end.
 
-\paragraph{What ``no gold'' means (and does not).} We are precise, because the
-framing matters. A contract needs \emph{no per-task human-labeled answer}: it is
-derived from the operator's \emph{specification}. For some operators the check is
-a pure invariant that no single implementation pins down (within-group shares
-sum to one \emph{per group}; a left join preserves every left row); for others
-the specification is strong enough that the contract \emph{recomputes} the
-expected value from the known operator and parameters and checks agreement (a
-weighted mean equals $\sum v_iw_i/\sum w_i$). In both cases the assumption is
-\emph{not} ``no reference is ever computed''---it is that the \emph{operator
-identity and column roles are known or inferred}. We therefore call the checks
-\emph{specification-derived}, and we measure separately (Sec.~\ref{sec:e2e})
-what happens when the operator and roles must themselves be recovered from the
-request.
+\paragraph{Where this sits.} The target is the reliability of \emph{LLM
+data-analysis agents}---the systems now writing the \texttt{pandas}/SQL behind
+scientific figures and reports---and the work connects three current threads:
+ambiguity-aware code generation \citep{clarifycodebench,orchid}, verifiers and
+verifiable rewards, and reference-free (goldless) verification. Our angle is a
+goldless, executable, and \emph{reward-hack-resistant} check for
+\emph{consequential intent ambiguity} in real data analysis---a signal that can
+gate, flag, or (at inference time) reward.
+
+\paragraph{What ``no gold'' means.} A contract needs \emph{no per-task
+human-labeled answer}---it derives from the operator's \emph{specification}. For
+some operators it is a \emph{pure invariant} no implementation pins down
+(within-group shares sum to one \emph{per group}; a left join keeps every left
+row); for others it \emph{recomputes} the expected value from the known operator
+and checks agreement. The assumption is not ``no reference is ever computed'' but
+that the \emph{operator and roles are known or inferred}---we measure separately
+what happens when they must be recovered (Sec.~\ref{sec:e2e}).
 
 \paragraph{Contributions.}
 \begin{enumerate}
@@ -137,8 +143,9 @@ checks detect 0\%, self-critique 61\% recall at 40\% false-positive
 (Sec.~\ref{sec:measure}).
 \item \textbf{Specification-derived operator contracts} that, \emph{given a
 known or inferred operator}, flag the errors at 98--99\% recall / 0.2\%
-false-positive on real tables---anchored by a pure relational invariant (99.8\%,
-deriving no reference value), the rest presupposing the operator---where
+false-positive on real tables---anchored by a \emph{five-family} pure-invariant
+core that derives no reference value (99.8\% on the large real slice),
+the rest presupposing the operator---where
 code-layer baselines are structurally blind (Sec.~\ref{sec:detect}).
 \item \textbf{Grounding intent into a specification}: the invariant can be
 auto-synthesized from a high-level goal (78--83\%, $N{=}23$, one-shot; stable
@@ -208,12 +215,13 @@ metamorphic testing.
 from \emph{verifiable} rewards \citep{deepseekr1} drive much of the recent gain in
 reasoning and code, and test-time verification turns extra inference compute into
 accuracy \citep{snell2024testtime}. Each assumes a checkable signal exists---unit
-tests, an answer key, or a learned reward. Our contracts supply exactly such a
-signal for data-transform code \emph{where none does}: a goldless, executable,
-operator-level verifier. We find it pays off at \emph{test time} (goldless
-selection and repair feedback, Sec.~\ref{sec:repair}) but, used as an offline
-preference label, does not yet improve an open model---a concrete data point on
-where goldless verifiers currently help.
+tests, an answer key, or a learned reward. Because our contract is a \emph{sound}
+executable invariant rather than a learned reward, it is far harder to
+\emph{reward-hack} than model-based verifiers. We find it pays off at \emph{test
+time} (goldless selection and repair feedback, Sec.~\ref{sec:repair}) but, used
+as an offline preference label, does not improve an open model---optimizing a
+goldless (necessary-but-not-sufficient) signal Goodharts---a concrete data point
+on where goldless verifiers help and where they invite reward-hacking.
 
 \paragraph{LLMs for data science and visualization.} Chart/plot benchmarks and
 code-/visual-similarity judges (MatPlotAgent, Plot2Code, ChartMimic, VisEval)
@@ -251,23 +259,36 @@ from intent, with no per-task label, as an inference-time detector.
 % =============================================================================
 A \emph{data-transform task} is a triple $(D, \iota, \theta)$: an input table (or
 tables) $D$, a natural-language intent $\iota$, and column-role parameters
-$\theta$ (which column is the group, the value, the weight, \dots). A model emits
-code $f$ with result $r=f(D)$; let $g$ be the intended transform. A
-\textbf{silent semantic error} occurs when $f$ executes without error, $r$ is
-schema-valid, yet $r\neq g(D)$ up to tolerance.
+$\theta$ (which column is the group, the value, the weight, \dots). Real intents
+are routinely \emph{under-specified}: ``a typical value per group'' admits a set
+of defensible operator readings $\mathcal{G}=\{g_1,\dots,g_k\}$ (mean vs.\ median;
+per-group vs.\ global share; pooled rate vs.\ mean-of-ratios; inner vs.\ left
+join). The task is \textbf{consequentially ambiguous} on $D$ when these readings
+\emph{disagree materially}---$\exists\,g_i,g_j\in\mathcal{G}:\
+\lVert g_i(D){-}g_j(D)\rVert>\tau$---an \emph{executable, gold-free} property
+(run the readings and compare; on our operator fixtures all forks exceed
+$\tau{=}1\%$, often by orders of magnitude). A model emits code $f$ with $r=f(D)$;
+the failure we target is a \textbf{silent commitment}: $f$ executes, $r$ is
+schema-valid, and the model commits to one reading \emph{without surfacing the
+fork}. Whether the commitment is ``wrong'' need not appeal to a stored answer---the
+readings' disagreement already establishes the hazard. As a \emph{directional}
+refinement we take the natural-phrasing reading $g\in\mathcal{G}$ as a reference
+and call $r$ a \textbf{silent semantic error} when it commits away from it
+($r\neq g(D)$); $g$ is a reference for that directional rate, \emph{not} a claim
+that it is the uniquely correct answer.
 
 A \textbf{specification-derived contract} for an operator $o$ is a function
-$C_o(D,\theta,r)\in\{\textsf{fire},\textsf{pass}\}$ encoding a checkable property
-of $o$'s semantics; it \emph{fires} iff $r$ violates it. $C_o$ uses \emph{no
-per-task gold label}: it is a function of the operator specification alone
-(instantiated at the given $\theta$). We evaluate a contract by two properties,
-measured against held-out correct and slip implementations: it \emph{fires on
-the silent slip} (recall) and \emph{passes on every valid implementation},
-including alternative correct ones (precision / false-positive robustness).
+$C_o(D,\theta,r)\in\{\textsf{fire},\textsf{pass}\}$ that identifies \emph{which
+reading} $r$ computed and fires when it is a confusable alternative to $o$'s
+intended semantics. $C_o$ uses \emph{no per-task gold label}: it is a function of
+the operator specification alone (instantiated at the given $\theta$). We evaluate
+it on held-out correct and slip implementations by two properties: it \emph{fires
+on the silent slip} (recall) and \emph{passes on every valid implementation},
+including order/representation-diverse correct ones (false-positive robustness).
 Crucially $C_o$ reads only $(D,\theta,r)$---never the code $f$---so it is
 agnostic to how $r$ was produced (Sec.~\ref{sec:sql}). The strong assumption is
-that $o$ and $\theta$ are known; Sec.~\ref{sec:e2e} removes it by inferring both
-from $\iota$.
+that the operator $o$ and roles $\theta$ (the reading menu) are known or
+inferable; Sec.~\ref{sec:e2e} removes it by inferring them from $\iota$.
 
 % =============================================================================
 \section{Measurement: How Common, How Invisible}\label{sec:measure}
@@ -276,7 +297,8 @@ from $\iota$.
 tables and instantiate operator-semantic tasks (median-vs-mean, within-group
 share, weighted mean, pooled rate, NaN-as-zero, \dots) on the real tables, so
 the tables and their columns are real scientific data, \emph{not} authored by
-us; the operator set, its gold transform, and the ambiguous/clarified prompts
+us; the operator set (24 operators grounded in observed real-data slips, not
+chosen post hoc; released), its gold transform, and the ambiguous/clarified prompts
 are fixed author-written templates instantiated on those tables (table-level
 independence, not task-level). Each task carries a matched pair of prompts: an \emph{ambiguous} phrasing
 (``a typical value per group''---the natural way a hurried analyst asks) and a
@@ -576,8 +598,14 @@ $\sum\text{num}/\sum\text{den}$. We concede the latter amounts to a
 \emph{parameterized reference computed on the fly}, not merely an invariant: its
 power is real but conditional on knowing the operator. On the real Nature sample
 the \emph{pure-invariant} contract (\texttt{within-group-share}) detects at
-$538/539=\mathbf{99.8\%}$---the cleanest evidence that the goldless signal is not
-smuggled in through recomputation---while the \emph{recomputation} contracts
+$538/539=\mathbf{99.8\%}$. Crucially this non-circular core is \emph{not one
+operator}: \textbf{five} core contracts derive no reference value---within-group
+-share, left-join-keep-all, running-total-equals-column-sum, top-$n$-with-ties,
+and count-includes-empty---and on the shared fixtures each fires on its silent
+slip while passing the intended transform \emph{and} every
+order/representation-diverse valid implementation (recall $5/5$, false-positive
+$0$; within-group-share is simply the family member with a large real-data
+sample). The \emph{recomputation} contracts
 (weighted-mean, pooled-rate, median, nan-as-zero) detect at
 $900/932=\mathbf{96.6\%}$. Both need \emph{no per-task human-labeled answer}; the
 honest distinction is whether a reference \emph{value} is derived, and we state
@@ -629,15 +657,13 @@ pooled rate's numerator-vs-denominator) that the request does not uniquely fix
 
 \subsection{End-to-end from only a request and a table}\label{sec:e2e}
 Table~\ref{tab:e2e} runs the full pipeline with nothing template-given. On
-generated fixtures the full system catches 61\%; on \emph{real} Nature tables
-58\%; and when even the column roles are inferred (so the input is \emph{only} a
-messy sentence and a raw table), 51\%---just 3 points below the params-given
-setting. We frame 51--58\% honestly as a \emph{useful early-warning floor}, not
-a deployable figure: roughly half of silent errors still pass, and the
-deployable regime remains the structured-intent $98\%/0.2\%$. The value of the
-end-to-end result is scientific---it shows the pipeline degrades gracefully and
-localizes where accuracy is lost (see below), not that a
-shipping product would rely on the floor.
+generated fixtures it catches 61\%; on \emph{real} Nature tables 58\%; and with
+column roles also inferred (only a messy sentence and a raw table), 51\%---3
+points below the params-given setting. \textbf{We treat 51--58\% as a boundary,
+not a headline}: roughly half of silent errors still pass, so the deployable
+regime remains the structured-intent $98\%/0.2\%$; the value here is
+scientific---the pipeline degrades gracefully and localizes where accuracy is
+lost (see below).
 
 \begin{table}[t]\centering\small
 \setlength{\tabcolsep}{4pt}
@@ -660,34 +686,24 @@ interval; per-vendor full-system spans $48$--$70\%$.}
 \label{tab:e2e}
 \end{table}
 
-\paragraph{Scaling and where the loss is.}
-Pooling the zero-template pipeline across five models (three OpenAI, one Google,
-one Anthropic; $N{=}115$) tightens the full-system estimate to $\mathbf{57\%}$ [48--66]
-(interval width $18$ vs.\ $38$ at $N{=}23$) and, more usefully, lets us \emph{decompose}
-the miss. Of the 49 full-system misses, $\mathbf{53\%}$ are contract-\emph{synthesis}
-failures (the operator was inferred correctly but the auto-synthesized invariant
-was wrong), $\mathbf{31\%}$ are operator-\emph{inference} failures (the
-auto-synthesized contract \emph{would} have fired had the operator been known), and $16\%$ fail at
-both stages. So in the zero-structure regime the larger share of misses is
-\emph{invariant synthesis} rather than operator inference (26 vs.\ 15 misses; the
-intervals overlap, so this is directional), pointing at the concrete target for future work. De-leaked synthesis alone, scaled
-to the same $N{=}115$ cross-vendor set, holds at $80\%$ [72--86] CORE (GPT-5.5 $96\%$,
-codex $87\%$, GPT-5.4 $78\%$, Gemini $74\%$, Opus $65\%$), confirming the feasibility number was not a
-single-model artifact.
+\paragraph{Where the loss is.}
+Pooling across five vendors ($N{=}115$) tightens the full-system estimate to
+$\mathbf{57\%}$ [48--66] (width $18$ vs.\ $38$ at $N{=}23$) and lets us
+\emph{decompose} the miss: of 49 misses, $\mathbf{53\%}$ are
+contract-\emph{synthesis} failures, $\mathbf{31\%}$ operator-\emph{inference},
+$16\%$ both---so invariant synthesis, not operator inference, is the dominant gap
+(26 vs.\ 15; intervals overlap, directional) and the concrete future-work target.
+De-leaked synthesis alone at $N{=}115$ holds at $80\%$ [72--86] CORE (GPT-5.5
+$96\%$, codex $87\%$, GPT-5.4 $78\%$, Gemini $74\%$, Opus $65\%$), so the
+feasibility number is not a single-model artifact.
 
-\paragraph{Exemplar prompting does not fix synthesis (ablation).} The natural fix
-for the synthesis bottleneck---show the synthesizer a worked contract---does
-\emph{not} help. Holding the messy request and operator fixed, adding a single
-out-of-set exemplar leaves CORE synthesis no better than zero-shot and trends
-lower. Over $k{=}3$ independent runs per vendor, zero-shot is the most stable
-arm (GPT $83{\pm}0\%$, $19/23$ every run) and exemplars fall below it (pooled
-zero-shot $72\%$ vs.\ one-shot $57{\pm}9\%$ vs.\ few-shot $54{\pm}7\%$); the
-run-to-run sd is as large as the exemplar effect, so we claim only that exemplars
-do not reliably improve synthesis---not a significant backfire.
-Zero-shot synthesis is therefore the right default; the residual failures
-concentrate on mechanically-intricate operators
-(index alignment, dtype coercion, resample boundaries) and are a fine-tuning /
-tool-use target, not a prompting fix.
+\paragraph{Exemplar prompting does not fix synthesis (ablation).} Showing the
+synthesizer a worked contract does \emph{not} help: over $k{=}3$ runs/vendor,
+zero-shot is the most stable arm (pooled $72\%$; GPT $83{\pm}0\%$) while
+one/few-shot fall to $57{\pm}9\%$/$54{\pm}7\%$---within run-to-run noise, so
+zero-shot is the right default. Residual failures concentrate on
+mechanically-intricate operators (index alignment, dtype coercion, resample
+boundaries)---a fine-tuning/tool-use target, not a prompting fix.
 
 \subsection{Substrate-agnostic transfer (pandas $\to$ SQL)}\label{sec:sql}
 Because a contract reads only $(D,\theta,r)$, the \emph{same} contracts fire on
@@ -810,14 +826,6 @@ request, transfer across execution substrates, and drive a zero-training repair
 recipe---and the whole pipeline runs end-to-end from only a messy request and a
 raw table. We frame silent-error detection as \emph{grounding an informal intent
 into a verifiable specification}, and release the measurement suite and code.
-
-\section*{Appendix: Operator Taxonomy}
-The 24 operators (23 with tabular fixtures for synthesis) are grounded in observed
-real-data slips, not chosen post hoc: a \emph{core group-aggregation} family
-(median-vs-mean, within-group-share, weighted/pooled rates, and
-dedup/tie/empty-group variants) and a \emph{framework/plumbing} family
-(index/dtype alignment, groupby-NaN keys, join fan-out, leakage/look-ahead). The
-full list, contracts, and fixtures are released.
 
 \bibliography{references}
 

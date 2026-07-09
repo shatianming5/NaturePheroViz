@@ -1,0 +1,154 @@
+{
+  "per_op": [
+    {
+      "op": "weighted_mean",
+      "kind": "recomputation",
+      "why": "== sum(v*w)/sum(w) recomputed",
+      "recall_fired": true,
+      "fp_on_correct": false,
+      "n_valid_alts": 1,
+      "fp_on_alts": 0,
+      "clean": true
+    },
+    {
+      "op": "within_group_share",
+      "kind": "pure_invariant",
+      "why": "per-group shares sum to 1 (no value recomputed)",
+      "recall_fired": true,
+      "fp_on_correct": false,
+      "n_valid_alts": 2,
+      "fp_on_alts": 0,
+      "clean": true
+    },
+    {
+      "op": "pct_point",
+      "kind": "recomputation",
+      "why": "== (a-b)*100 recomputed",
+      "recall_fired": true,
+      "fp_on_correct": false,
+      "n_valid_alts": 1,
+      "fp_on_alts": 0,
+      "clean": true
+    },
+    {
+      "op": "dedup_then_agg",
+      "kind": "recomputation",
+      "why": "== deduped groupby-sum total recomputed",
+      "recall_fired": true,
+      "fp_on_correct": false,
+      "n_valid_alts": 1,
+      "fp_on_alts": 0,
+      "clean": true
+    },
+    {
+      "op": "left_join_keep_all",
+      "kind": "pure_invariant",
+      "why": "output row-count == left row-count (structural)",
+      "recall_fired": true,
+      "fp_on_correct": false,
+      "n_valid_alts": 1,
+      "fp_on_alts": 0,
+      "clean": true
+    },
+    {
+      "op": "pooled_rate",
+      "kind": "recomputation",
+      "why": "== pooled sum/sum recomputed",
+      "recall_fired": true,
+      "fp_on_correct": false,
+      "n_valid_alts": 2,
+      "fp_on_alts": 0,
+      "clean": true
+    },
+    {
+      "op": "median_not_mean",
+      "kind": "recomputation",
+      "why": "== per-group median recomputed",
+      "recall_fired": true,
+      "fp_on_correct": false,
+      "n_valid_alts": 2,
+      "fp_on_alts": 0,
+      "clean": true
+    },
+    {
+      "op": "cumulative_running",
+      "kind": "pure_invariant",
+      "why": "last cumulative entry == column sum (conservation)",
+      "recall_fired": true,
+      "fp_on_correct": false,
+      "n_valid_alts": 1,
+      "fp_on_alts": 0,
+      "clean": true
+    },
+    {
+      "op": "topn_with_ties",
+      "kind": "pure_invariant",
+      "why": "|result| == #rows with rank<=n (cardinality)",
+      "recall_fired": true,
+      "fp_on_correct": false,
+      "n_valid_alts": 1,
+      "fp_on_alts": 0,
+      "clean": true
+    },
+    {
+      "op": "nan_as_zero_sum",
+      "kind": "recomputation",
+      "why": "== fillna(0) groupby-sum recomputed",
+      "recall_fired": true,
+      "fp_on_correct": false,
+      "n_valid_alts": 2,
+      "fp_on_alts": 0,
+      "clean": true
+    },
+    {
+      "op": "count_includes_empty",
+      "kind": "pure_invariant",
+      "why": "all categories present incl. zero-count (cardinality)",
+      "recall_fired": true,
+      "fp_on_correct": false,
+      "n_valid_alts": 1,
+      "fp_on_alts": 0,
+      "clean": true
+    },
+    {
+      "op": "proportion_true",
+      "kind": "recomputation",
+      "why": "== groupby mean recomputed (range-invariant fallback only)",
+      "recall_fired": true,
+      "fp_on_correct": false,
+      "n_valid_alts": 1,
+      "fp_on_alts": 0,
+      "clean": true
+    }
+  ],
+  "pure_invariant": {
+    "n_ops": 5,
+    "ops": [
+      "within_group_share",
+      "left_join_keep_all",
+      "cumulative_running",
+      "topn_with_ties",
+      "count_includes_empty"
+    ],
+    "recall": "5/5",
+    "fp_correct": "0/5",
+    "fp_alts": "0/6",
+    "clean_all": "5/5"
+  },
+  "recomputation": {
+    "n_ops": 7,
+    "ops": [
+      "weighted_mean",
+      "pct_point",
+      "dedup_then_agg",
+      "pooled_rate",
+      "median_not_mean",
+      "nan_as_zero_sum",
+      "proportion_true"
+    ],
+    "recall": "7/7",
+    "fp_correct": "0/7",
+    "fp_alts": "0/10",
+    "clean_all": "7/7"
+  }
+}
