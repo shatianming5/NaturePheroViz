@@ -1,40 +1,36 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Silent semantic errors in LLM data-transform code --- AAAI paper draft.
-% Self-contained: compiles with a minimal pdflatex (tikz, booktabs, no bibtex).
-% SUBMISSION: replace the "FALLBACK PREAMBLE" block with the official AAAI kit
-%   \documentclass[letterpaper]{article}\usepackage{aaai2026}
-%   \usepackage{times}\usepackage{helvet}\usepackage{courier}
-% and swap the manual thebibliography for \bibliography{references}.
+% Silent semantic errors in LLM data-transform code --- AAAI-27 anonymous submission.
+% Uses the official AAAI-27 author kit (aaai2027.sty / aaai2027.bst).
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\documentclass[letterpaper]{article} % DO NOT CHANGE THIS
+\usepackage[submission]{aaai2027}  % DO NOT CHANGE THIS
+\usepackage[hyphens]{url}  % DO NOT CHANGE THIS
+\usepackage{graphicx} % DO NOT CHANGE THIS
+\urlstyle{rm} % DO NOT CHANGE THIS
+\def\UrlFont{\rm}  % DO NOT CHANGE THIS
+\usepackage{natbib}  % DO NOT CHANGE THIS AND DO NOT ADD ANY OPTIONS TO IT
+\usepackage{caption} % DO NOT CHANGE THIS AND DO NOT ADD ANY OPTIONS TO IT
+\frenchspacing  % DO NOT CHANGE THIS
+\setcounter{secnumdepth}{2}
+\pdfinfo{
+/TemplateVersion (2027.1)
+}
 
-% ===================== SELF-CONTAINED FALLBACK PREAMBLE ======================
-\documentclass[10pt,twocolumn,letterpaper]{article}
-\usepackage[margin=0.75in,columnsep=0.31in]{geometry}
-\usepackage{times}
-\usepackage[T1]{fontenc}
-\usepackage[utf8]{inputenc}
+% --- content packages (permitted by the AAAI-27 kit) ---
 \usepackage{amsmath,amssymb}
-\usepackage{graphicx}
 \usepackage{booktabs}
 \usepackage{multirow}
-\usepackage{url}
-\usepackage[hidelinks]{hyperref}
-\usepackage{xcolor}
-\usepackage{enumitem}
 \usepackage{tikz}
 \usetikzlibrary{arrows.meta,positioning,shapes.geometric}
+\usepackage{enumitem}
 \setlist{nosep,leftmargin=1.2em}
-\newcommand{\todo}[1]{\textcolor{red}{[\textbf{TODO:} #1]}}
-\raggedbottom % keep inter-paragraph spacing tight; push column slack to the bottom
-\pagestyle{plain}
-% ============================ END FALLBACK PREAMBLE ==========================
 
-\title{Do LLMs Silently Compute the Wrong Thing?\\[2pt]
+% Title in mixed (title) case, per AAAI style.
+\title{Do LLMs Silently Compute the Wrong Thing?\\
 Measuring Silent Semantic Errors in LLM Data-Transform Code\\
 and Detecting Them with Specification-Derived Operator Contracts}
-
 \author{Anonymous Submission}
-\date{}
+\affiliations{Paper under double-blind review}
 
 \begin{document}
 \maketitle
@@ -162,25 +158,25 @@ is the bottleneck, and a calibrated scope-gate makes out-of-scope inputs
 \section{Related Work}\label{sec:related}
 % =============================================================================
 \paragraph{Evaluating LLM code generation.} HumanEval, MBPP, and DS-1000
-\cite{chen2021humaneval,austin2021mbpp,lai2023ds1000} score functional
+\citep{chen2021humaneval,austin2021mbpp,lai2023ds1000} score functional
 correctness against \emph{hidden tests or a gold reference}; execution-based
-agent evaluation (e.g., SWE-bench \cite{jimenez2024swebench}) assumes a
+agent evaluation (e.g., SWE-bench \citep{jimenez2024swebench}) assumes a
 checkable oracle. Our setting is complementary and harder: no per-task reference
 exists at inference time, and the code already passes execution.
 
 \paragraph{Data validation and pipeline testing.} Practitioner frameworks such
 as Great Expectations, \texttt{pandera}, and dbt tests
-\cite{gx2020,pandera2020} let engineers assert schemas, ranges, and
+\citep{gx2020,pandera2020} let engineers assert schemas, ranges, and
 distributional expectations on tables. These are \emph{hand-authored per
 dataset} and check \emph{surface} properties (types, nullability, bounds)---
 exactly the properties that silent semantic errors preserve. We instead check
 \emph{operator semantics} and \emph{synthesize} the check from intent.
 
 \paragraph{Property-based and metamorphic testing.} Property-based testing
-\cite{claessen2000quickcheck} and design-by-contract \cite{meyer1992dbc} predate
-us by decades; metamorphic testing \cite{chen1998metamorphic} verifies relations
+\citep{claessen2000quickcheck} and design-by-contract \citep{meyer1992dbc} predate
+us by decades; metamorphic testing \citep{chen1998metamorphic} verifies relations
 between outputs without a gold oracle. Invariant mining (Daikon;
-\cite{ernst2007daikon}) automatically discovers likely assertions from a corpus
+\citealp{ernst2007daikon}) automatically discovers likely assertions from a corpus
 of \emph{correct} executions; we instead derive the assertion from
 natural-language \emph{intent}, with no correct execution to mine. Our mechanism
 is in this family. Our
@@ -197,9 +193,9 @@ instantiating that invariant from a messy request is the inference problem we
 solve; the assertion itself is deliberately old and simple.
 
 \paragraph{Validating LLM outputs without gold.} Self-consistency
-\cite{wang2023selfconsistency}, self-critique / self-refine
-\cite{madaan2023selfrefine}, LLM-as-judge \cite{zheng2023judge}, and
-execution-guided verification (e.g., LEVER \cite{ni2023lever}) estimate
+\citep{wang2023selfconsistency}, self-critique / self-refine
+\citep{madaan2023selfrefine}, LLM-as-judge \citep{zheng2023judge}, and
+execution-guided verification (e.g., LEVER \citealp{ni2023lever}) estimate
 correctness without a reference. We show these miss silent semantic errors
 (self-critique: 61\% recall at 40\% false-positive); our consensus $+$
 metamorphic refinement is a goldless \emph{verification signal} in the spirit of
@@ -207,7 +203,7 @@ metamorphic testing.
 
 \paragraph{LLMs for data science and visualization.} Chart/plot benchmarks and
 code-/visual-similarity judges (MatPlotAgent, Plot2Code, ChartMimic, VisEval)
-\cite{yang2024matplotbench,wu2024plot2code,shi2024chartmimic,chen2024viseval}
+\citep{yang2024matplotbench,wu2024plot2code,shi2024chartmimic,chen2024viseval}
 score whether a figure \emph{looks} right, not whether the plotted numbers
 \emph{equal} the data. We measure and detect the upstream data-transform error
 such judges cannot see. Table~\ref{tab:position} summarizes these distinctions.
@@ -368,7 +364,7 @@ Gemini-3.1-Pro & Google & 40\% & $0/28$\\
 40--60\% across five frontier models from three vendors on the harder
 expansion-operator grid ($N{=}20$/model; the same models score 32--42\% on the
 core grid). Per-model rates ($N{=}20$--$23$) are directional; primary claims pool
-to $N{=}115$ (Sec.~\ref{sec:e2e-decomp}). The
+to $N{=}115$ (Sec.~\ref{sec:e2e}). The
 contract's false-positive rate is \textbf{0} on \emph{every} vendor---the
 detector is not tuned to one model's output style.}
 \label{tab:crossmodel}
@@ -626,7 +622,7 @@ setting. We frame 51--58\% honestly as a \emph{useful early-warning floor}, not
 a deployable figure: roughly half of silent errors still pass, and the
 deployable regime remains the structured-intent $98\%/0.2\%$. The value of the
 end-to-end result is scientific---it shows the pipeline degrades gracefully and
-localizes where accuracy is lost (Sec.~\ref{sec:e2e-decomp}), not that a
+localizes where accuracy is lost (see below), not that a
 shipping product would rely on the floor.
 
 \begin{table}[t]\centering\small
@@ -650,7 +646,7 @@ interval; per-vendor full-system spans $48$--$70\%$.}
 \label{tab:e2e}
 \end{table}
 
-\paragraph{Scaling and where the loss is.}\label{sec:e2e-decomp}
+\paragraph{Scaling and where the loss is.}
 Pooling the zero-template pipeline across five models (three OpenAI, one Google,
 one Anthropic; $N{=}115$) tightens the full-system estimate to $\mathbf{57\%}$ [48--66]
 (interval width $18$ vs.\ $38$ at $N{=}23$) and, more usefully, lets us \emph{decompose}
@@ -744,7 +740,7 @@ Sec.~\ref{sec:e2e}.
 \textbf{Small samples.} Per-condition slices start small
 ($N{=}23$--$35$); we mitigate by pooling across vendors---synthesis and
 end-to-end to $N{=}115$ (five vendors), repair to $N{=}65$ (four models)
-(Sec.~\ref{sec:e2e-decomp}, interval width $38{\to}18$)---but still report every
+(Sec.~\ref{sec:e2e}, interval width $38{\to}18$)---but still report every
 CI rather than significance.
 \textbf{Symmetric roles.} For operators with interchangeable
 numeric roles the request may not fix which column is which; we score this as
@@ -801,28 +797,6 @@ maps to a documented mistake (e.g., \texttt{groupby} silently dropping NaN keys,
 train/test leakage, look-ahead in time series). Full contracts and fixtures are
 released.
 
-{\small
-% For the official build use: \bibliographystyle{aaai2026}\bibliography{references}
-\begin{thebibliography}{99}
-\bibitem{chen2021humaneval} M.~Chen et al. Evaluating Large Language Models Trained on Code. arXiv:2107.03374, 2021.
-\bibitem{austin2021mbpp} J.~Austin et al. Program Synthesis with Large Language Models. arXiv:2108.07732, 2021.
-\bibitem{lai2023ds1000} Y.~Lai et al. DS-1000: A Natural and Reliable Benchmark for Data Science Code Generation. ICML, 2023.
-\bibitem{jimenez2024swebench} C.~E.~Jimenez et al. SWE-bench: Can Language Models Resolve Real-World GitHub Issues? ICLR, 2024.
-\bibitem{gx2020} Great Expectations. Always Know What to Expect From Your Data. \url{https://greatexpectations.io}, 2020.
-\bibitem{pandera2020} N.~Bantilan. pandera: Statistical Data Validation of Pandas Dataframes. SciPy, 2020.
-\bibitem{meyer1992dbc} B.~Meyer. Applying Design by Contract. IEEE Computer, 25(10):40--51, 1992.
-\bibitem{claessen2000quickcheck} K.~Claessen and J.~Hughes. QuickCheck: Lightweight Random Testing of Haskell Programs. ICFP, 2000.
-\bibitem{chen1998metamorphic} T.~Y.~Chen, S.~C.~Cheung, and S.~M.~Yiu. Metamorphic Testing. Tech.\ Rep.\ HKUST-CS98-01, 1998.
-\bibitem{ernst2007daikon} M.~D.~Ernst et al. The Daikon System for Dynamic Detection of Likely Invariants. Science of Computer Programming, 69(1--3):35--45, 2007.
-\bibitem{wang2023selfconsistency} X.~Wang et al. Self-Consistency Improves Chain-of-Thought Reasoning. ICLR, 2023.
-\bibitem{madaan2023selfrefine} A.~Madaan et al. Self-Refine: Iterative Refinement with Self-Feedback. NeurIPS, 2023.
-\bibitem{zheng2023judge} L.~Zheng et al. Judging LLM-as-a-Judge with MT-Bench and Chatbot Arena. NeurIPS, 2023.
-\bibitem{ni2023lever} A.~Ni et al. LEVER: Learning to Verify Language-to-Code Generation with Execution. ICML, 2023.
-\bibitem{yang2024matplotbench} Z.~Yang et al. MatPlotAgent: Evaluation for LLM-Based Agentic Scientific Visualization. ACL Findings, 2024.
-\bibitem{wu2024plot2code} C.~Wu et al. Plot2Code: Benchmarking MLLMs in Code Generation from Scientific Plots. arXiv:2405.07990, 2024.
-\bibitem{shi2024chartmimic} C.~Shi et al. ChartMimic: Evaluating Cross-Modal Reasoning via Chart-to-Code Generation. arXiv:2406.09961, 2024.
-\bibitem{chen2024viseval} N.~Chen et al. VisEval: A Benchmark for Data Visualization in the Era of LLMs. IEEE TVCG, 2024.
-\end{thebibliography}
-}
+\bibliography{references}
 
 \end{document}
