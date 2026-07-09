@@ -754,8 +754,13 @@ templates designed to model how a hurried analyst under-specifies intent, not a
 sampled corpus of deployed analyst prompts. The clarified-phrasing drop to 10\%
 shows the ambiguity---not task difficulty---drives the errors, but it does not
 establish how often real requests are this ambiguous; quantifying the ambiguity
-distribution of deployed requests is the key threat to external validity and is
-future work. \textbf{Gold-label reliability.} Gold is the author-written template
+distribution of deployed requests is the key threat to external validity. A pilot
+on 40 real StackOverflow-derived requests (DS-1000, ambiguity-prone families, each
+reduced to its prose intent) indicates operator ambiguity is common in the
+wild---flagged for $22\%$ [12--38] by a conservative keyword detector and $80\%$
+[65--90] by an LLM judge (single free model; per-item labels released)---so the
+ambiguous regime is ecologically common rather than a contrived trap, though the
+precise deployment distribution remains future work. \textbf{Gold-label reliability.} Gold is the author-written template
 transform; we did not run a second-rater agreement study, so the $4/1855$
 false-positives---attributed above to degenerate tables---are not independently
 adjudicated.

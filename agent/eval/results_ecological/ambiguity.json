@@ -1,0 +1,652 @@
+[
+  {
+    "problem_id": 2,
+    "families": [
+      "apply_map"
+    ],
+    "prose": "Problem:\nI have following pandas dataframe :\n\n              'Qu2': ['sausage', 'banana', 'apple', 'apple', 'apple', 'sausage', 'banana', 'banana', 'banana'],\n              'Qu3': ['apple', 'potato', 'sausage', 'cheese', 'cheese', 'potato', 'cheese', 'potato', 'egg']})\n\nI'd like to change values in columns Qu1,Qu2,Qu3 according to value_counts() when value count great or equal 2\nFor example for Qu1 column \ncheese     True\npotato     True\nbanana     True\napple     False\negg       False\n\nI'd like to keep values cheese,potato,banana, because each value has at least two appearances.\nFrom values apple and egg I'd like to create value others \nFor column Qu2 no changes :\nbanana     True\napple      True\nsausage    True\n\nThe final result as in attached test_data\n                  'Qu2': ['sausage', 'banana', 'apple', 'apple', 'apple', 'sausage', 'banana', 'banana', 'banana'],\n                  'Qu3': ['other', 'potato', 'other', 'cheese', 'cheese', 'potato', 'cheese', 'potato', 'other']})\n\nThanks !",
+    "lexical": {
+      "label": "clarified",
+      "axis": "none"
+    },
+    "llm": {
+      "label": "ambiguous",
+      "axis": "grouping",
+      "reason": "unclear if keep/replace boundary is per-column or global"
+    }
+  },
+  {
+    "problem_id": 3,
+    "families": [
+      "apply_map"
+    ],
+    "prose": "Problem:\nI have following pandas dataframe :\n\n              'Qu2': ['sausage', 'banana', 'apple', 'apple', 'apple', 'sausage', 'banana', 'banana', 'banana'],\n              'Qu3': ['apple', 'potato', 'sausage', 'cheese', 'cheese', 'potato', 'cheese', 'potato', 'egg']})\n\nI'd like to change values in columns Qu1,Qu2,Qu3 according to value_counts() when value count great or equal 3\nFor example for Qu1 column\ncheese     True\npotato    False\nbanana    False\napple     False\negg       False\n\nI'd like to keep values cheese, because each value has at least three appearances.\nFrom values potato, banana, apple and egg I'd like to create value others\nFor column Qu2 no changes :\nbanana     True\napple      True\nsausage   False\n\nThe final result as in attached test_data\n                  'Qu2': ['other', 'banana', 'apple', 'apple', 'apple', 'other', 'banana', 'banana', 'banana'],\n                  'Qu3': ['other', 'potato', 'other', 'cheese', 'cheese', 'potato', 'cheese', 'potato', 'other']})\n\nThanks !",
+    "lexical": {
+      "label": "clarified",
+      "axis": "none"
+    },
+    "llm": {
+      "label": "clarified",
+      "axis": "boundary",
+      "reason": "Threshold >=3 and replace with 'other' specified"
+    }
+  },
+  {
+    "problem_id": 5,
+    "families": [
+      "apply_map"
+    ],
+    "prose": "Problem:\nI have following pandas dataframe :\n\n              'Qu2': ['sausage', 'banana', 'apple', 'apple', 'apple', 'sausage', 'banana', 'banana', 'banana'],\n              'Qu3': ['apple', 'potato', 'sausage', 'cheese', 'cheese', 'potato', 'cheese', 'potato', 'egg']})\n\nI'd like to change values in columns Qu1 according to value_counts() when value count great or equal 3 and change values in columns Qu2 and Qu3 according to value_counts() when value count great or equal 2.\nFor example for Qu1 column\ncheese     True\npotato    False\nbanana    False\napple     False\negg       False\n\nI'd like to keep values cheese, because each value has at least three appearances.\nFrom values potato, banana, apple and egg I'd like to create value others\nFor column Qu2 no changes :\nbanana     True\napple      True\nsausage   True\n\nThe final result as in attached test_data\n                   'Qu2': ['sausage', 'banana', 'apple', 'apple', 'apple', 'sausage', 'banana', 'banana', 'banana'],\n                  'Qu3': ['other', 'potato', 'other', 'cheese', 'cheese', 'potato', 'cheese', 'potato', 'other']})\n\nThanks !",
+    "lexical": {
+      "label": "clarified",
+      "axis": "none"
+    },
+    "llm": {
+      "label": "ambiguous",
+      "axis": "tie",
+      "reason": "multiple values tied at threshold counts"
+    }
+  },
+  {
+    "problem_id": 6,
+    "families": [
+      "apply_map"
+    ],
+    "prose": "Problem:\nI have following pandas dataframe :\n\n              'Qu2': ['sausage', 'banana', 'apple', 'apple', 'apple', 'sausage', 'banana', 'banana', 'banana'],\n              'Qu3': ['apple', 'potato', 'sausage', 'cheese', 'cheese', 'potato', 'cheese', 'potato', 'egg']})\n\nI'd like to change values in columns Qu1 according to value_counts() when value count great or equal 3 and change values in columns Qu2 and Qu3 according to value_counts() when value count great or equal 2.\nFor example for Qu1 column\ncheese     True\npotato    False\nbanana    False\napple     False\negg       False\n\nI'd like to keep values cheese because each value has at least three appearances.\nFrom values potato, banana, apple and egg I'd like to create value others\nHowever I want to reserve all the 'apple'. That means don't replace 'apple' with 'other' and only 'egg' should be replaced.\nFor column Qu2 no changes :\nbanana     True\napple      True\nsausage   True\n\nThe final result as in attached test_data\n                   'Qu2': ['sausage', 'banana', 'apple', 'apple', 'apple', 'sausage', 'banana', 'banana', 'banana'],\n                  'Qu3': ['apple', 'potato', 'other', 'cheese', 'cheese', 'potato', 'cheese', 'potato', 'other']})\n\nThanks !",
+    "lexical": {
+      "label": "clarified",
+      "axis": "none"
+    },
+    "llm": {
+      "label": "ambiguous",
+      "axis": "none",
+      "reason": "ambiguous apple handling in Qu3 despite count vs special rule"
+    }
+  },
+  {
+    "problem_id": 7,
+    "families": [
+      "dedup"
+    ],
+    "prose": "Problem:\nI have a dataset :\nid    url     keep_if_dup\n1     A.com   Yes\n2     A.com   Yes\n3     B.com   No\n4     B.com   No\n5     C.com   No\n\nI want to remove duplicates, i.e. keep first occurence of \"url\" field, BUT  keep duplicates if the field \"keep_if_dup\" is YES.",
+    "lexical": {
+      "label": "ambiguous",
+      "axis": "duplicate"
+    },
+    "llm": {
+      "label": "ambiguous",
+      "axis": "duplicate",
+      "reason": "Conditional duplicate rule conflicts with simple first-occurrence approach"
+    }
+  },
+  {
+    "problem_id": 8,
+    "families": [
+      "dedup"
+    ],
+    "prose": "Problem:\nI have a dataset :\nid    url     drop_if_dup\n1     A.com   Yes\n2     A.com   Yes\n3     B.com   No\n4     B.com   No\n5     C.com   No\n\nI want to remove duplicates, i.e. keep first occurence of \"url\" field, BUT keep duplicates if the field \"drop_if_dup\" is No.",
+    "lexical": {
+      "label": "ambiguous",
+      "axis": "duplicate"
+    },
+    "llm": {
+      "label": "clarified",
+      "axis": "duplicate",
+      "reason": "Clear duplicate handling rule specified"
+    }
+  },
+  {
+    "problem_id": 9,
+    "families": [
+      "dedup"
+    ],
+    "prose": "Problem:\nI have a dataset :\nid    url     keep_if_dup\n1     A.com   Yes\n2     A.com   Yes\n3     B.com   No\n4     B.com   No\n5     C.com   No\n\nI want to remove duplicates, i.e. keep last occurence of \"url\" field, BUT keep duplicates if the field \"keep_if_dup\" is YES.",
+    "lexical": {
+      "label": "ambiguous",
+      "axis": "duplicate"
+    },
+    "llm": {
+      "label": "clarified",
+      "axis": "duplicate",
+      "reason": "Keep last occurrence for url duplicates, except retain both when keep_if_dup is Yes"
+    }
+  },
+  {
+    "problem_id": 10,
+    "families": [
+      "groupby_agg"
+    ],
+    "prose": "Problem:\nI'm Looking for a generic way of turning a DataFrame to a nested dictionary\nThis is a sample data frame \n    name    v1  v2  v3\n\nThe number of columns may differ and so does the column names.\nlike this : \n{\n'A' : { \n'B' : { \n'C' : { \n}\n\nWhat is best way to achieve this ? \nclosest I got was with the zip function but haven't managed to make it work for more then one level (two columns).",
+    "lexical": {
+      "label": "clarified",
+      "axis": "none"
+    },
+    "llm": {
+      "label": "ambiguous",
+      "axis": "grouping",
+      "reason": "Unclarity on nesting depth and how to organize rows/columns into nested levels"
+    }
+  },
+  {
+    "problem_id": 13,
+    "families": [
+      "sort_topk"
+    ],
+    "prose": "Problem:\nI have been struggling with removing the time zone info from a column in a pandas dataframe. I have checked the following question, but it does not work for me:\n\nCan I export pandas DataFrame to Excel stripping tzinfo?\n\nI used tz_localize to assign a timezone to a datetime object, because I need to convert to another timezone using tz_convert. This adds an UTC offset, in the way \"-06:00\". I need to get rid of this offset, because it results in an error when I try to export the dataframe to Excel.\n\nActual output",
+    "lexical": {
+      "label": "clarified",
+      "axis": "none"
+    },
+    "llm": {
+      "label": "clarified",
+      "axis": "none",
+      "reason": "Clear request to remove tzinfo before Excel export"
+    }
+  },
+  {
+    "problem_id": 14,
+    "families": [
+      "sort_topk"
+    ],
+    "prose": "Problem:\nI have been struggling with removing the time zone info from a column in a pandas dataframe. I have checked the following question, but it does not work for me:\n\nCan I export pandas DataFrame to Excel stripping tzinfo?\n\nI used tz_localize to assign a timezone to a datetime object, because I need to convert to another timezone using tz_convert. This adds an UTC offset, in the way \"-06:00\". I need to get rid of this offset, because it results in an error when I try to export the dataframe to Excel.\n\nActual output",
+    "lexical": {
+      "label": "clarified",
+      "axis": "none"
+    },
+    "llm": {
+      "label": "ambiguous",
+      "axis": "boundary",
+      "reason": "Method of timezone stripping unspecified"
+    }
+  },
+  {
+    "problem_id": 15,
+    "families": [
+      "apply_map"
+    ],
+    "prose": "Problem:\nI have a data set like below:\nname    status    number   message\nmatt    active    12345    [job:  , money: none, wife: none]\njames   active    23456    [group: band, wife: yes, money: 10000]\nadam    inactive  34567    [job: none, money: none, wife:  , kids: one, group: jail]\n\nHow can I extract the key value pairs, and turn them into a dataframe expanded all the way out?",
+    "lexical": {
+      "label": "clarified",
+      "axis": "none"
+    },
+    "llm": {
+      "label": "ambiguous",
+      "axis": "grouping",
+      "reason": "How to group data when expanding key-value pairs unclear"
+    }
+  },
+  {
+    "problem_id": 33,
+    "families": [
+      "groupby_agg",
+      "median_mean"
+    ],
+    "prose": "Problem:\nI have a script that generates a pandas data frame with a varying number of value columns. As an example, this df might be\n'group_color' : ['green', 'green', 'green', 'blue', 'blue'],\n})\n  group group_color  val1  val2\n0     A       green     5     4\n1     A       green     2     2\n2     A       green     3     8\n3     B        blue     4     5\n4     B        blue     5     7\n\nMy goal is to get the grouped mean for each of the value columns. In this specific case (with 2 value columns), I can use\ndf.groupby('group').agg({\"group_color\": \"first\", \"val1\": \"mean\", \"val2\": \"mean\"})\n      group_color      val1      val2\ngroup                                \n\nbut that does not work when the data frame in question has more value columns (val3, val4 etc.).\nIs there a way to dynamically take the mean of \"all the other columns\" or \"all columns containing val in their names\"?",
+    "lexical": {
+      "label": "clarified",
+      "axis": "none"
+    },
+    "llm": {
+      "label": "ambiguous",
+      "axis": "grouping",
+      "reason": "how to select value columns for aggregation is unclear"
+    }
+  },
+  {
+    "problem_id": 34,
+    "families": [
+      "groupby_agg"
+    ],
+    "prose": "Problem:\nI have a script that generates a pandas data frame with a varying number of value columns. As an example, this df might be\n'group_color' : ['green', 'green', 'green', 'blue', 'blue'],\n})\n  group group_color  val1  val2\n0     A       green     5     4\n1     A       green     2     2\n2     A       green     3     8\n3     B        blue     4     5\n4     B        blue     5     7\n\nMy goal is to get the grouped sum for each of the value columns. In this specific case (with 2 value columns), I can use\ndf.groupby('group').agg({\"group_color\": \"first\", \"val1\": \"sum\", \"val2\": \"sum\"})\n      group_color  val1  val2\ngroup                        \nA           green    10    14\nB            blue     9    12\n\nbut that does not work when the data frame in question has more value columns (val3, val4 etc.).\nIs there a way to dynamically take the sum of \"all the other columns\" or \"all columns containing val in their names\"?",
+    "lexical": {
+      "label": "ambiguous",
+      "axis": "grouping"
+    },
+    "llm": {
+      "label": "ambiguous",
+      "axis": "grouping",
+      "reason": "Unclear how to dynamically identify value columns"
+    }
+  },
+  {
+    "problem_id": 35,
+    "families": [
+      "groupby_agg",
+      "median_mean"
+    ],
+    "prose": "Problem:\nI have a script that generates a pandas data frame with a varying number of value columns. As an example, this df might be\n'group_color' : ['green', 'green', 'green', 'blue', 'blue'],\n})\n  group group_color  val1  val2   val32\n0     A       green     5     4     4\n1     A       green     2     2     2\n2     A       green     3     8     8\n3     B        blue     4     5     5\n4     B        blue     5     7     7\n\nMy goal is to get the grouped mean for each of the value columns which end with '2' and get the grouped sum for others.\ndf.groupby('group').agg({\"group_color\": \"first\", \"val1\": \"sum\", \"val2\": \"mean\", \"val32\": \"mean\"})\n\n      group_color      val1      val2    val32\ngroup                                \n\nbut that does not work when the data frame in question has more value columns (val3, val4 etc.).\nIs there a dynamical way?",
+    "lexical": {
+      "label": "clarified",
+      "axis": "none"
+    },
+    "llm": {
+      "label": "ambiguous",
+      "axis": "grouping",
+      "reason": "Pattern-based aggregation based on column name suffixes is unspecified"
+    }
+  },
+  {
+    "problem_id": 36,
+    "families": [
+      "median_mean"
+    ],
+    "prose": "Problem:\nI have pandas df with say, 100 rows, 10 columns, (actual data is huge). I also have row_index list which contains, which rows to be considered to take mean. I want to calculate mean on say columns 2,5,6,7 and 8. Can we do it with some function for dataframe object?\nWhat I know is do a for loop, get value of row for each element in row_index and keep doing mean. Do we have some direct function where we can pass row_list, and column_list and axis, for ex df.meanAdvance(row_list,column_list,axis=0) ?\nI have seen DataFrame.mean() but it didn't help I guess.\n  a b c d q \n\nI want mean of 0, 2, 3 rows for each a, b, d columns \na    1.0\nb    1.0\nd    2.0",
+    "lexical": {
+      "label": "clarified",
+      "axis": "none"
+    },
+    "llm": {
+      "label": "ambiguous",
+      "axis": "grouping",
+      "reason": "Unclear if row_index is for filtering vs aggregation grouping"
+    }
+  },
+  {
+    "problem_id": 39,
+    "families": [
+      "pivot",
+      "apply_map"
+    ],
+    "prose": "Problem:\nI have a dataframe with numerous columns (\u224830) from an external source (csv file) but several of them have no value or always the same. Thus, I would to see quickly the value_counts for each column. How can i do that?\nFor example\n  id, temp, name\n1 34, null, mark\n2 22, null, mark\n3 34, null, mark\n\nPlease return a Series like this:\n\nid    22      1.0\n      34      2.0\ntemp  null    3.0\nname  mark    3.0\ndtype: float64\n\nSo I would know that temp is irrelevant and name is not interesting (always the same)",
+    "lexical": {
+      "label": "ambiguous",
+      "axis": "missing"
+    },
+    "llm": {
+      "label": "ambiguous",
+      "axis": "missing",
+      "reason": "null handling unspecified"
+    }
+  },
+  {
+    "problem_id": 40,
+    "families": [
+      "apply_map"
+    ],
+    "prose": "Problem:\nI have a dataframe with numerous columns (\u224830) from an external source (csv file) but several of them have no value or always the same. Thus, I would to see quickly the counts of 'null' for each column. How can i do that?\nFor example\n  id, temp, name\n1 34, null, null\n2 22, null, mark\n3 34, null, mark\n\nPlease return a Series like this:\n\nid      NaN\ntemp    3.0\nname    1.0\nName: null, dtype: float64\n\nSo I would know that temp is irrelevant and name is not interesting (always the same)",
+    "lexical": {
+      "label": "ambiguous",
+      "axis": "missing"
+    },
+    "llm": {
+      "label": "clarified",
+      "axis": "missing",
+      "reason": "Intent is clear: count NaN per column using standard pandas null counting."
+    }
+  },
+  {
+    "problem_id": 48,
+    "families": [
+      "median_mean"
+    ],
+    "prose": "Problem:\nI have a pandas dataframe structured like this:\n      value\nlab        \nA        50\nB        35\nC         8\nD         5\nE         1\nF         1\n\nThis is just an example, the actual dataframe is bigger, but follows the same structure.\nThe sample dataframe has been created with this two lines:\n\nI would like to aggregate the rows whose value is bigger than a given threshold: all these rows should be substituted by a single row whose value is the average of the substituted rows.\nFor example, if I choose a threshold = 6, the expected",
+    "lexical": {
+      "label": "ambiguous",
+      "axis": "central_tendency"
+    },
+    "llm": {
+      "label": "clarified",
+      "axis": "none",
+      "reason": "Mean aggregation and threshold exceedance are specified"
+    }
+  },
+  {
+    "problem_id": 49,
+    "families": [
+      "median_mean"
+    ],
+    "prose": "Problem:\nI have a pandas dataframe structured like this:\n      value\nlab        \nA        50\nB        35\nC         8\nD         5\nE         1\nF         1\n\nThis is just an example, the actual dataframe is bigger, but follows the same structure.\nThe sample dataframe has been created with this two lines:\n\nI would like to aggregate the rows whose value is in not a given section: all these rows should be substituted by a single row whose value is the average of the substituted rows.\nFor example, if I choose a [4,38], the expected",
+    "lexical": {
+      "label": "ambiguous",
+      "axis": "central_tendency"
+    },
+    "llm": {
+      "label": "ambiguous",
+      "axis": "boundary",
+      "reason": "[4,38] range inclusivity unspecified"
+    }
+  },
+  {
+    "problem_id": 50,
+    "families": [
+      "merge_join",
+      "apply_map"
+    ],
+    "prose": "Problem:\nSample dataframe:\n\nI'd like to add inverses of each existing column to the dataframe and name them based on existing column names with a prefix, e.g. inv_A is an inverse of column A and so on.\nThe resulting dataframe",
+    "lexical": {
+      "label": "clarified",
+      "axis": "none"
+    },
+    "llm": {
+      "label": "ambiguous",
+      "axis": "boundary",
+      "reason": "What 'inverse' means is unspecified"
+    }
+  },
+  {
+    "problem_id": 51,
+    "families": [
+      "merge_join",
+      "apply_map"
+    ],
+    "prose": "Problem:\nSample dataframe:\n\nI'd like to add exponentials of each existing column to the dataframe and name them based on existing column names with a prefix, e.g. exp_A is an exponential of column A and so on.\nThe resulting dataframe",
+    "lexical": {
+      "label": "clarified",
+      "axis": "none"
+    },
+    "llm": {
+      "label": "ambiguous",
+      "axis": "missing",
+      "reason": "NaN handling in exponential calculation unspecified"
+    }
+  },
+  {
+    "problem_id": 52,
+    "families": [
+      "merge_join",
+      "apply_map"
+    ],
+    "prose": "Problem:\nSample dataframe:\n\nI'd like to add inverses of each existing column to the dataframe and name them based on existing column names with a prefix, e.g. inv_A is an inverse of column A and so on.\nNotice that 0 has no inverse and please keep it in inv_A\nThe resulting dataframe",
+    "lexical": {
+      "label": "clarified",
+      "axis": "none"
+    },
+    "llm": {
+      "label": "clarified",
+      "axis": "none",
+      "reason": "All outcome-changing decisions explicitly defined"
+    }
+  },
+  {
+    "problem_id": 53,
+    "families": [
+      "merge_join",
+      "apply_map"
+    ],
+    "prose": "Problem:\nSample dataframe:\n\nI'd like to add sigmoids of each existing column to the dataframe and name them based on existing column names with a prefix, e.g. sigmoid_A is an sigmoid of column A and so on.\nThe resulting dataframe",
+    "lexical": {
+      "label": "clarified",
+      "axis": "none"
+    },
+    "llm": {
+      "label": "ambiguous",
+      "axis": "boundary",
+      "reason": "unspecified sigmoid function and bounds"
+    }
+  },
+  {
+    "problem_id": 54,
+    "families": [
+      "cumulative"
+    ],
+    "prose": "Problem:\nThe title might not be intuitive--let me provide an example.  Say I have df, created with:\na = np.array([[ 1. ,  0.9,  1. ],\n              [ 0.9,  1. ,  1. ],\n              [ 1. ,  0.9,  1. ],\nidx = pd.date_range('2017', periods=a.shape[0])\n\nI can get the index location of each respective column minimum with\ndf.idxmin()\n\nNow, how could I get the location of the last occurrence of the column-wise maximum, up to the location of the minimum?\n\nwhere the max's after the minimum occurrence are ignored.\nI can do this with .apply, but can it be done with a mask/advanced indexing\nDesired result:\ndtype: datetime64[ns]",
+    "lexical": {
+      "label": "clarified",
+      "axis": "none"
+    },
+    "llm": {
+      "label": "ambiguous",
+      "axis": "boundary",
+      "reason": "\"up to\" inclusive/exclusive boundary unresolved"
+    }
+  },
+  {
+    "problem_id": 55,
+    "families": [
+      "cumulative"
+    ],
+    "prose": "Problem:\nThe title might not be intuitive--let me provide an example.  Say I have df, created with:\na = np.array([[ 1. ,  0.9,  1. ],\n              [ 0.9,  1. ,  1. ],\n              [ 1. ,  0.9,  1. ],\nidx = pd.date_range('2017', periods=a.shape[0])\n\nI can get the index location of each respective column minimum with\ndf.idxmin()\n\nNow, how could I get the location of the first occurrence of the column-wise maximum, down to the location of the minimum?\n\nwhere the max's before the minimum occurrence are ignored.\nI can do this with .apply, but can it be done with a mask/advanced indexing\nDesired result:\ndtype: datetime64[ns]",
+    "lexical": {
+      "label": "clarified",
+      "axis": "none"
+    },
+    "llm": {
+      "label": "ambiguous",
+      "axis": "ordering",
+      "reason": "What constitutes 'first occurrence' and sorting order unclear"
+    }
+  },
+  {
+    "problem_id": 56,
+    "families": [
+      "pivot"
+    ],
+    "prose": "Problem:\nI've a data frame that looks like the following\n\nWhat I would like to be able to do is find the minimum and maximum date within the date column and expand that column to have all the dates there while simultaneously filling in 0 for the val column.",
+    "lexical": {
+      "label": "clarified",
+      "axis": "none"
+    },
+    "llm": {
+      "label": "ambiguous",
+      "axis": "boundary",
+      "reason": "Expand operation needs clarification: all dates or only min/max?"
+    }
+  },
+  {
+    "problem_id": 57,
+    "families": [
+      "pivot"
+    ],
+    "prose": "Problem:\nI've a data frame that looks like the following\n\nWhat I would like to be able to do is find the minimum and maximum date within the date column and expand that column to have all the dates there while simultaneously filling in 0 for the val column.",
+    "lexical": {
+      "label": "clarified",
+      "axis": "none"
+    },
+    "llm": {
+      "label": "ambiguous",
+      "axis": "duplicate",
+      "reason": "unspecified how to handle duplicate dates when expanding"
+    }
+  },
+  {
+    "problem_id": 58,
+    "families": [
+      "pivot"
+    ],
+    "prose": "Problem:\nI've a data frame that looks like the following\n\nWhat I would like to be able to do is find the minimum and maximum date within the date column and expand that column to have all the dates there while simultaneously filling in 233 for the val column.",
+    "lexical": {
+      "label": "clarified",
+      "axis": "none"
+    },
+    "llm": {
+      "label": "ambiguous",
+      "axis": "boundary",
+      "reason": "date range expansion and value filling unspecified"
+    }
+  },
+  {
+    "problem_id": 59,
+    "families": [
+      "pivot"
+    ],
+    "prose": "Problem:\nI've a data frame that looks like the following\n\nWhat I would like to be able to do is find the minimum and maximum date within the date column and expand that column to have all the dates there while simultaneously filling in the maximum val of the user for the val column.",
+    "lexical": {
+      "label": "clarified",
+      "axis": "none"
+    },
+    "llm": {
+      "label": "ambiguous",
+      "axis": "boundary",
+      "reason": "Method to generate dates between min/max unspecified"
+    }
+  },
+  {
+    "problem_id": 60,
+    "families": [
+      "pivot"
+    ],
+    "prose": "Problem:\nI've a data frame that looks like the following\n\nWhat I would like to be able to do is find the minimum and maximum date within the date column and expand that column to have all the dates there while simultaneously filling in the maximum val of the user for the val column and convert df to the following format:",
+    "lexical": {
+      "label": "clarified",
+      "axis": "none"
+    },
+    "llm": {
+      "label": "ambiguous",
+      "axis": "none",
+      "reason": "\"maximum val of the user\" and format conversion are ambiguous"
+    }
+  },
+  {
+    "problem_id": 64,
+    "families": [
+      "apply_map"
+    ],
+    "prose": "Problem:\nI am using Pandas to get a dataframe like this:\n    name  a  b   c\n0  Aaron  3  5   7\n1  Aaron  3  6   9\n3  Brave  4  6   0\n4  Brave  3  6   1\n\nI want to combine name and a and replace each of them with a unique ID",
+    "lexical": {
+      "label": "ambiguous",
+      "axis": "duplicate"
+    },
+    "llm": {
+      "label": "ambiguous",
+      "axis": "grouping",
+      "reason": "How to combine name/a and ensure uniqueness unspecified"
+    }
+  },
+  {
+    "problem_id": 65,
+    "families": [
+      "pivot"
+    ],
+    "prose": "Problem:\nI have a table like this.\n\nI want to repartition the date columns into two columns date and value like this.\nuser    date       value   someBool\n\nHow to do this in python ?\nIs pivot_table in pandas helpful? \nIf possible provide code/psuedo code & give details on python version.",
+    "lexical": {
+      "label": "clarified",
+      "axis": "none"
+    },
+    "llm": {
+      "label": "ambiguous",
+      "axis": "grouping",
+      "reason": "Empty/NaN group handling unspecified in repartitioning; outcome may vary"
+    }
+  },
+  {
+    "problem_id": 66,
+    "families": [
+      "pivot"
+    ],
+    "prose": "Problem:\nI have a table like this.\n\nI want to repartition the others columns into two columns others and value like this.\n  user  01/12/15    others  value\n1   u1       100  someBool   True\n3   u2       200  someBool  False\n5   u3       -50  someBool   True\n\nHow to do this in python ?\nIs pivot_table in pandas helpful? \nIf possible provide code/psuedo code & give details on python version.",
+    "lexical": {
+      "label": "clarified",
+      "axis": "none"
+    },
+    "llm": {
+      "label": "ambiguous",
+      "axis": "grouping",
+      "reason": "No tie-breaking rule for duplicate column groupings"
+    }
+  },
+  {
+    "problem_id": 67,
+    "families": [
+      "pivot"
+    ],
+    "prose": "Problem:\nI have a table like this.\nu1      100         None      True\nu3     None          200      True\n\nI want to repartition the date columns into two columns date and value like this.\nuser    date       value   someBool\n\nHow to do this in python ?\nIs pivot_table in pandas helpful? \nIf possible provide code/psuedo code & give details on python version.",
+    "lexical": {
+      "label": "clarified",
+      "axis": "none"
+    },
+    "llm": {
+      "label": "ambiguous",
+      "axis": "missing",
+      "reason": "Unclear how to handle None/NaN values in data transformation"
+    }
+  },
+  {
+    "problem_id": 76,
+    "families": [
+      "groupby_agg",
+      "median_mean"
+    ],
+    "prose": "Problem:\nI have a simple dataframe which I would like to bin for every 3 rows.\n\nIt looks like this:\n\n    col1\n0      2\n1      1\n2      3\n3      1\n4      0\nand I would like to turn it into this:\n\n    col1\n0      2\n1    0.5\nI have already posted a similar question here but I have no Idea how to port the solution to my current use case.\n\nCan you help me out?\n\nMany thanks!",
+    "lexical": {
+      "label": "clarified",
+      "axis": "none"
+    },
+    "llm": {
+      "label": "ambiguous",
+      "axis": "grouping",
+      "reason": "binning interval and aggregation method unspecified"
+    }
+  },
+  {
+    "problem_id": 77,
+    "families": [
+      "groupby_agg",
+      "median_mean"
+    ],
+    "prose": "Problem:\nI have a simple dataframe which I would like to bin for every 3 rows.\n\nIt looks like this:\n\n    col1\n0      1\n1      1\n2      4\n3      5\n4      1\nand I would like to turn it into this:\n\n    col1\n0      2\n1      3\nI have already posted a similar question here but I have no Idea how to port the solution to my current use case.\n\nCan you help me out?\n\nMany thanks!",
+    "lexical": {
+      "label": "clarified",
+      "axis": "none"
+    },
+    "llm": {
+      "label": "ambiguous",
+      "axis": "grouping",
+      "reason": "Unclear how input rows map to output rows"
+    }
+  },
+  {
+    "problem_id": 78,
+    "families": [
+      "groupby_agg"
+    ],
+    "prose": "Problem:\nI have a simple dataframe which I would like to bin for every 4 rows.\n\nIt looks like this:\n\n    col1\n0      1\n1      1\n2      4\n3      5\n4      1\n5      4\nand I would like to turn it into this:\n\n    col1\n0     11\n1      5\nI have already posted a similar question here but I have no Idea how to port the solution to my current use case.\n\nCan you help me out?\n\nMany thanks!",
+    "lexical": {
+      "label": "clarified",
+      "axis": "none"
+    },
+    "llm": {
+      "label": "ambiguous",
+      "axis": "none",
+      "reason": "No binning operation specified"
+    }
+  },
+  {
+    "problem_id": 79,
+    "families": [
+      "groupby_agg",
+      "median_mean"
+    ],
+    "prose": "Problem:\nI have a simple dataframe which I would like to bin for every 3 rows from back to front.\n\nIt looks like this:\n\n    col1\n0      2\n1      1\n2      3\n3      1\n4      0\nand I would like to turn it into this:\n\n    col1\n0    1.5\nI have already posted a similar question here but I have no Idea how to port the solution to my current use case.\n\nCan you help me out?\n\nMany thanks!",
+    "lexical": {
+      "label": "clarified",
+      "axis": "none"
+    },
+    "llm": {
+      "label": "ambiguous",
+      "axis": "grouping",
+      "reason": "Grouping direction and size unspecified"
+    }
+  },
+  {
+    "problem_id": 95,
+    "families": [
+      "pivot"
+    ],
+    "prose": "Problem:\nI have a data set which is in wide format like this\n   1     Argentina   var2     1    3    2     5   7    5\n   3     Brazil      var2     0    1    2    2    3    3\n\nI want to reshape my data to long so that year, var1, and var2 become new columns\n  Variable Country     year   var1 var2\n  0     Argentina   2000   12   1\n  1     Argentina   2001   15   3\n  2     Argentina   2002   18   2\n\nI got my code to work when I only had one variable by writing\n\nI can't figure out how to do this for a var1,var2, var3, etc.",
+    "lexical": {
+      "label": "clarified",
+      "axis": "none"
+    },
+    "llm": {
+      "label": "clarified",
+      "axis": "none",
+      "reason": "Simple reshape from wide to long format"
+    }
+  },
+  {
+    "problem_id": 96,
+    "families": [
+      "pivot"
+    ],
+    "prose": "Problem:\nI have a data set which is in wide format like this\n   1     Argentina   var2     1    3    2     5   7    5\n   3     Brazil      var2     0    1    2    2    3    3\n\nI want to reshape my data to long so that year (descending order), var1, and var2 become new columns\n  Variable Country     year   var1 var2\n  0     Argentina   2005   29   5\n  1     Argentina   2004   23   7\n  2     Argentina   2003   17   5\n\nI got my code to work when I only had one variable and only need to keep the order of 'year' by writing\n\nI can't figure out how to reverse the 'year' and do this for a var1,var2, var3, etc.",
+    "lexical": {
+      "label": "clarified",
+      "axis": "none"
+    },
+    "llm": {
+      "label": "ambiguous",
+      "axis": "ordering",
+      "reason": "Natural language intent is unclear about year ordering and multiple variable handling"
+    }
+  }
+]
