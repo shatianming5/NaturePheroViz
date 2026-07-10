@@ -66,8 +66,14 @@ def _clean(df: pd.DataFrame):
     return df, cats, nums
 
 
-def _tasks_from_table(df: pd.DataFrame, cat: str, nums: List[str], art: str, sheet: str) -> List[Dict[str, Any]]:
-    """Instantiate the clean group-aggregation operators on one real table."""
+def _tasks_from_table(df: pd.DataFrame, cat: str, nums: List[str], art: str, sheet: str,
+                      expansion: bool = False) -> List[Dict[str, Any]]:
+    """Instantiate the clean group-aggregation operators on one real table.
+
+    expansion=True ALSO emits the framework-mechanics ops whose silent trigger —
+    MISSING data — genuinely occurs in real scientific tables: null_in_agg_count
+    (a measurement column has NaNs -> COUNT(col) undercounts) and groupby_dropna_key
+    (a category label is missing -> groupby silently drops those rows)."""
     out = []
     v = nums[0]
     base = df[[cat, v]].dropna().copy()
@@ -132,13 +138,45 @@ def _tasks_from_table(df: pd.DataFrame, cat: str, nums: List[str], art: str, she
             "ambiguous": f"Total {v} per {cat}. Columns {cat}, {v}.",
             "clarified": f"Total {v} per {cat}, treating MISSING values as 0. Columns {cat}, {v}.",
         })
+
+    if expansion:
+        # null_in_agg_count: a real measurement column has NaNs -> COUNT(col) silently
+        # undercounts groups that contain missing values (should be the group SIZE).
+        nv = df[[cat, v]].copy()
+        nv[cat] = nv[cat].astype(str)
+        if nv[v].isna().any() and nv[cat].nunique() >= 2 and len(nv) >= 6:
+            out.append({
+                "name": f"nullcount::{tag}", "op": "null_in_agg_count", "df": nv.copy(),
+                "params": {"group": cat, "out": "n"}, "result_kind": "frame",
+                "gold": (lambda d, _c=cat: d.groupby(_c).size().reset_index(name="n")),
+                "ambiguous": f"The number of records for each {cat}. Columns {cat}, n.",
+                "clarified": (f"The number of records for each {cat}, counting EVERY row including "
+                              f"those whose {v} is missing (group size, not a non-null count). Columns {cat}, n."),
+            })
+        # groupby_dropna_key: a real category label is MISSING (NaN) -> groupby's default
+        # dropna=True silently drops those rows, so their {v} vanishes from the totals.
+        gk = df[[cat, v]].copy()
+        if gk[cat].isna().any():
+            gk = gk[gk[v].notna()].copy()  # rows that carry a value; the key may be NaN
+            if gk[cat].isna().any() and gk[cat].dropna().nunique() >= 2 and len(gk) >= 6:
+                out.append({
+                    "name": f"dropnakey::{tag}", "op": "groupby_dropna_key", "df": gk.copy(),
+                    "params": {"group": cat, "value": v}, "result_kind": "frame",
+                    "gold": (lambda d, _c=cat, _v=v: d.groupby(_c, dropna=False, as_index=False)[_v].sum()),
+                    "ambiguous": f"Total {v} for each {cat}. Columns {cat}, {v}.",
+                    "clarified": (f"Total {v} for each {cat}, INCLUDING rows whose {cat} is missing (NaN) as "
+                                  f"their own group — do not drop them. Columns {cat}, {v}."),
+                })
     return out
 
 
-def _build(pairs_root: str, max_tasks: int, max_per_article: int = 15) -> List[Dict[str, Any]]:
+def _build(pairs_root: str, max_tasks: int, max_per_article: int = 15, max_rows: int = 0,
+           expansion: bool = False) -> List[Dict[str, Any]]:
     """Generate real tasks, capping how many come from any single article so the
     slice spans many independent papers (not just a few big-table articles).
-    max_per_article bounds per-article contribution -> task DIVERSITY across papers."""
+    max_per_article bounds per-article contribution -> task DIVERSITY across papers.
+    max_rows>0 caps each table to that many rows (bounds memory: every task holds its
+    own df; gold is computed on the SAME capped df so the semantics are unchanged)."""
     import glob
     from collections import Counter
     files = sorted(glob.glob(str(Path(pairs_root) / "*" / "data" / "*.xlsx")))
@@ -159,7 +197,7 @@ def _build(pairs_root: str, max_tasks: int, max_per_article: int = 15) -> List[D
             if len(tasks) >= max_tasks:
                 break
             try:
-                df, cats, nums = _clean(xl.parse(sh))
+                df, cats, nums = _clean(xl.parse(sh, nrows=max_rows or None))
             except Exception:
                 continue
             if not cats or not nums:
@@ -168,7 +206,7 @@ def _build(pairs_root: str, max_tasks: int, max_per_article: int = 15) -> List[D
             # yields two independent groupings) — up to 3 cat columns per sheet.
             new = []
             for cat in cats[:3]:
-                new += _tasks_from_table(df, cat, nums, art, str(sh))
+                new += _tasks_from_table(df, cat, nums, art, str(sh), expansion=expansion)
             # validate each task's gold + oracle-pass before accepting
             for t in new:
                 if len(tasks) >= max_tasks or per_art[art] >= max_per_article:
@@ -188,8 +226,8 @@ def _build(pairs_root: str, max_tasks: int, max_per_article: int = 15) -> List[D
     return tasks
 
 
-def _offline(pairs_root: str, max_tasks: int, max_per_article: int = 15) -> int:
-    tasks = _build(pairs_root, max_tasks, max_per_article)
+def _offline(pairs_root: str, max_tasks: int, max_per_article: int = 15, max_rows: int = 0) -> int:
+    tasks = _build(pairs_root, max_tasks, max_per_article, max_rows)
     from collections import Counter
     by_op = Counter(t["op"] for t in tasks)
     arts = len(set(t["name"].split("::")[1].split(":")[0] for t in tasks))
@@ -215,36 +253,58 @@ def main(argv: Optional[List[str]] = None) -> int:
     ap.add_argument("--max-tasks", type=int, default=60)
     ap.add_argument("--max-per-article", type=int, default=15,
                     help="cap tasks from any single article so the slice spans many papers")
+    ap.add_argument("--max-rows", type=int, default=0,
+                    help="cap each table to this many rows (bounds memory; 0 = no cap)")
     ap.add_argument("--offline", action="store_true")
     ap.add_argument("--out", default="eval/results_real_auto")
     a = ap.parse_args(argv)
 
     if a.offline:
-        return _offline(a.pairs_root, a.max_tasks, a.max_per_article)
+        return _offline(a.pairs_root, a.max_tasks, a.max_per_article, a.max_rows)
     if not os.getenv("LLM_API_BASE") or not os.getenv("LLM_API_KEY"):
         print("[error] needs LLM_API_BASE / LLM_API_KEY (or --offline)."); return 1
 
     from eval.ambiguity_calibration import _llm_code, _exec, _gold_correct, MODELS
+    import time as _time
 
-    tasks = _build(a.pairs_root, a.max_tasks, a.max_per_article)
+    def _llm_code_retry(task, prompt, model, retries=7, pace=0.6):
+        """Retry the LLM call on a None (transient proxy overload/rate-limit) with
+        backoff; pace successful calls so a bulk run doesn't flood the proxy (unpaced
+        rapid-fire calls return None -> tasks crash -> deflated silent rate). Tuned so
+        proxy-induced crashes -> ~0 (diagnosed: pace 0.6 + 7 retries clears them; the
+        residual crashes are genuine exec failures of the model's code on real tables)."""
+        for attempt in range(retries):
+            code = _llm_code(task, prompt, model)
+            if code is not None:
+                _time.sleep(pace)
+                return code
+            _time.sleep(min(2.0 * (attempt + 1), 12.0))
+        return None
+
+    tasks = _build(a.pairs_root, a.max_tasks, a.max_per_article, a.max_rows)
     arts = len(set(t["name"].split("::")[1].split(":")[0] for t in tasks))
     print(f"[real-auto] {len(tasks)} real tasks across {arts} articles x (ambiguous, clarified) x {len(MODELS)} models", flush=True)
 
     silent = {c: 0 for c in ("ambiguous", "clarified")}
     total = {c: 0 for c in ("ambiguous", "clarified")}
+    execok = {c: 0 for c in ("ambiguous", "clarified")}
     fire_wrong = wrong = fire_right = right = 0
+    crashes = 0
+    proxy_crash = exec_crash = 0
     rows = []
     for t in tasks:
         rec = {"name": t["name"], "op": t["op"]}
         for cond in ("ambiguous", "clarified"):
             for m in MODELS:
-                code = _llm_code(t, t[cond], m)
+                code = _llm_code_retry(t, t[cond], m)
                 result = _exec(t, code) if code else None
                 exec_ok = result is not None
                 correct = exec_ok and _gold_correct(t, result)
                 oc = oracle_check(t["op"], {"df": t["df"]}, t["params"], result)
                 fired = bool(oc and oc.fired)
                 total[cond] += 1
+                if exec_ok:
+                    execok[cond] += 1
                 if exec_ok and not correct:
                     silent[cond] += 1
                 if exec_ok:
@@ -253,6 +313,12 @@ def main(argv: Optional[List[str]] = None) -> int:
                     else:
                         wrong += 1; fire_wrong += int(fired)
                 tag = "ok" if correct else ("SILENT" if exec_ok else "crash")
+                if not exec_ok:
+                    crashes += 1
+                    if code is None:
+                        proxy_crash += 1   # LLM/proxy returned nothing after retries
+                    else:
+                        exec_crash += 1    # model produced code that failed on the real table
                 print(f"[{t['name'][:34]:34}] {cond:10} {m:18} {tag:7} fired={fired}", flush=True)
                 rec.setdefault(cond, {})[m] = {"tag": tag, "oracle_fired": fired}
         rows.append(rec)
@@ -262,8 +328,8 @@ def main(argv: Optional[List[str]] = None) -> int:
         f"Across {arts} Nature articles, real scientific tables, same operator-semantic",
         "tasks + (ambiguous, clarified) prompts + goldless oracle. Rates with 95% Wilson CIs.\n",
         "## (1) Silent-error rate on REAL data (large slice)",
-        f"- ambiguous: {silent['ambiguous']}/{total['ambiguous']} ({_wilson(silent['ambiguous'], total['ambiguous'])})",
-        f"- clarified: {silent['clarified']}/{total['clarified']} ({_wilson(silent['clarified'], total['clarified'])})\n",
+        f"- ambiguous: {silent['ambiguous']}/{execok['ambiguous']} ({_wilson(silent['ambiguous'], execok['ambiguous'])})",
+        f"- clarified: {silent['clarified']}/{execok['clarified']} ({_wilson(silent['clarified'], execok['clarified'])})\n",
         "## (2) Oracle recall on real silent errors",
         f"- {fire_wrong}/{wrong} ({_wilson(fire_wrong, wrong)})" if wrong else "- (no wrong)",
         "\n## (3) Oracle false-positive on real correct results",
@@ -271,6 +337,10 @@ def main(argv: Optional[List[str]] = None) -> int:
         "\n## Reading",
         f"- {len(tasks)} real tasks (vs the 9-table curated slice) makes the external-validity",
         "  claim hard to dismiss as small-sample; CIs are now tight.",
+        f"- exec crashes: {crashes}/{sum(total.values())} (proxy/LLM None={proxy_crash}, "
+        f"bad-code-on-real-table={exec_crash}); silent rate is over exec-ok only, so proxy "
+        f"hiccups cannot deflate it. Proxy crashes ~0 with retry+pace; exec_crash is a genuine "
+        f"model-failure rate on messy real tables.",
     ]
     out = Path(a.out); out.mkdir(parents=True, exist_ok=True)
     (out / "real_auto_report.md").write_text("\n".join(report), encoding="utf-8")

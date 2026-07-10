@@ -1,0 +1,78 @@
+{
+  "substrate": "sqlite3",
+  "n_operators": 10,
+  "correct": 10,
+  "cases": [
+    {
+      "op": "weighted_mean",
+      "fired_on_slip": true,
+      "fired_on_correct": false,
+      "ok": true,
+      "note": "SQL analyst writes AVG(price) instead of the quantity-weighted average"
+    },
+    {
+      "op": "groupby_dropna_key",
+      "fired_on_slip": true,
+      "fired_on_correct": false,
+      "ok": true,
+      "note": "SQL analyst adds WHERE g IS NOT NULL, silently dropping the NaN-key rows"
+    },
+    {
+      "op": "join_fanout",
+      "fired_on_slip": true,
+      "fired_on_correct": false,
+      "ok": true,
+      "note": "joining a 1-to-many tags table before SUM inflates amt via fan-out"
+    },
+    {
+      "op": "left_join_keep_all",
+      "fired_on_slip": true,
+      "fired_on_correct": false,
+      "ok": true,
+      "note": "INNER JOIN silently drops the left row with no match (id=2)"
+    },
+    {
+      "op": "pooled_rate",
+      "fired_on_slip": true,
+      "fired_on_correct": false,
+      "ok": true,
+      "note": "AVG(num/den) averages per-row ratios instead of the pooled sum/sum rate"
+    },
+    {
+      "op": "dedup_then_agg",
+      "fired_on_slip": true,
+      "fired_on_correct": false,
+      "ok": true,
+      "note": "SUM without de-duplicating the repeated key double-counts the line-item"
+    },
+    {
+      "op": "null_in_agg_count",
+      "fired_on_slip": true,
+      "fired_on_correct": false,
+      "ok": true,
+      "note": "COUNT(v) silently undercounts group 'a' because one v is NULL"
+    },
+    {
+      "op": "within_group_share",
+      "fired_on_slip": true,
+      "fired_on_correct": false,
+      "ok": true,
+      "note": "OVER () uses the grand total, so shares sum to 1 globally, not within group"
+    },
+    {
+      "op": "cumulative_running",
+      "fired_on_slip": true,
+      "fired_on_correct": false,
+      "ok": true,
+      "note": "returning the raw per-row value instead of the running cumulative total"
+    },
+    {
+      "op": "proportion_true",
+      "fired_on_slip": true,
+      "fired_on_correct": false,
+      "ok": true,
+      "note": "SUM(flag) returns the COUNT of trues, not the proportion in [0,1]"
+    }
+  ],
+  "claim": "goldless contracts are execution-substrate-agnostic (pandas -> SQL)"
+}

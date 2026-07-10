@@ -1,0 +1,434 @@
+[
+  {
+    "item": "nullcount::s41586-022-05507-1:2e:Time (h)",
+    "op": "null_in_agg_count",
+    "ambiguous": {
+      "opencode/big-pickle": {
+        "tag": "ok",
+        "oracle_fired": false,
+        "exec_ok": true,
+        "correct": true,
+        "code": "result = df.groupby('Time (h)', as_index=False).size().rename(columns={'size': 'n'})"
+      },
+      "opencode/deepseek-v4-flash-free": {
+        "tag": "ok",
+        "oracle_fired": false,
+        "exec_ok": true,
+        "correct": true,
+        "code": "result = df.groupby('Time (h)').size().reset_index(name='n')"
+      }
+    },
+    "clarified": {
+      "opencode/big-pickle": {
+        "tag": "ok",
+        "oracle_fired": false,
+        "exec_ok": true,
+        "correct": true,
+        "code": "result = df.groupby('Time (h)').size().reset_index(name='n')"
+      },
+      "opencode/deepseek-v4-flash-free": {
+        "tag": "ok",
+        "oracle_fired": false,
+        "exec_ok": true,
+        "correct": true,
+        "code": "result = df.groupby('Time (h)').size().reset_index(name='n')"
+      }
+    }
+  },
+  {
+    "item": "nullcount::s41586-024-08224-z:Fig. 4a:treatment",
+    "op": "null_in_agg_count",
+    "ambiguous": {
+      "opencode/big-pickle": {
+        "tag": "ok",
+        "oracle_fired": false,
+        "exec_ok": true,
+        "correct": true,
+        "code": "result = df.groupby('treatment').size().reset_index(name='n')"
+      },
+      "opencode/deepseek-v4-flash-free": {
+        "tag": "ok",
+        "oracle_fired": false,
+        "exec_ok": true,
+        "correct": true,
+        "code": "result = df.groupby('treatment').size().reset_index(name='n')"
+      }
+    },
+    "clarified": {
+      "opencode/big-pickle": {
+        "tag": "ok",
+        "oracle_fired": false,
+        "exec_ok": true,
+        "correct": true,
+        "code": "result = df.groupby('treatment').size().reset_index(name='n')"
+      },
+      "opencode/deepseek-v4-flash-free": {
+        "tag": "ok",
+        "oracle_fired": false,
+        "exec_ok": true,
+        "correct": true,
+        "code": "result = df.groupby('treatment').size().reset_index(name='n')"
+      }
+    }
+  },
+  {
+    "item": "nullcount::s41586-024-08224-z:Fig. 4a:vehicle",
+    "op": "null_in_agg_count",
+    "ambiguous": {
+      "opencode/big-pickle": {
+        "tag": "ok",
+        "oracle_fired": false,
+        "exec_ok": true,
+        "correct": true,
+        "code": "result = df.groupby('vehicle', as_index=False).size().rename(columns={'size': 'n'})"
+      },
+      "opencode/deepseek-v4-flash-free": {
+        "tag": "ok",
+        "oracle_fired": false,
+        "exec_ok": true,
+        "correct": true,
+        "code": "result = df.groupby('vehicle').size().reset_index(name='n')"
+      }
+    },
+    "clarified": {
+      "opencode/big-pickle": {
+        "tag": "ok",
+        "oracle_fired": false,
+        "exec_ok": true,
+        "correct": true,
+        "code": "result = df.groupby('vehicle').size().reset_index(name='n')"
+      },
+      "opencode/deepseek-v4-flash-free": {
+        "tag": "ok",
+        "oracle_fired": false,
+        "exec_ok": true,
+        "correct": true,
+        "code": "result = df.groupby('vehicle').size().reset_index(name='n')"
+      }
+    }
+  },
+  {
+    "item": "nullcount::s41586-024-08224-z:Fig. 4a:vehicle.1",
+    "op": "null_in_agg_count",
+    "ambiguous": {
+      "opencode/big-pickle": {
+        "tag": "ok",
+        "oracle_fired": false,
+        "exec_ok": true,
+        "correct": true,
+        "code": "result = df.groupby('vehicle.1').size().reset_index(name='n')"
+      },
+      "opencode/deepseek-v4-flash-free": {
+        "tag": "ok",
+        "oracle_fired": false,
+        "exec_ok": true,
+        "correct": true,
+        "code": "result = df.groupby('vehicle.1').size().reset_index(name='n')"
+      }
+    },
+    "clarified": {
+      "opencode/big-pickle": {
+        "tag": "ok",
+        "oracle_fired": false,
+        "exec_ok": true,
+        "correct": true,
+        "code": "result = df.groupby('vehicle.1').size().reset_index(name='n')"
+      },
+      "opencode/deepseek-v4-flash-free": {
+        "tag": "ok",
+        "oracle_fired": false,
+        "exec_ok": true,
+        "correct": true,
+        "code": "result = df.groupby('vehicle.1', as_index=False).size().rename(columns={'size': 'n'})"
+      }
+    }
+  },
+  {
+    "item": "dropnakey::s41586-024-08224-z:Fig. 4a:vehicle.1",
+    "op": "groupby_dropna_key",
+    "ambiguous": {
+      "opencode/big-pickle": {
+        "tag": "SILENT",
+        "oracle_fired": true,
+        "exec_ok": true,
+        "correct": false,
+        "code": "result = df.groupby('vehicle.1', as_index=False)['MPA.20'].sum()"
+      },
+      "opencode/deepseek-v4-flash-free": {
+        "tag": "SILENT",
+        "oracle_fired": true,
+        "exec_ok": true,
+        "correct": false,
+        "code": "result = df.groupby('vehicle.1', as_index=False)['MPA.20'].sum()"
+      }
+    },
+    "clarified": {
+      "opencode/big-pickle": {
+        "tag": "ok",
+        "oracle_fired": false,
+        "exec_ok": true,
+        "correct": true,
+        "code": "result = df.groupby('vehicle.1', dropna=False)['MPA.20'].sum().reset_index()"
+      },
+      "opencode/deepseek-v4-flash-free": {
+        "tag": "ok",
+        "oracle_fired": false,
+        "exec_ok": true,
+        "correct": true,
+        "code": "result = df.groupby('vehicle.1', dropna=False)['MPA.20'].sum().reset_index()"
+      }
+    }
+  },
+  {
+    "item": "nullcount::s41586-025-09880-5:Fig5ab EDfig6 EDtable3:COADMINISTRATION",
+    "op": "null_in_agg_count",
+    "ambiguous": {
+      "opencode/big-pickle": {
+        "tag": "ok",
+        "oracle_fired": false,
+        "exec_ok": true,
+        "correct": true,
+        "code": "result = df.groupby('COADMINISTRATION').size().reset_index(name='n')"
+      },
+      "opencode/deepseek-v4-flash-free": {
+        "tag": "ok",
+        "oracle_fired": false,
+        "exec_ok": true,
+        "correct": true,
+        "code": "result = df.groupby('COADMINISTRATION', as_index=False).size().rename(columns={'size': 'n'})"
+      }
+    },
+    "clarified": {
+      "opencode/big-pickle": {
+        "tag": "ok",
+        "oracle_fired": false,
+        "exec_ok": true,
+        "correct": true,
+        "code": "result = df.groupby(\"COADMINISTRATION\").size().reset_index(name=\"n\")"
+      },
+      "opencode/deepseek-v4-flash-free": {
+        "tag": "ok",
+        "oracle_fired": false,
+        "exec_ok": true,
+        "correct": true,
+        "code": "result = df.groupby('COADMINISTRATION').size().reset_index(name='n')"
+      }
+    }
+  },
+  {
+    "item": "dropnakey::s41586-025-09880-5:Fig5ab EDfig6 EDtable3:COADMINISTRATION",
+    "op": "groupby_dropna_key",
+    "ambiguous": {
+      "opencode/big-pickle": {
+        "tag": "SILENT",
+        "oracle_fired": true,
+        "exec_ok": true,
+        "correct": false,
+        "code": "result = df.groupby('COADMINISTRATION', as_index=False)['%MPE'].sum()"
+      },
+      "opencode/deepseek-v4-flash-free": {
+        "tag": "SILENT",
+        "oracle_fired": true,
+        "exec_ok": true,
+        "correct": false,
+        "code": "result = df.groupby('COADMINISTRATION')['%MPE'].sum().reset_index()"
+      }
+    },
+    "clarified": {
+      "opencode/big-pickle": {
+        "tag": "ok",
+        "oracle_fired": false,
+        "exec_ok": true,
+        "correct": true,
+        "code": "result = df.groupby('COADMINISTRATION', dropna=False)['%MPE'].sum().reset_index()"
+      },
+      "opencode/deepseek-v4-flash-free": {
+        "tag": "SILENT",
+        "oracle_fired": false,
+        "exec_ok": true,
+        "correct": false,
+        "code": "result = df.groupby('COADMINISTRATION', dropna=False)['%MPE'].sum()"
+      }
+    }
+  },
+  {
+    "item": "nullcount::s41586-025-09880-5:Fig5ab EDfig6 EDtable3:COADMINISTRATION.1",
+    "op": "null_in_agg_count",
+    "ambiguous": {
+      "opencode/big-pickle": {
+        "tag": "SILENT",
+        "oracle_fired": true,
+        "exec_ok": true,
+        "correct": false,
+        "code": "result = df.groupby('COADMINISTRATION.1', as_index=False).size()"
+      },
+      "opencode/deepseek-v4-flash-free": {
+        "tag": "ok",
+        "oracle_fired": false,
+        "exec_ok": true,
+        "correct": true,
+        "code": "result = df.groupby('COADMINISTRATION.1', as_index=False).size().rename(columns={'size': 'n'})"
+      }
+    },
+    "clarified": {
+      "opencode/big-pickle": {
+        "tag": "ok",
+        "oracle_fired": false,
+        "exec_ok": true,
+        "correct": true,
+        "code": "result = df.groupby('COADMINISTRATION.1', as_index=False).size().rename(columns={'size': 'n'})"
+      },
+      "opencode/deepseek-v4-flash-free": {
+        "tag": "ok",
+        "oracle_fired": false,
+        "exec_ok": true,
+        "correct": true,
+        "code": "result = df.groupby('COADMINISTRATION.1').size().reset_index(name='n')"
+      }
+    }
+  },
+  {
+    "item": "dropnakey::s41586-025-09887-y:Fig 4f -Gpnmb:00d WT.1",
+    "op": "groupby_dropna_key",
+    "ambiguous": {
+      "opencode/big-pickle": {
+        "tag": "SILENT",
+        "oracle_fired": false,
+        "exec_ok": true,
+        "correct": false,
+        "code": "result = df.groupby('00d WT.1', as_index=False)['00d KO.2'].sum()"
+      },
+      "opencode/deepseek-v4-flash-free": {
+        "tag": "SILENT",
+        "oracle_fired": false,
+        "exec_ok": true,
+        "correct": false,
+        "code": "result = df.groupby('00d WT.1', as_index=False)['00d KO.2'].sum()"
+      }
+    },
+    "clarified": {
+      "opencode/big-pickle": {
+        "tag": "SILENT",
+        "oracle_fired": false,
+        "exec_ok": true,
+        "correct": false,
+        "code": "result = df.groupby('00d WT.1', dropna=False)['00d KO.2'].sum()"
+      },
+      "opencode/deepseek-v4-flash-free": {
+        "tag": "SILENT",
+        "oracle_fired": false,
+        "exec_ok": true,
+        "correct": false,
+        "code": "result = df.groupby('00d WT.1', dropna=False)['00d KO.2'].sum()"
+      }
+    }
+  },
+  {
+    "item": "dropnakey::s41586-026-10490-y:ExD Fig. 11a:Coculture conditions",
+    "op": "groupby_dropna_key",
+    "ambiguous": {
+      "opencode/big-pickle": {
+        "tag": "SILENT",
+        "oracle_fired": true,
+        "exec_ok": true,
+        "correct": false,
+        "code": "result = df.groupby('Coculture conditions', as_index=False)['Similarity score'].sum()"
+      },
+      "opencode/deepseek-v4-flash-free": {
+        "tag": "SILENT",
+        "oracle_fired": true,
+        "exec_ok": true,
+        "correct": false,
+        "code": "result = df.groupby('Coculture conditions')['Similarity score'].sum().reset_index()"
+      }
+    },
+    "clarified": {
+      "opencode/big-pickle": {
+        "tag": "SILENT",
+        "oracle_fired": false,
+        "exec_ok": true,
+        "correct": false,
+        "code": "result = df.groupby(\"Coculture conditions\", dropna=False)[\"Similarity score\"].sum()"
+      },
+      "opencode/deepseek-v4-flash-free": {
+        "tag": "SILENT",
+        "oracle_fired": false,
+        "exec_ok": true,
+        "correct": false,
+        "code": "result = df.groupby('Coculture conditions', dropna=False)['Similarity score'].sum()"
+      }
+    }
+  },
+  {
+    "item": "dropnakey::s41586-026-10490-y:ExD Fig. 11b:Coculture conditions",
+    "op": "groupby_dropna_key",
+    "ambiguous": {
+      "opencode/big-pickle": {
+        "tag": "SILENT",
+        "oracle_fired": true,
+        "exec_ok": true,
+        "correct": false,
+        "code": "result = df.groupby(\"Coculture conditions\", as_index=False)[\"Similarity score\"].sum()"
+      },
+      "opencode/deepseek-v4-flash-free": {
+        "tag": "SILENT",
+        "oracle_fired": true,
+        "exec_ok": true,
+        "correct": false,
+        "code": "result = df.groupby('Coculture conditions', as_index=False)['Similarity score'].sum()"
+      }
+    },
+    "clarified": {
+      "opencode/big-pickle": {
+        "tag": "ok",
+        "oracle_fired": false,
+        "exec_ok": true,
+        "correct": true,
+        "code": "result = df.groupby('Coculture conditions', dropna=False)['Similarity score'].sum().reset_index()"
+      },
+      "opencode/deepseek-v4-flash-free": {
+        "tag": "SILENT",
+        "oracle_fired": false,
+        "exec_ok": true,
+        "correct": false,
+        "code": "result = df.groupby('Coculture conditions', dropna=False)['Similarity score'].sum()"
+      }
+    }
+  },
+  {
+    "item": "dropnakey::s41586-026-10490-y:Fig. 4c and d:Coculture conditions",
+    "op": "groupby_dropna_key",
+    "ambiguous": {
+      "opencode/big-pickle": {
+        "tag": "SILENT",
+        "oracle_fired": true,
+        "exec_ok": true,
+        "correct": false,
+        "code": "result = df.groupby('Coculture conditions', as_index=False)['Similarity score'].sum()"
+      },
+      "opencode/deepseek-v4-flash-free": {
+        "tag": "SILENT",
+        "oracle_fired": true,
+        "exec_ok": true,
+        "correct": false,
+        "code": "result = df.groupby('Coculture conditions')['Similarity score'].sum()"
+      }
+    },
+    "clarified": {
+      "opencode/big-pickle": {
+        "tag": "SILENT",
+        "oracle_fired": false,
+        "exec_ok": true,
+        "correct": false,
+        "code": "result = df.groupby('Coculture conditions', dropna=False)['Similarity score'].sum()"
+      },
+      "opencode/deepseek-v4-flash-free": {
+        "tag": "SILENT",
+        "oracle_fired": false,
+        "exec_ok": true,
+        "correct": false,
+        "code": "result = df.groupby('Coculture conditions', dropna=False)['Similarity score'].sum()"
+      }
+    }
+  }
+]

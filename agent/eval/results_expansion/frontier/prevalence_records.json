@@ -1,0 +1,1562 @@
+[
+  {
+    "item": "index_align#1",
+    "op": "index_align",
+    "ambiguous": {
+      "gpt-5.4": {
+        "tag": "SILENT",
+        "oracle_fired": true,
+        "exec_ok": true,
+        "correct": false,
+        "code": "result = df.merge(df2[['id', 'w']], on='id', how='left')\nresult['total'] = result['v'] + result['w']\nresult = result[['id', 'v', 'total']]"
+      },
+      "claude-opus-4.8": {
+        "tag": "SILENT",
+        "oracle_fired": true,
+        "exec_ok": true,
+        "correct": false,
+        "code": "result = df.merge(df2, on='id')\nresult['total'] = result['v'] + result['w']\nresult = result[['id', 'v', 'total']]"
+      },
+      "gpt-5.3-codex": {
+        "tag": "SILENT",
+        "oracle_fired": true,
+        "exec_ok": true,
+        "correct": false,
+        "code": "result = df.merge(df2[['id', 'w']], on='id', how='left')\nresult['total'] = result['v'] + result['w']\nresult = result[['id', 'v', 'total']]"
+      },
+      "gemini-3.1-pro-preview": {
+        "tag": "SILENT",
+        "oracle_fired": true,
+        "exec_ok": true,
+        "correct": false,
+        "code": "result = df.merge(df2, on='id').assign(total=lambda x: x['v'] + x['w'])[['id', 'v', 'total']]"
+      },
+      "gpt-5.5": {
+        "tag": "SILENT",
+        "oracle_fired": true,
+        "exec_ok": true,
+        "correct": false,
+        "code": "result = df.merge(df2, on='id', how='left').assign(total=lambda x: x['v'] + x['w'])[['id', 'v', 'total']]"
+      }
+    },
+    "clarified": {
+      "gpt-5.4": {
+        "tag": "ok",
+        "oracle_fired": false,
+        "exec_ok": true,
+        "correct": true,
+        "code": "result = df[['id', 'v']].copy()\nresult['total'] = result['v'] + result['id'].map(df2.groupby('id')['w'].sum()).fillna(0)"
+      },
+      "claude-opus-4.8": {
+        "tag": "ok",
+        "oracle_fired": false,
+        "exec_ok": true,
+        "correct": true,
+        "code": "result = df.merge(df2, on='id', how='left')\nresult['w'] = result['w'].fillna(0)\nresult['total'] = result['v'] + result['w']\nresult = result[['id', 'v', 'total']]"
+      },
+      "gpt-5.3-codex": {
+        "tag": "ok",
+        "oracle_fired": false,
+        "exec_ok": true,
+        "correct": true,
+        "code": "w_by_id = df2.groupby('id')['w'].sum()\nresult = df.assign(total=df['v'] + df['id'].map(w_by_id).fillna(0))[['id', 'v', 'total']]"
+      },
+      "gemini-3.1-pro-preview": {
+        "tag": "ok",
+        "oracle_fired": false,
+        "exec_ok": true,
+        "correct": true,
+        "code": "result = df.merge(df2, on='id', how='left').assign(total=lambda x: x['v'] + x['w'].fillna(0))[['id', 'v', 'total']]"
+      },
+      "gpt-5.5": {
+        "tag": "ok",
+        "oracle_fired": false,
+        "exec_ok": true,
+        "correct": true,
+        "code": "result = df.assign(total=df[\"v\"] + df[\"id\"].map(df2.set_index(\"id\")[\"w\"]).fillna(0))[[\"id\", \"v\", \"total\"]]"
+      }
+    }
+  },
+  {
+    "item": "index_align#2",
+    "op": "index_align",
+    "ambiguous": {
+      "gpt-5.4": {
+        "tag": "SILENT",
+        "oracle_fired": true,
+        "exec_ok": true,
+        "correct": false,
+        "code": "result = df.merge(df2, on='id', how='left')\nresult['total'] = result['v'] + result['w']\nresult = result[['id', 'v', 'total']]"
+      },
+      "claude-opus-4.8": {
+        "tag": "SILENT",
+        "oracle_fired": true,
+        "exec_ok": true,
+        "correct": false,
+        "code": "result = df.merge(df2, on='id')\nresult['total'] = result['v'] + result['w']\nresult = result[['id', 'v', 'total']]"
+      },
+      "gpt-5.3-codex": {
+        "tag": "SILENT",
+        "oracle_fired": true,
+        "exec_ok": true,
+        "correct": false,
+        "code": "result = df.assign(total=df['v'] + df['id'].map(df2.set_index('id')['w']))[['id', 'v', 'total']]"
+      },
+      "gemini-3.1-pro-preview": {
+        "tag": "SILENT",
+        "oracle_fired": true,
+        "exec_ok": true,
+        "correct": false,
+        "code": "result = df.merge(df2, on='id').assign(total=lambda x: x['v'] + x['w'])[['id', 'v', 'total']]"
+      },
+      "gpt-5.5": {
+        "tag": "SILENT",
+        "oracle_fired": true,
+        "exec_ok": true,
+        "correct": false,
+        "code": "result = df.assign(total=df['v'] + df['id'].map(df2.set_index('id')['w']))[['id', 'v', 'total']]"
+      }
+    },
+    "clarified": {
+      "gpt-5.4": {
+        "tag": "ok",
+        "oracle_fired": false,
+        "exec_ok": true,
+        "correct": true,
+        "code": "result = df.merge(df2[['id', 'w']], on='id', how='left')\nresult['total'] = result['v'] + result['w'].fillna(0)\nresult = result[['id', 'v', 'total']]"
+      },
+      "claude-opus-4.8": {
+        "tag": "ok",
+        "oracle_fired": false,
+        "exec_ok": true,
+        "correct": true,
+        "code": "result = df[['id', 'v']].copy()\nresult['total'] = result['v'] + result['id'].map(df2.set_index('id')['w']).fillna(0)"
+      },
+      "gpt-5.3-codex": {
+        "tag": "ok",
+        "oracle_fired": false,
+        "exec_ok": true,
+        "correct": true,
+        "code": "w_by_id = df2.groupby('id')['w'].sum()\nresult = df.assign(total=df['v'] + df['id'].map(w_by_id).fillna(0))[['id', 'v', 'total']]"
+      },
+      "gemini-3.1-pro-preview": {
+        "tag": "ok",
+        "oracle_fired": false,
+        "exec_ok": true,
+        "correct": true,
+        "code": "result = df.merge(df2, on='id', how='left')\nresult['total'] = result['v'] + result['w'].fillna(0)\nresult = result[['id', 'v', 'total']]"
+      },
+      "gpt-5.5": {
+        "tag": "ok",
+        "oracle_fired": false,
+        "exec_ok": true,
+        "correct": true,
+        "code": "result = df.merge(df2[['id', 'w']], on='id', how='left').assign(total=lambda x: x['v'] + x['w'].fillna(0))[['id', 'v', 'total']]"
+      }
+    }
+  },
+  {
+    "item": "dtype_coerce#1",
+    "op": "dtype_coerce",
+    "ambiguous": {
+      "gpt-5.4": {
+        "tag": "ok",
+        "oracle_fired": false,
+        "exec_ok": true,
+        "correct": true,
+        "code": "result = df.loc[:, ['zip', 'pop']].copy()\nresult['zkey'] = result['zip'].astype(str).str.zfill(5)"
+      },
+      "claude-opus-4.8": {
+        "tag": "ok",
+        "oracle_fired": false,
+        "exec_ok": true,
+        "correct": true,
+        "code": "result = df.assign(zkey=df['zip'].astype(str).str.strip().str.zfill(5))[['zip', 'pop', 'zkey']]"
+      },
+      "gpt-5.3-codex": {
+        "tag": "SILENT",
+        "oracle_fired": false,
+        "exec_ok": true,
+        "correct": false,
+        "code": "result = df.assign(zkey=df['zip'].astype('string').str.replace(r'\\D', '', regex=True).str[:5].str.zfill(5))[['zip', 'pop', 'zkey']]"
+      },
+      "gemini-3.1-pro-preview": {
+        "tag": "ok",
+        "oracle_fired": false,
+        "exec_ok": true,
+        "correct": true,
+        "code": "result = df.assign(zkey=df['zip'])[['zip', 'pop', 'zkey']]"
+      },
+      "gpt-5.5": {
+        "tag": "SILENT",
+        "oracle_fired": false,
+        "exec_ok": true,
+        "correct": false,
+        "code": "_z = df[\"zip\"].astype(\"string\").str.strip()\nresult = df.loc[:, [\"zip\", \"pop\"]].assign(zkey=_z.str.extract(r\"^(\\d{5})\", expand=False).fillna(_z.str.replace(r\"\\.0+$\", \"\", regex=True).str.zfill(5).str[-5:]))"
+      }
+    },
+    "clarified": {
+      "gpt-5.4": {
+        "tag": "SILENT",
+        "oracle_fired": false,
+        "exec_ok": true,
+        "correct": false,
+        "code": "result = df.assign(zkey=df['zip'].astype('string'))[['zip', 'pop', 'zkey']]"
+      },
+      "claude-opus-4.8": {
+        "tag": "ok",
+        "oracle_fired": false,
+        "exec_ok": true,
+        "correct": true,
+        "code": "df['zkey'] = df['zip'].astype(str); result = df[['zip', 'pop', 'zkey']]"
+      },
+      "gpt-5.3-codex": {
+        "tag": "SILENT",
+        "oracle_fired": false,
+        "exec_ok": true,
+        "correct": false,
+        "code": "result = df.assign(zkey=df['zip'].astype('string'))[['zip', 'pop', 'zkey']]"
+      },
+      "gemini-3.1-pro-preview": {
+        "tag": "ok",
+        "oracle_fired": false,
+        "exec_ok": true,
+        "correct": true,
+        "code": "result = df.assign(zkey=df['zip'].astype(str))"
+      },
+      "gpt-5.5": {
+        "tag": "SILENT",
+        "oracle_fired": false,
+        "exec_ok": true,
+        "correct": false,
+        "code": "result = df.assign(zkey=df[\"zip\"].astype(\"string\"))[[\"zip\", \"pop\", \"zkey\"]]"
+      }
+    }
+  },
+  {
+    "item": "dtype_coerce#2",
+    "op": "dtype_coerce",
+    "ambiguous": {
+      "gpt-5.4": {
+        "tag": "SILENT",
+        "oracle_fired": true,
+        "exec_ok": true,
+        "correct": false,
+        "code": "result = df.loc[:, ['zip', 'pop']].assign(zkey=df['zip'].astype(str).str.zfill(5))"
+      },
+      "claude-opus-4.8": {
+        "tag": "SILENT",
+        "oracle_fired": true,
+        "exec_ok": true,
+        "correct": false,
+        "code": "result = df.assign(zkey=df['zip'].astype(str).str.strip().str.split('.').str[0].str.zfill(5))[['zip', 'pop', 'zkey']]"
+      },
+      "gpt-5.3-codex": {
+        "tag": "SILENT",
+        "oracle_fired": true,
+        "exec_ok": true,
+        "correct": false,
+        "code": "result = df.assign(zkey=df['zip'].astype(str).str.extract(r'(\\d+)', expand=False).str.zfill(5).str[:5])[['zip', 'pop', 'zkey']]"
+      },
+      "gemini-3.1-pro-preview": {
+        "tag": "ok",
+        "oracle_fired": false,
+        "exec_ok": true,
+        "correct": true,
+        "code": "result = df.assign(zkey=df['zip'])[['zip', 'pop', 'zkey']]"
+      },
+      "gpt-5.5": {
+        "tag": "SILENT",
+        "oracle_fired": true,
+        "exec_ok": true,
+        "correct": false,
+        "code": "result = df.loc[:, ['zip', 'pop']].copy()\n_z = result['zip'].astype('string').str.strip().str.replace(r'\\.0$', '', regex=True)\nresult['zkey'] = _z.str.extract(r'(\\d+)', expand=False).str[:5].str.zfill(5)"
+      }
+    },
+    "clarified": {
+      "gpt-5.4": {
+        "tag": "SILENT",
+        "oracle_fired": false,
+        "exec_ok": true,
+        "correct": false,
+        "code": "result = df.assign(zkey=df['zip'].astype('string'))[['zip', 'pop', 'zkey']]"
+      },
+      "claude-opus-4.8": {
+        "tag": "ok",
+        "oracle_fired": false,
+        "exec_ok": true,
+        "correct": true,
+        "code": "df['zkey'] = df['zip'].astype(str)\nresult = df[['zip', 'pop', 'zkey']]"
+      },
+      "gpt-5.3-codex": {
+        "tag": "SILENT",
+        "oracle_fired": false,
+        "exec_ok": true,
+        "correct": false,
+        "code": "result = df.assign(zkey=df['zip'].astype('string'))[['zip', 'pop', 'zkey']]"
+      },
+      "gemini-3.1-pro-preview": {
+        "tag": "ok",
+        "oracle_fired": false,
+        "exec_ok": true,
+        "correct": true,
+        "code": "result = df.assign(zkey=df['zip'].astype(str))"
+      },
+      "gpt-5.5": {
+        "tag": "SILENT",
+        "oracle_fired": false,
+        "exec_ok": true,
+        "correct": false,
+        "code": "result = df.assign(zkey=df['zip'].astype('string'))[['zip', 'pop', 'zkey']]"
+      }
+    }
+  },
+  {
+    "item": "groupby_dropna_key#1",
+    "op": "groupby_dropna_key",
+    "ambiguous": {
+      "gpt-5.4": {
+        "tag": "SILENT",
+        "oracle_fired": true,
+        "exec_ok": true,
+        "correct": false,
+        "code": "result = df.groupby('g', as_index=False)['v'].sum()"
+      },
+      "claude-opus-4.8": {
+        "tag": "SILENT",
+        "oracle_fired": true,
+        "exec_ok": true,
+        "correct": false,
+        "code": "result = df.groupby('g', as_index=False)['v'].sum()"
+      },
+      "gpt-5.3-codex": {
+        "tag": "SILENT",
+        "oracle_fired": true,
+        "exec_ok": true,
+        "correct": false,
+        "code": "result = df.groupby('g', as_index=False)['v'].sum()"
+      },
+      "gemini-3.1-pro-preview": {
+        "tag": "SILENT",
+        "oracle_fired": true,
+        "exec_ok": true,
+        "correct": false,
+        "code": "result = df.groupby('g', as_index=False)['v'].sum()"
+      },
+      "gpt-5.5": {
+        "tag": "SILENT",
+        "oracle_fired": true,
+        "exec_ok": true,
+        "correct": false,
+        "code": "result = df.groupby('g', as_index=False)['v'].sum()"
+      }
+    },
+    "clarified": {
+      "gpt-5.4": {
+        "tag": "ok",
+        "oracle_fired": false,
+        "exec_ok": true,
+        "correct": true,
+        "code": "result = df.groupby('g', dropna=False, as_index=False)['v'].sum()"
+      },
+      "claude-opus-4.8": {
+        "tag": "SILENT",
+        "oracle_fired": false,
+        "exec_ok": true,
+        "correct": false,
+        "code": "result = df.groupby('g', dropna=False)['v'].sum()"
+      },
+      "gpt-5.3-codex": {
+        "tag": "ok",
+        "oracle_fired": false,
+        "exec_ok": true,
+        "correct": true,
+        "code": "result = df.groupby('g', dropna=False, as_index=False)['v'].sum()"
+      },
+      "gemini-3.1-pro-preview": {
+        "tag": "ok",
+        "oracle_fired": false,
+        "exec_ok": true,
+        "correct": true,
+        "code": "result = df.groupby('g', dropna=False)['v'].sum().reset_index()"
+      },
+      "gpt-5.5": {
+        "tag": "ok",
+        "oracle_fired": false,
+        "exec_ok": true,
+        "correct": true,
+        "code": "result = df.groupby('g', dropna=False, as_index=False)['v'].sum()"
+      }
+    }
+  },
+  {
+    "item": "groupby_dropna_key#2",
+    "op": "groupby_dropna_key",
+    "ambiguous": {
+      "gpt-5.4": {
+        "tag": "SILENT",
+        "oracle_fired": true,
+        "exec_ok": true,
+        "correct": false,
+        "code": "result = df.groupby('g', as_index=False)['v'].sum()"
+      },
+      "claude-opus-4.8": {
+        "tag": "SILENT",
+        "oracle_fired": true,
+        "exec_ok": true,
+        "correct": false,
+        "code": "result = df.groupby('g', as_index=False)['v'].sum()"
+      },
+      "gpt-5.3-codex": {
+        "tag": "SILENT",
+        "oracle_fired": true,
+        "exec_ok": true,
+        "correct": false,
+        "code": "result = df.groupby('g', as_index=False)['v'].sum()"
+      },
+      "gemini-3.1-pro-preview": {
+        "tag": "SILENT",
+        "oracle_fired": true,
+        "exec_ok": true,
+        "correct": false,
+        "code": "result = df.groupby('g', as_index=False)['v'].sum()"
+      },
+      "gpt-5.5": {
+        "tag": "SILENT",
+        "oracle_fired": true,
+        "exec_ok": true,
+        "correct": false,
+        "code": "result = df.groupby('g', as_index=False)['v'].sum()"
+      }
+    },
+    "clarified": {
+      "gpt-5.4": {
+        "tag": "ok",
+        "oracle_fired": false,
+        "exec_ok": true,
+        "correct": true,
+        "code": "result = df.groupby('g', dropna=False, as_index=False)['v'].sum()"
+      },
+      "claude-opus-4.8": {
+        "tag": "SILENT",
+        "oracle_fired": false,
+        "exec_ok": true,
+        "correct": false,
+        "code": "result = df.groupby('g', dropna=False)['v'].sum()"
+      },
+      "gpt-5.3-codex": {
+        "tag": "ok",
+        "oracle_fired": false,
+        "exec_ok": true,
+        "correct": true,
+        "code": "result = df.groupby('g', dropna=False, as_index=False)['v'].sum()"
+      },
+      "gemini-3.1-pro-preview": {
+        "tag": "ok",
+        "oracle_fired": false,
+        "exec_ok": true,
+        "correct": true,
+        "code": "result = df.groupby('g', dropna=False)['v'].sum().reset_index()"
+      },
+      "gpt-5.5": {
+        "tag": "ok",
+        "oracle_fired": false,
+        "exec_ok": true,
+        "correct": true,
+        "code": "result = df.groupby('g', dropna=False, as_index=False)['v'].sum()"
+      }
+    }
+  },
+  {
+    "item": "order_dependent_dedup#1",
+    "op": "order_dependent_dedup",
+    "ambiguous": {
+      "gpt-5.4": {
+        "tag": "ok",
+        "oracle_fired": false,
+        "exec_ok": true,
+        "correct": true,
+        "code": "result = df.loc[df.groupby('id')['ts'].idxmax(), ['id', 'ts', 'v']].reset_index(drop=True)"
+      },
+      "claude-opus-4.8": {
+        "tag": "ok",
+        "oracle_fired": false,
+        "exec_ok": true,
+        "correct": true,
+        "code": "result = df.sort_values('ts').drop_duplicates(subset='id', keep='last')[['id', 'ts', 'v']].reset_index(drop=True)"
+      },
+      "gpt-5.3-codex": {
+        "tag": "ok",
+        "oracle_fired": false,
+        "exec_ok": true,
+        "correct": true,
+        "code": "result = df.sort_values('ts').drop_duplicates(subset='id', keep='last')[['id', 'ts', 'v']]"
+      },
+      "gemini-3.1-pro-preview": {
+        "tag": "ok",
+        "oracle_fired": false,
+        "exec_ok": true,
+        "correct": true,
+        "code": "result = df.sort_values('ts').drop_duplicates(subset=['id'], keep='last')[['id', 'ts', 'v']]"
+      },
+      "gpt-5.5": {
+        "tag": "ok",
+        "oracle_fired": false,
+        "exec_ok": true,
+        "correct": true,
+        "code": "result = df.sort_values('ts').drop_duplicates('id', keep='last')[['id', 'ts', 'v']]"
+      }
+    },
+    "clarified": {
+      "gpt-5.4": {
+        "tag": "ok",
+        "oracle_fired": false,
+        "exec_ok": true,
+        "correct": true,
+        "code": "result = df.loc[df.groupby('id')['ts'].idxmax(), ['id', 'ts', 'v']].reset_index(drop=True)"
+      },
+      "claude-opus-4.8": {
+        "tag": "ok",
+        "oracle_fired": false,
+        "exec_ok": true,
+        "correct": true,
+        "code": "result = df.loc[df.groupby('id')['ts'].idxmax(), ['id', 'ts', 'v']].reset_index(drop=True)"
+      },
+      "gpt-5.3-codex": {
+        "tag": "ok",
+        "oracle_fired": false,
+        "exec_ok": true,
+        "correct": true,
+        "code": "result = df.loc[df.groupby('id')['ts'].idxmax(), ['id', 'ts', 'v']]"
+      },
+      "gemini-3.1-pro-preview": {
+        "tag": "ok",
+        "oracle_fired": false,
+        "exec_ok": true,
+        "correct": true,
+        "code": "result = df.loc[df.groupby('id')['ts'].idxmax()]"
+      },
+      "gpt-5.5": {
+        "tag": "ok",
+        "oracle_fired": false,
+        "exec_ok": true,
+        "correct": true,
+        "code": "result = df.loc[df.groupby('id')['ts'].idxmax(), ['id', 'ts', 'v']]"
+      }
+    }
+  },
+  {
+    "item": "order_dependent_dedup#2",
+    "op": "order_dependent_dedup",
+    "ambiguous": {
+      "gpt-5.4": {
+        "tag": "ok",
+        "oracle_fired": false,
+        "exec_ok": true,
+        "correct": true,
+        "code": "result = df.sort_values('ts').drop_duplicates(subset='id', keep='last')[['id', 'ts', 'v']]"
+      },
+      "claude-opus-4.8": {
+        "tag": "ok",
+        "oracle_fired": false,
+        "exec_ok": true,
+        "correct": true,
+        "code": "result = df.sort_values('ts').drop_duplicates('id', keep='last')[['id', 'ts', 'v']].reset_index(drop=True)"
+      },
+      "gpt-5.3-codex": {
+        "tag": "ok",
+        "oracle_fired": false,
+        "exec_ok": true,
+        "correct": true,
+        "code": "result = df.loc[df.groupby('id')['ts'].idxmax(), ['id', 'ts', 'v']].reset_index(drop=True)"
+      },
+      "gemini-3.1-pro-preview": {
+        "tag": "ok",
+        "oracle_fired": false,
+        "exec_ok": true,
+        "correct": true,
+        "code": "result = df.sort_values('ts').drop_duplicates('id', keep='last')"
+      },
+      "gpt-5.5": {
+        "tag": "ok",
+        "oracle_fired": false,
+        "exec_ok": true,
+        "correct": true,
+        "code": "result = df.sort_values('ts').drop_duplicates('id', keep='last')[['id', 'ts', 'v']]"
+      }
+    },
+    "clarified": {
+      "gpt-5.4": {
+        "tag": "ok",
+        "oracle_fired": false,
+        "exec_ok": true,
+        "correct": true,
+        "code": "result = df.loc[df.groupby('id')['ts'].idxmax(), ['id', 'ts', 'v']].reset_index(drop=True)"
+      },
+      "claude-opus-4.8": {
+        "tag": "ok",
+        "oracle_fired": false,
+        "exec_ok": true,
+        "correct": true,
+        "code": "result = df.loc[df.groupby('id')['ts'].idxmax(), ['id', 'ts', 'v']].reset_index(drop=True)"
+      },
+      "gpt-5.3-codex": {
+        "tag": "ok",
+        "oracle_fired": false,
+        "exec_ok": true,
+        "correct": true,
+        "code": "result = df.loc[df.groupby('id')['ts'].idxmax(), ['id', 'ts', 'v']]"
+      },
+      "gemini-3.1-pro-preview": {
+        "tag": "ok",
+        "oracle_fired": false,
+        "exec_ok": true,
+        "correct": true,
+        "code": "result = df.loc[df.groupby('id')['ts'].idxmax()]"
+      },
+      "gpt-5.5": {
+        "tag": "ok",
+        "oracle_fired": false,
+        "exec_ok": true,
+        "correct": true,
+        "code": "result = df.sort_values('ts', na_position='first').groupby('id', as_index=False).tail(1)[['id', 'ts', 'v']].reset_index(drop=True)"
+      }
+    }
+  },
+  {
+    "item": "resample_boundary#1",
+    "op": "resample_boundary",
+    "ambiguous": {
+      "gpt-5.4": {
+        "tag": "crash",
+        "oracle_fired": true,
+        "exec_ok": false,
+        "correct": false,
+        "code": "result = df.set_index('t').resample('H')['v'].sum().reset_index()"
+      },
+      "claude-opus-4.8": {
+        "tag": "SILENT",
+        "oracle_fired": true,
+        "exec_ok": true,
+        "correct": false,
+        "code": "result = df.assign(t=pd.to_datetime(df['t'])).set_index('t')['v'].resample('h').sum()"
+      },
+      "gpt-5.3-codex": {
+        "tag": "SILENT",
+        "oracle_fired": true,
+        "exec_ok": true,
+        "correct": false,
+        "code": "result = (\n    df.assign(t=df[\"t\"].astype(\"datetime64[ns]\"))\n      .set_index(\"t\")\n      .resample(\"1h\")[\"v\"]\n      .sum()\n      .reset_index()\n)"
+      },
+      "gemini-3.1-pro-preview": {
+        "tag": "crash",
+        "oracle_fired": true,
+        "exec_ok": false,
+        "correct": false,
+        "code": "result = df.resample('H', on='t')['v'].sum().reset_index()"
+      },
+      "gpt-5.5": {
+        "tag": "SILENT",
+        "oracle_fired": true,
+        "exec_ok": true,
+        "correct": false,
+        "code": "result = df.assign(t=pd.to_datetime(df['t'])).set_index('t')['v'].resample('h').sum().reset_index()"
+      }
+    },
+    "clarified": {
+      "gpt-5.4": {
+        "tag": "crash",
+        "oracle_fired": true,
+        "exec_ok": false,
+        "correct": false,
+        "code": "result = (df.set_index('t')['v'].resample('H', closed='right', label='right').sum().reset_index())"
+      },
+      "claude-opus-4.8": {
+        "tag": "SILENT",
+        "oracle_fired": false,
+        "exec_ok": true,
+        "correct": false,
+        "code": "result = df.resample('1h', on='t', closed='right', label='right')['v'].sum()"
+      },
+      "gpt-5.3-codex": {
+        "tag": "crash",
+        "oracle_fired": true,
+        "exec_ok": false,
+        "correct": false,
+        "code": "result = df.resample('H', on='t', closed='right', label='right')['v'].sum().reset_index()"
+      },
+      "gemini-3.1-pro-preview": {
+        "tag": "ok",
+        "oracle_fired": false,
+        "exec_ok": true,
+        "correct": true,
+        "code": "result = df.resample('h', on='t', closed='right', label='right')['v'].sum().reset_index()"
+      },
+      "gpt-5.5": {
+        "tag": "ok",
+        "oracle_fired": false,
+        "exec_ok": true,
+        "correct": true,
+        "code": "result = df.set_index('t').resample('h', closed='right', label='right')['v'].sum().reset_index()"
+      }
+    }
+  },
+  {
+    "item": "resample_boundary#2",
+    "op": "resample_boundary",
+    "ambiguous": {
+      "gpt-5.4": {
+        "tag": "crash",
+        "oracle_fired": true,
+        "exec_ok": false,
+        "correct": false,
+        "code": "result = df.set_index('t').resample('H')['v'].sum().reset_index()"
+      },
+      "claude-opus-4.8": {
+        "tag": "SILENT",
+        "oracle_fired": true,
+        "exec_ok": true,
+        "correct": false,
+        "code": "result = df.set_index('t')['v'].resample('h').sum()"
+      },
+      "gpt-5.3-codex": {
+        "tag": "crash",
+        "oracle_fired": true,
+        "exec_ok": false,
+        "correct": false,
+        "code": "result = df.resample('H', on='t')['v'].sum().reset_index()"
+      },
+      "gemini-3.1-pro-preview": {
+        "tag": "crash",
+        "oracle_fired": true,
+        "exec_ok": false,
+        "correct": false,
+        "code": "result = df.resample('H', on='t').sum().reset_index()"
+      },
+      "gpt-5.5": {
+        "tag": "SILENT",
+        "oracle_fired": true,
+        "exec_ok": true,
+        "correct": false,
+        "code": "result = (df.assign(t=pd.to_datetime(df['t'])).resample('h', on='t')[['v']].sum().reset_index())"
+      }
+    },
+    "clarified": {
+      "gpt-5.4": {
+        "tag": "crash",
+        "oracle_fired": true,
+        "exec_ok": false,
+        "correct": false,
+        "code": "result = (df.set_index('t').resample('1H', closed='right', label='right')['v'].sum().reset_index())"
+      },
+      "claude-opus-4.8": {
+        "tag": "SILENT",
+        "oracle_fired": false,
+        "exec_ok": true,
+        "correct": false,
+        "code": "result = df.resample('h', on='t', closed='right', label='right')['v'].sum()"
+      },
+      "gpt-5.3-codex": {
+        "tag": "ok",
+        "oracle_fired": false,
+        "exec_ok": true,
+        "correct": true,
+        "code": "result = df.set_index('t').resample('h', closed='right', label='right')['v'].sum().reset_index()"
+      },
+      "gemini-3.1-pro-preview": {
+        "tag": "ok",
+        "oracle_fired": false,
+        "exec_ok": true,
+        "correct": true,
+        "code": "result = df.resample('h', on='t', closed='right', label='right')['v'].sum().reset_index()"
+      },
+      "gpt-5.5": {
+        "tag": "ok",
+        "oracle_fired": false,
+        "exec_ok": true,
+        "correct": true,
+        "code": "result = df.set_index('t').resample('h', closed='right', label='right')['v'].sum().rename_axis('t').reset_index()"
+      }
+    }
+  },
+  {
+    "item": "string_normalize_join#1",
+    "op": "string_normalize_join",
+    "ambiguous": {
+      "gpt-5.4": {
+        "tag": "SILENT",
+        "oracle_fired": true,
+        "exec_ok": true,
+        "correct": false,
+        "code": "result = df.merge(df2[['name', 'price']], on='name', how='left')[['name', 'qty', 'price']]"
+      },
+      "claude-opus-4.8": {
+        "tag": "SILENT",
+        "oracle_fired": true,
+        "exec_ok": true,
+        "correct": false,
+        "code": "result = df.merge(df2, on='name', how='left')[['name', 'qty', 'price']]"
+      },
+      "gpt-5.3-codex": {
+        "tag": "SILENT",
+        "oracle_fired": true,
+        "exec_ok": true,
+        "correct": false,
+        "code": "result = df.merge(df2[['name', 'price']], on='name', how='left')[['name', 'qty', 'price']]"
+      },
+      "gemini-3.1-pro-preview": {
+        "tag": "SILENT",
+        "oracle_fired": true,
+        "exec_ok": true,
+        "correct": false,
+        "code": "result = df.merge(df2, on='name', how='left')"
+      },
+      "gpt-5.5": {
+        "tag": "SILENT",
+        "oracle_fired": true,
+        "exec_ok": true,
+        "correct": false,
+        "code": "result = df.merge(df2, on='name', how='left')[['name', 'qty', 'price']]"
+      }
+    },
+    "clarified": {
+      "gpt-5.4": {
+        "tag": "ok",
+        "oracle_fired": false,
+        "exec_ok": true,
+        "correct": true,
+        "code": "result = df.assign(_key=df['name'].astype(str).str.strip().str.lower()).merge(df2.assign(_key=df2['name'].astype(str).str.strip().str.lower())[[' _key' if False else '_key', 'price']], on='_key', how='left').loc[:, ['name', 'qty', 'price']]"
+      },
+      "claude-opus-4.8": {
+        "tag": "ok",
+        "oracle_fired": false,
+        "exec_ok": true,
+        "correct": true,
+        "code": "result = (df.assign(_k=df['name'].str.strip().str.lower()).merge(df2.assign(_k=df2['name'].str.strip().str.lower())[['_k', 'price']], on='_k', how='left').drop(columns='_k')[['name', 'qty', 'price']])"
+      },
+      "gpt-5.3-codex": {
+        "tag": "ok",
+        "oracle_fired": false,
+        "exec_ok": true,
+        "correct": true,
+        "code": "result = (\n    df.assign(_key=df['name'].str.strip().str.lower())\n      .merge(\n          df2.assign(_key=df2['name'].str.strip().str.lower())[[\"_key\", \"price\"]],\n          on=\"_key\",\n          how=\"left\"\n      )\n      [[\"name\", \"qty\", \"price\"]]\n)"
+      },
+      "gemini-3.1-pro-preview": {
+        "tag": "ok",
+        "oracle_fired": false,
+        "exec_ok": true,
+        "correct": true,
+        "code": "result = df.assign(_key=df['name'].str.strip().str.lower()).merge(df2.assign(_key=df2['name'].str.strip().str.lower())[['_key', 'price']], on='_key', how='left').drop(columns='_key')"
+      },
+      "gpt-5.5": {
+        "tag": "ok",
+        "oracle_fired": false,
+        "exec_ok": true,
+        "correct": true,
+        "code": "result = (df.assign(_match_key=df['name'].str.strip().str.lower()).merge(df2.assign(_match_key=df2['name'].str.strip().str.lower())[['_match_key', 'price']], on='_match_key', how='left').loc[:, ['name', 'qty', 'price']])"
+      }
+    }
+  },
+  {
+    "item": "string_normalize_join#2",
+    "op": "string_normalize_join",
+    "ambiguous": {
+      "gpt-5.4": {
+        "tag": "SILENT",
+        "oracle_fired": true,
+        "exec_ok": true,
+        "correct": false,
+        "code": "result = df.merge(df2[['name', 'price']], on='name', how='left')[['name', 'qty', 'price']]"
+      },
+      "claude-opus-4.8": {
+        "tag": "SILENT",
+        "oracle_fired": true,
+        "exec_ok": true,
+        "correct": false,
+        "code": "result = df.merge(df2, on='name', how='left')[['name', 'qty', 'price']]"
+      },
+      "gpt-5.3-codex": {
+        "tag": "SILENT",
+        "oracle_fired": true,
+        "exec_ok": true,
+        "correct": false,
+        "code": "result = df.merge(df2[['name', 'price']], on='name', how='left')[['name', 'qty', 'price']]"
+      },
+      "gemini-3.1-pro-preview": {
+        "tag": "SILENT",
+        "oracle_fired": true,
+        "exec_ok": true,
+        "correct": false,
+        "code": "result = df.merge(df2, on='name', how='left')"
+      },
+      "gpt-5.5": {
+        "tag": "SILENT",
+        "oracle_fired": true,
+        "exec_ok": true,
+        "correct": false,
+        "code": "result = df.merge(df2[['name', 'price']], on='name', how='left')[['name', 'qty', 'price']]"
+      }
+    },
+    "clarified": {
+      "gpt-5.4": {
+        "tag": "ok",
+        "oracle_fired": false,
+        "exec_ok": true,
+        "correct": true,
+        "code": "result = df.assign(_key=df['name'].str.strip().str.lower()).merge(df2.assign(_key=df2['name'].str.strip().str.lower())[['_key','price']], on='_key', how='left').loc[:, ['name', 'qty', 'price']]"
+      },
+      "claude-opus-4.8": {
+        "tag": "ok",
+        "oracle_fired": false,
+        "exec_ok": true,
+        "correct": true,
+        "code": "result = (df.assign(_key=df['name'].str.strip().str.lower()).merge(df2.assign(_key=df2['name'].str.strip().str.lower())[['_key', 'price']], on='_key', how='left').drop(columns='_key')[['name', 'qty', 'price']])"
+      },
+      "gpt-5.3-codex": {
+        "tag": "ok",
+        "oracle_fired": false,
+        "exec_ok": true,
+        "correct": true,
+        "code": "result = (\n    df.assign(_key=df['name'].str.strip().str.lower())\n      .merge(\n          df2.assign(_key=df2['name'].str.strip().str.lower())[['_key', 'price']],\n          on='_key',\n          how='left'\n      )\n      [['name', 'qty', 'price']]\n)"
+      },
+      "gemini-3.1-pro-preview": {
+        "tag": "ok",
+        "oracle_fired": false,
+        "exec_ok": true,
+        "correct": true,
+        "code": "result = df.assign(_key=df['name'].str.strip().str.lower()).merge(df2.assign(_key=df2['name'].str.strip().str.lower())[['_key', 'price']], on='_key', how='left').drop(columns=['_key'])"
+      },
+      "gpt-5.5": {
+        "tag": "ok",
+        "oracle_fired": false,
+        "exec_ok": true,
+        "correct": true,
+        "code": "result = (\n    df.assign(_key=df[\"name\"].astype(\"string\").str.strip().str.lower())\n      .merge(\n          df2.assign(_key=df2[\"name\"].astype(\"string\").str.strip().str.lower())[[\"_key\", \"price\"]],\n          on=\"_key\",\n          how=\"left\"\n      )\n      .loc[:, [\"name\", \"qty\", \"price\"]]\n)"
+      }
+    }
+  },
+  {
+    "item": "join_fanout#1",
+    "op": "join_fanout",
+    "ambiguous": {
+      "gpt-5.4": {
+        "tag": "SILENT",
+        "oracle_fired": true,
+        "exec_ok": true,
+        "correct": false,
+        "code": "result = df.groupby('cat', as_index=False)['amt'].sum().merge(df2, on='cat', how='left')"
+      },
+      "claude-opus-4.8": {
+        "tag": "ok",
+        "oracle_fired": false,
+        "exec_ok": true,
+        "correct": true,
+        "code": "result = df.groupby('cat', as_index=False)['amt'].sum()"
+      },
+      "gpt-5.3-codex": {
+        "tag": "ok",
+        "oracle_fired": false,
+        "exec_ok": true,
+        "correct": true,
+        "code": "result = df.groupby('cat', as_index=False)['amt'].sum()"
+      },
+      "gemini-3.1-pro-preview": {
+        "tag": "ok",
+        "oracle_fired": false,
+        "exec_ok": true,
+        "correct": true,
+        "code": "result = df.groupby('cat', as_index=False)['amt'].sum()"
+      },
+      "gpt-5.5": {
+        "tag": "ok",
+        "oracle_fired": false,
+        "exec_ok": true,
+        "correct": true,
+        "code": "result = df.groupby('cat', as_index=False)['amt'].sum()"
+      }
+    },
+    "clarified": {
+      "gpt-5.4": {
+        "tag": "ok",
+        "oracle_fired": false,
+        "exec_ok": true,
+        "correct": true,
+        "code": "result = df.groupby('cat', as_index=False)['amt'].sum()"
+      },
+      "claude-opus-4.8": {
+        "tag": "ok",
+        "oracle_fired": false,
+        "exec_ok": true,
+        "correct": true,
+        "code": "result = df.groupby('cat', as_index=False)['amt'].sum()"
+      },
+      "gpt-5.3-codex": {
+        "tag": "ok",
+        "oracle_fired": false,
+        "exec_ok": true,
+        "correct": true,
+        "code": "result = df.groupby('cat', as_index=False)['amt'].sum()"
+      },
+      "gemini-3.1-pro-preview": {
+        "tag": "ok",
+        "oracle_fired": false,
+        "exec_ok": true,
+        "correct": true,
+        "code": "result = df.groupby('cat', as_index=False)['amt'].sum()"
+      },
+      "gpt-5.5": {
+        "tag": "ok",
+        "oracle_fired": false,
+        "exec_ok": true,
+        "correct": true,
+        "code": "result = df.groupby('cat', as_index=False)['amt'].sum()"
+      }
+    }
+  },
+  {
+    "item": "join_fanout#2",
+    "op": "join_fanout",
+    "ambiguous": {
+      "gpt-5.4": {
+        "tag": "SILENT",
+        "oracle_fired": true,
+        "exec_ok": true,
+        "correct": false,
+        "code": "result = df.groupby('cat', as_index=False)['amt'].sum().merge(df2[['cat', 'tag']], on='cat', how='left')"
+      },
+      "claude-opus-4.8": {
+        "tag": "ok",
+        "oracle_fired": false,
+        "exec_ok": true,
+        "correct": true,
+        "code": "result = df.groupby('cat', as_index=False)['amt'].sum()"
+      },
+      "gpt-5.3-codex": {
+        "tag": "ok",
+        "oracle_fired": false,
+        "exec_ok": true,
+        "correct": true,
+        "code": "result = df.groupby('cat', as_index=False)['amt'].sum()"
+      },
+      "gemini-3.1-pro-preview": {
+        "tag": "ok",
+        "oracle_fired": false,
+        "exec_ok": true,
+        "correct": true,
+        "code": "result = df.groupby('cat', as_index=False)['amt'].sum()"
+      },
+      "gpt-5.5": {
+        "tag": "ok",
+        "oracle_fired": false,
+        "exec_ok": true,
+        "correct": true,
+        "code": "result = df.groupby('cat', as_index=False)['amt'].sum()"
+      }
+    },
+    "clarified": {
+      "gpt-5.4": {
+        "tag": "ok",
+        "oracle_fired": false,
+        "exec_ok": true,
+        "correct": true,
+        "code": "result = df.groupby('cat', as_index=False)['amt'].sum()"
+      },
+      "claude-opus-4.8": {
+        "tag": "ok",
+        "oracle_fired": false,
+        "exec_ok": true,
+        "correct": true,
+        "code": "result = df.groupby('cat', as_index=False)['amt'].sum()"
+      },
+      "gpt-5.3-codex": {
+        "tag": "ok",
+        "oracle_fired": false,
+        "exec_ok": true,
+        "correct": true,
+        "code": "result = df.groupby('cat', as_index=False)['amt'].sum()"
+      },
+      "gemini-3.1-pro-preview": {
+        "tag": "ok",
+        "oracle_fired": false,
+        "exec_ok": true,
+        "correct": true,
+        "code": "result = df[df['cat'].isin(df2['cat'])].groupby('cat', as_index=False)['amt'].sum()"
+      },
+      "gpt-5.5": {
+        "tag": "ok",
+        "oracle_fired": false,
+        "exec_ok": true,
+        "correct": true,
+        "code": "result = df.groupby('cat', as_index=False)['amt'].sum()"
+      }
+    }
+  },
+  {
+    "item": "null_in_agg_count#1",
+    "op": "null_in_agg_count",
+    "ambiguous": {
+      "gpt-5.4": {
+        "tag": "ok",
+        "oracle_fired": false,
+        "exec_ok": true,
+        "correct": true,
+        "code": "result = df.groupby('g', as_index=False).size().rename(columns={'size': 'n'})"
+      },
+      "claude-opus-4.8": {
+        "tag": "ok",
+        "oracle_fired": false,
+        "exec_ok": true,
+        "correct": true,
+        "code": "result = df.groupby('g').size().reset_index(name='n')"
+      },
+      "gpt-5.3-codex": {
+        "tag": "ok",
+        "oracle_fired": false,
+        "exec_ok": true,
+        "correct": true,
+        "code": "result = df.groupby('g').size().reset_index(name='n')"
+      },
+      "gemini-3.1-pro-preview": {
+        "tag": "ok",
+        "oracle_fired": false,
+        "exec_ok": true,
+        "correct": true,
+        "code": "result = df.groupby('g').size().reset_index(name='n')"
+      },
+      "gpt-5.5": {
+        "tag": "ok",
+        "oracle_fired": false,
+        "exec_ok": true,
+        "correct": true,
+        "code": "result = df.groupby('g').size().reset_index(name='n')"
+      }
+    },
+    "clarified": {
+      "gpt-5.4": {
+        "tag": "ok",
+        "oracle_fired": false,
+        "exec_ok": true,
+        "correct": true,
+        "code": "result = df.groupby('g', dropna=False).size().reset_index(name='n')"
+      },
+      "claude-opus-4.8": {
+        "tag": "ok",
+        "oracle_fired": false,
+        "exec_ok": true,
+        "correct": true,
+        "code": "result = df.groupby('g', dropna=False).size().reset_index(name='n')"
+      },
+      "gpt-5.3-codex": {
+        "tag": "ok",
+        "oracle_fired": false,
+        "exec_ok": true,
+        "correct": true,
+        "code": "result = df.groupby('g', dropna=False).size().reset_index(name='n')"
+      },
+      "gemini-3.1-pro-preview": {
+        "tag": "ok",
+        "oracle_fired": false,
+        "exec_ok": true,
+        "correct": true,
+        "code": "result = df.groupby('g').size().reset_index(name='n')"
+      },
+      "gpt-5.5": {
+        "tag": "ok",
+        "oracle_fired": false,
+        "exec_ok": true,
+        "correct": true,
+        "code": "result = df.groupby('g').size().reset_index(name='n')"
+      }
+    }
+  },
+  {
+    "item": "null_in_agg_count#2",
+    "op": "null_in_agg_count",
+    "ambiguous": {
+      "gpt-5.4": {
+        "tag": "ok",
+        "oracle_fired": false,
+        "exec_ok": true,
+        "correct": true,
+        "code": "result = df.groupby('g', as_index=False).size().rename(columns={'size': 'n'})"
+      },
+      "claude-opus-4.8": {
+        "tag": "ok",
+        "oracle_fired": false,
+        "exec_ok": true,
+        "correct": true,
+        "code": "result = df.groupby('g').size().reset_index(name='n')"
+      },
+      "gpt-5.3-codex": {
+        "tag": "ok",
+        "oracle_fired": false,
+        "exec_ok": true,
+        "correct": true,
+        "code": "result = df.groupby('g', as_index=False).size().rename(columns={'size': 'n'})"
+      },
+      "gemini-3.1-pro-preview": {
+        "tag": "ok",
+        "oracle_fired": false,
+        "exec_ok": true,
+        "correct": true,
+        "code": "result = df.groupby('g').size().reset_index(name='n')"
+      },
+      "gpt-5.5": {
+        "tag": "ok",
+        "oracle_fired": false,
+        "exec_ok": true,
+        "correct": true,
+        "code": "result = df.groupby('g', dropna=False).size().reset_index(name='n')"
+      }
+    },
+    "clarified": {
+      "gpt-5.4": {
+        "tag": "ok",
+        "oracle_fired": false,
+        "exec_ok": true,
+        "correct": true,
+        "code": "result = df.groupby('g', dropna=False).size().reset_index(name='n')"
+      },
+      "claude-opus-4.8": {
+        "tag": "ok",
+        "oracle_fired": false,
+        "exec_ok": true,
+        "correct": true,
+        "code": "result = df.groupby('g', dropna=False).size().reset_index(name='n')"
+      },
+      "gpt-5.3-codex": {
+        "tag": "ok",
+        "oracle_fired": false,
+        "exec_ok": true,
+        "correct": true,
+        "code": "result = df.groupby('g', dropna=False).size().reset_index(name='n')"
+      },
+      "gemini-3.1-pro-preview": {
+        "tag": "ok",
+        "oracle_fired": false,
+        "exec_ok": true,
+        "correct": true,
+        "code": "result = df.groupby('g').size().reset_index(name='n')"
+      },
+      "gpt-5.5": {
+        "tag": "ok",
+        "oracle_fired": false,
+        "exec_ok": true,
+        "correct": true,
+        "code": "result = df.groupby('g', dropna=False).size().reset_index(name='n')"
+      }
+    }
+  },
+  {
+    "item": "scale_before_split_leakage#1",
+    "op": "scale_before_split_leakage",
+    "ambiguous": {
+      "gpt-5.4": {
+        "tag": "SILENT",
+        "oracle_fired": true,
+        "exec_ok": true,
+        "correct": false,
+        "code": "result = df.assign(xs=(df['x'] - df['x'].mean()) / df['x'].std())[['x', 'split', 'xs']]"
+      },
+      "claude-opus-4.8": {
+        "tag": "SILENT",
+        "oracle_fired": true,
+        "exec_ok": true,
+        "correct": false,
+        "code": "result = df.copy()\nresult['xs'] = (result['x'] - result['x'].mean()) / result['x'].std()\nresult = result[['x', 'split', 'xs']]"
+      },
+      "gpt-5.3-codex": {
+        "tag": "SILENT",
+        "oracle_fired": true,
+        "exec_ok": true,
+        "correct": false,
+        "code": "result = df.assign(xs=(df['x'] - df['x'].mean()) / df['x'].std())[['x', 'split', 'xs']]"
+      },
+      "gemini-3.1-pro-preview": {
+        "tag": "SILENT",
+        "oracle_fired": true,
+        "exec_ok": true,
+        "correct": false,
+        "code": "result = df.assign(xs=(df['x'] - df['x'].mean()) / df['x'].std())[['x', 'split', 'xs']]"
+      },
+      "gpt-5.5": {
+        "tag": "SILENT",
+        "oracle_fired": true,
+        "exec_ok": true,
+        "correct": false,
+        "code": "result = df.loc[:, ['x', 'split']].copy()\nresult['xs'] = (result['x'] - result['x'].mean()) / result['x'].std()"
+      }
+    },
+    "clarified": {
+      "gpt-5.4": {
+        "tag": "SILENT",
+        "oracle_fired": false,
+        "exec_ok": true,
+        "correct": false,
+        "code": "train_mask = df['split'].eq('train')\nmean_ = df.loc[train_mask, 'x'].mean()\nstd_ = df.loc[train_mask, 'x'].std()\nresult = df.assign(xs=(df['x'] - mean_) / std_)[['x', 'split', 'xs']]"
+      },
+      "claude-opus-4.8": {
+        "tag": "SILENT",
+        "oracle_fired": false,
+        "exec_ok": true,
+        "correct": false,
+        "code": "train_mask = df['split'] == 'train'\ntrain_mean = df.loc[train_mask, 'x'].mean()\ntrain_std = df.loc[train_mask, 'x'].std()\nresult = df.copy()\nresult['xs'] = (result['x'] - train_mean) / train_std\nresult = result[['x', 'split', 'xs']]"
+      },
+      "gpt-5.3-codex": {
+        "tag": "SILENT",
+        "oracle_fired": false,
+        "exec_ok": true,
+        "correct": false,
+        "code": "train_mask = df['split'].eq('train')\nmu = df.loc[train_mask, 'x'].mean()\nsigma = df.loc[train_mask, 'x'].std()\nresult = df.assign(xs=(df['x'] - mu) / sigma)[['x', 'split', 'xs']]"
+      },
+      "gemini-3.1-pro-preview": {
+        "tag": "SILENT",
+        "oracle_fired": false,
+        "exec_ok": true,
+        "correct": false,
+        "code": "result = df.assign(xs=(df['x'] - df.loc[df['split'] == 'train', 'x'].mean()) / df.loc[df['split'] == 'train', 'x'].std())"
+      },
+      "gpt-5.5": {
+        "tag": "SILENT",
+        "oracle_fired": false,
+        "exec_ok": true,
+        "correct": false,
+        "code": "result = df[['x', 'split']].assign(xs=(df['x'] - df.loc[df['split'].eq('train'), 'x'].mean()) / df.loc[df['split'].eq('train'), 'x'].std())"
+      }
+    }
+  },
+  {
+    "item": "scale_before_split_leakage#2",
+    "op": "scale_before_split_leakage",
+    "ambiguous": {
+      "gpt-5.4": {
+        "tag": "SILENT",
+        "oracle_fired": true,
+        "exec_ok": true,
+        "correct": false,
+        "code": "result = df[['x', 'split']].copy()\nresult['xs'] = (result['x'] - result['x'].mean()) / result['x'].std()"
+      },
+      "claude-opus-4.8": {
+        "tag": "SILENT",
+        "oracle_fired": true,
+        "exec_ok": true,
+        "correct": false,
+        "code": "result = df.assign(xs=(df['x'] - df['x'].mean()) / df['x'].std())[['x', 'split', 'xs']]"
+      },
+      "gpt-5.3-codex": {
+        "tag": "SILENT",
+        "oracle_fired": true,
+        "exec_ok": true,
+        "correct": false,
+        "code": "result = df.assign(xs=(df['x'] - df['x'].mean()) / df['x'].std()).loc[:, ['x', 'split', 'xs']]"
+      },
+      "gemini-3.1-pro-preview": {
+        "tag": "SILENT",
+        "oracle_fired": true,
+        "exec_ok": true,
+        "correct": false,
+        "code": "result = df.assign(xs=(df['x'] - df['x'].mean()) / df['x'].std())[['x', 'split', 'xs']]"
+      },
+      "gpt-5.5": {
+        "tag": "SILENT",
+        "oracle_fired": true,
+        "exec_ok": true,
+        "correct": false,
+        "code": "result = df.assign(xs=(df['x'] - df['x'].mean()) / df['x'].std())[['x', 'split', 'xs']]"
+      }
+    },
+    "clarified": {
+      "gpt-5.4": {
+        "tag": "SILENT",
+        "oracle_fired": false,
+        "exec_ok": true,
+        "correct": false,
+        "code": "train = df['split'].eq('train')\nmean = df.loc[train, 'x'].mean()\nstd = df.loc[train, 'x'].std()\nresult = df[['x', 'split']].copy()\nresult['xs'] = (df['x'] - mean) / std"
+      },
+      "claude-opus-4.8": {
+        "tag": "SILENT",
+        "oracle_fired": false,
+        "exec_ok": true,
+        "correct": false,
+        "code": "train_mask = df['split'] == 'train'\nmu = df.loc[train_mask, 'x'].mean()\nsigma = df.loc[train_mask, 'x'].std()\ndf['xs'] = (df['x'] - mu) / sigma\nresult = df[['x', 'split', 'xs']]"
+      },
+      "gpt-5.3-codex": {
+        "tag": "SILENT",
+        "oracle_fired": false,
+        "exec_ok": true,
+        "correct": false,
+        "code": "train_mask = df['split'].eq('train')\nmu = df.loc[train_mask, 'x'].mean()\nsigma = df.loc[train_mask, 'x'].std()\nresult = df.assign(xs=(df['x'] - mu) / sigma)[['x', 'split', 'xs']]"
+      },
+      "gemini-3.1-pro-preview": {
+        "tag": "SILENT",
+        "oracle_fired": false,
+        "exec_ok": true,
+        "correct": false,
+        "code": "m = df.loc[df['split'] == 'train', 'x'].mean()\ns = df.loc[df['split'] == 'train', 'x'].std()\nresult = df.assign(xs=(df['x'] - m) / s)[['x', 'split', 'xs']]"
+      },
+      "gpt-5.5": {
+        "tag": "SILENT",
+        "oracle_fired": false,
+        "exec_ok": true,
+        "correct": false,
+        "code": "_train_x = df.loc[df[\"split\"].eq(\"train\"), \"x\"]\nresult = df.loc[:, [\"x\", \"split\"]].copy()\nresult[\"xs\"] = (result[\"x\"] - _train_x.mean()) / _train_x.std()"
+      }
+    }
+  },
+  {
+    "item": "lookahead_return#1",
+    "op": "lookahead_return",
+    "ambiguous": {
+      "gpt-5.4": {
+        "tag": "ok",
+        "oracle_fired": false,
+        "exec_ok": true,
+        "correct": true,
+        "code": "result = df[['day', 'price']].copy()\nresult['ret'] = result['price'].pct_change()"
+      },
+      "claude-opus-4.8": {
+        "tag": "ok",
+        "oracle_fired": false,
+        "exec_ok": true,
+        "correct": true,
+        "code": "result = df.assign(ret=df['price'].pct_change())[['day', 'price', 'ret']]"
+      },
+      "gpt-5.3-codex": {
+        "tag": "ok",
+        "oracle_fired": false,
+        "exec_ok": true,
+        "correct": true,
+        "code": "result = df.assign(ret=df['price'].pct_change())[ ['day', 'price', 'ret'] ]"
+      },
+      "gemini-3.1-pro-preview": {
+        "tag": "ok",
+        "oracle_fired": false,
+        "exec_ok": true,
+        "correct": true,
+        "code": "result = df.assign(ret=df['price'].pct_change())[['day', 'price', 'ret']]"
+      },
+      "gpt-5.5": {
+        "tag": "ok",
+        "oracle_fired": false,
+        "exec_ok": true,
+        "correct": true,
+        "code": "result = df.assign(ret=df['price'].pct_change())[['day', 'price', 'ret']]"
+      }
+    },
+    "clarified": {
+      "gpt-5.4": {
+        "tag": "ok",
+        "oracle_fired": false,
+        "exec_ok": true,
+        "correct": true,
+        "code": "result = df[['day', 'price']].copy()\nresult['ret'] = result['price'].pct_change()"
+      },
+      "claude-opus-4.8": {
+        "tag": "ok",
+        "oracle_fired": false,
+        "exec_ok": true,
+        "correct": true,
+        "code": "result = df.assign(ret=df['price'].pct_change())[['day', 'price', 'ret']]"
+      },
+      "gpt-5.3-codex": {
+        "tag": "ok",
+        "oracle_fired": false,
+        "exec_ok": true,
+        "correct": true,
+        "code": "result = df.assign(ret=(df['price'] - df['price'].shift(1)) / df['price'].shift(1))[['day', 'price', 'ret']]"
+      },
+      "gemini-3.1-pro-preview": {
+        "tag": "ok",
+        "oracle_fired": false,
+        "exec_ok": true,
+        "correct": true,
+        "code": "result = df.assign(ret=df['price'].pct_change())"
+      },
+      "gpt-5.5": {
+        "tag": "ok",
+        "oracle_fired": false,
+        "exec_ok": true,
+        "correct": true,
+        "code": "result = df.assign(ret=df['price'].pct_change())[['day', 'price', 'ret']]"
+      }
+    }
+  },
+  {
+    "item": "lookahead_return#2",
+    "op": "lookahead_return",
+    "ambiguous": {
+      "gpt-5.4": {
+        "tag": "ok",
+        "oracle_fired": false,
+        "exec_ok": true,
+        "correct": true,
+        "code": "result = df[['day', 'price']].copy()\nresult['ret'] = result['price'].pct_change()"
+      },
+      "claude-opus-4.8": {
+        "tag": "ok",
+        "oracle_fired": false,
+        "exec_ok": true,
+        "correct": true,
+        "code": "result = df.assign(ret=df['price'].pct_change())[['day', 'price', 'ret']]"
+      },
+      "gpt-5.3-codex": {
+        "tag": "ok",
+        "oracle_fired": false,
+        "exec_ok": true,
+        "correct": true,
+        "code": "result = df.assign(ret=df['price'].pct_change())[['day', 'price', 'ret']]"
+      },
+      "gemini-3.1-pro-preview": {
+        "tag": "ok",
+        "oracle_fired": false,
+        "exec_ok": true,
+        "correct": true,
+        "code": "result = df.assign(ret=df['price'].pct_change())"
+      },
+      "gpt-5.5": {
+        "tag": "ok",
+        "oracle_fired": false,
+        "exec_ok": true,
+        "correct": true,
+        "code": "result = df.loc[:, ['day', 'price']].copy()\nresult['ret'] = result['price'].pct_change()"
+      }
+    },
+    "clarified": {
+      "gpt-5.4": {
+        "tag": "ok",
+        "oracle_fired": false,
+        "exec_ok": true,
+        "correct": true,
+        "code": "result = df.assign(ret=df['price'].pct_change())[ ['day', 'price', 'ret'] ]"
+      },
+      "claude-opus-4.8": {
+        "tag": "ok",
+        "oracle_fired": false,
+        "exec_ok": true,
+        "correct": true,
+        "code": "result = df.assign(ret=df['price'].pct_change())[['day', 'price', 'ret']]"
+      },
+      "gpt-5.3-codex": {
+        "tag": "ok",
+        "oracle_fired": false,
+        "exec_ok": true,
+        "correct": true,
+        "code": "result = df.copy()\nresult['ret'] = (result['price'] - result['price'].shift(1)) / result['price'].shift(1)\nresult = result[['day', 'price', 'ret']]"
+      },
+      "gemini-3.1-pro-preview": {
+        "tag": "ok",
+        "oracle_fired": false,
+        "exec_ok": true,
+        "correct": true,
+        "code": "result = df.assign(ret=df['price'].pct_change())"
+      },
+      "gpt-5.5": {
+        "tag": "ok",
+        "oracle_fired": false,
+        "exec_ok": true,
+        "correct": true,
+        "code": "result = df.assign(ret=df['price'].pct_change())[['day', 'price', 'ret']]"
+      }
+    }
+  }
+]

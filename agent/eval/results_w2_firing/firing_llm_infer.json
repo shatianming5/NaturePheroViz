@@ -1,0 +1,1744 @@
+{
+  "source": "eval/results_w2_firing/firing_frontier.json",
+  "infer_model": "gpt-5.4",
+  "regex": {
+    "silent": 18,
+    "recall": "10/18",
+    "recall_ci": [
+      56,
+      34,
+      75
+    ],
+    "pass": 62,
+    "fp": "33/62",
+    "fp_ci": [
+      53,
+      41,
+      65
+    ],
+    "abstained": 0,
+    "labelable": 80,
+    "cases": [
+      {
+        "pid": 7,
+        "model": "gpt-5.4",
+        "outcome": "pass",
+        "op": "dedup_then_agg",
+        "fired": false
+      },
+      {
+        "pid": 7,
+        "model": "claude-opus-4.8",
+        "outcome": "pass",
+        "op": "dedup_then_agg",
+        "fired": false
+      },
+      {
+        "pid": 8,
+        "model": "gpt-5.4",
+        "outcome": "pass",
+        "op": "dedup_then_agg",
+        "fired": false
+      },
+      {
+        "pid": 8,
+        "model": "claude-opus-4.8",
+        "outcome": "pass",
+        "op": "dedup_then_agg",
+        "fired": false
+      },
+      {
+        "pid": 9,
+        "model": "gpt-5.4",
+        "outcome": "pass",
+        "op": "dedup_then_agg",
+        "fired": false
+      },
+      {
+        "pid": 9,
+        "model": "claude-opus-4.8",
+        "outcome": "pass",
+        "op": "dedup_then_agg",
+        "fired": false
+      },
+      {
+        "pid": 42,
+        "model": "gpt-5.4",
+        "outcome": "silent",
+        "op": "left_join_keep_all",
+        "fired": true
+      },
+      {
+        "pid": 42,
+        "model": "claude-opus-4.8",
+        "outcome": "pass",
+        "op": "left_join_keep_all",
+        "fired": true
+      },
+      {
+        "pid": 43,
+        "model": "gpt-5.4",
+        "outcome": "silent",
+        "op": "left_join_keep_all",
+        "fired": true
+      },
+      {
+        "pid": 43,
+        "model": "claude-opus-4.8",
+        "outcome": "pass",
+        "op": "left_join_keep_all",
+        "fired": true
+      },
+      {
+        "pid": 50,
+        "model": "gpt-5.4",
+        "outcome": "pass",
+        "op": "dedup_then_agg",
+        "fired": false
+      },
+      {
+        "pid": 50,
+        "model": "claude-opus-4.8",
+        "outcome": "pass",
+        "op": "dedup_then_agg",
+        "fired": false
+      },
+      {
+        "pid": 51,
+        "model": "gpt-5.4",
+        "outcome": "pass",
+        "op": "dedup_then_agg",
+        "fired": false
+      },
+      {
+        "pid": 51,
+        "model": "claude-opus-4.8",
+        "outcome": "pass",
+        "op": "dedup_then_agg",
+        "fired": false
+      },
+      {
+        "pid": 52,
+        "model": "gpt-5.4",
+        "outcome": "pass",
+        "op": "dedup_then_agg",
+        "fired": false
+      },
+      {
+        "pid": 52,
+        "model": "claude-opus-4.8",
+        "outcome": "pass",
+        "op": "dedup_then_agg",
+        "fired": false
+      },
+      {
+        "pid": 53,
+        "model": "gpt-5.4",
+        "outcome": "pass",
+        "op": "dedup_then_agg",
+        "fired": false
+      },
+      {
+        "pid": 53,
+        "model": "claude-opus-4.8",
+        "outcome": "pass",
+        "op": "dedup_then_agg",
+        "fired": false
+      },
+      {
+        "pid": 55,
+        "model": "gpt-5.4",
+        "outcome": "pass",
+        "op": "cumcount_per_group",
+        "fired": true
+      },
+      {
+        "pid": 55,
+        "model": "claude-opus-4.8",
+        "outcome": "pass",
+        "op": "cumcount_per_group",
+        "fired": true
+      },
+      {
+        "pid": 56,
+        "model": "gpt-5.4",
+        "outcome": "pass",
+        "op": "nan_as_zero_sum",
+        "fired": true
+      },
+      {
+        "pid": 56,
+        "model": "claude-opus-4.8",
+        "outcome": "pass",
+        "op": "nan_as_zero_sum",
+        "fired": true
+      },
+      {
+        "pid": 57,
+        "model": "gpt-5.4",
+        "outcome": "pass",
+        "op": "nan_as_zero_sum",
+        "fired": true
+      },
+      {
+        "pid": 57,
+        "model": "claude-opus-4.8",
+        "outcome": "pass",
+        "op": "nan_as_zero_sum",
+        "fired": true
+      },
+      {
+        "pid": 108,
+        "model": "gpt-5.4",
+        "outcome": "pass",
+        "op": "left_join_keep_all",
+        "fired": true
+      },
+      {
+        "pid": 108,
+        "model": "claude-opus-4.8",
+        "outcome": "pass",
+        "op": "left_join_keep_all",
+        "fired": true
+      },
+      {
+        "pid": 109,
+        "model": "gpt-5.4",
+        "outcome": "pass",
+        "op": "left_join_keep_all",
+        "fired": false
+      },
+      {
+        "pid": 109,
+        "model": "claude-opus-4.8",
+        "outcome": "pass",
+        "op": "left_join_keep_all",
+        "fired": false
+      },
+      {
+        "pid": 123,
+        "model": "gpt-5.4",
+        "outcome": "silent",
+        "op": "left_join_keep_all",
+        "fired": false
+      },
+      {
+        "pid": 123,
+        "model": "claude-opus-4.8",
+        "outcome": "pass",
+        "op": "left_join_keep_all",
+        "fired": false
+      },
+      {
+        "pid": 124,
+        "model": "gpt-5.4",
+        "outcome": "pass",
+        "op": "left_join_keep_all",
+        "fired": false
+      },
+      {
+        "pid": 124,
+        "model": "claude-opus-4.8",
+        "outcome": "pass",
+        "op": "left_join_keep_all",
+        "fired": false
+      },
+      {
+        "pid": 125,
+        "model": "gpt-5.4",
+        "outcome": "silent",
+        "op": "left_join_keep_all",
+        "fired": false
+      },
+      {
+        "pid": 125,
+        "model": "claude-opus-4.8",
+        "outcome": "pass",
+        "op": "left_join_keep_all",
+        "fired": false
+      },
+      {
+        "pid": 126,
+        "model": "gpt-5.4",
+        "outcome": "silent",
+        "op": "left_join_keep_all",
+        "fired": false
+      },
+      {
+        "pid": 126,
+        "model": "claude-opus-4.8",
+        "outcome": "pass",
+        "op": "left_join_keep_all",
+        "fired": false
+      },
+      {
+        "pid": 130,
+        "model": "gpt-5.4",
+        "outcome": "pass",
+        "op": "dedup_then_agg",
+        "fired": true
+      },
+      {
+        "pid": 130,
+        "model": "claude-opus-4.8",
+        "outcome": "pass",
+        "op": "dedup_then_agg",
+        "fired": true
+      },
+      {
+        "pid": 131,
+        "model": "gpt-5.4",
+        "outcome": "pass",
+        "op": "dedup_then_agg",
+        "fired": true
+      },
+      {
+        "pid": 133,
+        "model": "gpt-5.4",
+        "outcome": "pass",
+        "op": "dedup_then_agg",
+        "fired": true
+      },
+      {
+        "pid": 134,
+        "model": "gpt-5.4",
+        "outcome": "pass",
+        "op": "dedup_then_agg",
+        "fired": true
+      },
+      {
+        "pid": 147,
+        "model": "gpt-5.4",
+        "outcome": "silent",
+        "op": "cumulative_running",
+        "fired": true
+      },
+      {
+        "pid": 147,
+        "model": "claude-opus-4.8",
+        "outcome": "pass",
+        "op": "cumulative_running",
+        "fired": true
+      },
+      {
+        "pid": 162,
+        "model": "gpt-5.4",
+        "outcome": "silent",
+        "op": "left_join_keep_all",
+        "fired": false
+      },
+      {
+        "pid": 162,
+        "model": "claude-opus-4.8",
+        "outcome": "pass",
+        "op": "left_join_keep_all",
+        "fired": false
+      },
+      {
+        "pid": 163,
+        "model": "gpt-5.4",
+        "outcome": "silent",
+        "op": "left_join_keep_all",
+        "fired": false
+      },
+      {
+        "pid": 163,
+        "model": "claude-opus-4.8",
+        "outcome": "pass",
+        "op": "left_join_keep_all",
+        "fired": false
+      },
+      {
+        "pid": 164,
+        "model": "gpt-5.4",
+        "outcome": "silent",
+        "op": "left_join_keep_all",
+        "fired": false
+      },
+      {
+        "pid": 164,
+        "model": "claude-opus-4.8",
+        "outcome": "silent",
+        "op": "left_join_keep_all",
+        "fired": false
+      },
+      {
+        "pid": 223,
+        "model": "gpt-5.4",
+        "outcome": "pass",
+        "op": "nan_as_zero_sum",
+        "fired": true
+      },
+      {
+        "pid": 223,
+        "model": "claude-opus-4.8",
+        "outcome": "pass",
+        "op": "nan_as_zero_sum",
+        "fired": true
+      },
+      {
+        "pid": 224,
+        "model": "gpt-5.4",
+        "outcome": "pass",
+        "op": "nan_as_zero_sum",
+        "fired": true
+      },
+      {
+        "pid": 224,
+        "model": "claude-opus-4.8",
+        "outcome": "pass",
+        "op": "nan_as_zero_sum",
+        "fired": true
+      },
+      {
+        "pid": 225,
+        "model": "gpt-5.4",
+        "outcome": "silent",
+        "op": "nan_as_zero_sum",
+        "fired": true
+      },
+      {
+        "pid": 225,
+        "model": "claude-opus-4.8",
+        "outcome": "silent",
+        "op": "nan_as_zero_sum",
+        "fired": true
+      },
+      {
+        "pid": 232,
+        "model": "gpt-5.4",
+        "outcome": "pass",
+        "op": "left_join_keep_all",
+        "fired": true
+      },
+      {
+        "pid": 232,
+        "model": "claude-opus-4.8",
+        "outcome": "pass",
+        "op": "left_join_keep_all",
+        "fired": true
+      },
+      {
+        "pid": 233,
+        "model": "gpt-5.4",
+        "outcome": "pass",
+        "op": "left_join_keep_all",
+        "fired": true
+      },
+      {
+        "pid": 233,
+        "model": "claude-opus-4.8",
+        "outcome": "pass",
+        "op": "left_join_keep_all",
+        "fired": true
+      },
+      {
+        "pid": 234,
+        "model": "gpt-5.4",
+        "outcome": "pass",
+        "op": "left_join_keep_all",
+        "fired": true
+      },
+      {
+        "pid": 234,
+        "model": "claude-opus-4.8",
+        "outcome": "pass",
+        "op": "left_join_keep_all",
+        "fired": true
+      },
+      {
+        "pid": 235,
+        "model": "gpt-5.4",
+        "outcome": "silent",
+        "op": "left_join_keep_all",
+        "fired": false
+      },
+      {
+        "pid": 235,
+        "model": "claude-opus-4.8",
+        "outcome": "pass",
+        "op": "left_join_keep_all",
+        "fired": true
+      },
+      {
+        "pid": 236,
+        "model": "gpt-5.4",
+        "outcome": "silent",
+        "op": "left_join_keep_all",
+        "fired": true
+      },
+      {
+        "pid": 236,
+        "model": "claude-opus-4.8",
+        "outcome": "pass",
+        "op": "left_join_keep_all",
+        "fired": true
+      },
+      {
+        "pid": 238,
+        "model": "gpt-5.4",
+        "outcome": "silent",
+        "op": "nan_as_zero_sum",
+        "fired": true
+      },
+      {
+        "pid": 240,
+        "model": "gpt-5.4",
+        "outcome": "pass",
+        "op": "dedup_then_agg",
+        "fired": true
+      },
+      {
+        "pid": 241,
+        "model": "gpt-5.4",
+        "outcome": "silent",
+        "op": "dedup_then_agg",
+        "fired": true
+      },
+      {
+        "pid": 241,
+        "model": "claude-opus-4.8",
+        "outcome": "silent",
+        "op": "dedup_then_agg",
+        "fired": true
+      },
+      {
+        "pid": 242,
+        "model": "gpt-5.4",
+        "outcome": "silent",
+        "op": "dedup_then_agg",
+        "fired": true
+      },
+      {
+        "pid": 275,
+        "model": "gpt-5.4",
+        "outcome": "pass",
+        "op": "median_not_mean",
+        "fired": false
+      },
+      {
+        "pid": 275,
+        "model": "claude-opus-4.8",
+        "outcome": "pass",
+        "op": "median_not_mean",
+        "fired": false
+      },
+      {
+        "pid": 287,
+        "model": "gpt-5.4",
+        "outcome": "pass",
+        "op": "weighted_mean",
+        "fired": true
+      },
+      {
+        "pid": 287,
+        "model": "claude-opus-4.8",
+        "outcome": "pass",
+        "op": "weighted_mean",
+        "fired": true
+      },
+      {
+        "pid": 288,
+        "model": "gpt-5.4",
+        "outcome": "pass",
+        "op": "weighted_mean",
+        "fired": true
+      },
+      {
+        "pid": 288,
+        "model": "claude-opus-4.8",
+        "outcome": "pass",
+        "op": "weighted_mean",
+        "fired": true
+      },
+      {
+        "pid": 289,
+        "model": "gpt-5.4",
+        "outcome": "pass",
+        "op": "left_join_keep_all",
+        "fired": false
+      },
+      {
+        "pid": 289,
+        "model": "claude-opus-4.8",
+        "outcome": "pass",
+        "op": "left_join_keep_all",
+        "fired": false
+      },
+      {
+        "pid": 290,
+        "model": "gpt-5.4",
+        "outcome": "pass",
+        "op": "left_join_keep_all",
+        "fired": false
+      },
+      {
+        "pid": 290,
+        "model": "claude-opus-4.8",
+        "outcome": "pass",
+        "op": "left_join_keep_all",
+        "fired": false
+      }
+    ]
+  },
+  "llm_balanced": {
+    "silent": 18,
+    "recall": "1/18",
+    "recall_ci": [
+      6,
+      1,
+      26
+    ],
+    "pass": 62,
+    "fp": "3/62",
+    "fp_ci": [
+      5,
+      2,
+      13
+    ],
+    "abstained": 65,
+    "labelable": 80,
+    "cases": [
+      {
+        "pid": 7,
+        "model": "gpt-5.4",
+        "outcome": "pass",
+        "op": "order_dependent_dedup",
+        "fired": false
+      },
+      {
+        "pid": 7,
+        "model": "claude-opus-4.8",
+        "outcome": "pass",
+        "op": "order_dependent_dedup",
+        "fired": false
+      },
+      {
+        "pid": 8,
+        "model": "gpt-5.4",
+        "outcome": "pass",
+        "op": "order_dependent_dedup",
+        "fired": false
+      },
+      {
+        "pid": 8,
+        "model": "claude-opus-4.8",
+        "outcome": "pass",
+        "op": "order_dependent_dedup",
+        "fired": false
+      },
+      {
+        "pid": 9,
+        "model": "gpt-5.4",
+        "outcome": "pass",
+        "op": "order_dependent_dedup",
+        "fired": false
+      },
+      {
+        "pid": 9,
+        "model": "claude-opus-4.8",
+        "outcome": "pass",
+        "op": "order_dependent_dedup",
+        "fired": false
+      },
+      {
+        "pid": 42,
+        "model": "gpt-5.4",
+        "outcome": "silent",
+        "op": null,
+        "fired": false
+      },
+      {
+        "pid": 42,
+        "model": "claude-opus-4.8",
+        "outcome": "pass",
+        "op": null,
+        "fired": false
+      },
+      {
+        "pid": 43,
+        "model": "gpt-5.4",
+        "outcome": "silent",
+        "op": null,
+        "fired": false
+      },
+      {
+        "pid": 43,
+        "model": "claude-opus-4.8",
+        "outcome": "pass",
+        "op": null,
+        "fired": false
+      },
+      {
+        "pid": 50,
+        "model": "gpt-5.4",
+        "outcome": "pass",
+        "op": null,
+        "fired": false
+      },
+      {
+        "pid": 50,
+        "model": "claude-opus-4.8",
+        "outcome": "pass",
+        "op": null,
+        "fired": false
+      },
+      {
+        "pid": 51,
+        "model": "gpt-5.4",
+        "outcome": "pass",
+        "op": null,
+        "fired": false
+      },
+      {
+        "pid": 51,
+        "model": "claude-opus-4.8",
+        "outcome": "pass",
+        "op": null,
+        "fired": false
+      },
+      {
+        "pid": 52,
+        "model": "gpt-5.4",
+        "outcome": "pass",
+        "op": null,
+        "fired": false
+      },
+      {
+        "pid": 52,
+        "model": "claude-opus-4.8",
+        "outcome": "pass",
+        "op": null,
+        "fired": false
+      },
+      {
+        "pid": 53,
+        "model": "gpt-5.4",
+        "outcome": "pass",
+        "op": null,
+        "fired": false
+      },
+      {
+        "pid": 53,
+        "model": "claude-opus-4.8",
+        "outcome": "pass",
+        "op": null,
+        "fired": false
+      },
+      {
+        "pid": 55,
+        "model": "gpt-5.4",
+        "outcome": "pass",
+        "op": null,
+        "fired": false
+      },
+      {
+        "pid": 55,
+        "model": "claude-opus-4.8",
+        "outcome": "pass",
+        "op": null,
+        "fired": false
+      },
+      {
+        "pid": 56,
+        "model": "gpt-5.4",
+        "outcome": "pass",
+        "op": null,
+        "fired": false
+      },
+      {
+        "pid": 56,
+        "model": "claude-opus-4.8",
+        "outcome": "pass",
+        "op": "left_join_keep_all",
+        "fired": true
+      },
+      {
+        "pid": 57,
+        "model": "gpt-5.4",
+        "outcome": "pass",
+        "op": null,
+        "fired": false
+      },
+      {
+        "pid": 57,
+        "model": "claude-opus-4.8",
+        "outcome": "pass",
+        "op": "nan_as_zero_sum",
+        "fired": true
+      },
+      {
+        "pid": 108,
+        "model": "gpt-5.4",
+        "outcome": "pass",
+        "op": null,
+        "fired": false
+      },
+      {
+        "pid": 108,
+        "model": "claude-opus-4.8",
+        "outcome": "pass",
+        "op": null,
+        "fired": false
+      },
+      {
+        "pid": 109,
+        "model": "gpt-5.4",
+        "outcome": "pass",
+        "op": null,
+        "fired": false
+      },
+      {
+        "pid": 109,
+        "model": "claude-opus-4.8",
+        "outcome": "pass",
+        "op": null,
+        "fired": false
+      },
+      {
+        "pid": 123,
+        "model": "gpt-5.4",
+        "outcome": "silent",
+        "op": null,
+        "fired": false
+      },
+      {
+        "pid": 123,
+        "model": "claude-opus-4.8",
+        "outcome": "pass",
+        "op": null,
+        "fired": false
+      },
+      {
+        "pid": 124,
+        "model": "gpt-5.4",
+        "outcome": "pass",
+        "op": null,
+        "fired": false
+      },
+      {
+        "pid": 124,
+        "model": "claude-opus-4.8",
+        "outcome": "pass",
+        "op": null,
+        "fired": false
+      },
+      {
+        "pid": 125,
+        "model": "gpt-5.4",
+        "outcome": "silent",
+        "op": null,
+        "fired": false
+      },
+      {
+        "pid": 125,
+        "model": "claude-opus-4.8",
+        "outcome": "pass",
+        "op": null,
+        "fired": false
+      },
+      {
+        "pid": 126,
+        "model": "gpt-5.4",
+        "outcome": "silent",
+        "op": null,
+        "fired": false
+      },
+      {
+        "pid": 126,
+        "model": "claude-opus-4.8",
+        "outcome": "pass",
+        "op": null,
+        "fired": false
+      },
+      {
+        "pid": 130,
+        "model": "gpt-5.4",
+        "outcome": "pass",
+        "op": "order_dependent_dedup",
+        "fired": false
+      },
+      {
+        "pid": 130,
+        "model": "claude-opus-4.8",
+        "outcome": "pass",
+        "op": "order_dependent_dedup",
+        "fired": false
+      },
+      {
+        "pid": 131,
+        "model": "gpt-5.4",
+        "outcome": "pass",
+        "op": "order_dependent_dedup",
+        "fired": false
+      },
+      {
+        "pid": 133,
+        "model": "gpt-5.4",
+        "outcome": "pass",
+        "op": "order_dependent_dedup",
+        "fired": false
+      },
+      {
+        "pid": 134,
+        "model": "gpt-5.4",
+        "outcome": "pass",
+        "op": "order_dependent_dedup",
+        "fired": false
+      },
+      {
+        "pid": 147,
+        "model": "gpt-5.4",
+        "outcome": "silent",
+        "op": "cumulative_running",
+        "fired": true
+      },
+      {
+        "pid": 147,
+        "model": "claude-opus-4.8",
+        "outcome": "pass",
+        "op": "cumulative_running",
+        "fired": true
+      },
+      {
+        "pid": 162,
+        "model": "gpt-5.4",
+        "outcome": "silent",
+        "op": null,
+        "fired": false
+      },
+      {
+        "pid": 162,
+        "model": "claude-opus-4.8",
+        "outcome": "pass",
+        "op": null,
+        "fired": false
+      },
+      {
+        "pid": 163,
+        "model": "gpt-5.4",
+        "outcome": "silent",
+        "op": null,
+        "fired": false
+      },
+      {
+        "pid": 163,
+        "model": "claude-opus-4.8",
+        "outcome": "pass",
+        "op": null,
+        "fired": false
+      },
+      {
+        "pid": 164,
+        "model": "gpt-5.4",
+        "outcome": "silent",
+        "op": null,
+        "fired": false
+      },
+      {
+        "pid": 164,
+        "model": "claude-opus-4.8",
+        "outcome": "silent",
+        "op": null,
+        "fired": false
+      },
+      {
+        "pid": 223,
+        "model": "gpt-5.4",
+        "outcome": "pass",
+        "op": null,
+        "fired": false
+      },
+      {
+        "pid": 223,
+        "model": "claude-opus-4.8",
+        "outcome": "pass",
+        "op": null,
+        "fired": false
+      },
+      {
+        "pid": 224,
+        "model": "gpt-5.4",
+        "outcome": "pass",
+        "op": null,
+        "fired": false
+      },
+      {
+        "pid": 224,
+        "model": "claude-opus-4.8",
+        "outcome": "pass",
+        "op": null,
+        "fired": false
+      },
+      {
+        "pid": 225,
+        "model": "gpt-5.4",
+        "outcome": "silent",
+        "op": null,
+        "fired": false
+      },
+      {
+        "pid": 225,
+        "model": "claude-opus-4.8",
+        "outcome": "silent",
+        "op": null,
+        "fired": false
+      },
+      {
+        "pid": 232,
+        "model": "gpt-5.4",
+        "outcome": "pass",
+        "op": null,
+        "fired": false
+      },
+      {
+        "pid": 232,
+        "model": "claude-opus-4.8",
+        "outcome": "pass",
+        "op": null,
+        "fired": false
+      },
+      {
+        "pid": 233,
+        "model": "gpt-5.4",
+        "outcome": "pass",
+        "op": null,
+        "fired": false
+      },
+      {
+        "pid": 233,
+        "model": "claude-opus-4.8",
+        "outcome": "pass",
+        "op": null,
+        "fired": false
+      },
+      {
+        "pid": 234,
+        "model": "gpt-5.4",
+        "outcome": "pass",
+        "op": null,
+        "fired": false
+      },
+      {
+        "pid": 234,
+        "model": "claude-opus-4.8",
+        "outcome": "pass",
+        "op": null,
+        "fired": false
+      },
+      {
+        "pid": 235,
+        "model": "gpt-5.4",
+        "outcome": "silent",
+        "op": null,
+        "fired": false
+      },
+      {
+        "pid": 235,
+        "model": "claude-opus-4.8",
+        "outcome": "pass",
+        "op": null,
+        "fired": false
+      },
+      {
+        "pid": 236,
+        "model": "gpt-5.4",
+        "outcome": "silent",
+        "op": null,
+        "fired": false
+      },
+      {
+        "pid": 236,
+        "model": "claude-opus-4.8",
+        "outcome": "pass",
+        "op": null,
+        "fired": false
+      },
+      {
+        "pid": 238,
+        "model": "gpt-5.4",
+        "outcome": "silent",
+        "op": null,
+        "fired": false
+      },
+      {
+        "pid": 240,
+        "model": "gpt-5.4",
+        "outcome": "pass",
+        "op": null,
+        "fired": false
+      },
+      {
+        "pid": 241,
+        "model": "gpt-5.4",
+        "outcome": "silent",
+        "op": null,
+        "fired": false
+      },
+      {
+        "pid": 241,
+        "model": "claude-opus-4.8",
+        "outcome": "silent",
+        "op": null,
+        "fired": false
+      },
+      {
+        "pid": 242,
+        "model": "gpt-5.4",
+        "outcome": "silent",
+        "op": null,
+        "fired": false
+      },
+      {
+        "pid": 275,
+        "model": "gpt-5.4",
+        "outcome": "pass",
+        "op": null,
+        "fired": false
+      },
+      {
+        "pid": 275,
+        "model": "claude-opus-4.8",
+        "outcome": "pass",
+        "op": null,
+        "fired": false
+      },
+      {
+        "pid": 287,
+        "model": "gpt-5.4",
+        "outcome": "pass",
+        "op": null,
+        "fired": false
+      },
+      {
+        "pid": 287,
+        "model": "claude-opus-4.8",
+        "outcome": "pass",
+        "op": null,
+        "fired": false
+      },
+      {
+        "pid": 288,
+        "model": "gpt-5.4",
+        "outcome": "pass",
+        "op": null,
+        "fired": false
+      },
+      {
+        "pid": 288,
+        "model": "claude-opus-4.8",
+        "outcome": "pass",
+        "op": null,
+        "fired": false
+      },
+      {
+        "pid": 289,
+        "model": "gpt-5.4",
+        "outcome": "pass",
+        "op": null,
+        "fired": false
+      },
+      {
+        "pid": 289,
+        "model": "claude-opus-4.8",
+        "outcome": "pass",
+        "op": null,
+        "fired": false
+      },
+      {
+        "pid": 290,
+        "model": "gpt-5.4",
+        "outcome": "pass",
+        "op": null,
+        "fired": false
+      },
+      {
+        "pid": 290,
+        "model": "claude-opus-4.8",
+        "outcome": "pass",
+        "op": null,
+        "fired": false
+      }
+    ]
+  },
+  "llm_conservative": {
+    "silent": 18,
+    "recall": "0/18",
+    "recall_ci": [
+      0,
+      0,
+      18
+    ],
+    "pass": 62,
+    "fp": "0/62",
+    "fp_ci": [
+      0,
+      0,
+      6
+    ],
+    "abstained": 80,
+    "labelable": 80,
+    "cases": [
+      {
+        "pid": 7,
+        "model": "gpt-5.4",
+        "outcome": "pass",
+        "op": null,
+        "fired": false
+      },
+      {
+        "pid": 7,
+        "model": "claude-opus-4.8",
+        "outcome": "pass",
+        "op": null,
+        "fired": false
+      },
+      {
+        "pid": 8,
+        "model": "gpt-5.4",
+        "outcome": "pass",
+        "op": null,
+        "fired": false
+      },
+      {
+        "pid": 8,
+        "model": "claude-opus-4.8",
+        "outcome": "pass",
+        "op": null,
+        "fired": false
+      },
+      {
+        "pid": 9,
+        "model": "gpt-5.4",
+        "outcome": "pass",
+        "op": null,
+        "fired": false
+      },
+      {
+        "pid": 9,
+        "model": "claude-opus-4.8",
+        "outcome": "pass",
+        "op": null,
+        "fired": false
+      },
+      {
+        "pid": 42,
+        "model": "gpt-5.4",
+        "outcome": "silent",
+        "op": null,
+        "fired": false
+      },
+      {
+        "pid": 42,
+        "model": "claude-opus-4.8",
+        "outcome": "pass",
+        "op": null,
+        "fired": false
+      },
+      {
+        "pid": 43,
+        "model": "gpt-5.4",
+        "outcome": "silent",
+        "op": null,
+        "fired": false
+      },
+      {
+        "pid": 43,
+        "model": "claude-opus-4.8",
+        "outcome": "pass",
+        "op": null,
+        "fired": false
+      },
+      {
+        "pid": 50,
+        "model": "gpt-5.4",
+        "outcome": "pass",
+        "op": null,
+        "fired": false
+      },
+      {
+        "pid": 50,
+        "model": "claude-opus-4.8",
+        "outcome": "pass",
+        "op": null,
+        "fired": false
+      },
+      {
+        "pid": 51,
+        "model": "gpt-5.4",
+        "outcome": "pass",
+        "op": null,
+        "fired": false
+      },
+      {
+        "pid": 51,
+        "model": "claude-opus-4.8",
+        "outcome": "pass",
+        "op": null,
+        "fired": false
+      },
+      {
+        "pid": 52,
+        "model": "gpt-5.4",
+        "outcome": "pass",
+        "op": null,
+        "fired": false
+      },
+      {
+        "pid": 52,
+        "model": "claude-opus-4.8",
+        "outcome": "pass",
+        "op": null,
+        "fired": false
+      },
+      {
+        "pid": 53,
+        "model": "gpt-5.4",
+        "outcome": "pass",
+        "op": null,
+        "fired": false
+      },
+      {
+        "pid": 53,
+        "model": "claude-opus-4.8",
+        "outcome": "pass",
+        "op": null,
+        "fired": false
+      },
+      {
+        "pid": 55,
+        "model": "gpt-5.4",
+        "outcome": "pass",
+        "op": null,
+        "fired": false
+      },
+      {
+        "pid": 55,
+        "model": "claude-opus-4.8",
+        "outcome": "pass",
+        "op": null,
+        "fired": false
+      },
+      {
+        "pid": 56,
+        "model": "gpt-5.4",
+        "outcome": "pass",
+        "op": null,
+        "fired": false
+      },
+      {
+        "pid": 56,
+        "model": "claude-opus-4.8",
+        "outcome": "pass",
+        "op": null,
+        "fired": false
+      },
+      {
+        "pid": 57,
+        "model": "gpt-5.4",
+        "outcome": "pass",
+        "op": null,
+        "fired": false
+      },
+      {
+        "pid": 57,
+        "model": "claude-opus-4.8",
+        "outcome": "pass",
+        "op": null,
+        "fired": false
+      },
+      {
+        "pid": 108,
+        "model": "gpt-5.4",
+        "outcome": "pass",
+        "op": null,
+        "fired": false
+      },
+      {
+        "pid": 108,
+        "model": "claude-opus-4.8",
+        "outcome": "pass",
+        "op": null,
+        "fired": false
+      },
+      {
+        "pid": 109,
+        "model": "gpt-5.4",
+        "outcome": "pass",
+        "op": null,
+        "fired": false
+      },
+      {
+        "pid": 109,
+        "model": "claude-opus-4.8",
+        "outcome": "pass",
+        "op": null,
+        "fired": false
+      },
+      {
+        "pid": 123,
+        "model": "gpt-5.4",
+        "outcome": "silent",
+        "op": null,
+        "fired": false
+      },
+      {
+        "pid": 123,
+        "model": "claude-opus-4.8",
+        "outcome": "pass",
+        "op": null,
+        "fired": false
+      },
+      {
+        "pid": 124,
+        "model": "gpt-5.4",
+        "outcome": "pass",
+        "op": null,
+        "fired": false
+      },
+      {
+        "pid": 124,
+        "model": "claude-opus-4.8",
+        "outcome": "pass",
+        "op": null,
+        "fired": false
+      },
+      {
+        "pid": 125,
+        "model": "gpt-5.4",
+        "outcome": "silent",
+        "op": null,
+        "fired": false
+      },
+      {
+        "pid": 125,
+        "model": "claude-opus-4.8",
+        "outcome": "pass",
+        "op": null,
+        "fired": false
+      },
+      {
+        "pid": 126,
+        "model": "gpt-5.4",
+        "outcome": "silent",
+        "op": null,
+        "fired": false
+      },
+      {
+        "pid": 126,
+        "model": "claude-opus-4.8",
+        "outcome": "pass",
+        "op": null,
+        "fired": false
+      },
+      {
+        "pid": 130,
+        "model": "gpt-5.4",
+        "outcome": "pass",
+        "op": null,
+        "fired": false
+      },
+      {
+        "pid": 130,
+        "model": "claude-opus-4.8",
+        "outcome": "pass",
+        "op": null,
+        "fired": false
+      },
+      {
+        "pid": 131,
+        "model": "gpt-5.4",
+        "outcome": "pass",
+        "op": null,
+        "fired": false
+      },
+      {
+        "pid": 133,
+        "model": "gpt-5.4",
+        "outcome": "pass",
+        "op": null,
+        "fired": false
+      },
+      {
+        "pid": 134,
+        "model": "gpt-5.4",
+        "outcome": "pass",
+        "op": null,
+        "fired": false
+      },
+      {
+        "pid": 147,
+        "model": "gpt-5.4",
+        "outcome": "silent",
+        "op": null,
+        "fired": false
+      },
+      {
+        "pid": 147,
+        "model": "claude-opus-4.8",
+        "outcome": "pass",
+        "op": null,
+        "fired": false
+      },
+      {
+        "pid": 162,
+        "model": "gpt-5.4",
+        "outcome": "silent",
+        "op": null,
+        "fired": false
+      },
+      {
+        "pid": 162,
+        "model": "claude-opus-4.8",
+        "outcome": "pass",
+        "op": null,
+        "fired": false
+      },
+      {
+        "pid": 163,
+        "model": "gpt-5.4",
+        "outcome": "silent",
+        "op": null,
+        "fired": false
+      },
+      {
+        "pid": 163,
+        "model": "claude-opus-4.8",
+        "outcome": "pass",
+        "op": null,
+        "fired": false
+      },
+      {
+        "pid": 164,
+        "model": "gpt-5.4",
+        "outcome": "silent",
+        "op": null,
+        "fired": false
+      },
+      {
+        "pid": 164,
+        "model": "claude-opus-4.8",
+        "outcome": "silent",
+        "op": null,
+        "fired": false
+      },
+      {
+        "pid": 223,
+        "model": "gpt-5.4",
+        "outcome": "pass",
+        "op": null,
+        "fired": false
+      },
+      {
+        "pid": 223,
+        "model": "claude-opus-4.8",
+        "outcome": "pass",
+        "op": null,
+        "fired": false
+      },
+      {
+        "pid": 224,
+        "model": "gpt-5.4",
+        "outcome": "pass",
+        "op": null,
+        "fired": false
+      },
+      {
+        "pid": 224,
+        "model": "claude-opus-4.8",
+        "outcome": "pass",
+        "op": null,
+        "fired": false
+      },
+      {
+        "pid": 225,
+        "model": "gpt-5.4",
+        "outcome": "silent",
+        "op": null,
+        "fired": false
+      },
+      {
+        "pid": 225,
+        "model": "claude-opus-4.8",
+        "outcome": "silent",
+        "op": null,
+        "fired": false
+      },
+      {
+        "pid": 232,
+        "model": "gpt-5.4",
+        "outcome": "pass",
+        "op": null,
+        "fired": false
+      },
+      {
+        "pid": 232,
+        "model": "claude-opus-4.8",
+        "outcome": "pass",
+        "op": null,
+        "fired": false
+      },
+      {
+        "pid": 233,
+        "model": "gpt-5.4",
+        "outcome": "pass",
+        "op": null,
+        "fired": false
+      },
+      {
+        "pid": 233,
+        "model": "claude-opus-4.8",
+        "outcome": "pass",
+        "op": null,
+        "fired": false
+      },
+      {
+        "pid": 234,
+        "model": "gpt-5.4",
+        "outcome": "pass",
+        "op": null,
+        "fired": false
+      },
+      {
+        "pid": 234,
+        "model": "claude-opus-4.8",
+        "outcome": "pass",
+        "op": null,
+        "fired": false
+      },
+      {
+        "pid": 235,
+        "model": "gpt-5.4",
+        "outcome": "silent",
+        "op": null,
+        "fired": false
+      },
+      {
+        "pid": 235,
+        "model": "claude-opus-4.8",
+        "outcome": "pass",
+        "op": null,
+        "fired": false
+      },
+      {
+        "pid": 236,
+        "model": "gpt-5.4",
+        "outcome": "silent",
+        "op": null,
+        "fired": false
+      },
+      {
+        "pid": 236,
+        "model": "claude-opus-4.8",
+        "outcome": "pass",
+        "op": null,
+        "fired": false
+      },
+      {
+        "pid": 238,
+        "model": "gpt-5.4",
+        "outcome": "silent",
+        "op": null,
+        "fired": false
+      },
+      {
+        "pid": 240,
+        "model": "gpt-5.4",
+        "outcome": "pass",
+        "op": null,
+        "fired": false
+      },
+      {
+        "pid": 241,
+        "model": "gpt-5.4",
+        "outcome": "silent",
+        "op": null,
+        "fired": false
+      },
+      {
+        "pid": 241,
+        "model": "claude-opus-4.8",
+        "outcome": "silent",
+        "op": null,
+        "fired": false
+      },
+      {
+        "pid": 242,
+        "model": "gpt-5.4",
+        "outcome": "silent",
+        "op": null,
+        "fired": false
+      },
+      {
+        "pid": 275,
+        "model": "gpt-5.4",
+        "outcome": "pass",
+        "op": null,
+        "fired": false
+      },
+      {
+        "pid": 275,
+        "model": "claude-opus-4.8",
+        "outcome": "pass",
+        "op": null,
+        "fired": false
+      },
+      {
+        "pid": 287,
+        "model": "gpt-5.4",
+        "outcome": "pass",
+        "op": null,
+        "fired": false
+      },
+      {
+        "pid": 287,
+        "model": "claude-opus-4.8",
+        "outcome": "pass",
+        "op": null,
+        "fired": false
+      },
+      {
+        "pid": 288,
+        "model": "gpt-5.4",
+        "outcome": "pass",
+        "op": null,
+        "fired": false
+      },
+      {
+        "pid": 288,
+        "model": "claude-opus-4.8",
+        "outcome": "pass",
+        "op": null,
+        "fired": false
+      },
+      {
+        "pid": 289,
+        "model": "gpt-5.4",
+        "outcome": "pass",
+        "op": null,
+        "fired": false
+      },
+      {
+        "pid": 289,
+        "model": "claude-opus-4.8",
+        "outcome": "pass",
+        "op": null,
+        "fired": false
+      },
+      {
+        "pid": 290,
+        "model": "gpt-5.4",
+        "outcome": "pass",
+        "op": null,
+        "fired": false
+      },
+      {
+        "pid": 290,
+        "model": "claude-opus-4.8",
+        "outcome": "pass",
+        "op": null,
+        "fired": false
+      }
+    ]
+  }
+}

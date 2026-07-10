@@ -1,0 +1,205 @@
+{
+  "n": 19,
+  "llm_acc": 84,
+  "regex_acc": 26,
+  "model": "opencode/north-mini-code-free",
+  "cases": [
+    {
+      "true": "weighted_mean",
+      "llm": "weighted_mean",
+      "regex": null,
+      "prompt": "Mean unit cost, accounting for units shipped.",
+      "cols": [
+        "sku",
+        "cost",
+        "units"
+      ]
+    },
+    {
+      "true": "weighted_mean",
+      "llm": "weighted_mean",
+      "regex": null,
+      "prompt": "Average exam grade weighted by credit hours.",
+      "cols": [
+        "c",
+        "grade",
+        "credits"
+      ]
+    },
+    {
+      "true": "within_group_share",
+      "llm": "within_group_share",
+      "regex": null,
+      "prompt": "Each employee's fraction of their department's payroll.",
+      "cols": [
+        "dept",
+        "emp",
+        "pay"
+      ]
+    },
+    {
+      "true": "within_group_share",
+      "llm": "within_group_share",
+      "regex": null,
+      "prompt": "Portion of regional sales held by each store.",
+      "cols": [
+        "region",
+        "store",
+        "sales"
+      ]
+    },
+    {
+      "true": "pct_point",
+      "llm": "pct_point",
+      "regex": null,
+      "prompt": "Lift in conversion from before to after, in points.",
+      "cols": [
+        "team",
+        "before",
+        "after"
+      ]
+    },
+    {
+      "true": "pooled_rate",
+      "llm": "pooled_rate",
+      "regex": "pooled_rate",
+      "prompt": "Overall success rate per cohort = total wins / total attempts.",
+      "cols": [
+        "cohort",
+        "wins",
+        "tries"
+      ]
+    },
+    {
+      "true": "median_not_mean",
+      "llm": "weighted_mean",
+      "regex": null,
+      "prompt": "Central salary per team.",
+      "cols": [
+        "grp",
+        "v"
+      ]
+    },
+    {
+      "true": "nan_as_zero_sum",
+      "llm": "nan_as_zero_sum",
+      "regex": null,
+      "prompt": "Sum amounts per group; blanks count as zero.",
+      "cols": [
+        "grp",
+        "v"
+      ]
+    },
+    {
+      "true": "dedup_then_agg",
+      "llm": "dedup_then_agg",
+      "regex": null,
+      "prompt": "Sum revenue per store; invoices repeat.",
+      "cols": [
+        "store",
+        "order_id",
+        "rev"
+      ]
+    },
+    {
+      "true": "left_join_keep_all",
+      "llm": "left_join_keep_all",
+      "regex": "left_join_keep_all",
+      "prompt": "Attach rating from df2; keep products with no rating.",
+      "cols": [
+        "id",
+        "name"
+      ]
+    },
+    {
+      "true": "cumulative_running",
+      "llm": "cumulative_running",
+      "regex": "cumulative_running",
+      "prompt": "Account balance accumulating over time.",
+      "cols": [
+        "day",
+        "delta"
+      ]
+    },
+    {
+      "true": "cumcount_per_group",
+      "llm": "cumcount_per_group",
+      "regex": null,
+      "prompt": "Nth visit index per customer.",
+      "cols": [
+        "user",
+        "event"
+      ]
+    },
+    {
+      "true": "topn_with_ties",
+      "llm": "topn_with_ties",
+      "regex": "topn_with_ties",
+      "prompt": "Best 2 by score, keep all ties.",
+      "cols": [
+        "name",
+        "score"
+      ]
+    },
+    {
+      "true": "count_includes_empty",
+      "llm": "count_includes_empty",
+      "regex": null,
+      "prompt": "Tally per bucket including empty ones.",
+      "cols": [
+        "cat",
+        "v"
+      ]
+    },
+    {
+      "true": "proportion_true",
+      "llm": "within_group_share",
+      "regex": "within_group_share",
+      "prompt": "Share of yes per class.",
+      "cols": [
+        "cls",
+        "passed"
+      ]
+    },
+    {
+      "true": "zscore_within_group",
+      "llm": "zscore_within_group",
+      "regex": null,
+      "prompt": "Standardize values inside each lab.",
+      "cols": [
+        "batch",
+        "value"
+      ]
+    },
+    {
+      "true": "dense_rank",
+      "llm": "dense_rank",
+      "regex": "topn_with_ties",
+      "prompt": "Rank, ties share a rank, no gaps.",
+      "cols": [
+        "team",
+        "pts"
+      ]
+    },
+    {
+      "true": "rank_pct",
+      "llm": "pct_point",
+      "regex": "rank_pct",
+      "prompt": "Percentile position of elo.",
+      "cols": [
+        "player",
+        "elo"
+      ]
+    },
+    {
+      "true": "clip_outlier",
+      "llm": "clip_outlier",
+      "regex": null,
+      "prompt": "Cap reading to 0..100.",
+      "cols": [
+        "sensor",
+        "reading"
+      ]
+    }
+  ]
+}

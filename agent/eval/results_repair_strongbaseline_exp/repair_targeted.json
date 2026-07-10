@@ -1,0 +1,372 @@
+{
+  "offline": false,
+  "aggregate": {
+    "generic": {
+      "n": 7.0,
+      "success": 0.0,
+      "rounds": 9.0,
+      "calls": 9.0,
+      "over_a": 6.0,
+      "over_b": 0.0,
+      "malformed": 2.0,
+      "stop_fixpoint": 5.0,
+      "stop_malformed": 2.0
+    },
+    "selfdebug": {
+      "n": 7.0,
+      "success": 0.0,
+      "rounds": 8.0,
+      "calls": 8.0,
+      "over_a": 0.0,
+      "over_b": 0.0,
+      "malformed": 2.0,
+      "stop_fixpoint": 5.0,
+      "stop_malformed": 2.0
+    },
+    "targeted": {
+      "n": 7.0,
+      "success": 1.0,
+      "rounds": 19.0,
+      "calls": 19.0,
+      "over_a": 6.0,
+      "over_b": 0.0,
+      "malformed": 0.0,
+      "stop_budget": 6.0,
+      "stop_contract_pass": 1.0
+    },
+    "ceiling": {
+      "n": 7.0,
+      "success": 7.0,
+      "rounds": 7.0,
+      "calls": 7.0,
+      "over_a": 0.0,
+      "over_b": 0.0,
+      "malformed": 0.0,
+      "stop_gold_match": 7.0
+    }
+  },
+  "per_family": {
+    "generic": {
+      "index_align": [
+        0,
+        6
+      ],
+      "dtype_coerce": [
+        0,
+        1
+      ]
+    },
+    "selfdebug": {
+      "index_align": [
+        0,
+        6
+      ],
+      "dtype_coerce": [
+        0,
+        1
+      ]
+    },
+    "targeted": {
+      "index_align": [
+        0,
+        6
+      ],
+      "dtype_coerce": [
+        1,
+        1
+      ]
+    },
+    "ceiling": {
+      "index_align": [
+        6,
+        6
+      ],
+      "dtype_coerce": [
+        1,
+        1
+      ]
+    }
+  },
+  "cases": [
+    {
+      "case": "index_align#1",
+      "model": "gpt-5.4",
+      "generic": {
+        "success": false,
+        "rounds": 1,
+        "calls": 1,
+        "over_repair_a": 0,
+        "over_repair_b": false,
+        "stop_reason": "fixpoint",
+        "n_malformed": 0
+      },
+      "selfdebug": {
+        "success": false,
+        "rounds": 1,
+        "calls": 1,
+        "over_repair_a": 0,
+        "over_repair_b": false,
+        "stop_reason": "fixpoint",
+        "n_malformed": 0
+      },
+      "targeted": {
+        "success": false,
+        "rounds": 3,
+        "calls": 3,
+        "over_repair_a": 0,
+        "over_repair_b": false,
+        "stop_reason": "budget",
+        "n_malformed": 0
+      },
+      "ceiling": {
+        "success": true,
+        "rounds": 1,
+        "calls": 1,
+        "over_repair_a": 0,
+        "over_repair_b": false,
+        "stop_reason": "gold_match",
+        "n_malformed": 0
+      }
+    },
+    {
+      "case": "index_align#1",
+      "model": "claude-opus-4.8",
+      "generic": {
+        "success": false,
+        "rounds": 2,
+        "calls": 2,
+        "over_repair_a": 3,
+        "over_repair_b": false,
+        "stop_reason": "malformed",
+        "n_malformed": 1
+      },
+      "selfdebug": {
+        "success": false,
+        "rounds": 1,
+        "calls": 1,
+        "over_repair_a": 0,
+        "over_repair_b": false,
+        "stop_reason": "malformed",
+        "n_malformed": 1
+      },
+      "targeted": {
+        "success": false,
+        "rounds": 3,
+        "calls": 3,
+        "over_repair_a": 3,
+        "over_repair_b": false,
+        "stop_reason": "budget",
+        "n_malformed": 0
+      },
+      "ceiling": {
+        "success": true,
+        "rounds": 1,
+        "calls": 1,
+        "over_repair_a": 0,
+        "over_repair_b": false,
+        "stop_reason": "gold_match",
+        "n_malformed": 0
+      }
+    },
+    {
+      "case": "index_align#1",
+      "model": "gpt-5.5",
+      "generic": {
+        "success": false,
+        "rounds": 1,
+        "calls": 1,
+        "over_repair_a": 0,
+        "over_repair_b": false,
+        "stop_reason": "fixpoint",
+        "n_malformed": 0
+      },
+      "selfdebug": {
+        "success": false,
+        "rounds": 1,
+        "calls": 1,
+        "over_repair_a": 0,
+        "over_repair_b": false,
+        "stop_reason": "fixpoint",
+        "n_malformed": 0
+      },
+      "targeted": {
+        "success": false,
+        "rounds": 3,
+        "calls": 3,
+        "over_repair_a": 0,
+        "over_repair_b": false,
+        "stop_reason": "budget",
+        "n_malformed": 0
+      },
+      "ceiling": {
+        "success": true,
+        "rounds": 1,
+        "calls": 1,
+        "over_repair_a": 0,
+        "over_repair_b": false,
+        "stop_reason": "gold_match",
+        "n_malformed": 0
+      }
+    },
+    {
+      "case": "index_align#2",
+      "model": "gpt-5.4",
+      "generic": {
+        "success": false,
+        "rounds": 1,
+        "calls": 1,
+        "over_repair_a": 0,
+        "over_repair_b": false,
+        "stop_reason": "fixpoint",
+        "n_malformed": 0
+      },
+      "selfdebug": {
+        "success": false,
+        "rounds": 1,
+        "calls": 1,
+        "over_repair_a": 0,
+        "over_repair_b": false,
+        "stop_reason": "fixpoint",
+        "n_malformed": 0
+      },
+      "targeted": {
+        "success": false,
+        "rounds": 3,
+        "calls": 3,
+        "over_repair_a": 0,
+        "over_repair_b": false,
+        "stop_reason": "budget",
+        "n_malformed": 0
+      },
+      "ceiling": {
+        "success": true,
+        "rounds": 1,
+        "calls": 1,
+        "over_repair_a": 0,
+        "over_repair_b": false,
+        "stop_reason": "gold_match",
+        "n_malformed": 0
+      }
+    },
+    {
+      "case": "index_align#2",
+      "model": "claude-opus-4.8",
+      "generic": {
+        "success": false,
+        "rounds": 2,
+        "calls": 2,
+        "over_repair_a": 3,
+        "over_repair_b": false,
+        "stop_reason": "malformed",
+        "n_malformed": 1
+      },
+      "selfdebug": {
+        "success": false,
+        "rounds": 1,
+        "calls": 1,
+        "over_repair_a": 0,
+        "over_repair_b": false,
+        "stop_reason": "malformed",
+        "n_malformed": 1
+      },
+      "targeted": {
+        "success": false,
+        "rounds": 3,
+        "calls": 3,
+        "over_repair_a": 3,
+        "over_repair_b": false,
+        "stop_reason": "budget",
+        "n_malformed": 0
+      },
+      "ceiling": {
+        "success": true,
+        "rounds": 1,
+        "calls": 1,
+        "over_repair_a": 0,
+        "over_repair_b": false,
+        "stop_reason": "gold_match",
+        "n_malformed": 0
+      }
+    },
+    {
+      "case": "index_align#2",
+      "model": "gpt-5.5",
+      "generic": {
+        "success": false,
+        "rounds": 1,
+        "calls": 1,
+        "over_repair_a": 0,
+        "over_repair_b": false,
+        "stop_reason": "fixpoint",
+        "n_malformed": 0
+      },
+      "selfdebug": {
+        "success": false,
+        "rounds": 1,
+        "calls": 1,
+        "over_repair_a": 0,
+        "over_repair_b": false,
+        "stop_reason": "fixpoint",
+        "n_malformed": 0
+      },
+      "targeted": {
+        "success": false,
+        "rounds": 3,
+        "calls": 3,
+        "over_repair_a": 0,
+        "over_repair_b": false,
+        "stop_reason": "budget",
+        "n_malformed": 0
+      },
+      "ceiling": {
+        "success": true,
+        "rounds": 1,
+        "calls": 1,
+        "over_repair_a": 0,
+        "over_repair_b": false,
+        "stop_reason": "gold_match",
+        "n_malformed": 0
+      }
+    },
+    {
+      "case": "dtype_coerce#2",
+      "model": "gpt-5.4",
+      "generic": {
+        "success": false,
+        "rounds": 1,
+        "calls": 1,
+        "over_repair_a": 0,
+        "over_repair_b": false,
+        "stop_reason": "fixpoint",
+        "n_malformed": 0
+      },
+      "selfdebug": {
+        "success": false,
+        "rounds": 2,
+        "calls": 2,
+        "over_repair_a": 0,
+        "over_repair_b": false,
+        "stop_reason": "fixpoint",
+        "n_malformed": 0
+      },
+      "targeted": {
+        "success": true,
+        "rounds": 1,
+        "calls": 1,
+        "over_repair_a": 0,
+        "over_repair_b": false,
+        "stop_reason": "contract_pass",
+        "n_malformed": 0
+      },
+      "ceiling": {
+        "success": true,
+        "rounds": 1,
+        "calls": 1,
+        "over_repair_a": 0,
+        "over_repair_b": false,
+        "stop_reason": "gold_match",
+        "n_malformed": 0
+      }
+    }
+  ]
+}

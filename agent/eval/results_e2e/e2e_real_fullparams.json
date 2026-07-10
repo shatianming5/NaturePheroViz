@@ -1,0 +1,584 @@
+{
+  "model": "gpt-5.4",
+  "substrate": "REAL Nature tables (data/nature_pairs)",
+  "n": 35,
+  "infer_params": true,
+  "operator_inference": {
+    "k": 27,
+    "n": 35,
+    "pct_ci": [
+      77,
+      61,
+      88
+    ]
+  },
+  "contract_synth_core": {
+    "k": 22,
+    "n": 35,
+    "pct_ci": [
+      63,
+      46,
+      77
+    ]
+  },
+  "FULL_SYSTEM_core": {
+    "k": 19,
+    "n": 35,
+    "pct_ci": [
+      54,
+      38,
+      70
+    ]
+  },
+  "cases": [
+    {
+      "op": "median_not_mean",
+      "name": "median::s41586-019-1856-1:ED_Fig.5a:Chr",
+      "messy_nl": "Can you give me a typical age for each Chr group, using something robust to a few extreme values?",
+      "op_hat": "median_not_mean",
+      "op_correct": true,
+      "contract_core": true,
+      "system_ok": true,
+      "params_inferred": {
+        "group": "Chr",
+        "value": "age"
+      },
+      "params_correct": true,
+      "full_system_ok": true
+    },
+    {
+      "op": "median_not_mean",
+      "name": "median::s41586-019-1856-1:ED_Fig.7a:Chr",
+      "messy_nl": "Can you give me a typical Start value for each Chr, using something that won\u2019t get skewed by a few extreme positions?",
+      "op_hat": "median_not_mean",
+      "op_correct": true,
+      "contract_core": true,
+      "system_ok": true,
+      "params_inferred": {
+        "group": "Chr",
+        "value": "Start"
+      },
+      "params_correct": true,
+      "full_system_ok": true
+    },
+    {
+      "op": "weighted_mean",
+      "name": "wmean::s41586-019-1856-1:ED_Fig.7a:Chr",
+      "messy_nl": "Can you give me one overall average for the value in `End`, using `Start` to make bigger entries count more?",
+      "op_hat": "weighted_mean",
+      "op_correct": true,
+      "contract_core": true,
+      "system_ok": true,
+      "params_inferred": {
+        "value": "End",
+        "weight": "Start"
+      },
+      "params_correct": false,
+      "full_system_ok": false
+    },
+    {
+      "op": "nan_as_zero_sum",
+      "name": "nanzero::s41586-022-05507-1:2e:Time (h)",
+      "messy_nl": "Can you total up AdC3KO by Time (h), and if some rows are blank just still give me a number for that time?",
+      "op_hat": "nan_as_zero_sum",
+      "op_correct": true,
+      "contract_core": true,
+      "system_ok": true,
+      "params_inferred": {
+        "group": "Time (h)",
+        "value": "AdC3KO"
+      },
+      "params_correct": true,
+      "full_system_ok": true
+    },
+    {
+      "op": "null_in_agg_count",
+      "name": "nullcount::s41586-022-05507-1:2e:Time (h)",
+      "messy_nl": "Can you break out the row counts by AdC3KO?",
+      "op_hat": "count_includes_empty",
+      "op_correct": false,
+      "contract_core": true,
+      "system_ok": false,
+      "params_inferred": {},
+      "params_correct": false,
+      "full_system_ok": false
+    },
+    {
+      "op": "nan_as_zero_sum",
+      "name": "nanzero::s41586-024-08224-z:Fig. 4a:treatment",
+      "messy_nl": "Can you total up MPA.20 by treatment and make sure each treatment still gets a number even if some rows are blank?",
+      "op_hat": "nan_as_zero_sum",
+      "op_correct": true,
+      "contract_core": true,
+      "system_ok": true,
+      "params_inferred": {
+        "group": "treatment",
+        "value": "MPA.20"
+      },
+      "params_correct": true,
+      "full_system_ok": true
+    },
+    {
+      "op": "null_in_agg_count",
+      "name": "nullcount::s41586-024-08224-z:Fig. 4a:treatment",
+      "messy_nl": "Can you give me a quick breakdown of how many rows we have for each treatment/MPA.20 combination?",
+      "op_hat": null,
+      "op_correct": false,
+      "contract_core": true,
+      "system_ok": false,
+      "params_inferred": {
+        "group": "treatment"
+      },
+      "params_correct": true,
+      "full_system_ok": false
+    },
+    {
+      "op": "median_not_mean",
+      "name": "median::s41586-024-08276-1:Fig2f-estrus:Group",
+      "messy_nl": "Can you give me a typical value of Follicel count/ mm2 for each Group that won\u2019t get skewed by a few extreme rows?",
+      "op_hat": "median_not_mean",
+      "op_correct": true,
+      "contract_core": true,
+      "system_ok": true,
+      "params_inferred": {
+        "group": "Group",
+        "value": "Follicel count/ mm2"
+      },
+      "params_correct": true,
+      "full_system_ok": true
+    },
+    {
+      "op": "median_not_mean",
+      "name": "median::s41586-024-08276-1:Fig2f-diestrus:Group",
+      "messy_nl": "Can you give me a typical value for Follicel count/ mm2 by Group that won\u2019t get pulled around by a few extreme readings?",
+      "op_hat": "median_not_mean",
+      "op_correct": true,
+      "contract_core": true,
+      "system_ok": true,
+      "params_inferred": {
+        "group": "Group",
+        "value": "Follicel count/ mm2"
+      },
+      "params_correct": true,
+      "full_system_ok": true
+    },
+    {
+      "op": "median_not_mean",
+      "name": "median::s41586-024-08276-1:Fig2g-estrus:Group",
+      "messy_nl": "Can you give me a typical Progesterone (nmol/L) value for each Group, using something that won\u2019t get skewed by a few extreme readings?",
+      "op_hat": "median_not_mean",
+      "op_correct": true,
+      "contract_core": true,
+      "system_ok": true,
+      "params_inferred": {
+        "group": "Group",
+        "value": "Progesterone (nmol/L)"
+      },
+      "params_correct": true,
+      "full_system_ok": true
+    },
+    {
+      "op": "median_not_mean",
+      "name": "median::s41586-024-08301-3:3c_&_Ext.10:MiType",
+      "messy_nl": "Can you give me a typical PrsurPfr value for each MiType, using something robust to a few extreme values?",
+      "op_hat": "median_not_mean",
+      "op_correct": true,
+      "contract_core": false,
+      "system_ok": false,
+      "params_inferred": {
+        "group": "MiType",
+        "value": "PrsurPfr"
+      },
+      "params_correct": true,
+      "full_system_ok": false
+    },
+    {
+      "op": "median_not_mean",
+      "name": "median::s41586-024-08301-3:Fig5_ETR:Light",
+      "messy_nl": "Can you summarize PAR by Light and give a typical value for each group that won\u2019t get skewed by a few weird extremes?",
+      "op_hat": "median_not_mean",
+      "op_correct": true,
+      "contract_core": true,
+      "system_ok": true,
+      "params_inferred": {
+        "group": "Light",
+        "value": "PAR"
+      },
+      "params_correct": true,
+      "full_system_ok": true
+    },
+    {
+      "op": "median_not_mean",
+      "name": "median::s41586-024-08301-3:Fig5_NPQ:Light",
+      "messy_nl": "Can you give me a typical PAR value for each Light group, using something robust to a few extreme readings?",
+      "op_hat": "median_not_mean",
+      "op_correct": true,
+      "contract_core": false,
+      "system_ok": false,
+      "params_inferred": {
+        "group": "Light",
+        "value": "PAR"
+      },
+      "params_correct": true,
+      "full_system_ok": false
+    },
+    {
+      "op": "median_not_mean",
+      "name": "median::s41586-024-08525-3:Extended Fig.8e:0",
+      "messy_nl": "Can you give me a typical value for each group using the `0` groups and the `--` numbers, in a way that isn\u2019t skewed by a few extreme rows?",
+      "op_hat": "median_not_mean",
+      "op_correct": true,
+      "contract_core": true,
+      "system_ok": true,
+      "params_inferred": {
+        "group": "0",
+        "value": "--"
+      },
+      "params_correct": true,
+      "full_system_ok": true
+    },
+    {
+      "op": "median_not_mean",
+      "name": "median::s41586-024-08525-3:Extended Fig.8e:0.1",
+      "messy_nl": "Can you give me a typical value for each -- group, using 0.1, in a way that isn\u2019t skewed by a few extreme rows?",
+      "op_hat": "median_not_mean",
+      "op_correct": true,
+      "contract_core": false,
+      "system_ok": false,
+      "params_inferred": {
+        "group": "--",
+        "value": "0.1"
+      },
+      "params_correct": false,
+      "full_system_ok": false
+    },
+    {
+      "op": "median_not_mean",
+      "name": "median::s41586-024-08525-3:Extended Fig.8e:0.2",
+      "messy_nl": "Can you give me a typical value for each -- group using 0.2, something that won\u2019t get skewed by a few weirdly high or low rows?",
+      "op_hat": "median_not_mean",
+      "op_correct": true,
+      "contract_core": false,
+      "system_ok": false,
+      "params_inferred": {
+        "group": "--",
+        "value": "0.2"
+      },
+      "params_correct": false,
+      "full_system_ok": false
+    },
+    {
+      "op": "nan_as_zero_sum",
+      "name": "nanzero::s41586-025-09880-5:Fig5ab EDfig6 EDtable3:COADMINISTRATION",
+      "messy_nl": "Can you total up %MPE by COADMINISTRATION, treating blanks as zero so each group still gets a number?",
+      "op_hat": "nan_as_zero_sum",
+      "op_correct": true,
+      "contract_core": true,
+      "system_ok": true,
+      "params_inferred": {
+        "group": "COADMINISTRATION",
+        "value": "%MPE"
+      },
+      "params_correct": true,
+      "full_system_ok": true
+    },
+    {
+      "op": "null_in_agg_count",
+      "name": "nullcount::s41586-025-09880-5:Fig5ab EDfig6 EDtable3:COADMINISTRATION",
+      "messy_nl": "Can you break this down by COADMINISTRATION and show the number of records in each group?",
+      "op_hat": null,
+      "op_correct": false,
+      "contract_core": false,
+      "system_ok": false,
+      "params_inferred": {
+        "group": "COADMINISTRATION"
+      },
+      "params_correct": true,
+      "full_system_ok": false
+    },
+    {
+      "op": "groupby_dropna_key",
+      "name": "dropnakey::s41586-025-09880-5:Fig5ab EDfig6 EDtable3:COADMINISTRATION",
+      "messy_nl": "Can you total up %MPE by COADMINISTRATION, and keep the entries where COADMINISTRATION is blank in the results too?",
+      "op_hat": "groupby_dropna_key",
+      "op_correct": true,
+      "contract_core": true,
+      "system_ok": true,
+      "params_inferred": {
+        "group": "COADMINISTRATION",
+        "value": "%MPE"
+      },
+      "params_correct": true,
+      "full_system_ok": true
+    },
+    {
+      "op": "nan_as_zero_sum",
+      "name": "nanzero::s41586-025-09880-5:Fig5ab EDfig6 EDtable3:COADMINISTRATION.1",
+      "messy_nl": "Can you total up %MPE by COADMINISTRATION.1 and make sure each group still ends up with a number even if some rows are blank?",
+      "op_hat": "nan_as_zero_sum",
+      "op_correct": true,
+      "contract_core": true,
+      "system_ok": true,
+      "params_inferred": {
+        "group": "COADMINISTRATION.1",
+        "value": "%MPE"
+      },
+      "params_correct": true,
+      "full_system_ok": true
+    },
+    {
+      "op": "nan_as_zero_sum",
+      "name": "nanzero::s41586-025-09887-y:Ext 7k - GM WDMs:WT 7d.4",
+      "messy_nl": "Can you total this up by group and make sure each group still gets a number even if a few entries are blank?",
+      "op_hat": "nan_as_zero_sum",
+      "op_correct": true,
+      "contract_core": true,
+      "system_ok": true,
+      "params_inferred": {
+        "group": "WT 7d.4",
+        "value": "cKO 90d.5"
+      },
+      "params_correct": true,
+      "full_system_ok": true
+    },
+    {
+      "op": "null_in_agg_count",
+      "name": "nullcount::s41586-025-09887-y:Ext 7k - GM WDMs:WT 7d.4",
+      "messy_nl": "Can you give me a quick count of entries for each of these columns: WT 7d.4 and cKO 90d.5?",
+      "op_hat": null,
+      "op_correct": false,
+      "contract_core": false,
+      "system_ok": false,
+      "params_inferred": {
+        "group": "WT 7d.4"
+      },
+      "params_correct": true,
+      "full_system_ok": false
+    },
+    {
+      "op": "nan_as_zero_sum",
+      "name": "nanzero::s41586-025-09887-y:Ext 7k - GM WDMs:cKO 7d.1",
+      "messy_nl": "Can you total these up by group for `cKO 7d.1` and `cKO 90d.5`, and keep groups with blanks returning a number?",
+      "op_hat": "nan_as_zero_sum",
+      "op_correct": true,
+      "contract_core": true,
+      "system_ok": true,
+      "params_inferred": {
+        "group": "cKO 7d.1",
+        "value": "cKO 90d.5"
+      },
+      "params_correct": true,
+      "full_system_ok": true
+    },
+    {
+      "op": "null_in_agg_count",
+      "name": "nullcount::s41586-025-09887-y:Ext 7k - GM WDMs:cKO 7d.1",
+      "messy_nl": "Can you break this out by the `cKO 7d.1` and `cKO 90d.5` values and show how many records are in each combo?",
+      "op_hat": null,
+      "op_correct": false,
+      "contract_core": false,
+      "system_ok": false,
+      "params_inferred": {
+        "group": "cKO 7d.1"
+      },
+      "params_correct": true,
+      "full_system_ok": false
+    },
+    {
+      "op": "median_not_mean",
+      "name": "median::s41586-026-10490-y:ExD Fig. 11a:Coculture conditions",
+      "messy_nl": "Can you give me a typical Similarity score for each Coculture conditions group, using something robust to a few weird outliers?",
+      "op_hat": "median_not_mean",
+      "op_correct": true,
+      "contract_core": true,
+      "system_ok": true,
+      "params_inferred": {
+        "group": "Coculture conditions",
+        "value": "Similarity score"
+      },
+      "params_correct": true,
+      "full_system_ok": true
+    },
+    {
+      "op": "groupby_dropna_key",
+      "name": "dropnakey::s41586-026-10490-y:ExD Fig. 11a:Coculture conditions",
+      "messy_nl": "Can you total up the Similarity score by Coculture conditions, and make sure the blank Coculture conditions entries are included too?",
+      "op_hat": "groupby_dropna_key",
+      "op_correct": true,
+      "contract_core": true,
+      "system_ok": true,
+      "params_inferred": {
+        "group": "Coculture conditions",
+        "value": "Similarity score"
+      },
+      "params_correct": true,
+      "full_system_ok": true
+    },
+    {
+      "op": "nan_as_zero_sum",
+      "name": "nanzero::s41586-026-10496-6:Fig.4e:Input A",
+      "messy_nl": "Can you total up Input A by Time step, and if some entries are blank just still give me a number for that step?",
+      "op_hat": "nan_as_zero_sum",
+      "op_correct": true,
+      "contract_core": false,
+      "system_ok": false,
+      "params_inferred": {
+        "group": "Time step",
+        "value": "Input A"
+      },
+      "params_correct": false,
+      "full_system_ok": false
+    },
+    {
+      "op": "null_in_agg_count",
+      "name": "nullcount::s41586-026-10496-6:Fig.4e:Input A",
+      "messy_nl": "Can you give me a quick breakdown of row counts by Input A and Time step?",
+      "op_hat": null,
+      "op_correct": false,
+      "contract_core": true,
+      "system_ok": false,
+      "params_inferred": {
+        "group": "Input A"
+      },
+      "params_correct": true,
+      "full_system_ok": false
+    },
+    {
+      "op": "groupby_dropna_key",
+      "name": "dropnakey::s41586-026-10534-3:Fig4D:temp",
+      "messy_nl": "Can you total up the values by time, and keep the rows where time is blank too?",
+      "op_hat": "groupby_dropna_key",
+      "op_correct": true,
+      "contract_core": false,
+      "system_ok": false,
+      "params_inferred": {
+        "group": "time",
+        "value": "temp"
+      },
+      "params_correct": false,
+      "full_system_ok": false
+    },
+    {
+      "op": "weighted_mean",
+      "name": "wmean::s41586-026-10534-3:Fig S5B:WC_CF",
+      "messy_nl": "Can you give me one overall average for WC_NI that factors in the WC amounts so bigger ones count more?",
+      "op_hat": "weighted_mean",
+      "op_correct": true,
+      "contract_core": true,
+      "system_ok": true,
+      "params_inferred": {
+        "value": "WC_NI",
+        "weight": "WC"
+      },
+      "params_correct": true,
+      "full_system_ok": true
+    },
+    {
+      "op": "pooled_rate",
+      "name": "pooled::s41586-026-10534-3:Fig S5B:WC_CF",
+      "messy_nl": "Can you give me the overall WC rate for each group, rolling everyone in that group together using the WC_CF, WC_NI, and WC fields?",
+      "op_hat": "pooled_rate",
+      "op_correct": true,
+      "contract_core": false,
+      "system_ok": false,
+      "params_inferred": {
+        "group": "WC",
+        "num": "WC_CF",
+        "den": "WC_NI"
+      },
+      "params_correct": false,
+      "full_system_ok": false
+    },
+    {
+      "op": "weighted_mean",
+      "name": "wmean::s41586-026-10637-x:Fig. 3d:DOP (%, RMBA)",
+      "messy_nl": "Can you give me one overall average DOP0 that reflects the Pump Fluence values more heavily when they\u2019re larger?",
+      "op_hat": "weighted_mean",
+      "op_correct": true,
+      "contract_core": false,
+      "system_ok": false,
+      "params_inferred": {
+        "value": "DOP0 (%, SMBA)",
+        "weight": "Pump Fluence (\u00b5J cm^-2)"
+      },
+      "params_correct": false,
+      "full_system_ok": false
+    },
+    {
+      "op": "pooled_rate",
+      "name": "pooled::s41586-026-10637-x:Fig. 3d:DOP (%, RMBA)",
+      "messy_nl": "Can you give me one overall DOP figure per group by rolling up all the members together, using the RMBA DOP column?",
+      "op_hat": null,
+      "op_correct": false,
+      "contract_core": false,
+      "system_ok": false,
+      "params_inferred": {
+        "group": "Pump Fluence (\u00b5J cm^-2)",
+        "num": "DOP (%, RMBA)",
+        "den": "DOP0 (%, SMBA)"
+      },
+      "params_correct": false,
+      "full_system_ok": false
+    },
+    {
+      "op": "nan_as_zero_sum",
+      "name": "nanzero::s41586-026-10637-x:Fig. 3d:DOP (%, RMBA)",
+      "messy_nl": "Can you total up **Pump Fluence (\u00b5J cm^-2)** for each **DOP (%, RMBA)** bucket, and make sure groups still get a number even if a few entries are blank?",
+      "op_hat": "nan_as_zero_sum",
+      "op_correct": true,
+      "contract_core": true,
+      "system_ok": true,
+      "params_inferred": {
+        "group": "DOP (%, RMBA)",
+        "value": "Pump Fluence (\u00b5J cm^-2)"
+      },
+      "params_correct": true,
+      "full_system_ok": true
+    },
+    {
+      "op": "null_in_agg_count",
+      "name": "nullcount::s41586-026-10637-x:Fig. 3d:DOP (%, RMBA)",
+      "messy_nl": "Can you break this out into a simple count by DOP (%, RMBA) and Pump Fluence (\u00b5J cm^-2)?",
+      "op_hat": null,
+      "op_correct": false,
+      "contract_core": false,
+      "system_ok": false,
+      "params_inferred": {
+        "group": "DOP (%, RMBA)"
+      },
+      "params_correct": true,
+      "full_system_ok": false
+    }
+  ],
+  "param_inference": {
+    "k": 26,
+    "n": 35,
+    "pct_ci": [
+      74,
+      58,
+      86
+    ]
+  },
+  "FULL_SYSTEM_with_inferred_params": {
+    "k": 18,
+    "n": 35,
+    "pct_ci": [
+      51,
+      36,
+      67
+    ]
+  },
+  "param_inference_split": {
+    "type_disambiguated_roles": {
+      "k": 25,
+      "n": 30,
+      "pct": 83,
+      "ops": "median/nan_as_zero/null_count/dropna (group+value)"
+    },
+    "symmetric_roles": {
+      "k": 1,
+      "n": 5,
+      "note": "weighted value<->weight, pooled num<->den: NL may not uniquely fix roles; misses are ambiguity not method failure"
+    }
+  }
+}

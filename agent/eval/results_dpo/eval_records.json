@@ -1,0 +1,758 @@
+[
+  {
+    "uid": "weighted_mean#3",
+    "op": "weighted_mean",
+    "base_generic": {
+      "success": false,
+      "contract_pass": false,
+      "over_repair": 0
+    },
+    "base_targeted": {
+      "success": false,
+      "contract_pass": false,
+      "over_repair": 0
+    },
+    "tuned_targeted": {
+      "success": false,
+      "contract_pass": false,
+      "over_repair": 0
+    },
+    "base_bestN": {
+      "success": false,
+      "contract_pass": false,
+      "over_repair": 0,
+      "any_gold": false
+    },
+    "tuned_bestN": {
+      "success": false,
+      "contract_pass": false,
+      "over_repair": 0,
+      "any_gold": false
+    }
+  },
+  {
+    "uid": "within_group_share#7",
+    "op": "within_group_share",
+    "base_generic": {
+      "success": false,
+      "contract_pass": true,
+      "over_repair": 0
+    },
+    "base_targeted": {
+      "success": false,
+      "contract_pass": true,
+      "over_repair": 0
+    },
+    "tuned_targeted": {
+      "success": false,
+      "contract_pass": true,
+      "over_repair": 0
+    },
+    "base_bestN": {
+      "success": true,
+      "contract_pass": true,
+      "over_repair": 0,
+      "any_gold": true
+    },
+    "tuned_bestN": {
+      "success": false,
+      "contract_pass": true,
+      "over_repair": 0,
+      "any_gold": true
+    }
+  },
+  {
+    "uid": "pct_point#11",
+    "op": "pct_point",
+    "base_generic": {
+      "success": false,
+      "contract_pass": false,
+      "over_repair": 0
+    },
+    "base_targeted": {
+      "success": false,
+      "contract_pass": false,
+      "over_repair": 0
+    },
+    "tuned_targeted": {
+      "success": false,
+      "contract_pass": false,
+      "over_repair": 0
+    },
+    "base_bestN": {
+      "success": false,
+      "contract_pass": false,
+      "over_repair": 0,
+      "any_gold": false
+    },
+    "tuned_bestN": {
+      "success": false,
+      "contract_pass": false,
+      "over_repair": 0,
+      "any_gold": false
+    }
+  },
+  {
+    "uid": "dedup_then_agg#15",
+    "op": "dedup_then_agg",
+    "base_generic": {
+      "success": false,
+      "contract_pass": false,
+      "over_repair": 0
+    },
+    "base_targeted": {
+      "success": false,
+      "contract_pass": false,
+      "over_repair": 0
+    },
+    "tuned_targeted": {
+      "success": false,
+      "contract_pass": false,
+      "over_repair": 0
+    },
+    "base_bestN": {
+      "success": false,
+      "contract_pass": false,
+      "over_repair": 0,
+      "any_gold": false
+    },
+    "tuned_bestN": {
+      "success": false,
+      "contract_pass": false,
+      "over_repair": 0,
+      "any_gold": false
+    }
+  },
+  {
+    "uid": "left_join_keep_all#19",
+    "op": "left_join_keep_all",
+    "base_generic": {
+      "success": true,
+      "contract_pass": true,
+      "over_repair": 0
+    },
+    "base_targeted": {
+      "success": true,
+      "contract_pass": true,
+      "over_repair": 0
+    },
+    "tuned_targeted": {
+      "success": true,
+      "contract_pass": true,
+      "over_repair": 0
+    },
+    "base_bestN": {
+      "success": true,
+      "contract_pass": true,
+      "over_repair": 0,
+      "any_gold": true
+    },
+    "tuned_bestN": {
+      "success": true,
+      "contract_pass": true,
+      "over_repair": 0,
+      "any_gold": true
+    }
+  },
+  {
+    "uid": "pooled_rate#23",
+    "op": "pooled_rate",
+    "base_generic": {
+      "success": false,
+      "contract_pass": false,
+      "over_repair": 0
+    },
+    "base_targeted": {
+      "success": false,
+      "contract_pass": false,
+      "over_repair": 0
+    },
+    "tuned_targeted": {
+      "success": false,
+      "contract_pass": false,
+      "over_repair": 0
+    },
+    "base_bestN": {
+      "success": false,
+      "contract_pass": true,
+      "over_repair": 0,
+      "any_gold": false
+    },
+    "tuned_bestN": {
+      "success": false,
+      "contract_pass": true,
+      "over_repair": 0,
+      "any_gold": false
+    }
+  },
+  {
+    "uid": "median_not_mean#27",
+    "op": "median_not_mean",
+    "base_generic": {
+      "success": false,
+      "contract_pass": true,
+      "over_repair": 0
+    },
+    "base_targeted": {
+      "success": false,
+      "contract_pass": true,
+      "over_repair": 0
+    },
+    "tuned_targeted": {
+      "success": false,
+      "contract_pass": true,
+      "over_repair": 0
+    },
+    "base_bestN": {
+      "success": false,
+      "contract_pass": true,
+      "over_repair": 0,
+      "any_gold": true
+    },
+    "tuned_bestN": {
+      "success": false,
+      "contract_pass": true,
+      "over_repair": 0,
+      "any_gold": true
+    }
+  },
+  {
+    "uid": "cumulative_running#31",
+    "op": "cumulative_running",
+    "base_generic": {
+      "success": false,
+      "contract_pass": true,
+      "over_repair": 0
+    },
+    "base_targeted": {
+      "success": true,
+      "contract_pass": true,
+      "over_repair": 0
+    },
+    "tuned_targeted": {
+      "success": true,
+      "contract_pass": true,
+      "over_repair": 0
+    },
+    "base_bestN": {
+      "success": true,
+      "contract_pass": true,
+      "over_repair": 0,
+      "any_gold": true
+    },
+    "tuned_bestN": {
+      "success": true,
+      "contract_pass": true,
+      "over_repair": 0,
+      "any_gold": true
+    }
+  },
+  {
+    "uid": "topn_with_ties#35",
+    "op": "topn_with_ties",
+    "base_generic": {
+      "success": false,
+      "contract_pass": false,
+      "over_repair": 0
+    },
+    "base_targeted": {
+      "success": true,
+      "contract_pass": true,
+      "over_repair": 0
+    },
+    "tuned_targeted": {
+      "success": true,
+      "contract_pass": true,
+      "over_repair": 0
+    },
+    "base_bestN": {
+      "success": true,
+      "contract_pass": true,
+      "over_repair": 0,
+      "any_gold": true
+    },
+    "tuned_bestN": {
+      "success": true,
+      "contract_pass": true,
+      "over_repair": 0,
+      "any_gold": true
+    }
+  },
+  {
+    "uid": "nan_as_zero_sum#39",
+    "op": "nan_as_zero_sum",
+    "base_generic": {
+      "success": true,
+      "contract_pass": true,
+      "over_repair": 0
+    },
+    "base_targeted": {
+      "success": true,
+      "contract_pass": true,
+      "over_repair": 0
+    },
+    "tuned_targeted": {
+      "success": true,
+      "contract_pass": true,
+      "over_repair": 0
+    },
+    "base_bestN": {
+      "success": true,
+      "contract_pass": true,
+      "over_repair": 0,
+      "any_gold": true
+    },
+    "tuned_bestN": {
+      "success": false,
+      "contract_pass": true,
+      "over_repair": 0,
+      "any_gold": false
+    }
+  },
+  {
+    "uid": "count_includes_empty#43",
+    "note": "no_firing_buggy_start"
+  },
+  {
+    "uid": "proportion_true#47",
+    "op": "proportion_true",
+    "base_generic": {
+      "success": true,
+      "contract_pass": true,
+      "over_repair": 0
+    },
+    "base_targeted": {
+      "success": true,
+      "contract_pass": true,
+      "over_repair": 0
+    },
+    "tuned_targeted": {
+      "success": true,
+      "contract_pass": true,
+      "over_repair": 0
+    },
+    "base_bestN": {
+      "success": false,
+      "contract_pass": true,
+      "over_repair": 0,
+      "any_gold": true
+    },
+    "tuned_bestN": {
+      "success": false,
+      "contract_pass": true,
+      "over_repair": 0,
+      "any_gold": false
+    }
+  },
+  {
+    "uid": "zscore_within_group#51",
+    "op": "zscore_within_group",
+    "base_generic": {
+      "success": false,
+      "contract_pass": false,
+      "over_repair": 0
+    },
+    "base_targeted": {
+      "success": false,
+      "contract_pass": true,
+      "over_repair": 0
+    },
+    "tuned_targeted": {
+      "success": false,
+      "contract_pass": true,
+      "over_repair": 0
+    },
+    "base_bestN": {
+      "success": false,
+      "contract_pass": true,
+      "over_repair": 0,
+      "any_gold": false
+    },
+    "tuned_bestN": {
+      "success": false,
+      "contract_pass": true,
+      "over_repair": 0,
+      "any_gold": false
+    }
+  },
+  {
+    "uid": "dense_rank#55",
+    "note": "no_firing_buggy_start"
+  },
+  {
+    "uid": "cumcount_per_group#59",
+    "op": "cumcount_per_group",
+    "base_generic": {
+      "success": false,
+      "contract_pass": true,
+      "over_repair": 0
+    },
+    "base_targeted": {
+      "success": false,
+      "contract_pass": true,
+      "over_repair": 0
+    },
+    "tuned_targeted": {
+      "success": false,
+      "contract_pass": true,
+      "over_repair": 0
+    },
+    "base_bestN": {
+      "success": false,
+      "contract_pass": true,
+      "over_repair": 0,
+      "any_gold": true
+    },
+    "tuned_bestN": {
+      "success": false,
+      "contract_pass": true,
+      "over_repair": 0,
+      "any_gold": true
+    }
+  },
+  {
+    "uid": "rank_pct#63",
+    "op": "rank_pct",
+    "base_generic": {
+      "success": false,
+      "contract_pass": true,
+      "over_repair": 1
+    },
+    "base_targeted": {
+      "success": false,
+      "contract_pass": true,
+      "over_repair": 1
+    },
+    "tuned_targeted": {
+      "success": false,
+      "contract_pass": true,
+      "over_repair": 1
+    },
+    "base_bestN": {
+      "success": true,
+      "contract_pass": true,
+      "over_repair": 0,
+      "any_gold": true
+    },
+    "tuned_bestN": {
+      "success": true,
+      "contract_pass": true,
+      "over_repair": 0,
+      "any_gold": true
+    }
+  },
+  {
+    "uid": "clip_outlier#67",
+    "op": "clip_outlier",
+    "base_generic": {
+      "success": false,
+      "contract_pass": false,
+      "over_repair": 0
+    },
+    "base_targeted": {
+      "success": false,
+      "contract_pass": false,
+      "over_repair": 0
+    },
+    "tuned_targeted": {
+      "success": false,
+      "contract_pass": false,
+      "over_repair": 0
+    },
+    "base_bestN": {
+      "success": false,
+      "contract_pass": false,
+      "over_repair": 0,
+      "any_gold": false
+    },
+    "tuned_bestN": {
+      "success": false,
+      "contract_pass": false,
+      "over_repair": 0,
+      "any_gold": false
+    }
+  },
+  {
+    "uid": "index_align#69",
+    "op": "index_align",
+    "base_generic": {
+      "success": false,
+      "contract_pass": false,
+      "over_repair": 0
+    },
+    "base_targeted": {
+      "success": false,
+      "contract_pass": false,
+      "over_repair": 0
+    },
+    "tuned_targeted": {
+      "success": false,
+      "contract_pass": false,
+      "over_repair": 0
+    },
+    "base_bestN": {
+      "success": false,
+      "contract_pass": true,
+      "over_repair": 0,
+      "any_gold": false
+    },
+    "tuned_bestN": {
+      "success": false,
+      "contract_pass": true,
+      "over_repair": 0,
+      "any_gold": false
+    }
+  },
+  {
+    "uid": "dtype_coerce#71",
+    "op": "dtype_coerce",
+    "base_generic": {
+      "success": true,
+      "contract_pass": true,
+      "over_repair": 0
+    },
+    "base_targeted": {
+      "success": true,
+      "contract_pass": true,
+      "over_repair": 0
+    },
+    "tuned_targeted": {
+      "success": true,
+      "contract_pass": true,
+      "over_repair": 0
+    },
+    "base_bestN": {
+      "success": true,
+      "contract_pass": true,
+      "over_repair": 0,
+      "any_gold": true
+    },
+    "tuned_bestN": {
+      "success": true,
+      "contract_pass": true,
+      "over_repair": 0,
+      "any_gold": true
+    }
+  },
+  {
+    "uid": "groupby_dropna_key#73",
+    "op": "groupby_dropna_key",
+    "base_generic": {
+      "success": false,
+      "contract_pass": false,
+      "over_repair": 0
+    },
+    "base_targeted": {
+      "success": false,
+      "contract_pass": false,
+      "over_repair": 0
+    },
+    "tuned_targeted": {
+      "success": false,
+      "contract_pass": false,
+      "over_repair": 0
+    },
+    "base_bestN": {
+      "success": false,
+      "contract_pass": true,
+      "over_repair": 0,
+      "any_gold": false
+    },
+    "tuned_bestN": {
+      "success": false,
+      "contract_pass": true,
+      "over_repair": 0,
+      "any_gold": false
+    }
+  },
+  {
+    "uid": "order_dependent_dedup#75",
+    "note": "no_firing_buggy_start"
+  },
+  {
+    "uid": "resample_boundary#77",
+    "op": "resample_boundary",
+    "base_generic": {
+      "success": false,
+      "contract_pass": false,
+      "over_repair": 0
+    },
+    "base_targeted": {
+      "success": false,
+      "contract_pass": false,
+      "over_repair": 0
+    },
+    "tuned_targeted": {
+      "success": false,
+      "contract_pass": false,
+      "over_repair": 0
+    },
+    "base_bestN": {
+      "success": false,
+      "contract_pass": false,
+      "over_repair": 0,
+      "any_gold": false
+    },
+    "tuned_bestN": {
+      "success": false,
+      "contract_pass": false,
+      "over_repair": 0,
+      "any_gold": false
+    }
+  },
+  {
+    "uid": "string_normalize_join#79",
+    "op": "string_normalize_join",
+    "base_generic": {
+      "success": false,
+      "contract_pass": false,
+      "over_repair": 0
+    },
+    "base_targeted": {
+      "success": false,
+      "contract_pass": false,
+      "over_repair": 0
+    },
+    "tuned_targeted": {
+      "success": false,
+      "contract_pass": false,
+      "over_repair": 0
+    },
+    "base_bestN": {
+      "success": false,
+      "contract_pass": false,
+      "over_repair": 0,
+      "any_gold": false
+    },
+    "tuned_bestN": {
+      "success": false,
+      "contract_pass": false,
+      "over_repair": 0,
+      "any_gold": false
+    }
+  },
+  {
+    "uid": "join_fanout#81",
+    "op": "join_fanout",
+    "base_generic": {
+      "success": true,
+      "contract_pass": true,
+      "over_repair": 0
+    },
+    "base_targeted": {
+      "success": false,
+      "contract_pass": false,
+      "over_repair": 0
+    },
+    "tuned_targeted": {
+      "success": false,
+      "contract_pass": false,
+      "over_repair": 0
+    },
+    "base_bestN": {
+      "success": false,
+      "contract_pass": false,
+      "over_repair": 0,
+      "any_gold": false
+    },
+    "tuned_bestN": {
+      "success": false,
+      "contract_pass": false,
+      "over_repair": 0,
+      "any_gold": false
+    }
+  },
+  {
+    "uid": "null_in_agg_count#83",
+    "op": "null_in_agg_count",
+    "base_generic": {
+      "success": false,
+      "contract_pass": false,
+      "over_repair": 0
+    },
+    "base_targeted": {
+      "success": false,
+      "contract_pass": false,
+      "over_repair": 0
+    },
+    "tuned_targeted": {
+      "success": false,
+      "contract_pass": false,
+      "over_repair": 0
+    },
+    "base_bestN": {
+      "success": false,
+      "contract_pass": true,
+      "over_repair": 0,
+      "any_gold": false
+    },
+    "tuned_bestN": {
+      "success": false,
+      "contract_pass": true,
+      "over_repair": 0,
+      "any_gold": false
+    }
+  },
+  {
+    "uid": "scale_before_split_leakage#85",
+    "op": "scale_before_split_leakage",
+    "base_generic": {
+      "success": false,
+      "contract_pass": false,
+      "over_repair": 0
+    },
+    "base_targeted": {
+      "success": false,
+      "contract_pass": false,
+      "over_repair": 0
+    },
+    "tuned_targeted": {
+      "success": false,
+      "contract_pass": false,
+      "over_repair": 0
+    },
+    "base_bestN": {
+      "success": false,
+      "contract_pass": true,
+      "over_repair": 0,
+      "any_gold": false
+    },
+    "tuned_bestN": {
+      "success": false,
+      "contract_pass": false,
+      "over_repair": 0,
+      "any_gold": false
+    }
+  },
+  {
+    "uid": "lookahead_return#87",
+    "op": "lookahead_return",
+    "base_generic": {
+      "success": true,
+      "contract_pass": true,
+      "over_repair": 0
+    },
+    "base_targeted": {
+      "success": true,
+      "contract_pass": true,
+      "over_repair": 0
+    },
+    "tuned_targeted": {
+      "success": true,
+      "contract_pass": true,
+      "over_repair": 0
+    },
+    "base_bestN": {
+      "success": false,
+      "contract_pass": false,
+      "over_repair": 0,
+      "any_gold": false
+    },
+    "tuned_bestN": {
+      "success": true,
+      "contract_pass": true,
+      "over_repair": 0,
+      "any_gold": true
+    }
+  }
+]

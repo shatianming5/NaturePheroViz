@@ -1,0 +1,793 @@
+{
+  "backend": "api",
+  "models": [
+    "gpt-5.4",
+    "claude-opus-4.8"
+  ],
+  "n": 48,
+  "silent": 18,
+  "pass": 64,
+  "crash": 14,
+  "recall": "10/18",
+  "recall_ci": [
+    56,
+    34,
+    75
+  ],
+  "fp": "35/64",
+  "fp_ci": [
+    55,
+    43,
+    66
+  ],
+  "cases": [
+    {
+      "pid": 7,
+      "model": "gpt-5.4",
+      "op": "dedup_then_agg",
+      "outcome": "pass",
+      "oracle_fired": false,
+      "code": "result = df[(df['keep_if_dup'].eq('Yes')) | (~df['url'].duplicated())]"
+    },
+    {
+      "pid": 7,
+      "model": "claude-opus-4.8",
+      "op": "dedup_then_agg",
+      "outcome": "pass",
+      "oracle_fired": false,
+      "code": "result = df[(df['keep_if_dup'] == 'Yes') | ~df['url'].duplicated()]"
+    },
+    {
+      "pid": 8,
+      "model": "gpt-5.4",
+      "op": "dedup_then_agg",
+      "outcome": "pass",
+      "oracle_fired": false,
+      "code": "result = df[(df['drop_if_dup'].eq('No')) | ~df['url'].duplicated()]"
+    },
+    {
+      "pid": 8,
+      "model": "claude-opus-4.8",
+      "op": "dedup_then_agg",
+      "outcome": "pass",
+      "oracle_fired": false,
+      "code": "result = df[(df['drop_if_dup'] == 'No') | ~df['url'].duplicated()]"
+    },
+    {
+      "pid": 9,
+      "model": "gpt-5.4",
+      "op": "dedup_then_agg",
+      "outcome": "pass",
+      "oracle_fired": false,
+      "code": "result = df[df['keep_if_dup'].eq('Yes') | ~df['url'].duplicated(keep='last')]"
+    },
+    {
+      "pid": 9,
+      "model": "claude-opus-4.8",
+      "op": "dedup_then_agg",
+      "outcome": "pass",
+      "oracle_fired": false,
+      "code": "result = df[(df['keep_if_dup'] == 'Yes') | ~df['url'].duplicated(keep='last')]"
+    },
+    {
+      "pid": 42,
+      "model": "gpt-5.4",
+      "op": "left_join_keep_all",
+      "outcome": "silent",
+      "oracle_fired": true,
+      "code": "result = df.rename(columns=df.iloc[0]).drop(df.index[0]).reset_index(drop=True)"
+    },
+    {
+      "pid": 42,
+      "model": "claude-opus-4.8",
+      "op": "left_join_keep_all",
+      "outcome": "pass",
+      "oracle_fired": true,
+      "code": "first = df.iloc[0]\ncols = [first[c] if pd.notna(first[c]) else c for c in df.columns]\nresult = df.iloc[1:].copy()\nresult.columns = cols\nresult = result.reset_index(drop=True)"
+    },
+    {
+      "pid": 43,
+      "model": "gpt-5.4",
+      "op": "left_join_keep_all",
+      "outcome": "silent",
+      "oracle_fired": true,
+      "code": "result = df.rename(columns=df.iloc[0]).drop(df.index[0]).reset_index(drop=True)"
+    },
+    {
+      "pid": 43,
+      "model": "claude-opus-4.8",
+      "op": "left_join_keep_all",
+      "outcome": "pass",
+      "oracle_fired": true,
+      "code": "df.columns = np.where(df.columns.str.contains('Unnamed'), df.iloc[0], df.columns)\nresult = df.iloc[1:].reset_index(drop=True)"
+    },
+    {
+      "pid": 50,
+      "model": "gpt-5.4",
+      "op": "dedup_then_agg",
+      "outcome": "pass",
+      "oracle_fired": false,
+      "code": "result = df.join(df.rdiv(1).add_prefix('inv_'))"
+    },
+    {
+      "pid": 50,
+      "model": "claude-opus-4.8",
+      "op": "dedup_then_agg",
+      "outcome": "pass",
+      "oracle_fired": false,
+      "code": "result = df.join(df.rdiv(1).add_prefix(\"inv_\"))"
+    },
+    {
+      "pid": 51,
+      "model": "gpt-5.4",
+      "op": "dedup_then_agg",
+      "outcome": "pass",
+      "oracle_fired": false,
+      "code": "result = df.join(df.apply(lambda s: np.exp(s)).add_prefix('exp_'))"
+    },
+    {
+      "pid": 51,
+      "model": "claude-opus-4.8",
+      "op": "dedup_then_agg",
+      "outcome": "pass",
+      "oracle_fired": false,
+      "code": "import numpy as np\nresult = df.join(df.apply(lambda x: np.exp(x)).add_prefix('exp_'))"
+    },
+    {
+      "pid": 52,
+      "model": "gpt-5.4",
+      "op": "dedup_then_agg",
+      "outcome": "pass",
+      "oracle_fired": false,
+      "code": "result = df.join(df.rdiv(1).replace([float(\"inf\"), -float(\"inf\")], 0).add_prefix(\"inv_\"))"
+    },
+    {
+      "pid": 52,
+      "model": "claude-opus-4.8",
+      "op": "dedup_then_agg",
+      "outcome": "pass",
+      "oracle_fired": false,
+      "code": "result = df.join(df.rdiv(1).replace(float('inf'), 0).add_prefix('inv_'))"
+    },
+    {
+      "pid": 53,
+      "model": "gpt-5.4",
+      "op": "dedup_then_agg",
+      "outcome": "pass",
+      "oracle_fired": false,
+      "code": "result = df.join((1 / (1 + np.exp(-df))).add_prefix('sigmoid_'))"
+    },
+    {
+      "pid": 53,
+      "model": "claude-opus-4.8",
+      "op": "dedup_then_agg",
+      "outcome": "pass",
+      "oracle_fired": false,
+      "code": "import numpy as np\n\nresult = df.join(df.apply(lambda x: 1 / (1 + np.exp(-x))).add_prefix('sigmoid_'))"
+    },
+    {
+      "pid": 54,
+      "model": "gpt-5.4",
+      "op": "cumcount_per_group",
+      "outcome": "crash",
+      "oracle_fired": false,
+      "code": "m = df.index.to_series().le(df.idxmin())\nresult = df.where(m).iloc[::-1].idxmax()"
+    },
+    {
+      "pid": 54,
+      "model": "claude-opus-4.8",
+      "op": "cumcount_per_group",
+      "outcome": "crash",
+      "oracle_fired": false,
+      "code": ""
+    },
+    {
+      "pid": 55,
+      "model": "gpt-5.4",
+      "op": "cumcount_per_group",
+      "outcome": "pass",
+      "oracle_fired": true,
+      "code": "result = df.apply(lambda s: s.loc[s.idxmin():].idxmax())"
+    },
+    {
+      "pid": 55,
+      "model": "claude-opus-4.8",
+      "op": "cumcount_per_group",
+      "outcome": "pass",
+      "oracle_fired": true,
+      "code": "result = df.where(df.index.values[:, None] >= df.idxmin().values).idxmax()"
+    },
+    {
+      "pid": 56,
+      "model": "gpt-5.4",
+      "op": "nan_as_zero_sum",
+      "outcome": "pass",
+      "oracle_fired": true,
+      "code": "result = (\n    df.set_index(['user', 'dt'])\n      .reindex(\n          pd.MultiIndex.from_product(\n              [df['user'].unique(), pd.date_range(df['dt'].min(), df['dt'].max())],\n              names=['user', 'dt']\n          ),\n          fill_value=0\n      )\n      .reset_index()\n      [['dt', 'user', 'val']]\n)"
+    },
+    {
+      "pid": 56,
+      "model": "claude-opus-4.8",
+      "op": "nan_as_zero_sum",
+      "outcome": "pass",
+      "oracle_fired": true,
+      "code": "result = df.set_index(['dt', 'user']).unstack(fill_value=0).asfreq('D', fill_value=0).stack().sort_index(level=1).reset_index()"
+    },
+    {
+      "pid": 57,
+      "model": "gpt-5.4",
+      "op": "nan_as_zero_sum",
+      "outcome": "pass",
+      "oracle_fired": true,
+      "code": "result = (\n    df.set_index(['user', 'dt'])['val']\n      .reindex(\n          pd.MultiIndex.from_product(\n              [df['user'].unique(), pd.date_range(df['dt'].min(), df['dt'].max(), freq='D')],\n              names=['user', 'dt']\n          ),\n          fill_value=0\n      )\n      .reset_index()\n      .loc[:, ['dt', 'user', 'val']]\n)"
+    },
+    {
+      "pid": 57,
+      "model": "claude-opus-4.8",
+      "op": "nan_as_zero_sum",
+      "outcome": "pass",
+      "oracle_fired": true,
+      "code": "result = (df.set_index('dt')\n            .groupby('user')['val']\n            .apply(lambda x: x.reindex(pd.date_range(df['dt'].min(), df['dt'].max(), name='dt')))\n            .fillna(0)\n            .astype(int)\n            .reset_index()[['dt', 'user', 'val']])"
+    },
+    {
+      "pid": 108,
+      "model": "gpt-5.4",
+      "op": "left_join_keep_all",
+      "outcome": "pass",
+      "oracle_fired": true,
+      "code": "result = pd.merge_asof(\n    df2.sort_values('Timestamp'),\n    df1.sort_values('Timestamp'),\n    on='Timestamp',\n    direction='forward',\n    allow_exact_matches=True\n)"
+    },
+    {
+      "pid": 108,
+      "model": "claude-opus-4.8",
+      "op": "left_join_keep_all",
+      "outcome": "pass",
+      "oracle_fired": true,
+      "code": "result = pd.merge_asof(df2, df1, on='Timestamp', direction='forward')"
+    },
+    {
+      "pid": 109,
+      "model": "gpt-5.4",
+      "op": "left_join_keep_all",
+      "outcome": "pass",
+      "oracle_fired": false,
+      "code": "result = pd.merge_asof(\n    df1.sort_values('Timestamp'),\n    df2.sort_values('Timestamp'),\n    on='Timestamp',\n    direction='forward'\n)"
+    },
+    {
+      "pid": 109,
+      "model": "claude-opus-4.8",
+      "op": "left_join_keep_all",
+      "outcome": "pass",
+      "oracle_fired": false,
+      "code": "result = pd.merge_asof(df1, df2, on='Timestamp', direction='forward')"
+    },
+    {
+      "pid": 123,
+      "model": "gpt-5.4",
+      "op": "left_join_keep_all",
+      "outcome": "silent",
+      "oracle_fired": false,
+      "code": "result = df.assign(keywords_all=df.filter(like='keywords_').apply(lambda row: ','.join(row.dropna().astype(str)), axis=1))"
+    },
+    {
+      "pid": 123,
+      "model": "claude-opus-4.8",
+      "op": "left_join_keep_all",
+      "outcome": "pass",
+      "oracle_fired": false,
+      "code": "df[\"keywords_all\"] = df.apply(lambda x: \",\".join(x.dropna()), axis=1)\nresult = df"
+    },
+    {
+      "pid": 124,
+      "model": "gpt-5.4",
+      "op": "left_join_keep_all",
+      "outcome": "pass",
+      "oracle_fired": false,
+      "code": "df[\"keywords_all\"] = df.filter(like=\"keywords_\").apply(lambda row: \"-\".join(row.dropna().astype(str)), axis=1)\nresult = df"
+    },
+    {
+      "pid": 124,
+      "model": "claude-opus-4.8",
+      "op": "left_join_keep_all",
+      "outcome": "pass",
+      "oracle_fired": false,
+      "code": "df[\"keywords_all\"] = df.apply(lambda x: '-'.join(x.dropna()), axis=1)\nresult = df"
+    },
+    {
+      "pid": 125,
+      "model": "gpt-5.4",
+      "op": "left_join_keep_all",
+      "outcome": "silent",
+      "oracle_fired": false,
+      "code": "result = df.assign(\n    keywords_all=df.filter(like='keywords_').apply(lambda row: '-'.join(row.dropna()), axis=1)\n)"
+    },
+    {
+      "pid": 125,
+      "model": "claude-opus-4.8",
+      "op": "left_join_keep_all",
+      "outcome": "pass",
+      "oracle_fired": false,
+      "code": "cols = ['keywords_0', 'keywords_1', 'keywords_2', 'keywords_3']\ndf[\"keywords_all\"] = df[cols].apply(lambda x: '-'.join(x.dropna()), axis=1)"
+    },
+    {
+      "pid": 126,
+      "model": "gpt-5.4",
+      "op": "left_join_keep_all",
+      "outcome": "silent",
+      "oracle_fired": false,
+      "code": "result = df.assign(\n    keywords_all=df.filter(like='keywords_').iloc[:, ::-1].apply(lambda row: '-'.join(row.dropna().astype(str)), axis=1)\n)"
+    },
+    {
+      "pid": 126,
+      "model": "claude-opus-4.8",
+      "op": "left_join_keep_all",
+      "outcome": "pass",
+      "oracle_fired": false,
+      "code": "df[\"keywords_all\"] = df[['keywords_0', 'keywords_1', 'keywords_2', 'keywords_3']].apply(lambda row: '-'.join(row.dropna()[::-1]), axis=1)\nresult = df"
+    },
+    {
+      "pid": 130,
+      "model": "gpt-5.4",
+      "op": "dedup_then_agg",
+      "outcome": "pass",
+      "oracle_fired": true,
+      "code": "duplicate = df[df.duplicated(['col1', 'col2'], keep='first')].copy()\nduplicate['index_original'] = df.groupby(['col1', 'col2']).apply(lambda x: x.index[0]).reindex(pd.MultiIndex.from_frame(duplicate[['col1', 'col2']])).to_numpy()\nresult = duplicate"
+    },
+    {
+      "pid": 130,
+      "model": "claude-opus-4.8",
+      "op": "dedup_then_agg",
+      "outcome": "pass",
+      "oracle_fired": true,
+      "code": "df['index_original'] = df.groupby(['col1', 'col2']).col1.transform('idxmin')\nresult = df[df.duplicated(subset=['col1', 'col2'], keep='first')]"
+    },
+    {
+      "pid": 131,
+      "model": "gpt-5.4",
+      "op": "dedup_then_agg",
+      "outcome": "pass",
+      "oracle_fired": true,
+      "code": "duplicate = df.duplicated(subset=['col1', 'col2'], keep='last')\nlast_idx = df.reset_index().groupby(['col1', 'col2'])['index'].transform('max')\nresult = df.loc[duplicate].assign(index_original=last_idx[duplicate].values)"
+    },
+    {
+      "pid": 131,
+      "model": "claude-opus-4.8",
+      "op": "dedup_then_agg",
+      "outcome": "pass",
+      "oracle_fired": true,
+      "code": "def g(df):\n    df['index_original'] = df.groupby(['col1', 'col2']).col1.transform('idxmax')\n    for i in range(len(df)):\n        i = len(df) - 1 - i\n        origin = df.loc[i, 'index_original']\n        if i <= origin:\n            continue\n        if origin == df.loc[origin, 'index_original']:\n            df.loc[origin, 'index_original'] = i\n        df.loc[i, 'index_original'] = df.loc[origin, 'ind"
+    },
+    {
+      "pid": 133,
+      "model": "gpt-5.4",
+      "op": "dedup_then_agg",
+      "outcome": "pass",
+      "oracle_fired": true,
+      "code": "result = df.loc[df.duplicated(subset=['col1', 'col2', '3col'], keep='first')].assign(\n    index_original=lambda x: x.set_index(['col1', 'col2', '3col']).index.map(\n        df.reset_index().drop_duplicates(['col1', 'col2', '3col']).set_index(['col1', 'col2', '3col'])['index']\n    )\n)"
+    },
+    {
+      "pid": 133,
+      "model": "claude-opus-4.8",
+      "op": "dedup_then_agg",
+      "outcome": "crash",
+      "oracle_fired": false,
+      "code": ""
+    },
+    {
+      "pid": 134,
+      "model": "gpt-5.4",
+      "op": "dedup_then_agg",
+      "outcome": "pass",
+      "oracle_fired": true,
+      "code": "duplicate = df[df.duplicated(subset=['col1', 'col2'], keep='last')].copy()\nlast_idx = df.groupby(['col1', 'col2']).apply(lambda x: x.index[-1]).rename('index_original')\nresult = duplicate.join(last_idx, on=['col1', 'col2'])"
+    },
+    {
+      "pid": 134,
+      "model": "claude-opus-4.8",
+      "op": "dedup_then_agg",
+      "outcome": "pass",
+      "oracle_fired": true,
+      "code": "df['index_original'] = df.groupby(['col1', 'col2'])['col1'].transform('idxmax')\nfor i in range(len(df)):\n    i = len(df) - 1 - i\n    origin = df.loc[i, 'index_original']\n    if i <= origin:\n        continue\n    if origin == df.loc[origin, 'index_original']:\n        df.loc[origin, 'index_original'] = i\n    df.loc[i, 'index_original'] = df.loc[origin, 'index_original']\nresult = df[df.duplicated(subs"
+    },
+    {
+      "pid": 147,
+      "model": "gpt-5.4",
+      "op": "cumulative_running",
+      "outcome": "silent",
+      "oracle_fired": true,
+      "code": "result = df.assign(cumsum=df.groupby('id')['val'].cumsum().clip(lower=0))"
+    },
+    {
+      "pid": 147,
+      "model": "claude-opus-4.8",
+      "op": "cumulative_running",
+      "outcome": "pass",
+      "oracle_fired": true,
+      "code": "df['cumsum'] = df.groupby('id')['val'].cumsum().clip(lower=0)\nresult = df"
+    },
+    {
+      "pid": 155,
+      "model": "gpt-5.4",
+      "op": "dedup_then_agg",
+      "outcome": "crash",
+      "oracle_fired": false,
+      "code": "result = (\n    df.assign(\n        _firstname=df['firstname'].str.lower().str.replace(' ', '', regex=False),\n        _lastname=df['lastname'].str.lower().str.replace(' ', '', regex=False),\n        _email=df['email'].str.lower().str.replace(' ', '', regex=False),\n        _has_bank=df['bank'].notna()\n    )\n    .sort_values('_has_bank', ascending=False)\n    .drop_duplicates(subset=['_firstname', '_las"
+    },
+    {
+      "pid": 155,
+      "model": "claude-opus-4.8",
+      "op": "dedup_then_agg",
+      "outcome": "crash",
+      "oracle_fired": false,
+      "code": "uniq_indx = (df.sort_values(by=\"bank\", na_position='last').dropna(subset=['firstname', 'lastname', 'email'])\n.applymap(lambda s: s.lower() if type(s) == str else s)\n.applymap(lambda x: x.replace(\" \", \"\") if type(x) == str else x)\n.drop_duplicates(subset=['firstname', 'lastname', 'email'], keep='first')).index\nresult = df.loc[uniq_indx]"
+    },
+    {
+      "pid": 162,
+      "model": "gpt-5.4",
+      "op": "left_join_keep_all",
+      "outcome": "silent",
+      "oracle_fired": false,
+      "code": "result = df.copy()\nresult.columns = pd.MultiIndex.from_tuples(result.columns, names=['Caps', 'Lower'])"
+    },
+    {
+      "pid": 162,
+      "model": "claude-opus-4.8",
+      "op": "left_join_keep_all",
+      "outcome": "pass",
+      "oracle_fired": false,
+      "code": "df.columns = pd.MultiIndex.from_tuples(df.columns, names=['Caps', 'Lower'])\nresult = df"
+    },
+    {
+      "pid": 163,
+      "model": "gpt-5.4",
+      "op": "left_join_keep_all",
+      "outcome": "silent",
+      "oracle_fired": false,
+      "code": "result = df.set_axis(pd.MultiIndex.from_tuples(df.columns, names=['Caps', 'Middle', 'Lower']), axis=1)"
+    },
+    {
+      "pid": 163,
+      "model": "claude-opus-4.8",
+      "op": "left_join_keep_all",
+      "outcome": "pass",
+      "oracle_fired": false,
+      "code": "df.columns = pd.MultiIndex.from_tuples(df.columns, names=['Caps','Middle','Lower'])"
+    },
+    {
+      "pid": 164,
+      "model": "gpt-5.4",
+      "op": "left_join_keep_all",
+      "outcome": "silent",
+      "oracle_fired": false,
+      "code": "result = df.copy()\nresult.columns = pd.MultiIndex.from_tuples(result.columns, names=['Caps', 'Middle', 'Lower'])"
+    },
+    {
+      "pid": 164,
+      "model": "claude-opus-4.8",
+      "op": "left_join_keep_all",
+      "outcome": "silent",
+      "oracle_fired": false,
+      "code": "df.columns = pd.MultiIndex.from_tuples(df.columns)\nresult = df"
+    },
+    {
+      "pid": 202,
+      "model": "gpt-5.4",
+      "op": "cumulative_running",
+      "outcome": "crash",
+      "oracle_fired": false,
+      "code": "result = df.set_index('Name').replace(0, pd.NA).ffill(axis=1).expanding(axis=1).mean().fillna(0).reset_index()"
+    },
+    {
+      "pid": 202,
+      "model": "claude-opus-4.8",
+      "op": "cumulative_running",
+      "outcome": "crash",
+      "oracle_fired": false,
+      "code": ""
+    },
+    {
+      "pid": 203,
+      "model": "gpt-5.4",
+      "op": "cumulative_running",
+      "outcome": "crash",
+      "oracle_fired": false,
+      "code": "result = (df.set_index('Name')\n            .iloc[:, ::-1]\n            .replace(0, pd.NA)\n            .expanding(axis=1).mean()\n            .iloc[:, ::-1]\n            .fillna(0)\n            .reset_index())"
+    },
+    {
+      "pid": 203,
+      "model": "claude-opus-4.8",
+      "op": "cumulative_running",
+      "outcome": "crash",
+      "oracle_fired": false,
+      "code": "result = df.copy()\ncols = [c for c in df.columns if c != 'Name']\nresult[cols] = result[cols].astype(float)\nfor i in df.index:\n    avg = None\n    for col in reversed(cols):\n        val = df.loc[i, col]\n        if val != 0:\n            avg = val if avg is None else (val + avg) / 2\n        result.loc[i, col] = avg if avg is not None else 0"
+    },
+    {
+      "pid": 205,
+      "model": "gpt-5.4",
+      "op": "cumulative_running",
+      "outcome": "crash",
+      "oracle_fired": false,
+      "code": "cols = df.columns[1:]\nm = df[cols].replace(0, pd.NA).iloc[:, ::-1]\nresult = df.copy()\nresult[cols] = (m.cumsum(axis=1) / m.notna().cumsum(axis=1)).iloc[:, ::-1].ffill(axis=1).fillna(0)"
+    },
+    {
+      "pid": 205,
+      "model": "claude-opus-4.8",
+      "op": "cumulative_running",
+      "outcome": "crash",
+      "oracle_fired": false,
+      "code": ""
+    },
+    {
+      "pid": 223,
+      "model": "gpt-5.4",
+      "op": "nan_as_zero_sum",
+      "outcome": "pass",
+      "oracle_fired": true,
+      "code": "mask = df['Column_x'].isna()\nn = mask.sum()\nidx = df.index[mask]\ndf.loc[idx[:n // 2], 'Column_x'] = 0\ndf.loc[idx[n // 2:], 'Column_x'] = 1\nresult = df"
+    },
+    {
+      "pid": 223,
+      "model": "claude-opus-4.8",
+      "op": "nan_as_zero_sum",
+      "outcome": "pass",
+      "oracle_fired": true,
+      "code": "idx = df['Column_x'].index[df['Column_x'].isnull()]\ntotal_nan_len = len(idx)\nfirst_nan = (total_nan_len * 5) // 10\ndf.loc[idx[0:first_nan], 'Column_x'] = 0\ndf.loc[idx[first_nan:total_nan_len], 'Column_x'] = 1\nresult = df"
+    },
+    {
+      "pid": 224,
+      "model": "gpt-5.4",
+      "op": "nan_as_zero_sum",
+      "outcome": "pass",
+      "oracle_fired": true,
+      "code": "mask = df['Column_x'].isna()\nn = mask.sum()\nn30 = n * 30 // 100\nvals = np.r_[np.zeros(n30), np.full(n30, 0.5), np.ones(n - 2 * n30)]\ndf.loc[mask, 'Column_x'] = vals\nresult = df"
+    },
+    {
+      "pid": 224,
+      "model": "claude-opus-4.8",
+      "op": "nan_as_zero_sum",
+      "outcome": "pass",
+      "oracle_fired": true,
+      "code": "idx = df['Column_x'].index[df['Column_x'].isnull()]\ntotal_nan = len(idx)\nfirst_30 = int(total_nan * 0.3)\nmiddle_30 = int(total_nan * 0.3)\ndf.loc[idx[0:first_30], 'Column_x'] = 0\ndf.loc[idx[first_30:first_30 + middle_30], 'Column_x'] = 0.5\ndf.loc[idx[first_30 + middle_30:], 'Column_x'] = 1\nresult = df"
+    },
+    {
+      "pid": 225,
+      "model": "gpt-5.4",
+      "op": "nan_as_zero_sum",
+      "outcome": "silent",
+      "oracle_fired": true,
+      "code": "nan_idx = df.index[df['Column_x'].isna()]\nn = len(nan_idx)\nhalf = n // 2\ndf.loc[nan_idx[:half], 'Column_x'] = 0\ndf.loc[nan_idx[half:], 'Column_x'] = 1\nresult = df"
+    },
+    {
+      "pid": 225,
+      "model": "claude-opus-4.8",
+      "op": "nan_as_zero_sum",
+      "outcome": "silent",
+      "oracle_fired": true,
+      "code": ""
+    },
+    {
+      "pid": 232,
+      "model": "gpt-5.4",
+      "op": "left_join_keep_all",
+      "outcome": "pass",
+      "oracle_fired": true,
+      "code": "result = pd.DataFrame({'text': [', '.join(df['text'])]})"
+    },
+    {
+      "pid": 232,
+      "model": "claude-opus-4.8",
+      "op": "left_join_keep_all",
+      "outcome": "pass",
+      "oracle_fired": true,
+      "code": "result = pd.DataFrame({'text': [', '.join(df['text'].to_list())]})"
+    },
+    {
+      "pid": 233,
+      "model": "gpt-5.4",
+      "op": "left_join_keep_all",
+      "outcome": "pass",
+      "oracle_fired": true,
+      "code": "result = pd.DataFrame({'text': ['-'.join(df['text'])]})"
+    },
+    {
+      "pid": 233,
+      "model": "claude-opus-4.8",
+      "op": "left_join_keep_all",
+      "outcome": "pass",
+      "oracle_fired": true,
+      "code": "result = pd.DataFrame({'text': ['-'.join(df['text'].to_list())]})"
+    },
+    {
+      "pid": 234,
+      "model": "gpt-5.4",
+      "op": "left_join_keep_all",
+      "outcome": "pass",
+      "oracle_fired": true,
+      "code": "result = pd.DataFrame({'text': [', '.join(df['text'][::-1])]})"
+    },
+    {
+      "pid": 234,
+      "model": "claude-opus-4.8",
+      "op": "left_join_keep_all",
+      "outcome": "pass",
+      "oracle_fired": true,
+      "code": "result = pd.DataFrame({'text': [', '.join(df['text'].to_list()[::-1])]})"
+    },
+    {
+      "pid": 235,
+      "model": "gpt-5.4",
+      "op": "left_join_keep_all",
+      "outcome": "silent",
+      "oracle_fired": false,
+      "code": "result = df['text'].agg(', '.join)"
+    },
+    {
+      "pid": 235,
+      "model": "claude-opus-4.8",
+      "op": "left_join_keep_all",
+      "outcome": "pass",
+      "oracle_fired": true,
+      "code": "result = pd.Series(', '.join(df['text']), name='text')"
+    },
+    {
+      "pid": 236,
+      "model": "gpt-5.4",
+      "op": "left_join_keep_all",
+      "outcome": "silent",
+      "oracle_fired": true,
+      "code": "result = df.iloc[::-1].agg('-'.join, axis=0)"
+    },
+    {
+      "pid": 236,
+      "model": "claude-opus-4.8",
+      "op": "left_join_keep_all",
+      "outcome": "pass",
+      "oracle_fired": true,
+      "code": "result = pd.Series('-'.join(df['text'].iloc[::-1]), name='text')"
+    },
+    {
+      "pid": 238,
+      "model": "gpt-5.4",
+      "op": "nan_as_zero_sum",
+      "outcome": "silent",
+      "oracle_fired": true,
+      "code": "tmp = df2.merge(df1[['id', 'city', 'district']].drop_duplicates('id'), on='id', how='left')\nresult = pd.concat([df1, tmp], ignore_index=True, sort=False)\nresult['date'] = pd.to_datetime(result['date'])\nresult = result.sort_values(['id', 'date'], ascending=[True, False])[['id', 'city', 'district', 'date', 'value']].reset_index(drop=True)\nresult['date'] = result['date'].dt.strftime('%d-%b-%Y')"
+    },
+    {
+      "pid": 238,
+      "model": "claude-opus-4.8",
+      "op": "nan_as_zero_sum",
+      "outcome": "crash",
+      "oracle_fired": false,
+      "code": ""
+    },
+    {
+      "pid": 240,
+      "model": "gpt-5.4",
+      "op": "dedup_then_agg",
+      "outcome": "pass",
+      "oracle_fired": true,
+      "code": "result = (C.set_index('A').combine_first(D.set_index('A')).reset_index())\nresult['B'] = result['A'].map(D.set_index('A')['B']).fillna(result['B']).astype(int)"
+    },
+    {
+      "pid": 240,
+      "model": "claude-opus-4.8",
+      "op": "dedup_then_agg",
+      "outcome": "crash",
+      "oracle_fired": false,
+      "code": ""
+    },
+    {
+      "pid": 241,
+      "model": "gpt-5.4",
+      "op": "dedup_then_agg",
+      "outcome": "silent",
+      "oracle_fired": true,
+      "code": "result = pd.concat([C, D[~D['A'].isin(C['A'])]], ignore_index=True)"
+    },
+    {
+      "pid": 241,
+      "model": "claude-opus-4.8",
+      "op": "dedup_then_agg",
+      "outcome": "silent",
+      "oracle_fired": true,
+      "code": "result = pd.concat([C, D]).drop_duplicates(\"A\", keep=\"first\").reset_index(drop=True)"
+    },
+    {
+      "pid": 242,
+      "model": "gpt-5.4",
+      "op": "dedup_then_agg",
+      "outcome": "silent",
+      "oracle_fired": true,
+      "code": "result = (C.set_index('A')\n            .combine_first(D.set_index('A'))\n            .reset_index()\n            .assign(B=lambda x: x['A'].map(D.set_index('A')['B']).fillna(x['B']).astype(C['B'].dtype),\n                    dulplicated=lambda x: x['A'].isin(D['A']) & x['A'].isin(C['A'])))"
+    },
+    {
+      "pid": 242,
+      "model": "claude-opus-4.8",
+      "op": "dedup_then_agg",
+      "outcome": "crash",
+      "oracle_fired": false,
+      "code": ""
+    },
+    {
+      "pid": 275,
+      "model": "gpt-5.4",
+      "op": "median_not_mean",
+      "outcome": "pass",
+      "oracle_fired": false,
+      "code": "df['Avg'] = df[list_of_my_columns].mean(axis=1)\ndf['Min'] = df[list_of_my_columns].min(axis=1)\ndf['Max'] = df[list_of_my_columns].max(axis=1)\ndf['Median'] = df[list_of_my_columns].median(axis=1)\nresult = df"
+    },
+    {
+      "pid": 275,
+      "model": "claude-opus-4.8",
+      "op": "median_not_mean",
+      "outcome": "pass",
+      "oracle_fired": false,
+      "code": "df['Avg'] = df[list_of_my_columns].mean(axis=1)\ndf['Min'] = df[list_of_my_columns].min(axis=1)\ndf['Max'] = df[list_of_my_columns].max(axis=1)\ndf['Median'] = df[list_of_my_columns].median(axis=1)\nresult = df"
+    },
+    {
+      "pid": 287,
+      "model": "gpt-5.4",
+      "op": "weighted_mean",
+      "outcome": "pass",
+      "oracle_fired": true,
+      "code": "result = df.assign(bar=pd.to_numeric(df[\"bar\"], errors=\"coerce\")).groupby([\"id1\", \"id2\"])[[\"foo\", \"bar\"]].mean()"
+    },
+    {
+      "pid": 287,
+      "model": "claude-opus-4.8",
+      "op": "weighted_mean",
+      "outcome": "pass",
+      "oracle_fired": true,
+      "code": "import numpy as np\nresult = df.replace(\"NULL\", np.nan).groupby([\"id1\", \"id2\"])[[\"foo\", \"bar\"]].mean()"
+    },
+    {
+      "pid": 288,
+      "model": "gpt-5.4",
+      "op": "weighted_mean",
+      "outcome": "pass",
+      "oracle_fired": true,
+      "code": "result = df.assign(bar=pd.to_numeric(df['bar'], errors='coerce').fillna(0)).groupby(['id1', 'id2'])[['foo', 'bar']].mean()"
+    },
+    {
+      "pid": 288,
+      "model": "claude-opus-4.8",
+      "op": "weighted_mean",
+      "outcome": "pass",
+      "oracle_fired": true,
+      "code": "result = df.replace(\"NULL\", 0).groupby([\"id1\", \"id2\"])[[\"foo\", \"bar\"]].mean()"
+    },
+    {
+      "pid": 289,
+      "model": "gpt-5.4",
+      "op": "left_join_keep_all",
+      "outcome": "pass",
+      "oracle_fired": false,
+      "code": "result = pd.merge(df_a, df_b[['EntityNum', 'a_col']], on='EntityNum', how='left')"
+    },
+    {
+      "pid": 289,
+      "model": "claude-opus-4.8",
+      "op": "left_join_keep_all",
+      "outcome": "pass",
+      "oracle_fired": false,
+      "code": "result = df_a.merge(df_b[['EntityNum', 'a_col']], on='EntityNum')"
+    },
+    {
+      "pid": 290,
+      "model": "gpt-5.4",
+      "op": "left_join_keep_all",
+      "outcome": "pass",
+      "oracle_fired": false,
+      "code": "result = df_a.merge(df_b[['EntityNum', 'b_col']], on='EntityNum', how='left')"
+    },
+    {
+      "pid": 290,
+      "model": "claude-opus-4.8",
+      "op": "left_join_keep_all",
+      "outcome": "pass",
+      "oracle_fired": false,
+      "code": "result = pd.merge(df_a, df_b[['EntityNum', 'b_col']], on='EntityNum')"
+    }
+  ]
+}

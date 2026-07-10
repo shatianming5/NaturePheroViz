@@ -1,0 +1,343 @@
+{
+  "model": "gpt-5.4",
+  "gen_model": "gpt-5.4",
+  "n": 23,
+  "operator_inference": {
+    "k": 19,
+    "n": 23,
+    "pct_ci": [
+      83,
+      63,
+      93
+    ]
+  },
+  "contract_synth_core": {
+    "k": 17,
+    "n": 23,
+    "pct_ci": [
+      74,
+      54,
+      87
+    ]
+  },
+  "contract_synth_full": {
+    "k": 16,
+    "n": 23,
+    "pct_ci": [
+      70,
+      49,
+      84
+    ]
+  },
+  "FULL_SYSTEM_core": {
+    "k": 14,
+    "n": 23,
+    "pct_ci": [
+      61,
+      41,
+      78
+    ]
+  },
+  "exec_ok": 23,
+  "cases": [
+    {
+      "op": "weighted_mean",
+      "messy_nl": "Can you give me one overall average price for this, taking the quantities into account?",
+      "op_hat": "weighted_mean",
+      "op_correct": true,
+      "fire_wrong": true,
+      "pass_correct": true,
+      "alt_ok": true,
+      "core": true,
+      "full": true,
+      "exec_ok": true,
+      "system_ok": true
+    },
+    {
+      "op": "within_group_share",
+      "messy_nl": "Can you add a column showing each row\u2019s sales as its part of the total sales for that region?",
+      "op_hat": "within_group_share",
+      "op_correct": true,
+      "fire_wrong": true,
+      "pass_correct": true,
+      "alt_ok": true,
+      "core": true,
+      "full": true,
+      "exec_ok": true,
+      "system_ok": true
+    },
+    {
+      "op": "pct_point",
+      "messy_nl": "Can you show how much the percent changed from r0 to r1 for each team, keeping it in percent terms?",
+      "op_hat": "pct_point",
+      "op_correct": true,
+      "fire_wrong": true,
+      "pass_correct": false,
+      "alt_ok": false,
+      "core": false,
+      "full": false,
+      "exec_ok": true,
+      "system_ok": false
+    },
+    {
+      "op": "dedup_then_agg",
+      "messy_nl": "Can you roll this up by region, making sure repeated order_ids only contribute once before you total the rev?",
+      "op_hat": "dedup_then_agg",
+      "op_correct": true,
+      "fire_wrong": true,
+      "pass_correct": true,
+      "alt_ok": true,
+      "core": true,
+      "full": true,
+      "exec_ok": true,
+      "system_ok": true
+    },
+    {
+      "op": "left_join_keep_all",
+      "messy_nl": "Can you bring the `name` field onto the main table by `id`, and keep the main table exactly the same size even if some ids don\u2019t have a match?",
+      "op_hat": "left_join_keep_all",
+      "op_correct": true,
+      "fire_wrong": false,
+      "pass_correct": false,
+      "alt_ok": false,
+      "core": false,
+      "full": false,
+      "exec_ok": true,
+      "system_ok": false
+    },
+    {
+      "op": "pooled_rate",
+      "messy_nl": "Can you give me the overall click rate for each region, using all the rows in that region together?",
+      "op_hat": "pooled_rate",
+      "op_correct": true,
+      "fire_wrong": true,
+      "pass_correct": true,
+      "alt_ok": true,
+      "core": true,
+      "full": true,
+      "exec_ok": true,
+      "system_ok": true
+    },
+    {
+      "op": "median_not_mean",
+      "messy_nl": "Can you get a typical value for `v` within each `grp`, using something that won\u2019t get skewed by a few extreme rows?",
+      "op_hat": "median_not_mean",
+      "op_correct": true,
+      "fire_wrong": true,
+      "pass_correct": true,
+      "alt_ok": true,
+      "core": true,
+      "full": true,
+      "exec_ok": true,
+      "system_ok": true
+    },
+    {
+      "op": "cumulative_running",
+      "messy_nl": "Can you add a column that keeps a running amount by day, so each row shows how much we\u2019ve built up through that point?",
+      "op_hat": "cumulative_running",
+      "op_correct": true,
+      "fire_wrong": true,
+      "pass_correct": true,
+      "alt_ok": true,
+      "core": true,
+      "full": true,
+      "exec_ok": true,
+      "system_ok": true
+    },
+    {
+      "op": "topn_with_ties",
+      "messy_nl": "Can you pull the top N names by score, and if there\u2019s a tie at the boundary just keep everyone who matches it?",
+      "op_hat": "topn_with_ties",
+      "op_correct": true,
+      "fire_wrong": true,
+      "pass_correct": true,
+      "alt_ok": true,
+      "core": true,
+      "full": true,
+      "exec_ok": true,
+      "system_ok": true
+    },
+    {
+      "op": "nan_as_zero_sum",
+      "messy_nl": "Can you total up `v` by `grp`, and if some rows are blank just still give each group a number?",
+      "op_hat": "nan_as_zero_sum",
+      "op_correct": true,
+      "fire_wrong": true,
+      "pass_correct": true,
+      "alt_ok": true,
+      "core": true,
+      "full": true,
+      "exec_ok": true,
+      "system_ok": true
+    },
+    {
+      "op": "count_includes_empty",
+      "messy_nl": "Can you give me a count for each cat, and make sure cats with no records still show up as 0?",
+      "op_hat": "count_includes_empty",
+      "op_correct": true,
+      "fire_wrong": true,
+      "pass_correct": true,
+      "alt_ok": true,
+      "core": true,
+      "full": true,
+      "exec_ok": true,
+      "system_ok": true
+    },
+    {
+      "op": "proportion_true",
+      "messy_nl": "Can you give me, for each grp, the share of rows where passed is true?",
+      "op_hat": "proportion_true",
+      "op_correct": true,
+      "fire_wrong": true,
+      "pass_correct": true,
+      "alt_ok": true,
+      "core": true,
+      "full": true,
+      "exec_ok": true,
+      "system_ok": true
+    },
+    {
+      "op": "index_align",
+      "messy_nl": "Can you merge these two id/value tables and give me the total per id using the matching value from the other table too?",
+      "op_hat": "join_fanout",
+      "op_correct": false,
+      "fire_wrong": true,
+      "pass_correct": true,
+      "alt_ok": true,
+      "core": true,
+      "full": true,
+      "exec_ok": true,
+      "system_ok": false
+    },
+    {
+      "op": "dtype_coerce",
+      "messy_nl": "Can you roll this up so records with the same zip get treated as one even if the zip is written a bit differently?",
+      "op_hat": "string_normalize_join",
+      "op_correct": false,
+      "fire_wrong": false,
+      "pass_correct": true,
+      "alt_ok": true,
+      "core": false,
+      "full": false,
+      "exec_ok": true,
+      "system_ok": false
+    },
+    {
+      "op": "groupby_dropna_key",
+      "messy_nl": "Can you add up v by g, and make sure the blank g rows are still included in the output?",
+      "op_hat": "groupby_dropna_key",
+      "op_correct": true,
+      "fire_wrong": true,
+      "pass_correct": true,
+      "alt_ok": false,
+      "core": true,
+      "full": false,
+      "exec_ok": true,
+      "system_ok": true
+    },
+    {
+      "op": "order_dependent_dedup",
+      "messy_nl": "Can you collapse this to one row per id and keep the right record, probably using ts to decide which one to keep?",
+      "op_hat": "order_dependent_dedup",
+      "op_correct": true,
+      "fire_wrong": false,
+      "pass_correct": true,
+      "alt_ok": true,
+      "core": false,
+      "full": false,
+      "exec_ok": true,
+      "system_ok": false
+    },
+    {
+      "op": "resample_boundary",
+      "messy_nl": "Can you bucket this time series into normal calendar periods based on the timestamp so each row lands in the right month/quarter/year?",
+      "op_hat": "resample_boundary",
+      "op_correct": true,
+      "fire_wrong": true,
+      "pass_correct": false,
+      "alt_ok": false,
+      "core": false,
+      "full": false,
+      "exec_ok": true,
+      "system_ok": false
+    },
+    {
+      "op": "string_normalize_join",
+      "messy_nl": "Can you pull in the price for each row by matching on name, and make the name matching forgiving of little formatting differences so the same item still lines up?",
+      "op_hat": "string_normalize_join",
+      "op_correct": true,
+      "fire_wrong": true,
+      "pass_correct": true,
+      "alt_ok": true,
+      "core": true,
+      "full": true,
+      "exec_ok": true,
+      "system_ok": true
+    },
+    {
+      "op": "join_fanout",
+      "messy_nl": "Can you roll up amt by cat so each oid only counts once overall, even if the lookup/table on the other side has multiple rows per oid?",
+      "op_hat": "dedup_then_agg",
+      "op_correct": false,
+      "fire_wrong": true,
+      "pass_correct": true,
+      "alt_ok": true,
+      "core": true,
+      "full": true,
+      "exec_ok": true,
+      "system_ok": false
+    },
+    {
+      "op": "null_in_agg_count",
+      "messy_nl": "Can you give me a quick breakdown of how many records are in each g group?",
+      "op_hat": null,
+      "op_correct": false,
+      "fire_wrong": true,
+      "pass_correct": true,
+      "alt_ok": true,
+      "core": true,
+      "full": true,
+      "exec_ok": true,
+      "system_ok": false
+    },
+    {
+      "op": "scale_before_split_leakage",
+      "messy_nl": "Can you scale `x` for modeling using the train split to set it up, and apply that setup across the data?",
+      "op_hat": "scale_before_split_leakage",
+      "op_correct": true,
+      "fire_wrong": true,
+      "pass_correct": true,
+      "alt_ok": true,
+      "core": true,
+      "full": true,
+      "exec_ok": true,
+      "system_ok": true
+    },
+    {
+      "op": "latlon_swap",
+      "messy_nl": "Can you turn the lat/lon columns into the location result for each row?",
+      "op_hat": "latlon_swap",
+      "op_correct": true,
+      "fire_wrong": true,
+      "pass_correct": true,
+      "alt_ok": true,
+      "core": true,
+      "full": true,
+      "exec_ok": true,
+      "system_ok": true
+    },
+    {
+      "op": "lookahead_return",
+      "messy_nl": "Can you add a new column with the next-period price move for each day, using only what would\u2019ve been knowable on that date?",
+      "op_hat": "lookahead_return",
+      "op_correct": true,
+      "fire_wrong": false,
+      "pass_correct": false,
+      "alt_ok": false,
+      "core": false,
+      "full": false,
+      "exec_ok": true,
+      "system_ok": false
+    }
+  ]
+}

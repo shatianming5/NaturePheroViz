@@ -1,0 +1,1241 @@
+{
+  "model": "gpt-5.4",
+  "nl_mode": "realistic",
+  "n": 150,
+  "operators": [
+    "median_not_mean",
+    "nan_as_zero_sum",
+    "pooled_rate",
+    "weighted_mean",
+    "within_group_share"
+  ],
+  "llm_infer_acc": {
+    "k": 147,
+    "n": 150,
+    "pct_ci": [
+      98,
+      94,
+      99
+    ]
+  },
+  "regex_infer_acc": {
+    "k": 31,
+    "n": 150,
+    "pct_ci": [
+      21,
+      15,
+      28
+    ]
+  },
+  "detection_retention_inferred_vs_given": {
+    "k": 107,
+    "n": 109,
+    "pct_ci": [
+      98,
+      94,
+      99
+    ]
+  },
+  "cases": [
+    {
+      "op": "median_not_mean",
+      "col": "geneChr",
+      "inferred": "median_not_mean",
+      "regex": null,
+      "llm_correct": true,
+      "was_silent_detected": true
+    },
+    {
+      "op": "median_not_mean",
+      "col": "Fig. 2b",
+      "inferred": "median_not_mean",
+      "regex": null,
+      "llm_correct": true,
+      "was_silent_detected": true
+    },
+    {
+      "op": "median_not_mean",
+      "col": "Condition",
+      "inferred": "median_not_mean",
+      "regex": null,
+      "llm_correct": true,
+      "was_silent_detected": true
+    },
+    {
+      "op": "median_not_mean",
+      "col": "Days post LCMV",
+      "inferred": "median_not_mean",
+      "regex": null,
+      "llm_correct": true,
+      "was_silent_detected": true
+    },
+    {
+      "op": "median_not_mean",
+      "col": "KD",
+      "inferred": "median_not_mean",
+      "regex": null,
+      "llm_correct": true,
+      "was_silent_detected": true
+    },
+    {
+      "op": "median_not_mean",
+      "col": "Chr",
+      "inferred": "median_not_mean",
+      "regex": null,
+      "llm_correct": true,
+      "was_silent_detected": true
+    },
+    {
+      "op": "median_not_mean",
+      "col": "WT-UNT",
+      "inferred": "median_not_mean",
+      "regex": null,
+      "llm_correct": true,
+      "was_silent_detected": false
+    },
+    {
+      "op": "median_not_mean",
+      "col": "Light",
+      "inferred": "median_not_mean",
+      "regex": null,
+      "llm_correct": true,
+      "was_silent_detected": true
+    },
+    {
+      "op": "median_not_mean",
+      "col": "fdrpval",
+      "inferred": "median_not_mean",
+      "regex": null,
+      "llm_correct": true,
+      "was_silent_detected": true
+    },
+    {
+      "op": "median_not_mean",
+      "col": "Tumorpenetrance",
+      "inferred": "median_not_mean",
+      "regex": null,
+      "llm_correct": true,
+      "was_silent_detected": true
+    },
+    {
+      "op": "median_not_mean",
+      "col": "Site",
+      "inferred": null,
+      "regex": null,
+      "llm_correct": false,
+      "was_silent_detected": true
+    },
+    {
+      "op": "median_not_mean",
+      "col": "normalized PL intensity (a.u.).1",
+      "inferred": "median_not_mean",
+      "regex": null,
+      "llm_correct": true,
+      "was_silent_detected": true
+    },
+    {
+      "op": "median_not_mean",
+      "col": "collection_date",
+      "inferred": "median_not_mean",
+      "regex": null,
+      "llm_correct": true,
+      "was_silent_detected": true
+    },
+    {
+      "op": "median_not_mean",
+      "col": "Exp",
+      "inferred": "median_not_mean",
+      "regex": null,
+      "llm_correct": true,
+      "was_silent_detected": true
+    },
+    {
+      "op": "median_not_mean",
+      "col": "Effecive temperature change Teff (K) in gadolinium for a magnetic field \u00b50|\u0394H| of 1.4 T",
+      "inferred": "median_not_mean",
+      "regex": null,
+      "llm_correct": true,
+      "was_silent_detected": false
+    },
+    {
+      "op": "median_not_mean",
+      "col": "Time",
+      "inferred": "median_not_mean",
+      "regex": null,
+      "llm_correct": true,
+      "was_silent_detected": true
+    },
+    {
+      "op": "median_not_mean",
+      "col": "Fig a.",
+      "inferred": "median_not_mean",
+      "regex": null,
+      "llm_correct": true,
+      "was_silent_detected": true
+    },
+    {
+      "op": "median_not_mean",
+      "col": "mouse_id",
+      "inferred": "median_not_mean",
+      "regex": null,
+      "llm_correct": true,
+      "was_silent_detected": true
+    },
+    {
+      "op": "median_not_mean",
+      "col": "Kubelka Munk",
+      "inferred": "median_not_mean",
+      "regex": null,
+      "llm_correct": true,
+      "was_silent_detected": true
+    },
+    {
+      "op": "median_not_mean",
+      "col": "#DT",
+      "inferred": "median_not_mean",
+      "regex": null,
+      "llm_correct": true,
+      "was_silent_detected": true
+    },
+    {
+      "op": "median_not_mean",
+      "col": "Receptor variant",
+      "inferred": "median_not_mean",
+      "regex": null,
+      "llm_correct": true,
+      "was_silent_detected": true
+    },
+    {
+      "op": "median_not_mean",
+      "col": "Experiment.1",
+      "inferred": "median_not_mean",
+      "regex": null,
+      "llm_correct": true,
+      "was_silent_detected": true
+    },
+    {
+      "op": "median_not_mean",
+      "col": "level",
+      "inferred": "median_not_mean",
+      "regex": null,
+      "llm_correct": true,
+      "was_silent_detected": true
+    },
+    {
+      "op": "median_not_mean",
+      "col": "RA",
+      "inferred": "median_not_mean",
+      "regex": null,
+      "llm_correct": true,
+      "was_silent_detected": true
+    },
+    {
+      "op": "median_not_mean",
+      "col": "Analyte",
+      "inferred": "median_not_mean",
+      "regex": null,
+      "llm_correct": true,
+      "was_silent_detected": true
+    },
+    {
+      "op": "median_not_mean",
+      "col": "cKO",
+      "inferred": "median_not_mean",
+      "regex": null,
+      "llm_correct": true,
+      "was_silent_detected": false
+    },
+    {
+      "op": "median_not_mean",
+      "col": "Chromosome",
+      "inferred": "median_not_mean",
+      "regex": null,
+      "llm_correct": true,
+      "was_silent_detected": true
+    },
+    {
+      "op": "median_not_mean",
+      "col": "Figure",
+      "inferred": "median_not_mean",
+      "regex": null,
+      "llm_correct": true,
+      "was_silent_detected": true
+    },
+    {
+      "op": "median_not_mean",
+      "col": "avg.exp.scaled.no.cutoff",
+      "inferred": "median_not_mean",
+      "regex": null,
+      "llm_correct": true,
+      "was_silent_detected": true
+    },
+    {
+      "op": "median_not_mean",
+      "col": "PFAM_N",
+      "inferred": "median_not_mean",
+      "regex": null,
+      "llm_correct": true,
+      "was_silent_detected": true
+    },
+    {
+      "op": "within_group_share",
+      "col": "Individual",
+      "inferred": "within_group_share",
+      "regex": "within_group_share",
+      "llm_correct": true,
+      "was_silent_detected": true
+    },
+    {
+      "op": "within_group_share",
+      "col": "Chr",
+      "inferred": "within_group_share",
+      "regex": "within_group_share",
+      "llm_correct": true,
+      "was_silent_detected": true
+    },
+    {
+      "op": "within_group_share",
+      "col": "IBAG number RSV-P-BFP",
+      "inferred": "within_group_share",
+      "regex": "within_group_share",
+      "llm_correct": true,
+      "was_silent_detected": true
+    },
+    {
+      "op": "within_group_share",
+      "col": "Raw data of all 3 exp. (pSTING areas in AP1G1 stained cells)",
+      "inferred": "within_group_share",
+      "regex": "within_group_share",
+      "llm_correct": true,
+      "was_silent_detected": true
+    },
+    {
+      "op": "within_group_share",
+      "col": "95% CI, high",
+      "inferred": "within_group_share",
+      "regex": "within_group_share",
+      "llm_correct": true,
+      "was_silent_detected": true
+    },
+    {
+      "op": "within_group_share",
+      "col": "2.57485",
+      "inferred": "within_group_share",
+      "regex": "within_group_share",
+      "llm_correct": true,
+      "was_silent_detected": true
+    },
+    {
+      "op": "within_group_share",
+      "col": "lystae strain",
+      "inferred": "within_group_share",
+      "regex": "within_group_share",
+      "llm_correct": true,
+      "was_silent_detected": true
+    },
+    {
+      "op": "within_group_share",
+      "col": "Partial",
+      "inferred": "within_group_share",
+      "regex": "within_group_share",
+      "llm_correct": true,
+      "was_silent_detected": true
+    },
+    {
+      "op": "within_group_share",
+      "col": "length",
+      "inferred": "within_group_share",
+      "regex": "within_group_share",
+      "llm_correct": true,
+      "was_silent_detected": true
+    },
+    {
+      "op": "within_group_share",
+      "col": "N",
+      "inferred": "within_group_share",
+      "regex": "within_group_share",
+      "llm_correct": true,
+      "was_silent_detected": true
+    },
+    {
+      "op": "within_group_share",
+      "col": "Cases",
+      "inferred": "within_group_share",
+      "regex": "within_group_share",
+      "llm_correct": true,
+      "was_silent_detected": true
+    },
+    {
+      "op": "within_group_share",
+      "col": "N",
+      "inferred": "within_group_share",
+      "regex": "within_group_share",
+      "llm_correct": true,
+      "was_silent_detected": true
+    },
+    {
+      "op": "within_group_share",
+      "col": "Experiment.1",
+      "inferred": "within_group_share",
+      "regex": "within_group_share",
+      "llm_correct": true,
+      "was_silent_detected": true
+    },
+    {
+      "op": "within_group_share",
+      "col": "Kubelka Munk",
+      "inferred": "within_group_share",
+      "regex": "within_group_share",
+      "llm_correct": true,
+      "was_silent_detected": true
+    },
+    {
+      "op": "within_group_share",
+      "col": "year_interval",
+      "inferred": "within_group_share",
+      "regex": "within_group_share",
+      "llm_correct": true,
+      "was_silent_detected": true
+    },
+    {
+      "op": "within_group_share",
+      "col": "chr",
+      "inferred": "within_group_share",
+      "regex": "within_group_share",
+      "llm_correct": true,
+      "was_silent_detected": true
+    },
+    {
+      "op": "within_group_share",
+      "col": "Line ID",
+      "inferred": "within_group_share",
+      "regex": "within_group_share",
+      "llm_correct": true,
+      "was_silent_detected": true
+    },
+    {
+      "op": "within_group_share",
+      "col": "Current (A)",
+      "inferred": "within_group_share",
+      "regex": "within_group_share",
+      "llm_correct": true,
+      "was_silent_detected": true
+    },
+    {
+      "op": "within_group_share",
+      "col": "Y = % change in survival",
+      "inferred": "within_group_share",
+      "regex": "within_group_share",
+      "llm_correct": true,
+      "was_silent_detected": true
+    },
+    {
+      "op": "within_group_share",
+      "col": "Dive",
+      "inferred": "within_group_share",
+      "regex": "within_group_share",
+      "llm_correct": true,
+      "was_silent_detected": true
+    },
+    {
+      "op": "within_group_share",
+      "col": "year",
+      "inferred": "within_group_share",
+      "regex": "within_group_share",
+      "llm_correct": true,
+      "was_silent_detected": true
+    },
+    {
+      "op": "within_group_share",
+      "col": "Light",
+      "inferred": "within_group_share",
+      "regex": "within_group_share",
+      "llm_correct": true,
+      "was_silent_detected": true
+    },
+    {
+      "op": "within_group_share",
+      "col": "Survival",
+      "inferred": "within_group_share",
+      "regex": "within_group_share",
+      "llm_correct": true,
+      "was_silent_detected": true
+    },
+    {
+      "op": "within_group_share",
+      "col": "ActiveDriverWGS",
+      "inferred": "within_group_share",
+      "regex": "within_group_share",
+      "llm_correct": true,
+      "was_silent_detected": true
+    },
+    {
+      "op": "within_group_share",
+      "col": "PFAM_N",
+      "inferred": "within_group_share",
+      "regex": "within_group_share",
+      "llm_correct": true,
+      "was_silent_detected": true
+    },
+    {
+      "op": "within_group_share",
+      "col": "Sapphire",
+      "inferred": "within_group_share",
+      "regex": "within_group_share",
+      "llm_correct": true,
+      "was_silent_detected": true
+    },
+    {
+      "op": "within_group_share",
+      "col": "Support (Q1/Q2)",
+      "inferred": "within_group_share",
+      "regex": "within_group_share",
+      "llm_correct": true,
+      "was_silent_detected": true
+    },
+    {
+      "op": "within_group_share",
+      "col": "MIB",
+      "inferred": "within_group_share",
+      "regex": "within_group_share",
+      "llm_correct": true,
+      "was_silent_detected": true
+    },
+    {
+      "op": "within_group_share",
+      "col": "3.4 mA cm\u20132",
+      "inferred": "within_group_share",
+      "regex": "within_group_share",
+      "llm_correct": true,
+      "was_silent_detected": true
+    },
+    {
+      "op": "within_group_share",
+      "col": "vacA",
+      "inferred": "within_group_share",
+      "regex": "within_group_share",
+      "llm_correct": true,
+      "was_silent_detected": true
+    },
+    {
+      "op": "nan_as_zero_sum",
+      "col": "Figure",
+      "inferred": "nan_as_zero_sum",
+      "regex": null,
+      "llm_correct": true,
+      "was_silent_detected": false
+    },
+    {
+      "op": "nan_as_zero_sum",
+      "col": "Fig. 4a",
+      "inferred": "nan_as_zero_sum",
+      "regex": null,
+      "llm_correct": true,
+      "was_silent_detected": true
+    },
+    {
+      "op": "nan_as_zero_sum",
+      "col": "Supplementary_Fig_1a",
+      "inferred": "nan_as_zero_sum",
+      "regex": null,
+      "llm_correct": true,
+      "was_silent_detected": true
+    },
+    {
+      "op": "nan_as_zero_sum",
+      "col": "SUS",
+      "inferred": "nan_as_zero_sum",
+      "regex": null,
+      "llm_correct": true,
+      "was_silent_detected": false
+    },
+    {
+      "op": "nan_as_zero_sum",
+      "col": "Total",
+      "inferred": "nan_as_zero_sum",
+      "regex": null,
+      "llm_correct": true,
+      "was_silent_detected": false
+    },
+    {
+      "op": "nan_as_zero_sum",
+      "col": "mother_subjectID",
+      "inferred": "nan_as_zero_sum",
+      "regex": null,
+      "llm_correct": true,
+      "was_silent_detected": false
+    },
+    {
+      "op": "nan_as_zero_sum",
+      "col": "dV/dI.1",
+      "inferred": "nan_as_zero_sum",
+      "regex": null,
+      "llm_correct": true,
+      "was_silent_detected": false
+    },
+    {
+      "op": "nan_as_zero_sum",
+      "col": "00d WT.1",
+      "inferred": "nan_as_zero_sum",
+      "regex": null,
+      "llm_correct": true,
+      "was_silent_detected": true
+    },
+    {
+      "op": "nan_as_zero_sum",
+      "col": "0.5",
+      "inferred": "nan_as_zero_sum",
+      "regex": null,
+      "llm_correct": true,
+      "was_silent_detected": true
+    },
+    {
+      "op": "nan_as_zero_sum",
+      "col": "RES",
+      "inferred": "nan_as_zero_sum",
+      "regex": null,
+      "llm_correct": true,
+      "was_silent_detected": false
+    },
+    {
+      "op": "nan_as_zero_sum",
+      "col": "Kubelka Munk",
+      "inferred": "nan_as_zero_sum",
+      "regex": null,
+      "llm_correct": true,
+      "was_silent_detected": false
+    },
+    {
+      "op": "nan_as_zero_sum",
+      "col": "sgScrmbl",
+      "inferred": "nan_as_zero_sum",
+      "regex": null,
+      "llm_correct": true,
+      "was_silent_detected": false
+    },
+    {
+      "op": "nan_as_zero_sum",
+      "col": "Time (day)",
+      "inferred": "nan_as_zero_sum",
+      "regex": null,
+      "llm_correct": true,
+      "was_silent_detected": false
+    },
+    {
+      "op": "nan_as_zero_sum",
+      "col": "Genotype",
+      "inferred": "nan_as_zero_sum",
+      "regex": null,
+      "llm_correct": true,
+      "was_silent_detected": false
+    },
+    {
+      "op": "nan_as_zero_sum",
+      "col": "V(V)",
+      "inferred": "nan_as_zero_sum",
+      "regex": null,
+      "llm_correct": true,
+      "was_silent_detected": false
+    },
+    {
+      "op": "nan_as_zero_sum",
+      "col": "Sample",
+      "inferred": "nan_as_zero_sum",
+      "regex": null,
+      "llm_correct": true,
+      "was_silent_detected": false
+    },
+    {
+      "op": "nan_as_zero_sum",
+      "col": "Survival",
+      "inferred": "nan_as_zero_sum",
+      "regex": null,
+      "llm_correct": true,
+      "was_silent_detected": false
+    },
+    {
+      "op": "nan_as_zero_sum",
+      "col": "WT (n=46)",
+      "inferred": "nan_as_zero_sum",
+      "regex": null,
+      "llm_correct": true,
+      "was_silent_detected": false
+    },
+    {
+      "op": "nan_as_zero_sum",
+      "col": "Apo",
+      "inferred": "nan_as_zero_sum",
+      "regex": null,
+      "llm_correct": true,
+      "was_silent_detected": false
+    },
+    {
+      "op": "nan_as_zero_sum",
+      "col": "0.6",
+      "inferred": "nan_as_zero_sum",
+      "regex": null,
+      "llm_correct": true,
+      "was_silent_detected": true
+    },
+    {
+      "op": "nan_as_zero_sum",
+      "col": "EDF. 1d",
+      "inferred": "nan_as_zero_sum",
+      "regex": null,
+      "llm_correct": true,
+      "was_silent_detected": true
+    },
+    {
+      "op": "nan_as_zero_sum",
+      "col": "Time (h)",
+      "inferred": "nan_as_zero_sum",
+      "regex": null,
+      "llm_correct": true,
+      "was_silent_detected": false
+    },
+    {
+      "op": "nan_as_zero_sum",
+      "col": "junctional code",
+      "inferred": "nan_as_zero_sum",
+      "regex": null,
+      "llm_correct": true,
+      "was_silent_detected": false
+    },
+    {
+      "op": "nan_as_zero_sum",
+      "col": "Annelida",
+      "inferred": "nan_as_zero_sum",
+      "regex": null,
+      "llm_correct": true,
+      "was_silent_detected": false
+    },
+    {
+      "op": "nan_as_zero_sum",
+      "col": "Coculture conditions",
+      "inferred": "nan_as_zero_sum",
+      "regex": null,
+      "llm_correct": true,
+      "was_silent_detected": false
+    },
+    {
+      "op": "nan_as_zero_sum",
+      "col": "Ctnnb1ex3/WT",
+      "inferred": "nan_as_zero_sum",
+      "regex": null,
+      "llm_correct": true,
+      "was_silent_detected": false
+    },
+    {
+      "op": "nan_as_zero_sum",
+      "col": "Charge Capacity",
+      "inferred": "nan_as_zero_sum",
+      "regex": null,
+      "llm_correct": true,
+      "was_silent_detected": false
+    },
+    {
+      "op": "nan_as_zero_sum",
+      "col": "Extended Data Fig 7a",
+      "inferred": "nan_as_zero_sum",
+      "regex": null,
+      "llm_correct": true,
+      "was_silent_detected": true
+    },
+    {
+      "op": "nan_as_zero_sum",
+      "col": "mag_e.1",
+      "inferred": "nan_as_zero_sum",
+      "regex": null,
+      "llm_correct": true,
+      "was_silent_detected": false
+    },
+    {
+      "op": "nan_as_zero_sum",
+      "col": "fraction of CDR retained.1",
+      "inferred": "nan_as_zero_sum",
+      "regex": null,
+      "llm_correct": true,
+      "was_silent_detected": false
+    },
+    {
+      "op": "weighted_mean",
+      "col": "date",
+      "inferred": "weighted_mean",
+      "regex": "proportion_true",
+      "llm_correct": true,
+      "was_silent_detected": true
+    },
+    {
+      "op": "weighted_mean",
+      "col": "Start TimePoint",
+      "inferred": "weighted_mean",
+      "regex": "proportion_true",
+      "llm_correct": true,
+      "was_silent_detected": true
+    },
+    {
+      "op": "weighted_mean",
+      "col": "CAGE",
+      "inferred": "weighted_mean",
+      "regex": "proportion_true",
+      "llm_correct": true,
+      "was_silent_detected": false
+    },
+    {
+      "op": "weighted_mean",
+      "col": "chr",
+      "inferred": "weighted_mean",
+      "regex": "proportion_true",
+      "llm_correct": true,
+      "was_silent_detected": true
+    },
+    {
+      "op": "weighted_mean",
+      "col": "GeneRatio",
+      "inferred": "weighted_mean",
+      "regex": "proportion_true",
+      "llm_correct": true,
+      "was_silent_detected": true
+    },
+    {
+      "op": "weighted_mean",
+      "col": "value",
+      "inferred": "weighted_mean",
+      "regex": "weighted_mean",
+      "llm_correct": true,
+      "was_silent_detected": true
+    },
+    {
+      "op": "weighted_mean",
+      "col": "RPMI.1",
+      "inferred": "weighted_mean",
+      "regex": "proportion_true",
+      "llm_correct": true,
+      "was_silent_detected": false
+    },
+    {
+      "op": "weighted_mean",
+      "col": "GST Affinity_Quant_user 2019-10-30 15hr 29min_Exposure_2.0sec+user 2019-10-30 15hr 32min_white",
+      "inferred": "weighted_mean",
+      "regex": "proportion_true",
+      "llm_correct": true,
+      "was_silent_detected": true
+    },
+    {
+      "op": "weighted_mean",
+      "col": "ave of W/O",
+      "inferred": "weighted_mean",
+      "regex": "proportion_true",
+      "llm_correct": true,
+      "was_silent_detected": true
+    },
+    {
+      "op": "weighted_mean",
+      "col": "1",
+      "inferred": "weighted_mean",
+      "regex": "proportion_true",
+      "llm_correct": true,
+      "was_silent_detected": true
+    },
+    {
+      "op": "weighted_mean",
+      "col": "dIEC TCRd-/-.4",
+      "inferred": "weighted_mean",
+      "regex": "proportion_true",
+      "llm_correct": true,
+      "was_silent_detected": true
+    },
+    {
+      "op": "weighted_mean",
+      "col": "Concentration",
+      "inferred": "weighted_mean",
+      "regex": "proportion_true",
+      "llm_correct": true,
+      "was_silent_detected": true
+    },
+    {
+      "op": "weighted_mean",
+      "col": "bin",
+      "inferred": "weighted_mean",
+      "regex": "proportion_true",
+      "llm_correct": true,
+      "was_silent_detected": true
+    },
+    {
+      "op": "weighted_mean",
+      "col": "Gene Name",
+      "inferred": "weighted_mean",
+      "regex": "proportion_true",
+      "llm_correct": true,
+      "was_silent_detected": false
+    },
+    {
+      "op": "weighted_mean",
+      "col": "mouse_final",
+      "inferred": "weighted_mean",
+      "regex": "proportion_true",
+      "llm_correct": true,
+      "was_silent_detected": false
+    },
+    {
+      "op": "weighted_mean",
+      "col": "length",
+      "inferred": "weighted_mean",
+      "regex": "proportion_true",
+      "llm_correct": true,
+      "was_silent_detected": true
+    },
+    {
+      "op": "weighted_mean",
+      "col": "chr",
+      "inferred": "weighted_mean",
+      "regex": "proportion_true",
+      "llm_correct": true,
+      "was_silent_detected": false
+    },
+    {
+      "op": "weighted_mean",
+      "col": "0 days",
+      "inferred": "weighted_mean",
+      "regex": "proportion_true",
+      "llm_correct": true,
+      "was_silent_detected": true
+    },
+    {
+      "op": "weighted_mean",
+      "col": "0.2",
+      "inferred": "weighted_mean",
+      "regex": "proportion_true",
+      "llm_correct": true,
+      "was_silent_detected": true
+    },
+    {
+      "op": "weighted_mean",
+      "col": "Adjusted\u00a0P\u00a0Value",
+      "inferred": "weighted_mean",
+      "regex": "proportion_true",
+      "llm_correct": true,
+      "was_silent_detected": true
+    },
+    {
+      "op": "weighted_mean",
+      "col": "Man. P4 MD",
+      "inferred": "weighted_mean",
+      "regex": "proportion_true",
+      "llm_correct": true,
+      "was_silent_detected": true
+    },
+    {
+      "op": "weighted_mean",
+      "col": "sheet resistance(\u03a9)@SC6",
+      "inferred": "weighted_mean",
+      "regex": "proportion_true",
+      "llm_correct": true,
+      "was_silent_detected": true
+    },
+    {
+      "op": "weighted_mean",
+      "col": "3.6",
+      "inferred": "weighted_mean",
+      "regex": "proportion_true",
+      "llm_correct": true,
+      "was_silent_detected": true
+    },
+    {
+      "op": "weighted_mean",
+      "col": "orfo",
+      "inferred": "weighted_mean",
+      "regex": "proportion_true",
+      "llm_correct": true,
+      "was_silent_detected": true
+    },
+    {
+      "op": "weighted_mean",
+      "col": "Days post LCMV",
+      "inferred": "weighted_mean",
+      "regex": "proportion_true",
+      "llm_correct": true,
+      "was_silent_detected": true
+    },
+    {
+      "op": "weighted_mean",
+      "col": "Gene.refGene",
+      "inferred": "weighted_mean",
+      "regex": "proportion_true",
+      "llm_correct": true,
+      "was_silent_detected": true
+    },
+    {
+      "op": "weighted_mean",
+      "col": "depth (m)",
+      "inferred": "weighted_mean",
+      "regex": "proportion_true",
+      "llm_correct": true,
+      "was_silent_detected": true
+    },
+    {
+      "op": "weighted_mean",
+      "col": "Supernatant (ul)",
+      "inferred": "weighted_mean",
+      "regex": "proportion_true",
+      "llm_correct": true,
+      "was_silent_detected": true
+    },
+    {
+      "op": "weighted_mean",
+      "col": "normalized PL intensity (a.u.).1",
+      "inferred": "weighted_mean",
+      "regex": "proportion_true",
+      "llm_correct": true,
+      "was_silent_detected": true
+    },
+    {
+      "op": "weighted_mean",
+      "col": "\u03b415N",
+      "inferred": "weighted_mean",
+      "regex": "proportion_true",
+      "llm_correct": true,
+      "was_silent_detected": true
+    },
+    {
+      "op": "pooled_rate",
+      "col": "PFAM_N",
+      "inferred": "pooled_rate",
+      "regex": null,
+      "llm_correct": true,
+      "was_silent_detected": true
+    },
+    {
+      "op": "pooled_rate",
+      "col": "sheet resistance(\u03a9)@SC6",
+      "inferred": "pooled_rate",
+      "regex": null,
+      "llm_correct": true,
+      "was_silent_detected": false
+    },
+    {
+      "op": "pooled_rate",
+      "col": "orfo",
+      "inferred": "pooled_rate",
+      "regex": null,
+      "llm_correct": true,
+      "was_silent_detected": false
+    },
+    {
+      "op": "pooled_rate",
+      "col": "Germ Cell",
+      "inferred": "pooled_rate",
+      "regex": null,
+      "llm_correct": true,
+      "was_silent_detected": true
+    },
+    {
+      "op": "pooled_rate",
+      "col": "3.4 mA cm\u20132",
+      "inferred": "pooled_rate",
+      "regex": null,
+      "llm_correct": true,
+      "was_silent_detected": false
+    },
+    {
+      "op": "pooled_rate",
+      "col": "pop",
+      "inferred": null,
+      "regex": null,
+      "llm_correct": false,
+      "was_silent_detected": false
+    },
+    {
+      "op": "pooled_rate",
+      "col": "Estimated_age(million years old)",
+      "inferred": "pooled_rate",
+      "regex": null,
+      "llm_correct": true,
+      "was_silent_detected": false
+    },
+    {
+      "op": "pooled_rate",
+      "col": "Cytokine",
+      "inferred": "pooled_rate",
+      "regex": null,
+      "llm_correct": true,
+      "was_silent_detected": true
+    },
+    {
+      "op": "pooled_rate",
+      "col": "2SE.1",
+      "inferred": "pooled_rate",
+      "regex": null,
+      "llm_correct": true,
+      "was_silent_detected": true
+    },
+    {
+      "op": "pooled_rate",
+      "col": "1HS \u0394",
+      "inferred": "pooled_rate",
+      "regex": null,
+      "llm_correct": true,
+      "was_silent_detected": true
+    },
+    {
+      "op": "pooled_rate",
+      "col": "lystae strain",
+      "inferred": "pooled_rate",
+      "regex": null,
+      "llm_correct": true,
+      "was_silent_detected": false
+    },
+    {
+      "op": "pooled_rate",
+      "col": "ave of W/O",
+      "inferred": "pooled_rate",
+      "regex": null,
+      "llm_correct": true,
+      "was_silent_detected": true
+    },
+    {
+      "op": "pooled_rate",
+      "col": "DCPIB",
+      "inferred": "pooled_rate",
+      "regex": null,
+      "llm_correct": true,
+      "was_silent_detected": false
+    },
+    {
+      "op": "pooled_rate",
+      "col": "Chr",
+      "inferred": "pooled_rate",
+      "regex": null,
+      "llm_correct": true,
+      "was_silent_detected": true
+    },
+    {
+      "op": "pooled_rate",
+      "col": "year_interval",
+      "inferred": "pooled_rate",
+      "regex": null,
+      "llm_correct": true,
+      "was_silent_detected": true
+    },
+    {
+      "op": "pooled_rate",
+      "col": "Selectivity_SourceKnowledge",
+      "inferred": "pooled_rate",
+      "regex": null,
+      "llm_correct": true,
+      "was_silent_detected": false
+    },
+    {
+      "op": "pooled_rate",
+      "col": "p-value",
+      "inferred": null,
+      "regex": null,
+      "llm_correct": false,
+      "was_silent_detected": true
+    },
+    {
+      "op": "pooled_rate",
+      "col": "Viable/Singlets/CD45+/CD56+,Count",
+      "inferred": "pooled_rate",
+      "regex": null,
+      "llm_correct": true,
+      "was_silent_detected": true
+    },
+    {
+      "op": "pooled_rate",
+      "col": "Day",
+      "inferred": "pooled_rate",
+      "regex": null,
+      "llm_correct": true,
+      "was_silent_detected": true
+    },
+    {
+      "op": "pooled_rate",
+      "col": "Partial",
+      "inferred": "pooled_rate",
+      "regex": null,
+      "llm_correct": true,
+      "was_silent_detected": true
+    },
+    {
+      "op": "pooled_rate",
+      "col": "distance_CA MolC",
+      "inferred": "pooled_rate",
+      "regex": null,
+      "llm_correct": true,
+      "was_silent_detected": true
+    },
+    {
+      "op": "pooled_rate",
+      "col": "splitted chiral berry plasmon peak in spiral nano-ribbons",
+      "inferred": "pooled_rate",
+      "regex": null,
+      "llm_correct": true,
+      "was_silent_detected": true
+    },
+    {
+      "op": "pooled_rate",
+      "col": "+/+",
+      "inferred": "pooled_rate",
+      "regex": null,
+      "llm_correct": true,
+      "was_silent_detected": true
+    },
+    {
+      "op": "pooled_rate",
+      "col": "GST Affinity_Quant_user 2019-10-30 15hr 29min_Exposure_2.0sec+user 2019-10-30 15hr 32min_white",
+      "inferred": "pooled_rate",
+      "regex": null,
+      "llm_correct": true,
+      "was_silent_detected": false
+    },
+    {
+      "op": "pooled_rate",
+      "col": "chr",
+      "inferred": "pooled_rate",
+      "regex": null,
+      "llm_correct": true,
+      "was_silent_detected": true
+    },
+    {
+      "op": "pooled_rate",
+      "col": "IBAG number RSV-P-BFP",
+      "inferred": "pooled_rate",
+      "regex": null,
+      "llm_correct": true,
+      "was_silent_detected": true
+    },
+    {
+      "op": "pooled_rate",
+      "col": "Non-diabetic",
+      "inferred": "pooled_rate",
+      "regex": null,
+      "llm_correct": true,
+      "was_silent_detected": true
+    },
+    {
+      "op": "pooled_rate",
+      "col": "dating1s",
+      "inferred": "pooled_rate",
+      "regex": null,
+      "llm_correct": true,
+      "was_silent_detected": false
+    },
+    {
+      "op": "pooled_rate",
+      "col": "Isavuconazole",
+      "inferred": "pooled_rate",
+      "regex": null,
+      "llm_correct": true,
+      "was_silent_detected": true
+    },
+    {
+      "op": "pooled_rate",
+      "col": "Compound",
+      "inferred": "pooled_rate",
+      "regex": null,
+      "llm_correct": true,
+      "was_silent_detected": true
+    }
+  ]
+}

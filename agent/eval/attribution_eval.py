@@ -53,9 +53,15 @@ def _candidate_ops(inp, params, result) -> set:
     n_in, n_out = len(df), len(result)
     row_preserving = {"within_group_share", "pct_point", "cumulative_running",
                       "proportion_true", "zscore_within_group", "dense_rank",
-                      "cumcount_per_group", "rank_pct", "clip_outlier", "left_join_keep_all"}
+                      "cumcount_per_group", "rank_pct", "clip_outlier", "left_join_keep_all",
+                      # expansion ops that emit one row per input row (assign-a-column shape)
+                      "index_align", "dtype_coerce", "lookahead_return", "scale_before_split_leakage",
+                      "string_normalize_join", "latlon_swap"}
     row_reducing = {"weighted_mean", "dedup_then_agg", "pooled_rate", "median_not_mean",
-                    "topn_with_ties", "nan_as_zero_sum", "count_includes_empty"}
+                    "topn_with_ties", "nan_as_zero_sum", "count_includes_empty",
+                    # expansion ops that aggregate to one row per group / fewer rows
+                    "groupby_dropna_key", "null_in_agg_count", "join_fanout",
+                    "order_dependent_dedup", "resample_boundary"}
     cand = set(ORACLE.CONTRACTS)
     if n_out == n_in and n_in > 1:
         cand &= (row_preserving | {"weighted_mean"})  # weighted_mean is scalar but cheap to keep

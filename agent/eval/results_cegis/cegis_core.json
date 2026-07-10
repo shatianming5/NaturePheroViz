@@ -1,0 +1,363 @@
+{
+  "model": "gpt-5.4",
+  "intent": "deleaked",
+  "rounds": 2,
+  "k": 4,
+  "n": 12,
+  "oneshot": {
+    "core": 10,
+    "full": 10,
+    "core_ci": [
+      83,
+      55,
+      95
+    ],
+    "full_ci": [
+      83,
+      55,
+      95
+    ]
+  },
+  "cegis": {
+    "core": 10,
+    "full": 10,
+    "core_ci": [
+      83,
+      55,
+      95
+    ],
+    "full_ci": [
+      83,
+      55,
+      95
+    ]
+  },
+  "cases": [
+    {
+      "op": "weighted_mean",
+      "n_consensus": 4,
+      "oneshot": {
+        "core": true,
+        "full": true,
+        "exec_ok": true
+      },
+      "cegis": {
+        "core": true,
+        "full": true,
+        "exec_ok": true
+      },
+      "trace": [
+        {
+          "round": 0,
+          "n_consensus": 4,
+          "n_probes": 2,
+          "score": 2
+        },
+        {
+          "round": 1,
+          "fp_counterexample": true,
+          "new_score": 5,
+          "accepted": true
+        },
+        {
+          "round": 2,
+          "fp_counterexample": false
+        }
+      ]
+    },
+    {
+      "op": "within_group_share",
+      "n_consensus": 4,
+      "oneshot": {
+        "core": true,
+        "full": true,
+        "exec_ok": true
+      },
+      "cegis": {
+        "core": true,
+        "full": true,
+        "exec_ok": true
+      },
+      "trace": [
+        {
+          "round": 0,
+          "n_consensus": 4,
+          "n_probes": 4,
+          "score": 8
+        },
+        {
+          "round": 1,
+          "fp_counterexample": false
+        }
+      ]
+    },
+    {
+      "op": "pct_point",
+      "n_consensus": 4,
+      "oneshot": {
+        "core": false,
+        "full": false,
+        "exec_ok": true
+      },
+      "cegis": {
+        "core": false,
+        "full": false,
+        "exec_ok": true
+      },
+      "trace": [
+        {
+          "round": 0,
+          "n_consensus": 4,
+          "n_probes": 4,
+          "score": 8
+        },
+        {
+          "round": 1,
+          "fp_counterexample": false
+        }
+      ]
+    },
+    {
+      "op": "dedup_then_agg",
+      "n_consensus": 4,
+      "oneshot": {
+        "core": true,
+        "full": true,
+        "exec_ok": true
+      },
+      "cegis": {
+        "core": true,
+        "full": true,
+        "exec_ok": true
+      },
+      "trace": [
+        {
+          "round": 0,
+          "n_consensus": 4,
+          "n_probes": 4,
+          "score": 8
+        },
+        {
+          "round": 1,
+          "fp_counterexample": false
+        }
+      ]
+    },
+    {
+      "op": "left_join_keep_all",
+      "n_consensus": 4,
+      "oneshot": {
+        "core": true,
+        "full": true,
+        "exec_ok": true
+      },
+      "cegis": {
+        "core": true,
+        "full": true,
+        "exec_ok": true
+      },
+      "trace": [
+        {
+          "round": 0,
+          "n_consensus": 4,
+          "n_probes": 4,
+          "score": 5
+        },
+        {
+          "round": 1,
+          "fp_counterexample": false
+        }
+      ]
+    },
+    {
+      "op": "pooled_rate",
+      "n_consensus": 4,
+      "oneshot": {
+        "core": true,
+        "full": true,
+        "exec_ok": true
+      },
+      "cegis": {
+        "core": true,
+        "full": true,
+        "exec_ok": true
+      },
+      "trace": [
+        {
+          "round": 0,
+          "n_consensus": 4,
+          "n_probes": 4,
+          "score": 8
+        },
+        {
+          "round": 1,
+          "fp_counterexample": false
+        }
+      ]
+    },
+    {
+      "op": "median_not_mean",
+      "n_consensus": 3,
+      "oneshot": {
+        "core": false,
+        "full": false,
+        "exec_ok": true
+      },
+      "cegis": {
+        "core": false,
+        "full": false,
+        "exec_ok": true
+      },
+      "trace": [
+        {
+          "round": 0,
+          "n_consensus": 3,
+          "n_probes": 4,
+          "score": 7
+        },
+        {
+          "round": 1,
+          "fp_counterexample": false
+        }
+      ]
+    },
+    {
+      "op": "cumulative_running",
+      "n_consensus": 3,
+      "oneshot": {
+        "core": true,
+        "full": true,
+        "exec_ok": true
+      },
+      "cegis": {
+        "core": true,
+        "full": true,
+        "exec_ok": true
+      },
+      "trace": [
+        {
+          "round": 0,
+          "n_consensus": 3,
+          "n_probes": 4,
+          "score": 7
+        },
+        {
+          "round": 1,
+          "fp_counterexample": false
+        }
+      ]
+    },
+    {
+      "op": "topn_with_ties",
+      "n_consensus": 4,
+      "oneshot": {
+        "core": true,
+        "full": true,
+        "exec_ok": true
+      },
+      "cegis": {
+        "core": true,
+        "full": true,
+        "exec_ok": true
+      },
+      "trace": [
+        {
+          "round": 0,
+          "n_consensus": 4,
+          "n_probes": 4,
+          "score": 8
+        },
+        {
+          "round": 1,
+          "fp_counterexample": false
+        }
+      ]
+    },
+    {
+      "op": "nan_as_zero_sum",
+      "n_consensus": 4,
+      "oneshot": {
+        "core": true,
+        "full": true,
+        "exec_ok": true
+      },
+      "cegis": {
+        "core": true,
+        "full": true,
+        "exec_ok": true
+      },
+      "trace": [
+        {
+          "round": 0,
+          "n_consensus": 4,
+          "n_probes": 4,
+          "score": 8
+        },
+        {
+          "round": 1,
+          "fp_counterexample": false
+        }
+      ]
+    },
+    {
+      "op": "count_includes_empty",
+      "n_consensus": 4,
+      "oneshot": {
+        "core": true,
+        "full": true,
+        "exec_ok": true
+      },
+      "cegis": {
+        "core": true,
+        "full": true,
+        "exec_ok": true
+      },
+      "trace": [
+        {
+          "round": 0,
+          "n_consensus": 4,
+          "n_probes": 4,
+          "score": 4
+        },
+        {
+          "round": 1,
+          "fp_counterexample": true,
+          "new_score": 4,
+          "accepted": false
+        },
+        {
+          "round": 2,
+          "fp_counterexample": true,
+          "new_score": 4,
+          "accepted": false
+        }
+      ]
+    },
+    {
+      "op": "proportion_true",
+      "n_consensus": 4,
+      "oneshot": {
+        "core": true,
+        "full": true,
+        "exec_ok": true
+      },
+      "cegis": {
+        "core": true,
+        "full": true,
+        "exec_ok": true
+      },
+      "trace": [
+        {
+          "round": 0,
+          "n_consensus": 4,
+          "n_probes": 4,
+          "score": 8
+        },
+        {
+          "round": 1,
+          "fp_counterexample": false
+        }
+      ]
+    }
+  ]
+}

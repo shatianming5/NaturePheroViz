@@ -1,0 +1,16 @@
+{
+  "tasks": 275,
+  "covered": 48,
+  "precision_tp": 5,
+  "pct": 17,
+  "true_cov": 2,
+  "by_op": {
+    "dedup_then_agg": 15,
+    "left_join_keep_all": 18,
+    "cumcount_per_group": 2,
+    "nan_as_zero_sum": 6,
+    "cumulative_running": 4,
+    "median_not_mean": 1,
+    "weighted_mean": 2
+  }
+}
